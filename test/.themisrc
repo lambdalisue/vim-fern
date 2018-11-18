@@ -1,0 +1,36 @@
+if &encoding ==# 'latin1'
+  set encoding=utf-8
+endif
+
+" Profile ------------------------------------------------------------------
+if $PROFILE !=# ''
+  execute 'profile start' $PROFILE
+  profile! file ./autoload/fila/*
+  profile! file ./autoload/vital/__fila__/*
+endif
+
+" Force English interface
+try
+  language message C
+catch
+endtry
+set helplang=en
+
+let s:assert = themis#helper('assert')
+call themis#option('recursive', 1)
+call themis#option('reporter', 'dot')
+call themis#helper('command').with(s:assert)
+
+call themis#log(substitute(execute('version'), '^\%(\r\?\n\)*', '', ''))
+call themis#log('-----------------------------------------------------------')
+call themis#log('$LANG:          ' . $LANG)
+call themis#log('&encoding:      ' . &encoding)
+call themis#log('&termencoding:  ' . &termencoding)
+call themis#log('&fileencodings: ' . &fileencodings)
+call themis#log('&fileformats:   ' . &fileformats)
+call themis#log('&shellslash:    ' . (exists('&shellslash') ? &shellslash : 'DISABLED'))
+call themis#log('&runtimepath:')
+for s:runtimepath in split(&runtimepath, ',')
+  call themis#log('  ' . s:runtimepath)
+endfor
+call themis#log('-----------------------------------------------------------')

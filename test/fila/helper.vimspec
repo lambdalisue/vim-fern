@@ -1,0 +1,293 @@
+let s:STATUS_COLLAPSED = 0
+let s:STATUS_EXPANDED = 1
+
+Describe fila#helper
+  Before all
+    let Promise = vital#fila#import('Async.Promise')
+    let WindowCursor = vital#fila#import('Vim.Window.Cursor')
+  End
+
+  Describe #new()
+    It returns a helper instance for a current window
+      let helper = fila#helper#new()
+      Assert KeyExists(helper, 'bufnr')
+      Assert Equals(helper.bufnr, bufnr('%'))
+    End
+  End
+
+  Describe helper instance
+    Before
+      let helper = fila#helper#new()
+    End
+
+    After
+      silent! unlet! g:fila_hidden
+      new | %bwipeout!
+    End
+
+    Describe .get_nodes()
+      It throws an error when the target buffer does not have nodes
+        Throws /given buffer does not have nodes/ helper.get_nodes()
+      End
+
+      It returns b:fila_nodes as-is
+        let b:fila_nodes = []
+        Assert Equals(helper.get_nodes(), b:fila_nodes)
+        Assert Same(helper.get_nodes(), b:fila_nodes)
+      End
+    End
+
+    Describe .set_nodes()
+      It assigns b:fila_nodes as-is
+        let nodes = []
+        call helper.set_nodes(nodes)
+        Assert Equals(b:fila_nodes, nodes)
+        Assert Same(b:fila_nodes, nodes)
+      End
+    End
+
+    Describe .get_marks()
+      It returns an empty list in default
+        Assert Equals(helper.get_marks(), [])
+      End
+
+      It returns b:fila_marks as-is
+        let b:fila_marks = []
+        Assert Equals(helper.get_marks(), b:fila_marks)
+        Assert Same(helper.get_marks(), b:fila_marks)
+      End
+    End
+
+    Describe .set_marks()
+      It assigns b:fila_marks as-is
+        let marks = []
+        call helper.set_marks(marks)
+        Assert Equals(b:fila_marks, marks)
+        Assert Same(b:fila_marks, marks)
+      End
+    End
+
+    Describe .get_hidden()
+      It returns FALSE in default
+        Assert False(helper.get_hidden())
+      End
+
+      It returns g:fila_hidden
+        let g:fila_hidden = 1
+        Assert True(helper.get_hidden())
+      End
+    End
+
+    Describe .set_hidden()
+      It assigns g:fila_hidden
+        call helper.set_hidden(1)
+        Assert True(g:fila_hidden)
+      End
+    End
+
+    Describe .get_root_node()
+      It returns a root node as-is
+        let nodes = [
+              \ fila#node#new([], {}),
+              \ fila#node#new(['Apple'], {}),
+              \ fila#node#new(['Banana'], {}),
+              \ fila#node#new(['Candy'], {}),
+              \]
+        call helper.set_nodes(nodes)
+        Assert Equals(helper.get_root_node(), nodes[0])
+        Assert Same(helper.get_root_node(), nodes[0])
+      End
+    End
+
+    Describe .get_visible_nodes()
+      It returns non hidden nodes
+        let nodes = [
+              \ fila#node#new([], {}),
+              \ fila#node#new(['.git'], {
+              \   'hidden': 1,
+              \   'children': [],
+              \ }),
+              \ fila#node#new(['Apple'], {}),
+              \ fila#node#new(['Banana'], {}),
+              \ fila#node#new(['Candy'], {}),
+              \]
+        call helper.set_nodes(nodes)
+
+        let r = helper.get_visible_nodes()
+        Assert Equals(map(r, { -> v:val.key }), [
+              \ [],
+              \ ['Apple'],
+              \ ['Banana'],
+              \ ['Candy'],
+              \])
+      End
+
+      It returns hidden but expanded nodes
+        let nodes = [
+              \ fila#node#new([], {}),
+              \ fila#node#new(['.git'], {
+              \   'hidden': 1,
+              \   'status': s:STATUS_EXPANDED,
+              \   'children': [],
+              \ }),
+              \ fila#node#new(['Apple'], {}),
+              \ fila#node#new(['Banana'], {}),
+              \ fila#node#new(['Candy'], {}),
+              \]
+        call helper.set_nodes(nodes)
+
+        let r = helper.get_visible_nodes()
+        Assert Equals(map(r, { -> v:val.key }), [
+              \ [],
+              \ ['.git'],
+              \ ['Apple'],
+              \ ['Banana'],
+              \ ['Candy'],
+              \])
+      End
+    End
+
+    Describe .get_marked_nodes()
+      It returns marked nodes
+        let nodes = [
+              \ fila#node#new([], {}),
+              \ fila#node#new(['.git'], {
+              \   'hidden': 1,
+              \   'status': 1,
+              \   'children': [],
+              \ }),
+              \ fila#node#new(['Apple'], {}),
+              \ fila#node#new(['Banana'], {}),
+              \ fila#node#new(['Candy'], {}),
+              \]
+        call helper.set_nodes(nodes)
+        call helper.set_marks([
+              \ ['.git'],
+              \ ['Banana'],
+              \])
+
+        let r = helper.get_marked_nodes()
+        Assert Equals(map(r, { -> v:val.key }), [
+              \ ['.git'],
+              \ ['Banana'],
+              \])
+      End
+    End
+
+    Describe .get_cursor_node()
+      It returns a node on the cursor
+        let nodes = [
+              \ fila#node#new([], {}),
+              \ fila#node#new(['Apple'], {}),
+              \ fila#node#new(['Banana'], {}),
+              \ fila#node#new(['Candy'], {}),
+              \]
+        call helper.set_nodes(nodes)
+        call setline(1, [
+              \ '',
+              \ 'Apple',
+              \ 'Banana',
+              \ 'Candy',
+              \])
+
+        Assert Equals(helper.get_cursor_node([1, 1]), nodes[0])
+        Assert Same(helper.get_cursor_node([1, 1]), nodes[0])
+
+        Assert Equals(helper.get_cursor_node([2, 2]), nodes[1])
+        Assert Same(helper.get_cursor_node([2, 2]), nodes[1])
+
+        Assert Equals(helper.get_cursor_node([3, 3]), nodes[2])
+        Assert Same(helper.get_cursor_node([3, 3]), nodes[2])
+      End
+
+      It returns a node on the cursor from visible nodes
+        let nodes = [
+              \ fila#node#new([], {}),
+              \ fila#node#new(['.git'], {
+              \   'hidden': 1,
+              \   'children': [],
+              \ }),
+              \ fila#node#new(['Apple'], {}),
+              \ fila#node#new(['Banana'], {}),
+              \ fila#node#new(['Candy'], {}),
+              \]
+        call helper.set_nodes(nodes)
+        call setline(1, [
+              \ '',
+              \ 'Apple',
+              \ 'Banana',
+              \ 'Candy',
+              \])
+
+        Assert Equals(helper.get_cursor_node([1, 1]), nodes[0])
+        Assert Same(helper.get_cursor_node([1, 1]), nodes[0])
+
+        Assert Equals(helper.get_cursor_node([2, 2]), nodes[2])
+        Assert Same(helper.get_cursor_node([2, 2]), nodes[2])
+
+        Assert Equals(helper.get_cursor_node([3, 3]), nodes[3])
+        Assert Same(helper.get_cursor_node([3, 3]), nodes[3])
+      End
+    End
+
+    Describe .get_selection_nodes()
+      It returns node in the selection
+        let nodes = [
+              \ fila#node#new([], {}),
+              \ fila#node#new(['.git'], {
+              \   'hidden': 1,
+              \   'children': [],
+              \ }),
+              \ fila#node#new(['Apple'], {}),
+              \ fila#node#new(['Banana'], {}),
+              \ fila#node#new(['Candy'], {}),
+              \]
+        call helper.set_nodes(nodes)
+        call setline(1, [
+              \ '',
+              \ 'Apple',
+              \ 'Banana',
+              \ 'Candy',
+              \])
+
+        let r = helper.get_selection_nodes([2, 4])
+        Assert Equals(map(r, { -> v:val.key }), [
+              \ ['Apple'],
+              \ ['Banana'],
+              \ ['Candy'],
+              \])
+      End
+    End
+
+    Describe .redraw()
+      It resolves after the buffer content has replaced
+        let nodes = [
+              \ fila#node#new([], {}),
+              \ fila#node#new(['.git'], {
+              \   'hidden': 1,
+              \   'status': 1,
+              \   'children': [],
+              \ }),
+              \ fila#node#new(['Apple'], {}),
+              \ fila#node#new(['Banana'], {}),
+              \ fila#node#new(['Candy'], {}),
+              \]
+        call helper.set_nodes(nodes)
+        call helper.set_marks([
+              \ ['.git'],
+              \ ['Banana'],
+              \])
+
+        let p = helper.redraw()
+        Assert Equals(Promise.wait(p), [helper, v:null])
+        Assert Equals(getline(1, '$'), [
+              \ '  ',
+              \ '* |- .git',
+              \ '  |  Apple',
+              \ '* |  Banana',
+              \ '  |  Candy',
+              \])
+      End
+    End
+  End
+End

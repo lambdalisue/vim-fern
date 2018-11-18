@@ -1,0 +1,495 @@
+Describe fila#node
+  Before all
+    let Promise = vital#fila#import('Async.Promise')
+  End
+
+  Describe #new()
+    It returns a node instance
+      let node = fila#node#new([], {})
+      Assert Equals(node, {
+            \ 'key': [],
+            \ 'text': '',
+            \ 'hidden': 0,
+            \ 'status': 0,
+            \})
+    End
+  End
+
+  Describe is_branch()
+    It returns 0 if a node does not have children
+      let node = fila#node#new([], {})
+      Assert False(fila#node#is_branch(node))
+    End
+
+    It returns 1 if a node has children
+      let node = fila#node#new([], {
+            \ 'children': [],
+            \})
+      Assert True(fila#node#is_branch(node))
+    End
+  End
+
+  Describe is_expanded()
+    It returns 0 if a node status is not expanded
+      let node = fila#node#new([], {})
+      Assert False(fila#node#is_expanded(node))
+    End
+
+    It returns 1 if a node status is expanded
+      let node = fila#node#new([], {
+            \ 'children': [],
+            \ 'status': 1,
+            \})
+      Assert True(fila#node#is_expanded(node))
+    End
+  End
+
+  Describe index()
+    It returns -1 if no node is found for a given key
+      let nodes = [
+            \ fila#node#new([], {}),
+            \ fila#node#new(['Users'], {}),
+            \ fila#node#new(['Users', 'John'], {}),
+            \]
+      Assert Equals(fila#node#index(['Application'], nodes), -1)
+    End
+
+    It returns an index of a node for a given key
+      let nodes = [
+            \ fila#node#new([], {}),
+            \ fila#node#new(['Users'], {}),
+            \ fila#node#new(['Users', 'John'], {}),
+            \]
+      Assert Equals(fila#node#index([], nodes), 0)
+      Assert Equals(fila#node#index(['Users'], nodes), 1)
+      Assert Equals(fila#node#index(['Users', 'John'], nodes), 2)
+    End
+  End
+
+  Describe find()
+    It returns v:null if no node is found for a given key
+      let nodes = [
+            \ fila#node#new([], {}),
+            \ fila#node#new(['Users'], {}),
+            \ fila#node#new(['Users', 'John'], {}),
+            \]
+      Assert Equals(fila#node#find(['Application'], nodes), v:null)
+    End
+
+    It returns a node for a given key
+      let nodes = [
+            \ fila#node#new([], {}),
+            \ fila#node#new(['Users'], {}),
+            \ fila#node#new(['Users', 'John'], {}),
+            \]
+      Assert Equals(fila#node#find([], nodes), nodes[0])
+      Assert Equals(fila#node#find(['Users'], nodes), nodes[1])
+      Assert Equals(fila#node#find(['Users', 'John'], nodes), nodes[2])
+    End
+  End
+
+  Describe children()
+    It rejects when a give node does not have children
+      let node = fila#node#new([], {})
+      let p = fila#node#children(node)
+      Assert True(Promise.is_promise(p))
+      let [r, e] = Promise.wait(p)
+      Assert Equals(r, v:null)
+      Assert NotEquals(e, v:null)
+    End
+
+    It resolves with children when a given node has children
+      let children = [
+            \ fila#node#new(['Application'], {}),
+            \ fila#node#new(['Documents'], {}),
+            \]
+      let node = fila#node#new([], {
+            \ 'children': children,
+            \})
+      let p = fila#node#children(node)
+      Assert True(Promise.is_promise(p))
+      let [r, e] = Promise.wait(p)
+      Assert Equals(map(copy(r), { -> v:val.key }), [
+            \ ['Application'],
+            \ ['Documents'],
+            \])
+      Assert Equals(e, v:null)
+    End
+
+    It resolves with children function result when a given node has children function (instance)
+      let children = [
+            \ fila#node#new(['Application'], {}),
+            \ fila#node#new(['Documents'], {}),
+            \]
+      let node = fila#node#new([], {
+            \ 'children': { -> children },
+            \})
+      let p = fila#node#children(node)
+      Assert True(Promise.is_promise(p))
+      let [r, e] = Promise.wait(p)
+      Assert Equals(map(copy(r), { -> v:val.key }), [
+            \ ['Application'],
+            \ ['Documents'],
+            \])
+      Assert Equals(e, v:null)
+    End
+
+    It resolves with children function result when a give node has children function (promise/resolve)
+      let children = [
+            \ fila#node#new(['Application'], {}),
+            \ fila#node#new(['Documents'], {}),
+            \]
+      let node = fila#node#new([], {
+            \ 'children': { -> Promise.resolve(children) },
+            \})
+      let p = fila#node#children(node)
+      Assert True(Promise.is_promise(p))
+      let [r, e] = Promise.wait(p)
+      Assert Equals(map(copy(r), { -> v:val.key }), [
+            \ ['Application'],
+            \ ['Documents'],
+            \])
+      Assert Equals(e, v:null)
+    End
+
+    It rejects with children function result when a given node has children function (promise/reject)
+      let node = fila#node#new([], {
+            \ 'children': { -> Promise.reject('hello') },
+            \})
+      let p = fila#node#children(node)
+      Assert True(Promise.is_promise(p))
+      let [r, e] = Promise.wait(p)
+      Assert Equals(r, v:null)
+      Assert NotEquals(e, v:null)
+    End
+
+    It assigns parent attribute to each children
+      let children = [
+            \ fila#node#new(['Application'], {}),
+            \ fila#node#new(['Documents'], {}),
+            \]
+      let node = fila#node#new([], {
+            \ 'children': children,
+            \})
+      let p = fila#node#children(node)
+      let [r, e] = Promise.wait(p)
+      Assert KeyExists(r[0], 'parent')
+      Assert KeyExists(r[1], 'parent')
+      Assert Equals(r[0].parent, node)
+      Assert Equals(r[1].parent, node)
+      Assert Equals(e, v:null)
+    End
+
+    It assigns children_resolver to the node during promise handling
+      let children = [
+            \ fila#node#new(['Application'], {}),
+            \ fila#node#new(['Documents'], {}),
+            \]
+      let node = fila#node#new([], {
+            \ 'children': children,
+            \})
+      let p = fila#node#children(node)
+      Assert KeyExists(node, 'children_resolver')
+      Assert Equals(node.children_resolver, p)
+      call Promise.wait(p)
+      Assert KeyNotExists(node, 'children_resolver')
+    End
+
+    It uses children_resolver instead if exist
+      let children_resolver = Promise.resolve([
+            \ fila#node#new(['Application'], {}),
+            \ fila#node#new(['Documents'], {}),
+            \])
+      let node = fila#node#new([], {
+            \ 'children': [],
+            \ 'children_resolver': children_resolver,
+            \})
+      let p = fila#node#children(node)
+      Assert Same(p, children_resolver)
+      let [r, e] = Promise.wait(p)
+      Assert Equals(map(copy(r), { -> v:val.key }), [
+            \ ['Application'],
+            \ ['Documents'],
+            \])
+      Assert Equals(e, v:null)
+    End
+  End
+
+  Describe expand_at()
+    It rejects when no node for a given key is found
+      let nodes = [
+            \ fila#node#new([], {}),
+            \ fila#node#new(['Users'], {
+            \   'children': [
+            \     fila#node#new(['Users', 'Alice'], {}),
+            \     fila#node#new(['Users', 'John'], {}),
+            \     fila#node#new(['Users', 'Peter'], {}),
+            \   ],
+            \ }),
+            \ fila#node#new(['Library'], {}),
+            \]
+      let p = fila#node#expand_at(['Application'], nodes)
+      Assert True(Promise.is_promise(p))
+      let [r, e] = Promise.wait(p)
+      Assert Equals(r, v:null)
+      Assert NotEquals(e, v:null)
+    End
+
+    It resolves with extended nodes when a node for a given key is collapsed
+      let nodes = [
+            \ fila#node#new([], {}),
+            \ fila#node#new(['Users'], {
+            \   'children': [
+            \     fila#node#new(['Users', 'Alice'], {}),
+            \     fila#node#new(['Users', 'John'], {}),
+            \     fila#node#new(['Users', 'Peter'], {}),
+            \   ],
+            \ }),
+            \ fila#node#new(['Library'], {}),
+            \]
+      let p = fila#node#expand_at(['Users'], nodes)
+      Assert True(Promise.is_promise(p))
+      let [r, e] = Promise.wait(p)
+      Assert Equals(e, v:null)
+      Assert Equals(map(copy(r), { -> v:val.key }), [
+            \ [],
+            \ ['Users'],
+            \ ['Users', 'Alice'],
+            \ ['Users', 'John'],
+            \ ['Users', 'Peter'],
+            \ ['Library'],
+            \])
+      Assert True(fila#node#is_expanded(nodes[1]))
+    End
+
+    It resolves with given nodes when a node for a given key is already expanded
+      let nodes = [
+            \ fila#node#new([], {}),
+            \ fila#node#new(['Users'], {
+            \   'status': 1,
+            \ }),
+            \ fila#node#new(['Users', 'Alice'], {}),
+            \ fila#node#new(['Users', 'John'], {}),
+            \ fila#node#new(['Users', 'Peter'], {}),
+            \ fila#node#new(['Library'], {}),
+            \]
+      let p = fila#node#expand_at(['Users'], nodes)
+      Assert True(Promise.is_promise(p))
+      let [r, e] = Promise.wait(p)
+      Assert Equals(e, v:null)
+      Assert Equals(map(copy(r), { -> v:val.key }), [
+            \ [],
+            \ ['Users'],
+            \ ['Users', 'Alice'],
+            \ ['Users', 'John'],
+            \ ['Users', 'Peter'],
+            \ ['Library'],
+            \])
+      Assert True(fila#node#is_expanded(nodes[1]))
+    End
+  End
+
+  Describe collapse_at()
+    It rejects when no node for a given key is found
+      let nodes = [
+            \ fila#node#new([], {}),
+            \ fila#node#new(['Users'], {
+            \   'status': 1,
+            \ }),
+            \ fila#node#new(['Users', 'Alice'], {}),
+            \ fila#node#new(['Users', 'John'], {}),
+            \ fila#node#new(['Users', 'Peter'], {}),
+            \ fila#node#new(['Library'], {}),
+            \]
+      let p = fila#node#collapse_at(['Application'], nodes)
+      Assert True(Promise.is_promise(p))
+      let [r, e] = Promise.wait(p)
+      Assert Equals(r, v:null)
+      Assert NotEquals(e, v:null)
+    End
+
+    It resolves with collapsed nodes when a node for a given key is expanded
+      let nodes = [
+            \ fila#node#new([], {}),
+            \ fila#node#new(['Users'], {
+            \   'status': 1,
+            \ }),
+            \ fila#node#new(['Users', 'Alice'], {}),
+            \ fila#node#new(['Users', 'John'], {}),
+            \ fila#node#new(['Users', 'Peter'], {}),
+            \ fila#node#new(['Library'], {}),
+            \]
+      let p = fila#node#collapse_at(['Users'], nodes)
+      Assert True(Promise.is_promise(p))
+      let [r, e] = Promise.wait(p)
+      Assert Equals(e, v:null)
+      Assert Equals(map(copy(r), { -> v:val.key }), [
+            \ [],
+            \ ['Users'],
+            \ ['Library'],
+            \])
+      Assert False(fila#node#is_expanded(nodes[1]))
+    End
+
+    It resolves with collapsed nodes when a node for a given key is not expanded
+      let nodes = [
+            \ fila#node#new([], {}),
+            \ fila#node#new(['Users'], {
+            \   'children': [
+            \     fila#node#new(['Users', 'Alice'], {}),
+            \     fila#node#new(['Users', 'John'], {}),
+            \     fila#node#new(['Users', 'Peter'], {}),
+            \   ],
+            \ }),
+            \ fila#node#new(['Library'], {}),
+            \]
+      let p = fila#node#collapse_at(['Users'], nodes)
+      Assert True(Promise.is_promise(p))
+      let [r, e] = Promise.wait(p)
+      Assert Equals(e, v:null)
+      Assert Equals(map(copy(r), { -> v:val.key }), [
+            \ [],
+            \ ['Users'],
+            \ ['Library'],
+            \])
+      Assert False(fila#node#is_expanded(nodes[1]))
+    End
+  End
+
+  Describe reload_at()
+    It rejects when no node for a given key is found
+      let nodes = [
+            \ fila#node#new([], {}),
+            \ fila#node#new(['Users'], {
+            \   'status': 1,
+            \   'children': [
+            \     fila#node#new(['Users', 'Alice'], {}),
+            \     fila#node#new(['Users', 'Bob'], {}),
+            \     fila#node#new(['Users', 'John'], {}),
+            \     fila#node#new(['Users', 'Peter'], {}),
+            \   ],
+            \ }),
+            \ fila#node#new(['Users', 'Alice'], {}),
+            \ fila#node#new(['Users', 'John'], {}),
+            \ fila#node#new(['Users', 'Peter'], {}),
+            \ fila#node#new(['Library'], {}),
+            \]
+      let p = fila#node#reload_at(['Application'], nodes)
+      Assert True(Promise.is_promise(p))
+      let [r, e] = Promise.wait(p)
+      Assert Equals(r, v:null)
+      Assert NotEquals(e, v:null)
+    End
+
+    It resolves with reloaded nodes when a node for a given key is expanded
+      let nodes = [
+            \ fila#node#new([], {}),
+            \ fila#node#new(['Users'], {
+            \   'status': 1,
+            \   'children': [
+            \     fila#node#new(['Users', 'Alice'], {}),
+            \     fila#node#new(['Users', 'Bob'], {}),
+            \     fila#node#new(['Users', 'John'], {}),
+            \     fila#node#new(['Users', 'Peter'], {}),
+            \   ],
+            \ }),
+            \ fila#node#new(['Users', 'Alice'], {}),
+            \ fila#node#new(['Users', 'John'], {}),
+            \ fila#node#new(['Users', 'Peter'], {}),
+            \ fila#node#new(['Library'], {}),
+            \]
+      let p = fila#node#reload_at(['Users'], nodes)
+      Assert True(Promise.is_promise(p))
+      let [r, e] = Promise.wait(p)
+      Assert Equals(e, v:null)
+      Assert Equals(map(copy(r), { -> v:val.key }), [
+            \ [],
+            \ ['Users'],
+            \ ['Users', 'Alice'],
+            \ ['Users', 'Bob'],
+            \ ['Users', 'John'],
+            \ ['Users', 'Peter'],
+            \ ['Library'],
+            \])
+      Assert True(fila#node#is_expanded(r[1]))
+    End
+
+    It resolves with reloaded nodes when a node for a given key is not expanded
+      let nodes = [
+            \ fila#node#new([], {}),
+            \ fila#node#new(['Users'], {
+            \   'children': [
+            \     fila#node#new(['Users', 'Alice'], {}),
+            \     fila#node#new(['Users', 'Bob'], {}),
+            \     fila#node#new(['Users', 'John'], {}),
+            \     fila#node#new(['Users', 'Peter'], {}),
+            \   ],
+            \ }),
+            \ fila#node#new(['Library'], {}),
+            \]
+      let p = fila#node#reload_at(['Users'], nodes)
+      Assert True(Promise.is_promise(p))
+      let [r, e] = Promise.wait(p)
+      Assert Equals(e, v:null)
+      Assert Equals(map(copy(r), { -> v:val.key }), [
+            \ [],
+            \ ['Users'],
+            \ ['Library'],
+            \])
+      Assert False(fila#node#is_expanded(r[1]))
+    End
+
+    It resolves with reloaded nodes recursively for expanded nodes
+      let nodes = [
+            \ fila#node#new([], {}),
+            \ fila#node#new(['Users'], {
+            \   'status': 1,
+            \   'children': [
+            \     fila#node#new(['Users', 'Alice'], {}),
+            \     fila#node#new(['Users', 'Bob'], {}),
+            \     fila#node#new(['Users', 'John'], {
+            \       'status': 1,
+            \       'children': [
+            \         fila#node#new(['Users', 'John', 'Desktop'], {}),
+            \         fila#node#new(['Users', 'John', 'Documents'], {}),
+            \         fila#node#new(['Users', 'John', 'Download'], {}),
+            \       ]
+            \     }),
+            \     fila#node#new(['Users', 'Peter'], {}),
+            \   ],
+            \ }),
+            \ fila#node#new(['Users', 'John'], {
+            \   'status': 1,
+            \   'children': [
+            \     fila#node#new(['Users', 'John', 'Desktop'], {}),
+            \     fila#node#new(['Users', 'John', 'Documents'], {}),
+            \     fila#node#new(['Users', 'John', 'Download'], {}),
+            \   ]
+            \ }),
+            \ fila#node#new(['Users', 'John', 'Desktop'], {}),
+            \ fila#node#new(['Users', 'John', 'Documents'], {}),
+            \ fila#node#new(['Users', 'John', 'Download'], {}),
+            \ fila#node#new(['Users', 'Alice'], {}),
+            \ fila#node#new(['Users', 'Peter'], {}),
+            \ fila#node#new(['Library'], {}),
+            \]
+      let p = fila#node#reload_at(['Users'], nodes)
+      Assert True(Promise.is_promise(p))
+      let [r, e] = Promise.wait(p)
+      Assert Equals(e, v:null)
+      Assert Equals(map(copy(r), { -> v:val.key }), [
+            \ [],
+            \ ['Users'],
+            \ ['Users', 'John'],
+            \ ['Users', 'John', 'Desktop'],
+            \ ['Users', 'John', 'Documents'],
+            \ ['Users', 'John', 'Download'],
+            \ ['Users', 'Alice'],
+            \ ['Users', 'Bob'],
+            \ ['Users', 'Peter'],
+            \ ['Library'],
+            \])
+      Assert True(fila#node#is_expanded(r[1]))
+    End
+  End
+End
