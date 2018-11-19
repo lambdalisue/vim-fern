@@ -45,7 +45,6 @@ function! s:syntax() abort
   syntax match FilaLeaf   /^\s*|  /
   syntax match FilaBranch /^\s*|[+-] .*/
   syntax match FilaMarked /^* .*/
-  let b:current_syntax = 'fila'
 endfunction
 
 function! s:highlight() abort
@@ -53,11 +52,6 @@ function! s:highlight() abort
   highlight default link FilaLeaf   Directory
   highlight default link FilaBranch Directory
   highlight default link FilaMarked Title
-
-  augroup fila_syntax
-    autocmd! * <buffer>
-    autocmd ColorScheme <buffer> call s:highlight()
-  augroup END
 endfunction
 
 call s:Config.config(expand('<sfile>:p'), {
