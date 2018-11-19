@@ -1,5 +1,7 @@
+let s:Dict = vital#fila#import('Data.Dict')
 let s:Action = vital#fila#import('App.Action')
 let s:Lambda = vital#fila#import('Lambda')
+let s:Promise = vital#fila#import('Async.Promise')
 let s:Revelator = vital#fila#import('App.Revelator')
 
 function! fila#action#get() abort
@@ -7,11 +9,12 @@ function! fila#action#get() abort
 endfunction
 
 function! fila#action#call(...) abort
-  let action = s:Action.get()
-  call call(action.call, a:000, action)
+  let action = fila#action#get()
+  let result = call(action.call, a:000, action)
+  retur s:Promise.is_promise(result) ? result : s:Promise.resolve(result)
 endfunction
 
-function! fila#action#_init(...) abort
+function! fila#action#_init() abort
   let action = s:Action.new({
         \ 'args': { -> [fila#helper#new()] },
         \})
@@ -20,6 +23,10 @@ endfunction
 
 function! fila#action#_define() abort
   let action = fila#action#get()
+
+  call action.define('sleep', funcref('s:sleep'), {
+        \ 'hidden': 1,
+        \})
   call action.define('echo', funcref('s:echo'), {
         \ 'hidden': 1,
         \ 'mapping_mode': 'nv',
@@ -89,24 +96,10 @@ function! fila#action#_define() abort
         \ 'mapping_mode': 'nv',
         \})
   call action.define('hidden', 'hidden:toggle')
-  " Mapping
-  nmap <buffer> <Backspace> <Plug>(fila-action-leave)
-  nmap <buffer> <C-h>       <Plug>(fila-action-leave)
-  nmap <buffer> <Return>    <Plug>(fila-action-enter-or-open)
-  nmap <buffer> <C-m>       <Plug>(fila-action-enter-or-open)
-  nmap <buffer> <F5>        <Plug>(fila-action-reload)
-  nmap <buffer> l           <Plug>(fila-action-expand-or-open)
-  nmap <buffer> h           <Plug>(fila-action-collapse)
-  nmap <buffer> -           <Plug>(fila-action-mark-toggle)
-  vmap <buffer> -           <Plug>(fila-action-mark-toggle)
-  nmap <buffer> !           <Plug>(fila-action-hidden-toggle)
-  nmap <buffer> e           <Plug>(fila-action-open)
-  nmap <buffer> E           <Plug>(fila-action-open-side)
-  nmap <buffer> s           <Plug>(fila-action-open-select)
-  nmap <buffer> t           <Plug>(fila-action-open-tabedit)
-  nmap <buffer> p           <Plug>(fila-action-open-pedit)
-  " Allow users to define extra actions
-  doautocmd <nomodeline> User FilaActionDefine
+endfunction
+
+function! s:sleep(range, params, helper) abort
+  execute printf('sleep %dm', v:count)
 endfunction
 
 function! s:echo(range, params, helper) abort
@@ -122,6 +115,9 @@ function! s:echo(range, params, helper) abort
     echo printf("parent  : %s", has_key(node, 'parent'))
     echo printf("children: %s", has_key(node, 'children'))
     echo printf("bufname : %s", get(node, 'bufname', ''))
+    echo printf("remains : %s", s:Dict.omit(copy(node), [
+          \ 'key', 'text', 'hidden', 'status', 'parent', 'children', 'bufname',
+          \]))
   endfor
 endfunction
 
@@ -139,18 +135,18 @@ function! s:open(range, params, helper) abort
   if !has_key(node, 'bufname')
     throw s:Revelator.info('the node does not have bufname')
   endif
-  call fila#buffer#open(node.bufname, {
+  return fila#buffer#open(node.bufname, {
         \ 'opener': empty(a:params) ? 'edit' : a:params,
         \ 'locator': fila#drawer#is_drawer(win_getid()),
         \})
-        \.catch({ e -> fila#helper#handle_error(e) })
+        \.catch({ e -> fila#error#handle(e) })
 endfunction
 
 function! s:open_side(range, params, helper) abort
   if fila#drawer#is_drawer(win_getid())
-    call fila#action#call('open:left')
+    return fila#action#call('open:left')
   else
-    call fila#action#call('open:right')
+    return fila#action#call('open:right')
   endif
 endfunction
 
@@ -160,9 +156,9 @@ function! s:enter(range, params, helper) abort
     throw s:Revelator.info('the node does not have bufname')
   endif
   let winid = win_getid()
-  call a:helper.enter_node(node)
+  return a:helper.enter_node(node)
         \.then({ h -> h.cursor_node(winid, node, 1) })
-        \.catch({ e -> fila#helper#handle_error(e) })
+        \.catch({ e -> fila#error#handle(e) })
 endfunction
 
 function! s:leave(range, params, helper) abort
@@ -172,9 +168,9 @@ function! s:leave(range, params, helper) abort
   endif
   let node = root.parent
   let winid = win_getid()
-  call a:helper.enter_node(node)
+  return a:helper.enter_node(node)
         \.then({ h -> h.cursor_node(winid, root) })
-        \.catch({ e -> fila#helper#handle_error(e) })
+        \.catch({ e -> fila#error#handle(e) })
 endfunction
 
 function! s:reload(range, params, helper) abort
@@ -183,22 +179,21 @@ function! s:reload(range, params, helper) abort
     return
   endif
   let winid = win_getid()
-  call a:helper.reload_node(node)
+  return a:helper.reload_node(node)
         \.then({ h -> h.redraw() })
-        \.catch({ e -> fila#helper#handle_error(e) })
+        \.catch({ e -> fila#error#handle(e) })
 endfunction
 
 function! s:expand(range, params, helper) abort
   let node = a:helper.get_cursor_node(a:range)
   if !fila#node#is_branch(node) || fila#node#is_expanded(node)
-    call fila#action#call('reload')
-    return
+    return fila#action#call('reload')
   endif
   let winid = win_getid()
-  call a:helper.expand_node(node)
+  return a:helper.expand_node(node)
         \.then({ h -> h.redraw() })
         \.then({ h -> h.cursor_node(winid, node, 1) })
-        \.catch({ e -> fila#helper#handle_error(e) })
+        \.catch({ e -> fila#error#handle(e) })
 endfunction
 
 function! s:collapse(range, params, helper) abort
@@ -210,27 +205,27 @@ function! s:collapse(range, params, helper) abort
     let node = node.parent
   endif
   let winid = win_getid()
-  call a:helper.collapse_node(node)
+  return a:helper.collapse_node(node)
         \.then({ h -> h.redraw() })
         \.then({ h -> h.cursor_node(winid, node) })
-        \.catch({ e -> fila#helper#handle_error(e) })
+        \.catch({ e -> fila#error#handle(e) })
 endfunction
 
 function! s:enter_or_open(range, params, helper) abort
   let node = a:helper.get_cursor_node(a:range)
   if fila#node#is_branch(node)
-    call fila#action#call('enter')
+    return fila#action#call('enter')
   else
-    call fila#action#call('open')
+    return fila#action#call('open')
   endif
 endfunction
 
 function! s:expand_or_open(range, params, helper) abort
   let node = a:helper.get_cursor_node(a:range)
   if fila#node#is_branch(node)
-    call fila#action#call('expand')
+    return fila#action#call('expand')
   else
-    call fila#action#call('open')
+    return fila#action#call('open')
   endif
 endfunction
 
@@ -241,7 +236,8 @@ function! s:mark_set(range, params, helper) abort
     call add(marks, node.key)
   endfor
   call a:helper.set_marks(uniq(marks))
-  call a:helper.redraw()
+  return a:helper.redraw()
+        \.catch({ e -> fila#error#handle(e) })
 endfunction
 
 function! s:mark_unset(range, params, helper) abort
@@ -254,7 +250,8 @@ function! s:mark_unset(range, params, helper) abort
     endif
   endfor
   call a:helper.set_marks(uniq(marks))
-  call a:helper.redraw()
+  return a:helper.redraw()
+        \.catch({ e -> fila#error#handle(e) })
 endfunction
 
 function! s:mark_toggle(range, params, helper) abort
@@ -269,34 +266,39 @@ function! s:mark_toggle(range, params, helper) abort
     endif
   endfor
   call a:helper.set_marks(uniq(marks))
-  call a:helper.redraw()
+  return a:helper.redraw()
+        \.catch({ e -> fila#error#handle(e) })
 endfunction
 
 function! s:mark_clear(range, params, helper) abort
   call a:helper.set_marks([])
-  call a:helper.redraw()
+  return a:helper.redraw()
+        \.catch({ e -> fila#error#handle(e) })
 endfunction
 
 function! s:hidden_set(range, params, helper) abort
   let node = a:helper.get_cursor_node(a:range)
   let winid = win_getid()
   call a:helper.set_hidden(1)
-  call a:helper.redraw()
+  return a:helper.redraw()
         \.then({ h -> h.cursor_node(winid, node) })
+        \.catch({ e -> fila#error#handle(e) })
 endfunction
 
 function! s:hidden_unset(range, params, helper) abort
   let node = a:helper.get_cursor_node(a:range)
   let winid = win_getid()
   call a:helper.set_hidden(0)
-  call a:helper.redraw()
+  return a:helper.redraw()
         \.then({ h -> h.cursor_node(winid, node) })
+        \.catch({ e -> fila#error#handle(e) })
 endfunction
 
 function! s:hidden_toggle(range, params, helper) abort
   let node = a:helper.get_cursor_node(a:range)
   let winid = win_getid()
   call a:helper.set_hidden(!a:helper.get_hidden())
-  call a:helper.redraw()
+  return a:helper.redraw()
         \.then({ h -> h.cursor_node(winid, node) })
+        \.catch({ e -> fila#error#handle(e) })
 endfunction

@@ -6,10 +6,9 @@ let s:STATUS_COLLAPSED = g:fila#node#STATUS_COLLAPSED
 let s:STATUS_EXPANDED = g:fila#node#STATUS_EXPANDED
 
 function! fila#scheme#file#action#define(action) abort
-  call a:action.define('cd', funcref('s:cd'))
-  call a:action.define('cd:cd', 'cd cd')
-  call a:action.define('cd:lcd', 'cd lcd')
-  call a:action.define('cd:tcd', 'cd tcd')
+  call a:action.define('cd', funcref('s:cd', ['cd']))
+  call a:action.define('lcd', funcref('s:cd', ['lcd']))
+  call a:action.define('tcd', funcref('s:cd', ['tcd']))
   call a:action.define('new:file', funcref('s:new_file'), {
         \ 'repeat': 0,
         \})
@@ -50,10 +49,9 @@ function! fila#scheme#file#action#define(action) abort
         \})
 endfunction
 
-function! s:cd(range, params, helper) abort
+function! s:cd(command, range, params, helper) abort
   let root = a:helper.get_root_node()
-  let command = empty(a:params) ? 'tcd' : a:params
-  if command ==# 'tcd' && !exists(':tcd')
+  if a:command ==# 'tcd' && !exists(':tcd')
     let winid = win_getid()
     silent execute printf(
           \ 'keepjumps %d,%dwindo lcd %s',
@@ -61,13 +59,8 @@ function! s:cd(range, params, helper) abort
           \)
     call win_gotoid(winid)
   else
-    execute command fnameescape(root.__path)
+    execute a:command fnameescape(root.__path)
   endif
-endfunction
-
-function! s:lcd(range, params, helper) abort
-  let root = a:helper.get_root_node()
-  execute 'lcd' fnameescape(root.__path)
 endfunction
 
 function! s:new_file(range, params, helper) abort
@@ -87,7 +80,7 @@ function! s:new_file(range, params, helper) abort
   call a:helper.reload_node(node)
         \.then({ -> a:helper.redraw() })
         \.then({ -> a:helper.cursor_node(winid, fila#scheme#file#node#new(path)) })
-        \.catch({ e -> fila#helper#handle_error(e) })
+        \.catch({ e -> fila#error#handle(e) })
   redraw | echo printf('File "%s" is created', name)
 endfunction
 
@@ -108,7 +101,7 @@ function! s:new_directory(range, params, helper) abort
   call a:helper.reload_node(node)
         \.then({ -> a:helper.redraw() })
         \.then({ -> a:helper.cursor_node(winid, fila#scheme#file#node#new(path)) })
-        \.catch({ e -> fila#helper#handle_error(e) })
+        \.catch({ e -> fila#error#handle(e) })
   redraw | echo printf('Directory "%s" is created', name)
 endfunction
 
@@ -130,7 +123,7 @@ function! s:move(range, params, helper) abort
   call a:helper.set_marks([])
   call a:helper.reload_node(a:helper.get_root_node())
         \.then({ -> a:helper.redraw() })
-        \.catch({ e -> fila#helper#handle_error(e) })
+        \.catch({ e -> fila#error#handle(e) })
   redraw | echo printf(
         \ '%d file/directory are moved',
         \ len(nodes),

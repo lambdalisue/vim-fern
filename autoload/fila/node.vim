@@ -64,7 +64,7 @@ function! fila#node#children(node) abort
   return p
 endfunction
 
-function! fila#node#reload_at(key, nodes) abort
+function! fila#node#reload_at(key, nodes, comparator) abort
   let node = fila#node#find(a:key, a:nodes)
   if node is# v:null
     return s:Promise.reject(printf('no node "%s" is found', a:key))
@@ -86,10 +86,10 @@ function! fila#node#reload_at(key, nodes) abort
         \.then(s:Lambda.reduce_f({ a, v -> a + v }, []))
   return s:Promise.all([outer, inner, descendants])
         \.then(s:Lambda.reduce_f({ a, v -> a + v }, []))
-        \.then({ v -> s:uniq(s:sort(v)) })
+        \.then({ v -> s:uniq(sort(v, a:comparator)) })
 endfunction
 
-function! fila#node#expand_at(key, nodes) abort
+function! fila#node#expand_at(key, nodes, comparator) abort
   let node = fila#node#find(a:key, a:nodes)
   if node is# v:null
     return s:Promise.reject(printf('no node "%s" is found', a:key))
@@ -97,13 +97,13 @@ function! fila#node#expand_at(key, nodes) abort
     return s:Promise.resolve(copy(a:nodes))
   endif
   let p = fila#node#children(node)
-        \.then({ v -> s:uniq(s:sort(v)) })
+        \.then({ v -> s:uniq(sort(v, a:comparator)) })
         \.then({ v -> s:extend(a:key, copy(a:nodes), v) })
   call p.then({ v -> s:Lambda.let(node, 'status', s:STATUS_EXPANDED) })
   return p
 endfunction
 
-function! fila#node#collapse_at(key, nodes) abort
+function! fila#node#collapse_at(key, nodes, comparator) abort
   let node = fila#node#find(a:key, a:nodes)
   if node is# v:null
     return s:Promise.reject(printf('no node "%s" is found', a:key))
@@ -121,11 +121,6 @@ endfunction
 
 function! s:uniq(nodes) abort
   return uniq(a:nodes, { a, b -> a.key != b.key })
-endfunction
-
-function! s:sort(nodes, ...) abort
-  let C = a:0 ? a:1 : function('fila#node#comparator#default')
-  return sort(a:nodes, C)
 endfunction
 
 function! s:extend(key, nodes, new_nodes) abort

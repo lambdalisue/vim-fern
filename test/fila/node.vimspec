@@ -1,6 +1,7 @@
 Describe fila#node
   Before all
     let Promise = vital#fila#import('Async.Promise')
+    let comparator = fila#comparator#default#new()
   End
 
   Describe #new()
@@ -228,7 +229,7 @@ Describe fila#node
             \ }),
             \ fila#node#new(['Library'], {}),
             \]
-      let p = fila#node#expand_at(['Application'], nodes)
+      let p = fila#node#expand_at(['Application'], nodes, comparator.compare)
       Assert True(Promise.is_promise(p))
       let [r, e] = Promise.wait(p)
       Assert Equals(r, v:null)
@@ -247,7 +248,7 @@ Describe fila#node
             \ }),
             \ fila#node#new(['Library'], {}),
             \]
-      let p = fila#node#expand_at(['Users'], nodes)
+      let p = fila#node#expand_at(['Users'], nodes, comparator.compare)
       Assert True(Promise.is_promise(p))
       let [r, e] = Promise.wait(p)
       Assert Equals(e, v:null)
@@ -273,7 +274,7 @@ Describe fila#node
             \ fila#node#new(['Users', 'Peter'], {}),
             \ fila#node#new(['Library'], {}),
             \]
-      let p = fila#node#expand_at(['Users'], nodes)
+      let p = fila#node#expand_at(['Users'], nodes, comparator.compare)
       Assert True(Promise.is_promise(p))
       let [r, e] = Promise.wait(p)
       Assert Equals(e, v:null)
@@ -301,7 +302,7 @@ Describe fila#node
             \ fila#node#new(['Users', 'Peter'], {}),
             \ fila#node#new(['Library'], {}),
             \]
-      let p = fila#node#collapse_at(['Application'], nodes)
+      let p = fila#node#collapse_at(['Application'], nodes, comparator.compare)
       Assert True(Promise.is_promise(p))
       let [r, e] = Promise.wait(p)
       Assert Equals(r, v:null)
@@ -319,7 +320,7 @@ Describe fila#node
             \ fila#node#new(['Users', 'Peter'], {}),
             \ fila#node#new(['Library'], {}),
             \]
-      let p = fila#node#collapse_at(['Users'], nodes)
+      let p = fila#node#collapse_at(['Users'], nodes, comparator.compare)
       Assert True(Promise.is_promise(p))
       let [r, e] = Promise.wait(p)
       Assert Equals(e, v:null)
@@ -343,7 +344,7 @@ Describe fila#node
             \ }),
             \ fila#node#new(['Library'], {}),
             \]
-      let p = fila#node#collapse_at(['Users'], nodes)
+      let p = fila#node#collapse_at(['Users'], nodes, comparator.compare)
       Assert True(Promise.is_promise(p))
       let [r, e] = Promise.wait(p)
       Assert Equals(e, v:null)
@@ -374,7 +375,7 @@ Describe fila#node
             \ fila#node#new(['Users', 'Peter'], {}),
             \ fila#node#new(['Library'], {}),
             \]
-      let p = fila#node#reload_at(['Application'], nodes)
+      let p = fila#node#reload_at(['Application'], nodes, comparator.compare)
       Assert True(Promise.is_promise(p))
       let [r, e] = Promise.wait(p)
       Assert Equals(r, v:null)
@@ -398,7 +399,7 @@ Describe fila#node
             \ fila#node#new(['Users', 'Peter'], {}),
             \ fila#node#new(['Library'], {}),
             \]
-      let p = fila#node#reload_at(['Users'], nodes)
+      let p = fila#node#reload_at(['Users'], nodes, comparator.compare)
       Assert True(Promise.is_promise(p))
       let [r, e] = Promise.wait(p)
       Assert Equals(e, v:null)
@@ -427,7 +428,7 @@ Describe fila#node
             \ }),
             \ fila#node#new(['Library'], {}),
             \]
-      let p = fila#node#reload_at(['Users'], nodes)
+      let p = fila#node#reload_at(['Users'], nodes, comparator.compare)
       Assert True(Promise.is_promise(p))
       let [r, e] = Promise.wait(p)
       Assert Equals(e, v:null)
@@ -473,7 +474,7 @@ Describe fila#node
             \ fila#node#new(['Users', 'Peter'], {}),
             \ fila#node#new(['Library'], {}),
             \]
-      let p = fila#node#reload_at(['Users'], nodes)
+      let p = fila#node#reload_at(['Users'], nodes, comparator.compare)
       Assert True(Promise.is_promise(p))
       let [r, e] = Promise.wait(p)
       Assert Equals(e, v:null)

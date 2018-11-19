@@ -3,15 +3,18 @@ let s:Lambda = vital#fila#import('Lambda')
 let s:Revelator = vital#fila#import('App.Revelator')
 let s:BufferWriter = vital#fila#import('Vim.Buffer.Writer')
 let s:WindowCursor = vital#fila#import('Vim.Window.Cursor')
+let s:Config = vital#fila#import('Config')
 
-let s:STATUS_COLLAPSED = 0
-let s:STATUS_EXPANDED = 1
+let s:STATUS_COLLAPSED = g:fila#node#STATUS_COLLAPSED
+let s:STATUS_EXPANDED = g:fila#node#STATUS_EXPANDED
 
 function! fila#helper#new(...) abort
   let bufnr = a:0 ? a:1 : bufnr('%')
   if exists('s:helper')
     return extend(copy(s:helper), {
           \ 'bufnr': bufnr,
+          \ 'renderer': g:fila#helper#renderer,
+          \ 'comparator': g:fila#helper#comparator,
           \})
   endif
   let s:helper = {
@@ -26,6 +29,7 @@ function! fila#helper#new(...) abort
         \ 'get_marked_nodes': funcref('s:get_marked_nodes'),
         \ 'get_cursor_node': funcref('s:get_cursor_node'),
         \ 'get_selection_nodes': funcref('s:get_selection_nodes'),
+        \ 'init': funcref('s:init'),
         \ 'redraw': funcref('s:redraw'),
         \ 'enter_node': funcref('s:enter_node'),
         \ 'reload_node': funcref('s:reload_node'),
@@ -35,23 +39,9 @@ function! fila#helper#new(...) abort
         \}
   return extend(copy(s:helper), {
         \ 'bufnr': bufnr,
+        \ 'renderer': g:fila#helper#renderer,
+        \ 'comparator': g:fila#helper#comparator,
         \})
-endfunction
-
-function! fila#helper#handle_error(error) abort
-  if type(a:error) is# v:t_dict && has_key(a:error, 'exception')
-    let message = split(a:error.exception, "\n")
-    let message += split(get(a:error, 'throwpoint', ''), "\n")
-  elseif type(a:error) is# v:t_string
-    let message = split(a:error, "\n")
-  else
-    let message = [string(a:error)]
-  endif
-  echohl Error
-  for m in message
-    echomsg m
-  endfor
-  echohl None
 endfunction
 
 " Getter/Setter
@@ -157,20 +147,18 @@ function! s:get_selection_nodes(range) abort dict
 endfunction
 
 " Method
+function! s:init(root) abort dict
+  call self.set_marks([])
+  call self.set_nodes([a:root])
+endfunction
+
 function! s:redraw() abort dict
   if !bufloaded(self.bufnr)
     return s:Promise.reject(printf('buffer %d does not exist', self.bufnr))
   endif
   let nodes = self.get_visible_nodes()
   let marks = self.get_marks()
-  let prefixes = map(
-        \ copy(nodes),
-        \ { -> index(marks, v:val.key) isnot# -1 ? '* ' : '  '},
-        \)
-  let contents = map(
-        \ fila#node#renderer#render(nodes, {}),
-        \ { k, v -> prefixes[k] . v },
-        \)
+  let contents = self.renderer.render(nodes, marks)
   call s:BufferWriter.replace(self.bufnr, 0, -1, contents)
   return s:Promise.resolve(self)
 endfunction
@@ -188,21 +176,21 @@ endfunction
 
 function! s:reload_node(node) abort dict
   let nodes = self.get_nodes()
-  return fila#node#reload_at(a:node.key, nodes)
+  return fila#node#reload_at(a:node.key, nodes, self.comparator.compare)
         \.then({ v -> self.set_nodes(v)})
         \.then({ -> self })
 endfunction
 
 function! s:expand_node(node) abort dict
   let nodes = self.get_nodes()
-  return fila#node#expand_at(a:node.key, nodes)
+  return fila#node#expand_at(a:node.key, nodes, self.comparator.compare)
         \.then({ v -> self.set_nodes(v)})
         \.then({ -> self })
 endfunction
 
 function! s:collapse_node(node) abort dict
   let nodes = self.get_nodes()
-  return fila#node#collapse_at(a:node.key, nodes)
+  return fila#node#collapse_at(a:node.key, nodes, self.comparator.compare)
         \.then({ v -> self.set_nodes(v)})
         \.then({ -> self })
 endfunction
@@ -222,3 +210,9 @@ function! s:cursor_node(winid, node, ...) abort dict
   call s:WindowCursor.set_cursor(a:winid, [index + 1 + offset, cursor[1]])
   return s:Promise.resolve(self)
 endfunction
+
+
+call s:Config.config(expand('<sfile>:p'), {
+      \ 'renderer': fila#renderer#default#new(),
+      \ 'comparator': fila#comparator#default#new(),
+      \})
