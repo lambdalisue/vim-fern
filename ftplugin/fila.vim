@@ -5,4 +5,4 @@ let b:did_ftplugin = 1
 
 setlocal signcolumn=no
 setlocal cursorline
-setlocal nolist nowrap
+setlocal nolist nowrap nospell
