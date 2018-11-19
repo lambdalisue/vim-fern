@@ -1,5 +1,6 @@
 let s:Path = vital#fila#import('System.Filepath')
 let s:Prompt = vital#fila#import('Prompt')
+let s:Promise = vital#fila#import('Async.Promise')
 let s:Revelator = vital#fila#import('App.Revelator')
 
 let s:STATUS_COLLAPSED = g:fila#node#STATUS_COLLAPSED
@@ -9,6 +10,7 @@ function! fila#scheme#file#action#define(action) abort
   call a:action.define('cd', funcref('s:cd', ['cd']))
   call a:action.define('lcd', funcref('s:cd', ['lcd']))
   call a:action.define('tcd', funcref('s:cd', ['tcd']))
+  call a:action.define('open:system', funcref('s:open_system'))
   call a:action.define('new:file', funcref('s:new_file'), {
         \ 'repeat': 0,
         \})
@@ -63,6 +65,14 @@ function! s:cd(command, range, params, helper) abort
   endif
 endfunction
 
+function! s:open_system(range, params, helper) abort
+  let node = a:helper.get_cursor_node(a:range)
+  let path = node.__path
+  call fila#scheme#file#util#open(node.__path)
+        \.then({ -> fila#message#notify('%s is opened', path) })
+        \.catch({ e -> fila#error#handle(e) })
+endfunction
+
 function! s:new_file(range, params, helper) abort
   let name = s:Prompt.ask('New file: ', '', 'file')
   if empty(name)
@@ -77,11 +87,11 @@ function! s:new_file(range, params, helper) abort
   let path = s:Path.join(node.__path, name)
   let winid = win_getid()
   call fila#scheme#file#util#new_file(path)
-  call a:helper.reload_node(node)
+        \.then({ -> a:helper.reload_node(node) })
         \.then({ -> a:helper.redraw() })
         \.then({ -> a:helper.cursor_node(winid, fila#scheme#file#node#new(path)) })
+        \.then({ -> fila#message#notify('%s is created', name) })
         \.catch({ e -> fila#error#handle(e) })
-  redraw | echo printf('File "%s" is created', name)
 endfunction
 
 function! s:new_directory(range, params, helper) abort
@@ -98,11 +108,11 @@ function! s:new_directory(range, params, helper) abort
   let path = s:Path.join(node.__path, name)
   let winid = win_getid()
   call fila#scheme#file#util#new_directory(path)
-  call a:helper.reload_node(node)
+        \.then({ -> a:helper.reload_node(node) })
         \.then({ -> a:helper.redraw() })
         \.then({ -> a:helper.cursor_node(winid, fila#scheme#file#node#new(path)) })
+        \.then({ -> fila#message#notify('%s is created', name) })
         \.catch({ e -> fila#error#handle(e) })
-  redraw | echo printf('Directory "%s" is created', name)
 endfunction
 
 function! s:move(range, params, helper) abort
@@ -110,6 +120,7 @@ function! s:move(range, params, helper) abort
   if empty(nodes)
     let nodes = a:helper.get_selection_nodes(a:range)
   endif
+  let ps = []
   for node in nodes
     let dst = s:Prompt.ask(
           \ printf('Move %s -> ', node.__path),
@@ -118,16 +129,14 @@ function! s:move(range, params, helper) abort
     if empty(dst) || node.__path ==# dst
       continue
     endif
-    call fila#scheme#file#util#move(node.__path, dst)
+    call add(ps, fila#scheme#file#util#move(node.__path, dst))
   endfor
-  call a:helper.set_marks([])
-  call a:helper.reload_node(a:helper.get_root_node())
+  call s:Promise.all(ps)
+        \.then({ -> a:helper.set_marks([]) })
+        \.then({ -> a:helper.reload_node(a:helper.get_root_node()) })
         \.then({ -> a:helper.redraw() })
+        \.then({ -> fila#message#notify('%d items are moved', len(nodes)) })
         \.catch({ e -> fila#error#handle(e) })
-  redraw | echo printf(
-        \ '%d file/directory are moved',
-        \ len(nodes),
-        \)
 endfunction
 
 function! s:copy_clipboard(range, params, helper) abort
@@ -138,10 +147,8 @@ function! s:copy_clipboard(range, params, helper) abort
   let w:fila_file_clipboard = map(copy(nodes), { -> v:val.__path })
   call a:helper.set_marks([])
   call a:helper.redraw()
-  redraw | echo printf(
-        \ '%d file(s) are copied into an internal clipboard',
-        \ len(w:fila_file_clipboard),
-        \)
+        \.then({ -> fila#message#notify('%d items are copied', len(w:fila_file_clipboard)) })
+        \.catch({ e -> fila#error#handle(e) })
 endfunction
 
 function! s:paste_clipboard(range, params, helper) abort
@@ -154,20 +161,20 @@ function! s:paste_clipboard(range, params, helper) abort
       let node = node.parent
     endif
   endif
+  let ps =[]
   for src in w:fila_file_clipboard
     let dst = s:Path.join(node.__path, fnamemodify(src, ':t'))
-    redraw | echo printf(
+    call fila#message#echo(
           \ 'coping %s to %s ...',
           \ src, dst,
           \)
-    call fila#scheme#file#util#copy(src, dst)
+    call add(ps, fila#scheme#file#util#copy(src, dst))
   endfor
-  call a:helper.reload_node(node)
+  call s:Promise.all(ps)
+        \.then({ -> a:helper.reload_node(node) })
         \.then({ -> a:helper.redraw() })
-  redraw | echo printf(
-        \ '%d file/directory are copied',
-        \ len(w:fila_file_clipboard),
-        \)
+        \.then({ -> fila#message#notify('%d items are copied', len(w:fila_file_clipboard)) })
+        \.catch({ e -> fila#error#handle(e) })
 endfunction
 
 function! s:delete_trash(range, params, helper) abort
@@ -187,18 +194,18 @@ function! s:delete_trash(range, params, helper) abort
   if !s:Prompt.confirm(prompt, v:true)
     throw s:Revelator.info('Cancelled')
   endif
+  let ps = []
   for name in names
-    redraw | echo printf(
+    call fila#message#echo(
           \ 'deleting %s ...', name,
           \)
-    call fila#scheme#file#util#trash(name)
+    call add(ps, fila#scheme#file#util#trash(name))
   endfor
-  call a:helper.reload_node(a:helper.get_root_node())
+  call s:Promise.all(ps)
+        \.then({ -> a:helper.reload_node(a:helper.get_root_node()) })
         \.then({ -> a:helper.redraw() })
-  redraw | echo printf(
-        \ '%d file/directory are removed',
-        \ len(nodes),
-        \)
+        \.then({ -> fila#message#notify('%d items are trashed', len(nodes)) })
+        \.catch({ e -> fila#error#handle(e) })
 endfunction
 
 function! s:delete_remove(range, params, helper) abort
@@ -218,16 +225,16 @@ function! s:delete_remove(range, params, helper) abort
   if !s:Prompt.confirm(prompt, v:true)
     throw s:Revelator.info('Cancelled')
   endif
+  let ps = []
   for name in names
-    redraw | echo printf(
+    call fila#message#echo(
           \ 'deleting %s ...', name,
           \)
-    call fila#scheme#file#util#remove(name)
+    call add(ps, fila#scheme#file#util#remove(name))
   endfor
-  call a:helper.reload_node(a:helper.get_root_node())
+  call s:Promise.all(ps)
+        \.then({ -> a:helper.reload_node(a:helper.get_root_node()) })
         \.then({ -> a:helper.redraw() })
-  redraw | echo printf(
-        \ '%d file/directory are removed',
-        \ len(nodes),
-        \)
+        \.then({ -> fila#message#notify('%d items are removed', len(nodes)) })
+        \.catch({ e -> fila#error#handle(e) })
 endfunction
