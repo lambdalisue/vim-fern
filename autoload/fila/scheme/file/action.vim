@@ -144,7 +144,7 @@ function! s:copy_clipboard(range, params, helper) abort
   if empty(nodes)
     let nodes = a:helper.get_selection_nodes(a:range)
   endif
-  let w:fila_file_clipboard = map(copy(nodes), { -> v:val.__path })
+  let w:fila_file_clipboard = map(copy(nodes), { -> s:Path.remove_last_separator(v:val.__path) })
   call a:helper.set_marks([])
   call a:helper.redraw()
         \.then({ -> fila#message#notify('%d items are copied', len(w:fila_file_clipboard)) })

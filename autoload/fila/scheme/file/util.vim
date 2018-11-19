@@ -38,7 +38,7 @@ function! fila#scheme#file#util#copy(src, dst) abort
       let new_dst = input(
             \ printf('New name: %s -> ', a:src),
             \ a:dst,
-            \ 'file',
+            \ filereadable(a:src) ? 'file' : 'dir',
             \)
       if empty(new_dst)
         throw s:Revelator.info('Cancelled')
@@ -68,7 +68,7 @@ function! fila#scheme#file#util#move(src, dst) abort
       let new_dst = input(
             \ printf('New name: %s -> ', a:src),
             \ a:dst,
-            \ 'file',
+            \ filereadable(a:src) ? 'file' : 'dir',
             \)
       if empty(new_dst)
         throw s:Revelator.info('Cancelled')
