@@ -127,7 +127,7 @@ function! s:_find(action, expr) abort
             \ a:expr
             \))
     endif
-    return s:_find(a:action, cs[0] . suffix))
+    return s:_find(a:action, cs[0] . suffix)
   endif
 endfunction
 
