@@ -9,11 +9,14 @@ endfunction
 " open()
 if executable('rundll32')
   function! s:open(filename) abort
+    let filename = fnamemodify(substitute(a:filename, '[/\\]\+', '\', 'g'), ':p')
     return s:Process.start([
           \ 'rundll32',
           \ 'url.dll,FileProtocolHandler',
-          \ fnamemodify(a:filename, ':p'),
+          \ filename,
           \])
+          \.then({ r -> s:_iconv_result(r) })
+          \.catch({ e -> s:_iconv_result(e) })
   endfunction
 elseif executable('cygstart')
   function! s:open(filename) abort
@@ -21,6 +24,8 @@ elseif executable('cygstart')
           \ 'cygstart',
           \ a:filename,
           \])
+          \.then({ r -> s:_iconv_result(r) })
+          \.catch({ e -> s:_iconv_result(e) })
   endfunction
 elseif executable('xdg-open')
   function! s:open(filename) abort
@@ -74,6 +79,8 @@ if has('win32') && executable('cmd')
     return s:Process.start([
           \ 'cmd.exe', '/c', 'move', '/y', src, dst,
           \])
+          \.then({ r -> s:_iconv_result(r) })
+          \.catch({ e -> s:_iconv_result(e) })
   endfunction
 elseif executable('mv')
   function! s:move_dir(src, dst) abort
@@ -91,13 +98,15 @@ endif
 if has('win32') && executable('cmd')
   function! s:move(src, dst) abort
     " normalize successive slashes to one slash
-    let src = substitute(a:src, '[/\\]\+', '\', 'g')
-    let dst = substitute(a:dst, '[/\\]\+', '\', 'g')
+    let src = fnamemodify(substitute(a:src, '[/\\]\+', '\', 'g'), ':p')
+    let dst = fnamemodify(substitute(a:dst, '[/\\]\+', '\', 'g'), ':p')
     " src must NOT have trailing slush
     let src = substitute(src, '\\$', '', '')
     return s:Process.start([
           \ 'cmd.exe', '/c', 'move', '/y', src, dst,
           \])
+          \.then({ r -> s:_iconv_result(r) })
+          \.catch({ e -> s:_iconv_result(e) })
   endfunction
 elseif executable('mv')
   function! s:move(src, dst) abort
@@ -114,9 +123,16 @@ endif
 " copy_dir()
 if has('win32') && executable('robocopy')
   function! s:copy_dir(src, dst) abort
+    " normalize successive slashes to one slash
+    let src = fnamemodify(substitute(a:src, '[/\\]\+', '\', 'g'), ':p')
+    let dst = fnamemodify(substitute(a:dst, '[/\\]\+', '\', 'g'), ':p')
+    " src must NOT have trailing slush
+    let src = substitute(src, '\\$', '', '')
     return s:Process.start([
-          \ 'robocopy', '/e', a:src, a:dst,
+          \ 'robocopy', '/e', src, dst,
           \])
+          \.then({ r -> s:_iconv_result(r) })
+          \.catch({ e -> s:_iconv_result(e) })
   endfunction
 elseif executable('cp')
   function! s:copy_dir(src, dst) abort
@@ -126,21 +142,23 @@ elseif executable('cp')
   endfunction
 else
   function! s:copy_dir(src, dst) abort
-    throw 'vital: Async.File: copy(): Not supported platform.'
+    throw 'vital: Async.File: copy_dir(): Not supported platform.'
   endfunction
 endif
 
-" copy_file()
+" copy()
 if has('win32') && executable('cmd')
   function! s:copy(src, dst) abort
     " normalize successive slashes to one slash
-    let src = substitute(a:src, '[/\\]\+', '\', 'g')
-    let dst = substitute(a:dst, '[/\\]\+', '\', 'g')
+    let src = fnamemodify(substitute(a:src, '[/\\]\+', '\', 'g'), ':p')
+    let dst = fnamemodify(substitute(a:dst, '[/\\]\+', '\', 'g'), ':p')
     " src must NOT have trailing slush
     let src = substitute(src, '\\$', '', '')
     return s:Process.start([
           \ 'cmd', '/c', 'copy', '/y', src, dst,
           \])
+          \.then({ r -> s:_iconv_result(r) })
+          \.catch({ e -> s:_iconv_result(e) })
   endfunction
 elseif executable('cp')
   function! s:copy(src, dst) abort
@@ -159,39 +177,42 @@ endif
 if executable('trash-put')
   " https://github.com/andreafrancia/trash-cli
   function! s:trash(path) abort
+    let abspath = fnamemodify(a:path, ':p')
     return s:Process.start([
-          \ 'trash-put', a:path,
+          \ 'trash-put', abspath,
           \])
   endfunction
 elseif executable('gomi')
   " https://github.com/b4b4r07/gomi
   function! s:trash(path) abort
+    let abspath = fnamemodify(a:path, ':p')
     return s:Process.start([
-          \ 'gomi', a:path,
+          \ 'gomi', abspath,
           \])
   endfunction
 elseif has('mac') && executable('osascript')
   function! s:trash(path) abort
     let script = 'tell app "Finder" to move the POSIX file "%s" to trash'
-    let abspath = fnamemodify(expand(a:path), ':p')
+    let abspath = fnamemodify(a:path, ':p')
     return s:Process.start([
           \ 'osascript', '-e', printf(script, abspath)
           \])
   endfunction
 elseif has('win32') && executable('powershell')
   function! s:trash(path) abort
-    let abspath = fnamemodify(expand(a:path), ':p:gs?/?\\?')
+    let abspath = fnamemodify(substitute(a:path, '[/\\]\+', '\', 'g'), ':p')
     let script = [
-          \ printf('$path = \"%s\"', abspath),
-          \ '$shell = new-object -comobject \"Shell.Application\"',
-          \ '$item = $shell.Namespace(0).ParseName(\"$path\")',
-          \ '$item.InvokeVerb(\"delete\")',
+          \ '$path = Get-Item ''%s''',
+          \ '$shell = New-Object -ComObject ''Shell.Application''',
+          \ '$shell.NameSpace(0).ParseName($path.FullName).InvokeVerb(''delete'')',
           \]
     return s:Process.start([
           \ 'powershell',
           \ '-ExecutionPolicy', 'Bypass',
-          \ '-Command', join(script, "\r\n"),
+          \ '-Command', printf(join(script, "\r\n"), abspath),
           \])
+          \.then({ r -> s:_iconv_result(r) })
+          \.catch({ e -> s:_iconv_result(e) })
   endfunction
 else
   " freedesktop
@@ -200,3 +221,9 @@ else
     throw 'vital: Async.File: trash(): Not supported platform.'
   endfunction
 endif
+
+function! s:_iconv_result(r) abort
+  let a:r.stdout = map(a:r.stdout, { -> iconv(v:val, 'char', &encoding) })
+  let a:r.stderr = map(a:r.stderr, { -> iconv(v:val, 'char', &encoding) })
+  return a:r
+endfunction

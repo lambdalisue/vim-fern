@@ -1,18 +1,17 @@
 let s:Lambda = vital#fila#import('Lambda')
 let s:Promise = vital#fila#import('Async.Promise')
 
-let s:SEPARATOR = has('win32') ? '\' : '/'
-
 function! fila#scheme#file#node#new(path) abort
   return s:new(simplify(a:path))
 endfunction
 
 function! s:new(path) abort
   let path = fnamemodify(a:path, ':p')
+  let key = split(fnamemodify(path, ':gs?\\?/?'), '/')
   if isdirectory(path)
     let options = {
           \ '__path': path,
-          \ 'bufname': 'fila:file://' . fnamemodify(path, 'gs?\\?/'),
+          \ 'bufname': 'fila://file://' . fnamemodify(path, ':gs?\\?/?'),
           \ 'hidden': s:is_hidden(path),
           \ 'children': funcref('s:children', [path]),
           \}
@@ -23,7 +22,7 @@ function! s:new(path) abort
           \ 'hidden': s:is_hidden(path),
           \}
   endif
-  return fila#node#new(split(a:path, s:SEPARATOR), options)
+  return fila#node#new(key, options)
 endfunction
 
 if executable('ls')
@@ -34,6 +33,8 @@ if executable('ls')
           \.then(s:Lambda.map_f({ v -> s:new(a:path . v) }))
   endfunction
 else
+  let s:SEPARATOR = has('win32') ? '\' : '/'
+
   function! s:children(path) abort
     let s = s:SEPARATOR
     let a = s:Promise.resolve(glob(a:path . '*', 1, 1, 1))

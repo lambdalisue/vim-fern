@@ -1,5 +1,5 @@
 function! fila#scheme#file#BufReadCmd() abort
-  let path = matchstr(expand('<afile>'), 'fila:file://\zs.*')
+  let path = matchstr(expand('<afile>'), 'fila://file://\zs.*')
   call fila#viewer#BufReadCmd({ -> s:create_root(path) })
 endfunction
 

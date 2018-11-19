@@ -78,10 +78,8 @@ augroup fila_viewer_internal
   autocmd! *
   autocmd User FilaViewerInit :
   autocmd User FilaViewerRead :
-  autocmd BufReadPre  fila:*   :
-  autocmd BufReadPre  fila:*/* :
-  autocmd BufReadPost fila:*   :
-  autocmd BufReadPost fila:*/* :
+  autocmd BufReadPre  fila://*   :
+  autocmd BufReadPost fila://* :
 augroup END
 
 call s:Config.config(expand('<sfile>:p'), {
