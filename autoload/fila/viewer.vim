@@ -1,4 +1,4 @@
-let s:Config = vital#fila#import("Config")
+let s:Config = vital#fila#import('Config')
 
 function! fila#viewer#open(bufname, options) abort
   call fila#buffer#open(a:bufname, a:options)

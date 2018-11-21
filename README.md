@@ -9,8 +9,6 @@
 
 Asynchronous file explorer written in Pure Vim script.
 
-langauge
-
 **WARNING: This project is in alpha stage. Anything will be drastically changed without anouncements**
 
 ## feature
