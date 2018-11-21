@@ -5,7 +5,7 @@ function! fila#viewer#open(bufname, options) abort
         \.catch({ e -> fila#error#handle(e) })
 endfunction
 
-function! fila#viewer#BufReadCmd(factory)
+function! fila#viewer#BufReadCmd(factory) abort
   doautocmd <nomodeline> BufReadPre
 
   let bufnr = str2nr(expand('<abuf>'))
