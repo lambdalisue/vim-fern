@@ -21,7 +21,6 @@ env:
   - VIM=neovim TAG=v0.3.0
   - VIM=neovim TAG=v0.3.1
 
-
 addons:
   apt:
     packages:
@@ -35,7 +34,6 @@ install:
   - docker --version
   - mkdir -p ~/bin/ && export PATH="~/bin/:$PATH"
   - .ci/misspell.sh
-  - .ci/reviewdog.sh
 
 before_script:
   - uname -a
@@ -44,6 +42,6 @@ before_script:
   - make VIM=${VIM} TAG=${TAG} version
 
 script:
-  - reviewdog -conf=.reviewdog.yml -reporter=github-pr-check
+  - make lint
   - make VIM=${VIM} TAG=${TAG} ARGS="-e PROFILE=${PROFILE} -e CI=docker" test
   # - make VIM=${VIM} TAG=${TAG} helptags
