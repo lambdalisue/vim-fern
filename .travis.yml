@@ -1,0 +1,49 @@
+sudo: false
+language: generic
+
+services:
+  - docker
+
+git:
+  depth: 3
+
+env:
+  - VIM=vim    TAG=latest
+  - VIM=vim    TAG=v8.0.0107
+  - VIM=vim    TAG=v8.1.0000
+  - VIM=vim    TAG=v8.1.0342
+  - VIM=vim    TAG=v8.1.0349
+  - VIM=vim    TAG=v8.1.0367
+  - VIM=neovim TAG=latest
+  - VIM=neovim TAG=v0.2.0
+  - VIM=neovim TAG=v0.2.1
+  - VIM=neovim TAG=v0.2.2
+  - VIM=neovim TAG=v0.3.0
+  - VIM=neovim TAG=v0.3.1
+
+
+addons:
+  apt:
+    packages:
+      - docker-ce
+      - python3
+      - python3-pip
+
+install:
+  - pip3 install --user --upgrade setuptools
+  - pip3 install --user vim-vint typing
+  - docker --version
+  - mkdir -p ~/bin/ && export PATH="~/bin/:$PATH"
+  - .ci/misspell.sh
+  - .ci/reviewdog.sh
+
+before_script:
+  - uname -a
+  - python3 --version
+  - vint --version
+  - make VIM=${VIM} TAG=${TAG} version
+
+script:
+  - reviewdog -conf=.reviewdog.yml -reporter=github-pr-check
+  - make VIM=${VIM} TAG=${TAG} ARGS="-e PROFILE=${PROFILE} -e CI=docker" test
+  # - make VIM=${VIM} TAG=${TAG} helptags
