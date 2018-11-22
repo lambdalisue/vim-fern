@@ -41,8 +41,8 @@ endfunction
 
 function! s:attach() abort
   execute printf('augroup vital_window_locator_local_internal_%s', s:UNIQUE)
-    autocmd! * <buffer>
-    autocmd WinLeave <buffer> call s:_on_WinLeave()
+    execute 'autocmd! * <buffer>'
+    execute 'autocmd WinLeave <buffer> call s:_on_WinLeave()'
   execute 'augroup END'
 endfunction
 
@@ -76,6 +76,6 @@ function! s:_on_WinEnter() abort
 endfunction
 
 execute printf('augroup vital_window_locator_internal_%s', s:UNIQUE)
-  autocmd! *
-  autocmd WinEnter * nested call s:_on_WinEnter()
+  execute 'autocmd! *'
+  execute 'autocmd WinEnter * nested call s:_on_WinEnter()'
 execute 'augroup END'

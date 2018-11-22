@@ -8,9 +8,9 @@ ARGS  :=
 IMAGE := lambdalisue/${VIM}-themis
 
 ifeq (${VIM},neovim)
-    VIME := nvim
+    VIMC := nvim
 else
-    VIME := ${VIM}
+    VIMC := ${VIM}
 endif
 
 # http://postd.cc/auto-documented-makefile/
@@ -20,11 +20,6 @@ help: ## Show this help
 	@grep -E '^[0-9a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) \
 	| awk 'BEGIN {FS = ":.*?## "}; {printf "${CYAN}%-30s${RESET} %s\n", $$1, $$2}'
 
-.PHONY: image
-image: ## Build a docker image
-	@echo "${GREEN}Building a docker image (${IMAGE}:${TAG})${RESET}"
-	@docker build -t ${IMAGE}:${TAG} --build-arg TAG=${TAG} -f .ci/Dockerfile.${VIM} .
-
 .PHONY: version
 version: version-vim version-themis ## Show Vim/vim-themis version in a docker image
 
@@ -32,11 +27,17 @@ version: version-vim version-themis ## Show Vim/vim-themis version in a docker i
 version-vim: ## Show Vim version in a docker image
 	@docker run --rm --entrypoint= \
 	    -it ${IMAGE}:${TAG} \
-	    /usr/local/bin/${VIME} --version
+	    /usr/local/bin/${VIMC} --version
 
 .PHONY: version-themis
 version-themis: ## Show vim-themis version in a docker image
 	@docker run --rm -it ${IMAGE}:${TAG} --version
+
+.PHONY: lint
+lint: ## Run lint by vim-vint and misspell
+	@echo "${GREEN}Running lint by vim-vint and misspell${RESET}"
+	@vint .
+	@misspell .
 
 .PHONY: test
 test: ## Run unittests by using a docker image
@@ -49,6 +50,6 @@ helptags: ## Build helptags by using a docker image
 	@docker run --rm --entrypoint= \
 	    --volume ${PWD}:/mnt/volume \
 	    -it ${IMAGE}:${TAG} \
-	    /usr/local/bin/${VIME} \
+	    /usr/local/bin/${VIMC} \
 	    --cmd "try | helptags doc/ | catch | cquit | endtry" \
 	    --cmd quit

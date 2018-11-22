@@ -108,14 +108,14 @@ function! s:echo(range, params, helper) abort
     let nodes = a:helper.get_selection_nodes(a:range)
   endif
   for node in nodes
-    echo printf("key     : %s", node.key)
-    echo printf("text    : %s", node.text)
-    echo printf("hidden  : %s", node.hidden)
-    echo printf("status  : %s", node.status)
-    echo printf("parent  : %s", has_key(node, 'parent'))
-    echo printf("children: %s", has_key(node, 'children'))
-    echo printf("bufname : %s", get(node, 'bufname', ''))
-    echo printf("remains : %s", s:Dict.omit(copy(node), [
+    echo printf('key     : %s', node.key)
+    echo printf('text    : %s', node.text)
+    echo printf('hidden  : %s', node.hidden)
+    echo printf('status  : %s', node.status)
+    echo printf('parent  : %s', has_key(node, 'parent'))
+    echo printf('children: %s', has_key(node, 'children'))
+    echo printf('bufname : %s', get(node, 'bufname', ''))
+    echo printf('remains : %s', s:Dict.omit(copy(node), [
           \ 'key', 'text', 'hidden', 'status', 'parent', 'children', 'bufname',
           \]))
   endfor
@@ -127,7 +127,7 @@ function! s:yank(range, params, helper) abort
     let nodes = a:helper.get_selection_nodes(a:range)
   endif
   let buffer = map(copy(nodes), { -> get(v:val, 'bufname', '') })
-  call setreg(v:register, join(buffer, "\n"))
+  call setreg(v:register, join(buffer, '\n'))
 endfunction
 
 function! s:open(range, params, helper) abort

@@ -33,7 +33,7 @@ if !exists('*nvim_win_set_cursor')
       let winid_saved = win_getid()
       try
         call win_gotoid(a:winid)
-        call a:set_cursor(a:winid, a:pos)
+        call s:set_cursor(a:winid, a:pos)
       finally
         call win_gotoid(winid_saved)
       endtry
