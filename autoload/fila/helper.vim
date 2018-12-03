@@ -156,10 +156,13 @@ function! s:redraw() abort dict
   if !bufloaded(self.bufnr)
     return s:Promise.reject(printf('buffer %d does not exist', self.bufnr))
   endif
+  let winid = bufwinid(self.bufnr)
   let nodes = self.get_visible_nodes()
   let marks = self.get_marks()
   let contents = self.renderer.render(nodes, marks)
+  let cursor = s:WindowCursor.get_cursor(winid)
   call s:BufferWriter.replace(self.bufnr, 0, -1, contents)
+  call s:WindowCursor.set_cursor(winid, cursor)
   return s:Promise.resolve(self)
 endfunction
 
