@@ -122,14 +122,15 @@ function! s:move(range, params, helper) abort
   endif
   let ps = []
   for node in nodes
+    let src = s:Path.remove_last_separator(node.__path)
     let dst = s:Prompt.ask(
-          \ printf('Move %s -> ', node.__path),
-          \ node.__path,
+          \ printf('Move %s -> ', src),
+          \ src,
           \)
     if empty(dst) || node.__path ==# dst
       continue
     endif
-    call add(ps, fila#scheme#file#util#move(node.__path, dst))
+    call add(ps, fila#scheme#file#util#move(src, dst))
   endfor
   call s:Promise.all(ps)
         \.then({ -> a:helper.set_marks([]) })
