@@ -30,6 +30,10 @@ function! fila#scheme#file#action#define(action) abort
         \ 'hidden': 1,
         \ 'repeat': 0,
         \})
+  call a:action.define('clear:clipboard:', funcref('s:clear_clipboard'), {
+        \ 'hidden': 1,
+        \ 'repeat': 0,
+        \})
   call a:action.define('delete:trash', funcref('s:delete_trash'), {
         \ 'hidden': 1,
         \ 'mapping_mode': 'nv',
@@ -145,15 +149,15 @@ function! s:copy_clipboard(range, params, helper) abort
   if empty(nodes)
     let nodes = a:helper.get_selection_nodes(a:range)
   endif
-  let w:fila_file_clipboard = map(copy(nodes), { -> s:Path.remove_last_separator(v:val.__path) })
+  let g:fila_file_clipboard = map(copy(nodes), { -> s:Path.remove_last_separator(v:val.__path) })
   call a:helper.set_marks([])
   call a:helper.redraw()
-        \.then({ -> fila#message#notify('%d items are copied', len(w:fila_file_clipboard)) })
+        \.then({ -> fila#message#notify('%d items are copied', len(g:fila_file_clipboard)) })
         \.catch({ e -> fila#error#handle(e) })
 endfunction
 
 function! s:paste_clipboard(range, params, helper) abort
-  if !exists('w:fila_file_clipboard')
+  if !exists('g:fila_file_clipboard')
     throw s:Revelator.info('nothing to paste')
   endif
   let node = a:helper.get_cursor_node(a:range)
@@ -163,7 +167,7 @@ function! s:paste_clipboard(range, params, helper) abort
     endif
   endif
   let ps =[]
-  for src in w:fila_file_clipboard
+  for src in g:fila_file_clipboard
     let dst = s:Path.join(node.__path, fnamemodify(src, ':t'))
     call fila#message#echo(
           \ 'coping %s to %s ...',
@@ -174,8 +178,12 @@ function! s:paste_clipboard(range, params, helper) abort
   call s:Promise.all(ps)
         \.then({ -> a:helper.reload_node(node) })
         \.then({ -> a:helper.redraw() })
-        \.then({ -> fila#message#notify('%d items are copied', len(w:fila_file_clipboard)) })
+        \.then({ -> fila#message#notify('%d items are copied', len(g:fila_file_clipboard)) })
         \.catch({ e -> fila#error#handle(e) })
+endfunction
+
+function! s:clear_clipboard(range, params, helper) abort
+  silent! unlet! g:fila_file_clipboard
 endfunction
 
 function! s:delete_trash(range, params, helper) abort
