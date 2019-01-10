@@ -13,7 +13,7 @@ function! fila#viewer#BufReadCmd(factory) abort
 
   if !exists('b:fila_ready') || v:cmdbang
     let b:fila_ready = 1
-    setlocal buftype=nofile
+    setlocal buftype=nofile bufhidden=unload
     setlocal noswapfile nobuflisted nomodifiable readonly
 
     augroup fila_viewer_internal
