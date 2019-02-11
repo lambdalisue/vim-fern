@@ -174,23 +174,7 @@ else
 endif
 
 " trash()
-if executable('trash-put')
-  " https://github.com/andreafrancia/trash-cli
-  function! s:trash(path) abort
-    let abspath = fnamemodify(a:path, ':p')
-    return s:Process.start([
-          \ 'trash-put', abspath,
-          \])
-  endfunction
-elseif executable('gomi')
-  " https://github.com/b4b4r07/gomi
-  function! s:trash(path) abort
-    let abspath = fnamemodify(a:path, ':p')
-    return s:Process.start([
-          \ 'gomi', abspath,
-          \])
-  endfunction
-elseif has('mac') && executable('osascript')
+if has('mac') && executable('osascript')
   function! s:trash(path) abort
     let script = 'tell app "Finder" to move the POSIX file "%s" to trash'
     let abspath = fnamemodify(a:path, ':p')
@@ -213,6 +197,22 @@ elseif has('win32') && executable('powershell')
           \])
           \.then({ r -> s:_iconv_result(r) })
           \.catch({ e -> s:_iconv_result(e) })
+  endfunction
+elseif executable('trash-put')
+  " https://github.com/andreafrancia/trash-cli
+  function! s:trash(path) abort
+    let abspath = fnamemodify(a:path, ':p')
+    return s:Process.start([
+          \ 'trash-put', abspath,
+          \])
+  endfunction
+elseif executable('gomi')
+  " https://github.com/b4b4r07/gomi
+  function! s:trash(path) abort
+    let abspath = fnamemodify(a:path, ':p')
+    return s:Process.start([
+          \ 'gomi', abspath,
+          \])
   endfunction
 else
   " freedesktop
