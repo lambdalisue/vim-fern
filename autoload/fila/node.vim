@@ -107,6 +107,8 @@ function! fila#node#collapse_at(key, nodes, comparator) abort
   let node = fila#node#find(a:key, a:nodes)
   if node is# v:null
     return s:Promise.reject(printf('no node "%s" is found', a:key))
+  elseif node is# a:nodes[0]
+    return s:Promise.resolve(copy(a:nodes))
   elseif node.status is# s:STATUS_COLLAPSED
     return s:Promise.resolve(copy(a:nodes))
   endif
