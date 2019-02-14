@@ -288,6 +288,7 @@ endfunction
 function! s:hidden_unset(range, params, helper) abort
   let node = a:helper.get_cursor_node(a:range)
   let winid = win_getid()
+  call cursor(1, 1)
   call a:helper.set_hidden(0)
   return a:helper.redraw()
         \.then({ h -> h.cursor_node(winid, node) })
@@ -297,6 +298,9 @@ endfunction
 function! s:hidden_toggle(range, params, helper) abort
   let node = a:helper.get_cursor_node(a:range)
   let winid = win_getid()
+  if a:helper.get_hidden()
+    call cursor(1, 1)
+  endif
   call a:helper.set_hidden(!a:helper.get_hidden())
   return a:helper.redraw()
         \.then({ h -> h.cursor_node(winid, node) })
