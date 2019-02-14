@@ -57,7 +57,7 @@ function! fila#action#_define() abort
   call action.define('expand-or-open', funcref('s:expand_or_open'), {
         \ 'hidden': 2,
         \})
-  call action.define('expand-toggle', funcref('s:expand_toggle'), {
+  call action.define('expand-or-collapse', funcref('s:expand_or_collapse'), {
         \ 'hidden': 2,
         \})
   call action.define('mark:set', funcref('s:mark_set'), {
@@ -232,7 +232,7 @@ function! s:expand_or_open(range, params, helper) abort
   endif
 endfunction
 
-function! s:expand_toggle(range, params, helper) abort
+function! s:expand_or_collapse(range, params, helper) abort
   let node = a:helper.get_cursor_node(a:range)
   if fila#node#is_branch(node) && !fila#node#is_expanded(node)
     return fila#action#call('expand')
