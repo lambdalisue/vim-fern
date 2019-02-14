@@ -38,14 +38,14 @@ function! fila#drawer#close() abort
   if !fila#drawer#is_opened()
     return
   endif
-  execute printf('%dclose!', s:get_winid())
+  execute printf('%dclose!', win_id2win(s:get_winid()))
 endfunction
 
 function! fila#drawer#quit() abort
   if !fila#drawer#is_opened()
     return
   endif
-  execute printf('%quit!', s:get_winid())
+  execute printf('%dquit!', win_id2win(s:get_winid()))
 endfunction
 
 function! s:get_winid() abort
