@@ -1,3 +1,5 @@
+let s:Config = vital#fila#import('Config')
+
 function! fila#drawer#is_drawer(winid) abort
   return a:winid is# s:get_winid()
 endfunction
@@ -8,7 +10,7 @@ endfunction
 
 function! fila#drawer#open(bufname, options) abort
   let options = extend({
-        \ 'width': 30,
+        \ 'width': g:fila#drawer#width,
         \ 'toggle': 0,
         \}, a:options)
   if fila#drawer#is_opened()
@@ -56,3 +58,6 @@ function! s:set_winid(winid) abort
   let t:fila_drawer_winid = a:winid
 endfunction
 
+call s:Config.config(expand('<sfile>:p'), {
+      \ 'width': 30,
+      \})
