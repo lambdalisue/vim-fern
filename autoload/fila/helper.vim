@@ -179,21 +179,21 @@ endfunction
 
 function! s:reload_node(node) abort dict
   let nodes = self.get_nodes()
-  return fila#node#reload_at(a:node.key, nodes, self.comparator.compare)
+  return fila#node#reload(a:node.key, nodes, self.comparator.compare)
         \.then({ v -> self.set_nodes(v)})
         \.then({ -> self })
 endfunction
 
 function! s:expand_node(node) abort dict
   let nodes = self.get_nodes()
-  return fila#node#expand_at(a:node.key, nodes, self.comparator.compare)
+  return fila#node#expand(a:node.key, nodes, self.comparator.compare)
         \.then({ v -> self.set_nodes(v)})
         \.then({ -> self })
 endfunction
 
 function! s:collapse_node(node) abort dict
   let nodes = self.get_nodes()
-  return fila#node#collapse_at(a:node.key, nodes, self.comparator.compare)
+  return fila#node#collapse(a:node.key, nodes, self.comparator.compare)
         \.then({ v -> self.set_nodes(v)})
         \.then({ -> self })
 endfunction
