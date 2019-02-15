@@ -493,4 +493,58 @@ Describe fila#node
       Assert False(fila#node#is_expanded(nodes[1]))
     End
   End
+
+  Describe reveal()
+    It rejects when no node for a given key is found
+      let nodes = [
+            \ fila#node#new([], {}),
+            \ fila#node#new(['Users'], {
+            \   'children': [
+            \     fila#node#new(['Users', 'Alice'], {
+            \       'children': [
+            \         fila#node#new(['Users', 'Alice', 'A'], {}),
+            \         fila#node#new(['Users', 'Alice', 'B'], {}),
+            \         fila#node#new(['Users', 'Alice', 'C'], {}),
+            \       ],
+            \     }),
+            \     fila#node#new(['Users', 'John'], {
+            \       'children': [
+            \         fila#node#new(['Users', 'John', 'A'], {}),
+            \         fila#node#new(['Users', 'John', 'B'], {}),
+            \         fila#node#new(['Users', 'John', 'C'], {}),
+            \       ],
+            \     }),
+            \     fila#node#new(['Users', 'Peter'], {
+            \       'children': [
+            \         fila#node#new(['Users', 'Peter', 'A'], {}),
+            \         fila#node#new(['Users', 'Peter', 'B'], {}),
+            \         fila#node#new(['Users', 'Peter', 'C'], {}),
+            \       ],
+            \     }),
+            \   ],
+            \ }),
+            \ fila#node#new(['Library'], {
+            \   'children': [
+            \     fila#node#new(['Library', 'Hello'], {}),
+            \     fila#node#new(['Library', 'World'], {}),
+            \   ],
+            \ }),
+            \]
+      let p = fila#node#reveal(['Users', 'John', 'B'], nodes, comparator.compare)
+      Assert True(Promise.is_promise(p))
+      let [r, e] = Promise.wait(p)
+      Assert Equals(e, v:null)
+      Assert Equals(map(copy(r), { -> v:val.key }), [
+            \ [],
+            \ ['Users'],
+            \ ['Users', 'Alice'],
+            \ ['Users', 'John'],
+            \ ['Users', 'John', 'A'],
+            \ ['Users', 'John', 'B'],
+            \ ['Users', 'John', 'C'],
+            \ ['Users', 'Peter'],
+            \ ['Library'],
+            \])
+    End
+  End
 End

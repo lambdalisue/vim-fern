@@ -36,11 +36,13 @@ function! fila#node#helper#new(...) abort
         \ 'reload': funcref('s:reload'),
         \ 'expand': funcref('s:expand'),
         \ 'collapse': funcref('s:collapse'),
+        \ 'reveal': funcref('s:reveal'),
         \ 'enter_node': funcref('s:enter_node'),
         \ 'cursor_node': funcref('s:cursor_node'),
         \ 'reload_node': funcref('s:reload_node'),
         \ 'expand_node': funcref('s:expand_node'),
         \ 'collapse_node': funcref('s:collapse_node'),
+        \ 'reveal_node': funcref('s:reveal_node'),
         \}
   return extend(copy(s:helper), {
         \ 'bufnr': bufnr,
@@ -220,6 +222,13 @@ function! s:collapse(key) abort dict
         \.then({ -> self })
 endfunction
 
+function! s:reveal(key) abort dict
+  let nodes = self.get_nodes()
+  return fila#node#reveal(a:key, nodes, self.comparator.compare)
+        \.then({ v -> self.set_nodes(v)})
+        \.then({ -> self })
+endfunction
+
 function! s:enter_node(node) abort dict
   let marks = self.get_marks()
   let hidden = self.get_hidden()
@@ -247,6 +256,10 @@ endfunction
 
 function! s:collapse_node(node) abort dict
   return self.collapse(a:node.key)
+endfunction
+
+function! s:reveal_node(node) abort dict
+  return self.reveal(a:node.key)
 endfunction
 
 

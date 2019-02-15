@@ -121,6 +121,17 @@ function! fila#node#collapse(key, nodes, comparator) abort
   return p
 endfunction
 
+function! fila#node#reveal(key, nodes, comparator) abort
+  let n = len(a:nodes[0].key) - 1
+  let k = copy(a:key)
+  let ks = []
+  while len(k) - 1 > n
+    call add(ks, copy(k))
+    call remove(k, -1)
+  endwhile
+  return s:expand_recursively(ks, a:nodes, a:comparator)
+endfunction
+
 function! s:uniq(nodes) abort
   return uniq(a:nodes, { a, b -> a.key != b.key })
 endfunction
@@ -128,6 +139,16 @@ endfunction
 function! s:extend(key, nodes, new_nodes) abort
   let index = fila#node#index(a:key, a:nodes)
   return index is# -1 ? a:nodes : extend(a:nodes, a:new_nodes, index + 1)
+endfunction
+
+function! s:expand_recursively(keys, nodes, comparator) abort
+  return fila#node#expand(a:keys[-1], a:nodes, a:comparator)
+        \.then({ v -> s:Lambda.pass(v, remove(a:keys, -1)) })
+        \.then({ v -> s:Lambda.if(
+        \   len(a:keys) > 1,
+        \   { -> s:expand_recursively(a:keys, v, a:comparator) },
+        \   { -> v },
+        \ )})
 endfunction
 
 let g:fila#node#STATUS_COLLAPSED = s:STATUS_COLLAPSED
