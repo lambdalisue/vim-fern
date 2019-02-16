@@ -1,4 +1,5 @@
 let s:Config = vital#fila#import('Config')
+let s:Promise = vital#fila#import('Async.Promise')
 
 function! fila#drawer#is_drawer(winid) abort
   return a:winid is# s:get_winid()
@@ -19,8 +20,9 @@ function! fila#drawer#open(bufname, options) abort
     else
       call fila#drawer#focus()
     endif
+    return s:Promise.resolve()
   else
-    call fila#buffer#open(a:bufname, {
+    return fila#viewer#open(a:bufname, {
           \ 'opener': printf('topleft %dvsplit', options.width),
           \ 'cmdarg': '+setlocal\ winfixwidth',
           \})

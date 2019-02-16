@@ -4,7 +4,8 @@ function! fila#viewer#open(bufname, options) abort
   let options = extend({
         \ 'opener': g:fila#viewer#opener,
         \}, a:options)
-  call fila#buffer#open(a:bufname, options)
+  let options.notifier = 1
+  return fila#buffer#open(a:bufname, options)
         \.catch({ e -> fila#error#handle(e) })
 endfunction
 
