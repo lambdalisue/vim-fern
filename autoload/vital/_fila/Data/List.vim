@@ -4,13 +4,17 @@
 function! s:_SID() abort
   return matchstr(expand('<sfile>'), '<SNR>\zs\d\+\ze__SID$')
 endfunction
-execute join(['function! vital#_fila#Data#List#import() abort', printf("return map({'combinations': '', 'and': '', 'sort_by': '', 'foldr1': '', 'sort': '', 'flatten': '', 'has_index': '', 'filter': '', 'find_indices': '', 'any': '', 'map': '', 'unshift': '', 'span': '', 'pop': '', 'binary_search': '', 'uniq_by': '', 'or': '', 'all': '', 'zip': '', 'find_last_index': '', 'find': '', 'partition': '', 'map_accum': '', 'permutations': '', 'break': '', 'max_by': '', 'foldl': '', 'foldr': '', 'find_index': '', 'drop_while': '', 'group_by': '', 'take_while': '', 'conj': '', 'push': '', 'char_range': '', 'cons': '', 'foldl1': '', 'intersect': '', 'concat': '', 'shift': '', 'clear': '', 'has_common_items': '', 'product': '', 'uncons': '', 'zip_fill': '', 'uniq': '', 'has': '', 'min_by': '', 'with_index': ''}, \"vital#_fila#function('<SNR>%s_' . v:key)\")", s:_SID()), 'endfunction'], "\n")
+execute join(['function! vital#_fila#Data#List#import() abort', printf("return map({'combinations': '', 'and': '', 'sort_by': '', 'foldr1': '', 'sort': '', 'flatten': '', 'has_index': '', 'filter': '', 'find_indices': '', 'any': '', 'map': '', 'unshift': '', 'span': '', 'pop': '', 'binary_search': '', 'uniq_by': '', 'or': '', 'all': '', 'zip': '', 'find_last_index': '', 'find': '', 'partition': '', 'shift': '', 'permutations': '', 'break': '', 'max_by': '', 'foldl': '', 'foldr': '', 'new': '', 'find_index': '', 'drop_while': '', 'group_by': '', 'take_while': '', 'conj': '', 'push': '', 'char_range': '', 'cons': '', 'foldl1': '', 'intersect': '', 'concat': '', 'map_accum': '', 'clear': '', 'has_common_items': '', 'product': '', 'uncons': '', 'zip_fill': '', 'uniq': '', 'has': '', 'min_by': '', 'with_index': ''}, \"vital#_fila#function('<SNR>%s_' . v:key)\")", s:_SID()), 'endfunction'], "\n")
 delfunction s:_SID
 " ___vital___
 " Utilities for list.
 
 let s:save_cpo = &cpo
 set cpo&vim
+
+function! s:new(size, f) abort
+  return map(range(a:size), a:f)
+endfunction
 
 function! s:pop(list) abort
   return remove(a:list, -1)

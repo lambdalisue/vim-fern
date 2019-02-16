@@ -1,14 +1,13 @@
 fila
-9b584074f2d64bc538d635e21fb67f71a00b2b2a
+d2119cf55230863a1950e491388c2f62fbcaf3c2
 
 Async.Promise
 App.Revelator
 Vim.Buffer.Writer
 Vim.Buffer.Opener
 Async.Later
-System.File
-System.Trash
-Prompt
 Config
 Data.Dict
 Async.Process
+Async.Promise.Process
+System.Filepath

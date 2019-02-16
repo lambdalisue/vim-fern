@@ -1,5 +1,6 @@
 let s:Lambda = vital#fila#import('Lambda')
 let s:Promise = vital#fila#import('Async.Promise')
+let s:Process = vital#fila#import('Async.Promise.Process')
 
 function! fila#scheme#file#node#new(path) abort
   return s:new(simplify(a:path))
@@ -27,9 +28,10 @@ endfunction
 
 if executable('ls')
   function! s:children(path) abort
-    return fila#process#start(['ls', '-A', a:path])
+    return s:Process.start(['ls', '-A', a:path])
           \.catch({ v -> v.stderr })
           \.then({ v -> v.stdout })
+          \.then(s:Lambda.filter_f({ v -> !empty(v) }))
           \.then(s:Lambda.map_f({ v -> s:new(a:path . v) }))
   endfunction
 else

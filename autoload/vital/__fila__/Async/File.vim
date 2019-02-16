@@ -1,9 +1,9 @@
 function! s:_vital_depends() abort
-  return ['Async.Process']
+  return ['Async.Promise.Process']
 endfunction
 
 function! s:_vital_loaded(V) abort
-  let s:Process = a:V.import('Async.Process')
+  let s:Process = a:V.import('Async.Promise.Process')
 endfunction
 
 " open()

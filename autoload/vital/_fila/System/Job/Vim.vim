@@ -20,6 +20,9 @@ function! s:start(args, options) abort
         \ 'mode': 'raw',
         \ 'timeout': 0,
         \}
+  if has('patch-8.1.889')
+    let job_options['noblock'] = 1
+  endif
   if has_key(job, 'on_stdout')
     let job_options.out_cb = funcref('s:_out_cb', [job])
   else
