@@ -4,25 +4,25 @@ let s:Lambda = vital#fila#import('Lambda')
 let s:Promise = vital#fila#import('Async.Promise')
 let s:Revelator = vital#fila#import('App.Revelator')
 
-function! fila#action#get() abort
+function! fila#viewer#action#get() abort
   return s:Action.get()
 endfunction
 
-function! fila#action#call(...) abort
-  let action = fila#action#get()
+function! fila#viewer#action#call(...) abort
+  let action = fila#viewer#action#get()
   let result = call(action.call, a:000, action)
   retur s:Promise.is_promise(result) ? result : s:Promise.resolve(result)
 endfunction
 
-function! fila#action#_init() abort
+function! fila#viewer#action#_init() abort
   let action = s:Action.new({
-        \ 'args': { -> [fila#helper#new()] },
+        \ 'args': { -> [fila#node#helper#new()] },
         \})
   call action.init()
 endfunction
 
-function! fila#action#_define() abort
-  let action = fila#action#get()
+function! fila#viewer#action#_define() abort
+  let action = fila#viewer#action#get()
 
   call action.define('sleep', funcref('s:sleep'), {
         \ 'hidden': 1,
@@ -140,16 +140,16 @@ function! s:open(range, params, helper) abort
   endif
   return fila#buffer#open(node.bufname, {
         \ 'opener': empty(a:params) ? 'edit' : a:params,
-        \ 'locator': fila#drawer#is_drawer(win_getid()),
+        \ 'locator': fila#viewer#drawer#is_drawer(win_getid()),
         \})
         \.catch({ e -> fila#error#handle(e) })
 endfunction
 
 function! s:open_side(range, params, helper) abort
-  if fila#drawer#is_drawer(win_getid())
-    return fila#action#call('open:left')
+  if fila#viewer#drawer#is_drawer(win_getid())
+    return fila#viewer#action#call('open:left')
   else
-    return fila#action#call('open:right')
+    return fila#viewer#action#call('open:right')
   endif
 endfunction
 
@@ -190,7 +190,7 @@ endfunction
 function! s:expand(range, params, helper) abort
   let node = a:helper.get_cursor_node(a:range)
   if !fila#node#is_branch(node) || fila#node#is_expanded(node)
-    return fila#action#call('reload')
+    return fila#viewer#action#call('reload')
   endif
   let winid = win_getid()
   return a:helper.expand_node(node)
@@ -220,22 +220,22 @@ endfunction
 function! s:enter_or_open(range, params, helper) abort
   let node = a:helper.get_cursor_node(a:range)
   return fila#node#is_branch(node)
-        \ ? fila#action#call('enter')
-        \ : fila#action#call('open')
+        \ ? fila#viewer#action#call('enter')
+        \ : fila#viewer#action#call('open')
 endfunction
 
 function! s:expand_or_open(range, params, helper) abort
   let node = a:helper.get_cursor_node(a:range)
   return fila#node#is_branch(node)
-        \ ? fila#action#call('expand')
-        \ : fila#action#call('open')
+        \ ? fila#viewer#action#call('expand')
+        \ : fila#viewer#action#call('open')
 endfunction
 
 function! s:expand_or_collapse(range, params, helper) abort
   let node = a:helper.get_cursor_node(a:range)
   return fila#node#is_expanded(node) || !fila#node#is_branch(node)
-        \ ? fila#action#call('collapse')
-        \ : fila#action#call('expand')
+        \ ? fila#viewer#action#call('collapse')
+        \ : fila#viewer#action#call('expand')
 endfunction
 
 function! s:mark_set(range, params, helper) abort

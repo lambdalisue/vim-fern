@@ -6,7 +6,7 @@ function! fila#command(mods, qargs) abort
   let bufname = s:init_bufname(remains)
   let options.mods = a:mods
   if get(options, 'drawer')
-    return fila#drawer#open(bufname, options)
+    return fila#viewer#drawer#open(bufname, options)
   else
     return fila#viewer#open(bufname, options)
   endif

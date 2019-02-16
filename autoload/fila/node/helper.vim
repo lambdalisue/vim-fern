@@ -8,13 +8,13 @@ let s:Config = vital#fila#import('Config')
 let s:STATUS_COLLAPSED = g:fila#node#STATUS_COLLAPSED
 let s:STATUS_EXPANDED = g:fila#node#STATUS_EXPANDED
 
-function! fila#helper#new(...) abort
+function! fila#node#helper#new(...) abort
   let bufnr = a:0 ? a:1 : bufnr('%')
   if exists('s:helper')
     return extend(copy(s:helper), {
           \ 'bufnr': bufnr,
-          \ 'renderer': g:fila#helper#renderer,
-          \ 'comparator': g:fila#helper#comparator,
+          \ 'renderer': g:fila#node#helper#renderer,
+          \ 'comparator': g:fila#node#helper#comparator,
           \})
   endif
   let s:helper = {
@@ -44,8 +44,8 @@ function! fila#helper#new(...) abort
         \}
   return extend(copy(s:helper), {
         \ 'bufnr': bufnr,
-        \ 'renderer': g:fila#helper#renderer,
-        \ 'comparator': g:fila#helper#comparator,
+        \ 'renderer': g:fila#node#helper#renderer,
+        \ 'comparator': g:fila#node#helper#comparator,
         \})
 endfunction
 
@@ -224,7 +224,7 @@ function! s:enter_node(node) abort dict
         \ 'locator': 0,
         \ 'notifier': 1,
         \})
-        \.then({ c -> fila#helper#new(c.bufnr) })
+        \.then({ c -> fila#node#helper#new(c.bufnr) })
 endfunction
 
 function! s:cursor_node(winid, node, ...) abort dict
@@ -246,6 +246,6 @@ endfunction
 
 
 call s:Config.config(expand('<sfile>:p'), {
-      \ 'renderer': fila#renderer#default#new(),
-      \ 'comparator': fila#comparator#default#new(),
+      \ 'renderer': fila#node#renderer#default#new(),
+      \ 'comparator': fila#node#comparator#default#new(),
       \})

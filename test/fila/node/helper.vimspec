@@ -1,7 +1,7 @@
 let s:STATUS_COLLAPSED = 0
 let s:STATUS_EXPANDED = 1
 
-Describe fila#helper
+Describe fila#node#helper
   Before all
     let Promise = vital#fila#import('Async.Promise')
     let WindowCursor = vital#fila#import('Vim.Window.Cursor')
@@ -9,7 +9,7 @@ Describe fila#helper
 
   Describe #new()
     It returns a helper instance for a current window
-      let helper = fila#helper#new()
+      let helper = fila#node#helper#new()
       Assert KeyExists(helper, 'bufnr')
       Assert Equals(helper.bufnr, bufnr('%'))
     End
@@ -17,7 +17,7 @@ Describe fila#helper
 
   Describe helper instance
     Before
-      let helper = fila#helper#new()
+      let helper = fila#node#helper#new()
     End
 
     After

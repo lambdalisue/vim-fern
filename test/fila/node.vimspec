@@ -1,7 +1,7 @@
 Describe fila#node
   Before all
     let Promise = vital#fila#import('Async.Promise')
-    let comparator = fila#comparator#default#new()
+    let comparator = fila#node#comparator#default#new()
   End
 
   Describe #new()

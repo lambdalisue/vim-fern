@@ -1,24 +1,24 @@
 let s:Config = vital#fila#import('Config')
 let s:Promise = vital#fila#import('Async.Promise')
 
-function! fila#drawer#is_drawer(winid) abort
+function! fila#viewer#drawer#is_drawer(winid) abort
   return a:winid is# s:get_winid()
 endfunction
 
-function! fila#drawer#is_opened() abort
+function! fila#viewer#drawer#is_opened() abort
   return !empty(getwininfo(s:get_winid()))
 endfunction
 
-function! fila#drawer#open(bufname, options) abort
+function! fila#viewer#drawer#open(bufname, options) abort
   let options = extend({
-        \ 'width': g:fila#drawer#width,
-        \ 'toggle': g:fila#drawer#toggle,
+        \ 'width': g:fila#viewer#drawer#width,
+        \ 'toggle': g:fila#viewer#drawer#toggle,
         \}, a:options)
-  if fila#drawer#is_opened()
+  if fila#viewer#drawer#is_opened()
     if options.toggle
-      call fila#drawer#close()
+      call fila#viewer#drawer#close()
     else
-      call fila#drawer#focus()
+      call fila#viewer#drawer#focus()
     endif
     return s:Promise.resolve()
   else
@@ -31,22 +31,22 @@ function! fila#drawer#open(bufname, options) abort
   endif
 endfunction
 
-function! fila#drawer#focus() abort
-  if !fila#drawer#is_opened()
+function! fila#viewer#drawer#focus() abort
+  if !fila#viewer#drawer#is_opened()
     return
   endif
   call win_gotoid(s:get_winid())
 endfunction
 
-function! fila#drawer#close() abort
-  if !fila#drawer#is_opened()
+function! fila#viewer#drawer#close() abort
+  if !fila#viewer#drawer#is_opened()
     return
   endif
   execute printf('%dclose!', win_id2win(s:get_winid()))
 endfunction
 
-function! fila#drawer#quit() abort
-  if !fila#drawer#is_opened()
+function! fila#viewer#drawer#quit() abort
+  if !fila#viewer#drawer#is_opened()
     return
   endif
   execute printf('%dquit!', win_id2win(s:get_winid()))

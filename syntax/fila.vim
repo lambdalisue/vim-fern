@@ -3,12 +3,12 @@ if exists('b:current_syntax')
 endif
 
 function! s:define_syntax() abort
-  let helper = fila#helper#new()
+  let helper = fila#node#helper#new()
   call helper.renderer.syntax()
 endfunction
 
 function! s:define_highlight() abort
-  let helper = fila#helper#new()
+  let helper = fila#node#helper#new()
   call helper.renderer.highlight()
 endfunction
 

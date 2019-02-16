@@ -13,7 +13,7 @@ function! fila#viewer#BufReadCmd(factory) abort
   doautocmd <nomodeline> BufReadPre
 
   let bufnr = str2nr(expand('<abuf>'))
-  let helper = fila#helper#new(bufnr)
+  let helper = fila#node#helper#new(bufnr)
 
   if !exists('b:fila_ready') || v:cmdbang
     let b:fila_ready = 1
@@ -25,8 +25,8 @@ function! fila#viewer#BufReadCmd(factory) abort
       autocmd BufEnter <buffer> setlocal nobuflisted
     augroup END
 
-    call fila#action#_init()
-    call fila#action#_define()
+    call fila#viewer#action#_init()
+    call fila#viewer#action#_define()
 
     if !g:fila#viewer#skip_default_mappings
       nmap <buffer><nowait> <Backspace> <Plug>(fila-action-leave)

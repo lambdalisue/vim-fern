@@ -1,6 +1,6 @@
 let s:Config = vital#fila#import('Config')
 
-function! fila#renderer#default#new() abort
+function! fila#node#renderer#default#new() abort
   return {
         \ 'render': funcref('s:render'),
         \ 'syntax': funcref('s:syntax'),
@@ -10,13 +10,13 @@ endfunction
 
 function! s:render(nodes, marks) abort
   let options = {
-        \ 'leading': g:fila#renderer#default#leading,
-        \ 'root_symbol': g:fila#renderer#default#root_symbol,
-        \ 'leaf_symbol': g:fila#renderer#default#leaf_symbol,
-        \ 'expanded_symbol': g:fila#renderer#default#expanded_symbol,
-        \ 'collapsed_symbol': g:fila#renderer#default#collapsed_symbol,
-        \ 'marked_symbol': g:fila#renderer#default#marked_symbol,
-        \ 'unmarked_symbol': g:fila#renderer#default#unmarked_symbol,
+        \ 'leading': g:fila#node#renderer#default#leading,
+        \ 'root_symbol': g:fila#node#renderer#default#root_symbol,
+        \ 'leaf_symbol': g:fila#node#renderer#default#leaf_symbol,
+        \ 'expanded_symbol': g:fila#node#renderer#default#expanded_symbol,
+        \ 'collapsed_symbol': g:fila#node#renderer#default#collapsed_symbol,
+        \ 'marked_symbol': g:fila#node#renderer#default#marked_symbol,
+        \ 'unmarked_symbol': g:fila#node#renderer#default#unmarked_symbol,
         \}
   let base = len(a:nodes[0].key)
   return map(copy(a:nodes), { -> s:render_node(v:val, a:marks, base, options) })
