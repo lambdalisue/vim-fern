@@ -11,7 +11,7 @@ endfunction
 function! fila#drawer#open(bufname, options) abort
   let options = extend({
         \ 'width': g:fila#drawer#width,
-        \ 'toggle': 0,
+        \ 'toggle': g:fila#drawer#toggle,
         \}, a:options)
   if fila#drawer#is_opened()
     if options.toggle
@@ -60,4 +60,5 @@ endfunction
 
 call s:Config.config(expand('<sfile>:p'), {
       \ 'width': 30,
+      \ 'toggle': 0,
       \})
