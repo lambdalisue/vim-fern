@@ -57,6 +57,9 @@ function! fila#action#_define() abort
   call action.define('expand-or-open', funcref('s:expand_or_open'), {
         \ 'hidden': 2,
         \})
+  call action.define('expand-or-collapse', funcref('s:expand_or_collapse'), {
+        \ 'hidden': 2,
+        \})
   call action.define('mark:set', funcref('s:mark_set'), {
         \ 'hidden': 1,
         \ 'mapping_mode': 'nv',
@@ -226,6 +229,18 @@ function! s:expand_or_open(range, params, helper) abort
     return fila#action#call('expand')
   else
     return fila#action#call('open')
+  endif
+endfunction
+
+function! s:expand_or_collapse(range, params, helper) abort
+  let node = a:helper.get_cursor_node(a:range)
+  let root = a:helper.get_root_node()
+  if fila#node#is_branch(node) && !fila#node#is_expanded(node)
+    return fila#action#call('expand')
+  elseif fila#node#is_branch(node) && has_key(node, 'parent') && fila#node#is_expanded(node.parent)
+    return fila#action#call('collapse')
+  elseif !fila#node#is_branch(node) && has_key(node.parent, 'parent') && node.parent isnot# root
+    return fila#action#call('collapse')
   endif
 endfunction
 
