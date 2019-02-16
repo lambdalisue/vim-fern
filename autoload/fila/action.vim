@@ -207,8 +207,7 @@ function! s:collapse(range, params, helper) abort
     endif
     let node = node.parent
   endif
-  let root = a:helper.get_root_node()
-  if node is# root
+  if node is# a:helper.get_root_node()
     return s:Promise.resolve()
   endif
   let winid = win_getid()
@@ -220,33 +219,23 @@ endfunction
 
 function! s:enter_or_open(range, params, helper) abort
   let node = a:helper.get_cursor_node(a:range)
-  if fila#node#is_branch(node)
-    return fila#action#call('enter')
-  else
-    return fila#action#call('open')
-  endif
+  return fila#node#is_branch(node)
+        \ ? fila#action#call('enter')
+        \ : fila#action#call('open')
 endfunction
 
 function! s:expand_or_open(range, params, helper) abort
   let node = a:helper.get_cursor_node(a:range)
-  if fila#node#is_branch(node)
-    return fila#action#call('expand')
-  else
-    return fila#action#call('open')
-  endif
+  return fila#node#is_branch(node)
+        \ ? fila#action#call('expand')
+        \ : fila#action#call('open')
 endfunction
 
 function! s:expand_or_collapse(range, params, helper) abort
   let node = a:helper.get_cursor_node(a:range)
-  let root = a:helper.get_root_node()
-  if fila#node#is_branch(node) && !fila#node#is_expanded(node)
-    return fila#action#call('expand')
-  elseif fila#node#is_branch(node) && has_key(node, 'parent') && fila#node#is_expanded(node.parent)
-    return fila#action#call('collapse')
-  elseif !fila#node#is_branch(node) && has_key(node.parent, 'parent') && node.parent isnot# root
-    return fila#action#call('collapse')
-  endif
-  return s:Promise.resolve()
+  return fila#node#is_expanded(node) || !fila#node#is_branch(node)
+        \ ? fila#action#call('collapse')
+        \ : fila#action#call('expand')
 endfunction
 
 function! s:mark_set(range, params, helper) abort
