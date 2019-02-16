@@ -179,7 +179,7 @@ endfunction
 function! s:reload(range, params, helper) abort
   let node = a:helper.get_cursor_node(a:range)
   if !fila#node#is_expanded(node)
-    return
+    return s:Promise.resolve()
   endif
   let winid = win_getid()
   return a:helper.reload_node(node)
@@ -246,6 +246,7 @@ function! s:expand_or_collapse(range, params, helper) abort
   elseif !fila#node#is_branch(node) && has_key(node.parent, 'parent') && node.parent isnot# root
     return fila#action#call('collapse')
   endif
+  return s:Promise.resolve()
 endfunction
 
 function! s:mark_set(range, params, helper) abort
