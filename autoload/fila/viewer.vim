@@ -1,7 +1,10 @@
 let s:Config = vital#fila#import('Config')
 
 function! fila#viewer#open(bufname, options) abort
-  call fila#buffer#open(a:bufname, a:options)
+  let options = extend({
+        \ 'opener': g:fila#viewer#opener,
+        \}, a:options)
+  call fila#buffer#open(a:bufname, options)
         \.catch({ e -> fila#error#handle(e) })
 endfunction
 
@@ -116,5 +119,6 @@ augroup fila_viewer_internal
 augroup END
 
 call s:Config.config(expand('<sfile>:p'), {
+      \ 'opener': 'edit',
       \ 'skip_default_mappings': 0,
       \})
