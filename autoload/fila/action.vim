@@ -203,9 +203,13 @@ function! s:collapse(range, params, helper) abort
   let node = a:helper.get_cursor_node(a:range)
   if !fila#node#is_branch(node) || !fila#node#is_expanded(node)
     if !has_key(node, 'parent') || !fila#node#is_branch(node.parent) || !fila#node#is_expanded(node.parent)
-      return
+      return s:Promise.resolve()
     endif
     let node = node.parent
+  endif
+  let root = a:helper.get_root_node()
+  if node is# root
+    return s:Promise.resolve()
   endif
   let winid = win_getid()
   return a:helper.collapse_node(node)
