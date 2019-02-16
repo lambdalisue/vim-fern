@@ -34,8 +34,8 @@ function! fila#viewer#action#_define() abort
   call action.define('yank', funcref('s:yank'), {
         \ 'mapping_mode': 'nv',
         \})
-  call action.define('open', funcref('s:open'))
-  call action.define('open:side', funcref('s:open_side'))
+  call action.define('edit', funcref('s:edit'))
+  call action.define('edit:side', funcref('s:edit_side'))
   call action.define('enter', funcref('s:enter'), {
         \ 'hidden': 1,
         \})
@@ -51,10 +51,10 @@ function! fila#viewer#action#_define() abort
   call action.define('collapse', funcref('s:collapse'), {
         \ 'hidden': 1,
         \})
-  call action.define('enter-or-open', funcref('s:enter_or_open'), {
+  call action.define('enter-or-edit', funcref('s:enter_or_edit'), {
         \ 'hidden': 2,
         \})
-  call action.define('expand-or-open', funcref('s:expand_or_open'), {
+  call action.define('expand-or-edit', funcref('s:expand_or_edit'), {
         \ 'hidden': 2,
         \})
   call action.define('expand-or-collapse', funcref('s:expand_or_collapse'), {
@@ -82,19 +82,19 @@ function! fila#viewer#action#_define() abort
   call action.define('hidden:toggle', funcref('s:hidden_toggle'), {
         \ 'hidden': 1,
         \})
-  call action.define('open:select', 'open select')
-  call action.define('open:split', 'open split')
-  call action.define('open:vsplit', 'open vsplit')
-  call action.define('open:tabedit', 'open tabedit')
-  call action.define('open:pedit', 'open pedit')
-  call action.define('open:above', 'open leftabove split')
-  call action.define('open:left', 'open leftabove vsplit')
-  call action.define('open:below', 'open rightbelow split')
-  call action.define('open:right', 'open rightbelow vsplit')
-  call action.define('open:top', 'open topleft split')
-  call action.define('open:leftest', 'open topleft vsplit')
-  call action.define('open:bottom', 'open botright split')
-  call action.define('open:rightest', 'open botright vsplit')
+  call action.define('edit:select', 'edit select')
+  call action.define('edit:split', 'edit split')
+  call action.define('edit:vsplit', 'edit vsplit')
+  call action.define('edit:tabedit', 'edit tabedit')
+  call action.define('edit:pedit', 'edit pedit')
+  call action.define('edit:above', 'edit leftabove split')
+  call action.define('edit:left', 'edit leftabove vsplit')
+  call action.define('edit:below', 'edit rightbelow split')
+  call action.define('edit:right', 'edit rightbelow vsplit')
+  call action.define('edit:top', 'edit topleft split')
+  call action.define('edit:leftest', 'edit topleft vsplit')
+  call action.define('edit:bottom', 'edit botright split')
+  call action.define('edit:rightest', 'edit botright vsplit')
   call action.define('mark', 'mark:toggle', {
         \ 'mapping_mode': 'nv',
         \})
@@ -133,7 +133,7 @@ function! s:yank(range, params, helper) abort
   call setreg(v:register, join(buffer, '\n'))
 endfunction
 
-function! s:open(range, params, helper) abort
+function! s:edit(range, params, helper) abort
   let node = a:helper.get_cursor_node(a:range)
   if !has_key(node, 'bufname')
     throw s:Revelator.info('the node does not have bufname')
@@ -145,11 +145,11 @@ function! s:open(range, params, helper) abort
         \.catch({ e -> fila#error#handle(e) })
 endfunction
 
-function! s:open_side(range, params, helper) abort
+function! s:edit_side(range, params, helper) abort
   if fila#viewer#drawer#is_drawer(win_getid())
-    return fila#viewer#action#call('open:left')
+    return fila#viewer#action#call('edit:left')
   else
-    return fila#viewer#action#call('open:right')
+    return fila#viewer#action#call('edit:right')
   endif
 endfunction
 
@@ -217,18 +217,18 @@ function! s:collapse(range, params, helper) abort
         \.catch({ e -> fila#error#handle(e) })
 endfunction
 
-function! s:enter_or_open(range, params, helper) abort
+function! s:enter_or_edit(range, params, helper) abort
   let node = a:helper.get_cursor_node(a:range)
   return fila#node#is_branch(node)
         \ ? fila#viewer#action#call('enter')
-        \ : fila#viewer#action#call('open')
+        \ : fila#viewer#action#call('edit')
 endfunction
 
-function! s:expand_or_open(range, params, helper) abort
+function! s:expand_or_edit(range, params, helper) abort
   let node = a:helper.get_cursor_node(a:range)
   return fila#node#is_branch(node)
         \ ? fila#viewer#action#call('expand')
-        \ : fila#viewer#action#call('open')
+        \ : fila#viewer#action#call('edit')
 endfunction
 
 function! s:expand_or_collapse(range, params, helper) abort

@@ -31,17 +31,17 @@ function! fila#viewer#BufReadCmd(factory) abort
     if !g:fila#viewer#skip_default_mappings
       nmap <buffer><nowait> <Backspace> <Plug>(fila-action-leave)
       nmap <buffer><nowait> <C-h>       <Plug>(fila-action-leave)
-      nmap <buffer><nowait> <Return>    <Plug>(fila-action-enter-or-open)
-      nmap <buffer><nowait> <C-m>       <Plug>(fila-action-enter-or-open)
+      nmap <buffer><nowait> <Return>    <Plug>(fila-action-enter-or-edit)
+      nmap <buffer><nowait> <C-m>       <Plug>(fila-action-enter-or-edit)
       nmap <buffer><nowait> <F5>        <Plug>(fila-action-reload)
-      nmap <buffer><nowait> l           <Plug>(fila-action-expand-or-open)
+      nmap <buffer><nowait> l           <Plug>(fila-action-expand-or-edit)
       nmap <buffer><nowait> h           <Plug>(fila-action-collapse)
       nmap <buffer><nowait> -           <Plug>(fila-action-mark-toggle)
       vmap <buffer><nowait> -           <Plug>(fila-action-mark-toggle)
       nmap <buffer><nowait> !           <Plug>(fila-action-hidden-toggle)
-      nmap <buffer><nowait> e           <Plug>(fila-action-open)
-      nmap <buffer><nowait> t           <Plug>(fila-action-open-tabedit)
-      nmap <buffer><nowait> E           <Plug>(fila-action-open-side)
+      nmap <buffer><nowait> e           <Plug>(fila-action-edit)
+      nmap <buffer><nowait> t           <Plug>(fila-action-edit-tabedit)
+      nmap <buffer><nowait> E           <Plug>(fila-action-edit-side)
     endif
 
     let winid = win_getid()
