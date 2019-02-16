@@ -180,7 +180,8 @@ function! s:enter(key) abort dict
 endfunction
 
 function! s:cursor(winid, key, ...) abort dict
-  let offset = a:0 ? a:1 : 0
+  let offset = a:0 > 0 ? a:1 : 0
+  let ignore = a:0 > 1 ? a:2 : 0
   if empty(getwininfo(a:winid))
     return s:Promise.reject(printf('no window %d exist', a:winid))
   endif
@@ -188,7 +189,9 @@ function! s:cursor(winid, key, ...) abort dict
   let index = fila#node#index(a:key, nodes)
   let n = len(nodes)
   if n is# 0 || index >= n
-    return s:Promise.reject(printf('node %s does not exist', a:key))
+    return ignore
+          \ ? s:Promise.resolve(self)
+          \ : s:Promise.reject(printf('node %s does not exist', a:key))
   endif
   let cursor = s:WindowCursor.get_cursor(a:winid)
   call s:WindowCursor.set_cursor(a:winid, [index + 1 + offset, cursor[1]])
@@ -228,8 +231,9 @@ function! s:enter_node(node) abort dict
 endfunction
 
 function! s:cursor_node(winid, node, ...) abort dict
-  let offset = a:0 ? a:1 : 0
-  return self.cursor(a:winid, a:node.key, offset)
+  let offset = a:0 > 0 ? a:1 : 0
+  let ignore = a:0 > 1 ? a:2 : 0
+  return self.cursor(a:winid, a:node.key, offset, ignore)
 endfunction
 
 function! s:reload_node(node) abort dict
