@@ -1,21 +1,21 @@
 let s:Config = vital#fila#import('Config')
+let s:Flag = vital#fila#import('App.Flag')
 
-function! fila#open(...) abort
-  let url = a:0 ? expand(a:1) : ''
-  let url = empty(url) ? s:smart_url() : url
-  let url = url =~# '^[^:]\+://' ? url : 'file://' . fnamemodify(url, ':p')
-  let bufname = 'fila://' . fnamemodify(url, ':gs?\\?/?')
-  let options = extend({}, a:0 > 1 ? a:2 : {})
-  call fila#viewer#open(bufname, options)
+function! fila#command(mods, qargs) abort
+  let [options, remains] = s:Flag.parse(s:Flag.split(a:qargs))
+  let bufname = s:init_bufname(remains)
+  let options.mods = a:mods
+  if get(options, 'drawer')
+    return fila#viewer#drawer#open(bufname, options)
+  else
+    return fila#viewer#open(bufname, options)
+  endif
 endfunction
 
-function! fila#drawer(...) abort
-  let url = a:0 ? expand(a:1) : ''
-  let url = empty(url) ? s:smart_url() : url
+function! s:init_bufname(args) abort
+  let url = len(a:args) ? remove(a:args, 0) : s:smart_url()
   let url = url =~# '^[^:]\+://' ? url : 'file://' . fnamemodify(url, ':p')
-  let bufname = 'fila://' . fnamemodify(url, ':gs?\\?/?')
-  let options = extend({}, a:0 > 1 ? a:2 : {})
-  call fila#drawer#open(bufname, options)
+  return 'fila://' . fnamemodify(url, ':gs?\\?/?')
 endfunction
 
 function! s:smart_url() abort

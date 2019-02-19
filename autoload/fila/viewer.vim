@@ -1,7 +1,11 @@
 let s:Config = vital#fila#import('Config')
 
 function! fila#viewer#open(bufname, options) abort
-  call fila#buffer#open(a:bufname, a:options)
+  let options = extend({
+        \ 'opener': g:fila#viewer#opener,
+        \}, a:options)
+  let options.notifier = 1
+  return fila#buffer#open(a:bufname, options)
         \.catch({ e -> fila#error#handle(e) })
 endfunction
 
@@ -9,7 +13,7 @@ function! fila#viewer#BufReadCmd(factory) abort
   doautocmd <nomodeline> BufReadPre
 
   let bufnr = str2nr(expand('<abuf>'))
-  let helper = fila#helper#new(bufnr)
+  let helper = fila#node#helper#new(bufnr)
 
   if !exists('b:fila_ready') || v:cmdbang
     let b:fila_ready = 1
@@ -21,23 +25,23 @@ function! fila#viewer#BufReadCmd(factory) abort
       autocmd BufEnter <buffer> setlocal nobuflisted
     augroup END
 
-    call fila#action#_init()
-    call fila#action#_define()
+    call fila#viewer#action#_init()
+    call fila#viewer#action#_define()
 
     if !g:fila#viewer#skip_default_mappings
       nmap <buffer><nowait> <Backspace> <Plug>(fila-action-leave)
       nmap <buffer><nowait> <C-h>       <Plug>(fila-action-leave)
-      nmap <buffer><nowait> <Return>    <Plug>(fila-action-enter-or-open)
-      nmap <buffer><nowait> <C-m>       <Plug>(fila-action-enter-or-open)
+      nmap <buffer><nowait> <Return>    <Plug>(fila-action-enter-or-edit)
+      nmap <buffer><nowait> <C-m>       <Plug>(fila-action-enter-or-edit)
       nmap <buffer><nowait> <F5>        <Plug>(fila-action-reload)
-      nmap <buffer><nowait> l           <Plug>(fila-action-expand-or-open)
+      nmap <buffer><nowait> l           <Plug>(fila-action-expand-or-edit)
       nmap <buffer><nowait> h           <Plug>(fila-action-collapse)
       nmap <buffer><nowait> -           <Plug>(fila-action-mark-toggle)
       vmap <buffer><nowait> -           <Plug>(fila-action-mark-toggle)
       nmap <buffer><nowait> !           <Plug>(fila-action-hidden-toggle)
-      nmap <buffer><nowait> e           <Plug>(fila-action-open)
-      nmap <buffer><nowait> t           <Plug>(fila-action-open-tabedit)
-      nmap <buffer><nowait> E           <Plug>(fila-action-open-side)
+      nmap <buffer><nowait> e           <Plug>(fila-action-edit)
+      nmap <buffer><nowait> t           <Plug>(fila-action-edit-tabedit)
+      nmap <buffer><nowait> E           <Plug>(fila-action-edit-side)
     endif
 
     let winid = win_getid()
@@ -66,12 +70,45 @@ function! fila#viewer#BufReadCmd(factory) abort
 endfunction
 
 function! s:notify(bufnr) abort
-  let notifier = getbufvar(a:bufnr, 'fila_notifier', v:null)
+  if bufnr('%') is# a:bufnr
+    call s:notify_on_local()
+  elseif bufwinid(a:bufnr) isnot# -1
+    call s:notify_on_window(a:bufnr)
+  else
+    call s:notify_on_hidden(a:bufnr)
+  endif
+endfunction
+
+function! s:notify_on_local() abort
+  let notifier = get(b:, 'fila_notifier', v:null)
   if notifier isnot# v:null
+    let b:fila_notifier = v:null
     call notifier.notify()
-    call setbufvar(a:bufnr, 'fila_notifier', v:null)
   endif
   doautocmd <nomodeline> User FilaViewerRead
+endfunction
+
+function! s:notify_on_window(bufnr) abort
+  let winid = win_getid()
+  try
+    call win_gotoid(bufwinid(a:bufnr))
+    call s:notify_on_local()
+  finally
+    call win_gotoid(winid)
+  endtry
+endfunction
+
+function! s:notify_on_hidden(bufnr) abort
+  let bufnr = bufnr('%')
+  let bufhidden = &bufhidden
+  try
+    setlocal bufhidden=hide
+    silent execute printf('keepjumps keepalt %dbuffer', a:bufnr)
+    call s:notify_on_local()
+  finally
+    silent execute printf('keepjumps keepalt %dbuffer', bufnr)
+    let &bufhidden = bufhidden
+  endtry
 endfunction
 
 augroup fila_viewer_internal
@@ -83,5 +120,6 @@ augroup fila_viewer_internal
 augroup END
 
 call s:Config.config(expand('<sfile>:p'), {
+      \ 'opener': 'edit',
       \ 'skip_default_mappings': 0,
       \})

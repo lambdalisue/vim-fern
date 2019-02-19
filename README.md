@@ -20,7 +20,7 @@ Asynchronous file explorer written in Pure Vim script.
     - [ ] Zip
 - Split window & Project drawer
     - `:Fila {url}` to open a fila window in the current window (Split window style)
-    - `:FilaDrawer {url}` to open a fila window in the drawer window (Project drawer style)
+    - `:Fila {url} -drawer` to open a fila window in the drawer window (Project drawer style)
     - [What is split window and project drawer?](http://vimcasts.org/blog/2013/01/oil-and-vinegar-split-windows-and-project-drawer/)
 - Asynchronous local file operations
     - [x] Perform `cd`, `lcd`, and `tcd` to the directory
@@ -67,14 +67,14 @@ Asynchronous file explorer written in Pure Vim script.
 
 ### Split window style
 ```
-:Fila {url}
+:Fila {url} [-opener=edit]
 ```
 
 ![Split window style](https://user-images.githubusercontent.com/546312/48725703-4e5cd880-ec70-11e8-9376-3d25c1a4fc0b.png)
 
 ### Project drawer style
 ```
-:FilaDrawer {url}
+:Fila {url} -drawer [-toggle] [-width=30]
 ```
 
 ![Project drawer style](https://user-images.githubusercontent.com/546312/48725677-40a75300-ec70-11e8-9577-23cd841ca137.png)

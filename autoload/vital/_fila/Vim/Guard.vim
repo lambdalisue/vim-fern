@@ -29,12 +29,10 @@ function! s:_vital_created(module) abort
   " define constant variables
   if !exists('s:const')
     let s:const = {}
-    let s:const.is_local_variable_supported =
-        \ v:version > 703 || (v:version == 703 && has('patch560'))
-    " NOTE:
-    " The third argument is available from 7.4.242 but it had bug and that
-    " bug was fixed from 7.4.513
-    let s:const.is_third_argument_of_getreg_supported = has('patch-7.4.513')
+    " These variables are provided for 7.4 or earlier.
+    " But we leave this code to keep API.
+    let s:const.is_local_variable_supported = 1
+    let s:const.is_third_argument_of_getreg_supported = 1
     lockvar s:const
   endif
   call extend(a:module, s:const)
@@ -85,11 +83,7 @@ function! s:_new_register(name) abort
   let name = a:name ==# '@@' ? '' : a:name[1]
   let register = copy(s:register)
   let register.name = name
-  if s:const.is_third_argument_of_getreg_supported
-    let register.value = getreg(name, 1, 1)
-  else
-    let register.value = getreg(name, 1)
-  endif
+  let register.value = getreg(name, 1, 1)
   let register.type = getregtype(name)
   return register
 endfunction

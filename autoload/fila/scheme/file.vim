@@ -10,7 +10,7 @@ function! s:create_root(path) abort
 endfunction
 
 function! s:action_define() abort
-  let action = fila#action#get()
+  let action = fila#viewer#action#get()
   call fila#scheme#file#action#define(action)
 endfunction
 

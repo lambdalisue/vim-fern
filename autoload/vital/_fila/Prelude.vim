@@ -10,60 +10,28 @@ delfunction s:_SID
 let s:save_cpo = &cpo
 set cpo&vim
 
-if v:version > 703 ||
-\  (v:version == 703 && has('patch465'))
-  function! s:glob(expr) abort
-    return glob(a:expr, 1, 1)
-  endfunction
-else
-  function! s:glob(expr) abort
-    return split(glob(a:expr, 1), '\n')
-  endfunction
-endif
+function! s:glob(expr) abort
+  return glob(a:expr, 1, 1)
+endfunction
 
-if v:version > 704 ||
-\  (v:version == 704 && has('patch279'))
-  function! s:globpath(path, expr) abort
-    return globpath(a:path, a:expr, 1, 1)
-  endfunction
-else
-  function! s:globpath(path, expr) abort
-    return split(globpath(a:path, a:expr, 1), '\n')
-  endfunction
-endif
+function! s:globpath(path, expr) abort
+  return globpath(a:path, a:expr, 1, 1)
+endfunction
 
 " Wrapper functions for type().
-" NOTE: __TYPE_FLOAT = -1 when -float.
-" this doesn't match to anything.
-if has('patch-7.4.2071')
-  let [
-  \   s:__TYPE_NUMBER,
-  \   s:__TYPE_STRING,
-  \   s:__TYPE_FUNCREF,
-  \   s:__TYPE_LIST,
-  \   s:__TYPE_DICT,
-  \   s:__TYPE_FLOAT] = [
-        \   v:t_number,
-        \   v:t_string,
-        \   v:t_func,
-        \   v:t_list,
-        \   v:t_dict,
-        \   v:t_float]
-else
-  let [
-  \   s:__TYPE_NUMBER,
-  \   s:__TYPE_STRING,
-  \   s:__TYPE_FUNCREF,
-  \   s:__TYPE_LIST,
-  \   s:__TYPE_DICT,
-  \   s:__TYPE_FLOAT] = [
-        \   type(3),
-        \   type(''),
-        \   type(function('tr')),
-        \   type([]),
-        \   type({}),
-        \   has('float') ? type(str2float('0')) : -1]
-endif
+let [
+\   s:__TYPE_NUMBER,
+\   s:__TYPE_STRING,
+\   s:__TYPE_FUNCREF,
+\   s:__TYPE_LIST,
+\   s:__TYPE_DICT,
+\   s:__TYPE_FLOAT] = [
+      \   v:t_number,
+      \   v:t_string,
+      \   v:t_func,
+      \   v:t_list,
+      \   v:t_dict,
+      \   v:t_float]
 
 " Number or Float
 function! s:is_numeric(Value) abort
@@ -176,56 +144,10 @@ function! s:strwidthpart_reverse(str, width) abort
   return ret
 endfunction
 
-if v:version >= 703
-  " Use builtin function.
-  function! s:wcswidth(str) abort
-    call s:_warn_deprecated('wcswidth', 'Data.String.wcswidth')
-    return strwidth(a:str)
-  endfunction
-else
-  function! s:wcswidth(str) abort
-    call s:_warn_deprecated('wcswidth', 'Data.String.wcswidth')
-
-    if a:str =~# '^[\x00-\x7f]*$'
-      return strlen(a:str)
-    end
-
-    let mx_first = '^\(.\)'
-    let str = a:str
-    let width = 0
-    while 1
-      let ucs = char2nr(substitute(str, mx_first, '\1', ''))
-      if ucs == 0
-        break
-      endif
-      let width += s:_wcwidth(ucs)
-      let str = substitute(str, mx_first, '', '')
-    endwhile
-    return width
-  endfunction
-
-  " UTF-8 only.
-  function! s:_wcwidth(ucs) abort
-    let ucs = a:ucs
-    if (ucs >= 0x1100
-          \  && (ucs <= 0x115f
-          \  || ucs == 0x2329
-          \  || ucs == 0x232a
-          \  || (ucs >= 0x2e80 && ucs <= 0xa4cf
-          \      && ucs != 0x303f)
-          \  || (ucs >= 0xac00 && ucs <= 0xd7a3)
-          \  || (ucs >= 0xf900 && ucs <= 0xfaff)
-          \  || (ucs >= 0xfe30 && ucs <= 0xfe6f)
-          \  || (ucs >= 0xff00 && ucs <= 0xff60)
-          \  || (ucs >= 0xffe0 && ucs <= 0xffe6)
-          \  || (ucs >= 0x20000 && ucs <= 0x2fffd)
-          \  || (ucs >= 0x30000 && ucs <= 0x3fffd)
-          \  ))
-      return 2
-    endif
-    return 1
-  endfunction
-endif
+function! s:wcswidth(str) abort
+  call s:_warn_deprecated('wcswidth', 'Data.String.wcswidth')
+  return strwidth(a:str)
+endfunction
 
 let s:is_windows = has('win32') " This means any versions of windows https://github.com/vim-jp/vital.vim/wiki/Coding-Rule#how-to-check-if-the-runtime-os-is-windows
 let s:is_cygwin = has('win32unix')
