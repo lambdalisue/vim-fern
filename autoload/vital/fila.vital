@@ -11,3 +11,4 @@ Data.Dict
 Async.Process
 Async.Promise.Process
 System.Filepath
+Async.Promise.Deferred
