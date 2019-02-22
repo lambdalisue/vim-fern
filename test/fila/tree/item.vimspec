@@ -1,0 +1,51 @@
+Describe fila#tree#item
+  Before all
+    let STATUS_NONE      = g:fila#tree#item#STATUS_NONE
+    let STATUS_COLLAPSED = g:fila#tree#item#STATUS_COLLAPSED
+    let STATUS_EXPANDED  = g:fila#tree#item#STATUS_EXPANDED
+  End
+
+  Describe #uri()
+    It returns a normalized URI
+      Assert Equals(fila#tree#item#uri('/Users/Alice/Documents/'), 'Users/Alice/Documents')
+      Assert Equals(fila#tree#item#uri('/Users/Alice/Documents'), 'Users/Alice/Documents')
+      Assert Equals(fila#tree#item#uri('Users/Alice/Documents/'), 'Users/Alice/Documents')
+      Assert Equals(fila#tree#item#uri('///Users///Alice////Documents////'), 'Users/Alice/Documents')
+    End
+  End
+
+  Describe #new()
+    It returns an item instance
+      let item = fila#tree#item#new('/Users/Alice/Documents/', STATUS_COLLAPSED)
+
+      Assert True(fila#test#is#item(item))
+    End
+
+    It normalize {resource_uri} prior to assign
+      let item = fila#tree#item#new('/Users/Alice/Documents/', STATUS_COLLAPSED)
+      Assert Equals(item.resource_uri, 'Users/Alice/Documents')
+    End
+
+    It assigns a given status
+      let item = fila#tree#item#new('/Users/Alice/Documents/', STATUS_NONE)
+      Assert Equals(item.status, STATUS_NONE)
+
+      let item = fila#tree#item#new('/Users/Alice/Documents/', STATUS_COLLAPSED)
+      Assert Equals(item.status, STATUS_COLLAPSED)
+
+      let item = fila#tree#item#new('/Users/Alice/Documents/', STATUS_EXPANDED)
+      Assert Equals(item.status, STATUS_EXPANDED)
+    End
+
+    It automatically create label from {resource_uri}
+      let item = fila#tree#item#new('/Users/Alice/Documents/', STATUS_COLLAPSED)
+      Assert Equals(item.label, 'Documents')
+
+      let item = fila#tree#item#new('/Users/Alice/', STATUS_COLLAPSED)
+      Assert Equals(item.label, 'Alice')
+
+      let item = fila#tree#item#new('/Users/', STATUS_COLLAPSED)
+      Assert Equals(item.label, 'Users')
+    End
+  End
+End
