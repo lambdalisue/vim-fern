@@ -1,0 +1,189 @@
+Describe fila#tree#util
+  Before all
+    let TIMEOUT = (!empty($APPVEYOR) || !empty($TRAVIS)) ? 30000 : 5000
+    let STATUS_NONE      = g:fila#tree#item#STATUS_NONE
+    let STATUS_COLLAPSED = g:fila#tree#item#STATUS_COLLAPSED
+    let STATUS_EXPANDED  = g:fila#tree#item#STATUS_EXPANDED
+
+    let Promise = vital#fila#import('Async.Promise')
+    let Lambda = vital#fila#import('Lambda')
+
+    let provider = fila#provider#dict#new({
+          \ 'Users': {
+          \   'Alice': {
+          \     'Documents': {},
+          \     '.bashrc': 0,
+          \   },
+          \   'Bob': {
+          \     'Documents': {},
+          \     '.bashrc': 0,
+          \   },
+          \   'Catherin': {
+          \     'Documents': {},
+          \     '.bashrc': 0,
+          \   },
+          \ },
+          \ 'Volumes': {},
+          \})
+    let comparator = {
+          \ 'compare': { i1, i2 -> i1.resource_uri == i2.resource_uri ? 0 : i1.resource_uri > i2.resource_uri ? 1 : -1}
+          \}
+  End
+
+  Describe #_sort()
+    It sorts {items} by {comparator}
+      let items = [
+            \ fila#tree#item#new('Bob'),
+            \ fila#tree#item#new('Alice'),
+            \ fila#tree#item#new('Catherin'),
+            \]
+      Assert Equals(fila#tree#util#_sort(items, comparator), [
+            \ fila#tree#item#new('Alice'),
+            \ fila#tree#item#new('Bob'),
+            \ fila#tree#item#new('Catherin'),
+            \])
+    End
+  End
+
+  Describe #_index()
+    It returns an index of item for {resource_uri} in {items}
+      let items = [
+            \ fila#tree#item#new('Alice'),
+            \ fila#tree#item#new('Bob'),
+            \ fila#tree#item#new('Catherin'),
+            \]
+      Assert Equals(fila#tree#util#_index('Alice', items), 0)
+      Assert Equals(fila#tree#util#_index('Bob', items), 1)
+      Assert Equals(fila#tree#util#_index('Catherin', items), 2)
+    End
+
+    It returns -1 if no {resource_uri} found in {items}
+      let items = [
+            \ fila#tree#item#new('Alice'),
+            \ fila#tree#item#new('Bob'),
+            \ fila#tree#item#new('Catherin'),
+            \]
+      Assert Equals(fila#tree#util#_index('User/Alice', items), -1)
+      Assert Equals(fila#tree#util#_index('User/Bob', items), -1)
+      Assert Equals(fila#tree#util#_index('User/Catherin', items), -1)
+    End
+  End
+
+  Describe #_parent()
+    It returns a promise which is resolved to a parent (item) of {resource_uri}
+      let p = fila#tree#util#_parent('Users/Alice', provider)
+      let [r, e] = Promise.wait(p, TIMEOUT)
+      Assert Equals(e, v:null)
+      Assert Equals(r, provider.item('Users'))
+    End
+  End
+
+  Describe #_children()
+    It returns a promise which is resolved to children (items) of {resource_uri}
+      let p = fila#tree#util#_children('Users/Alice', provider)
+      let [r, e] = Promise.wait(p, TIMEOUT)
+      Assert Equals(e, v:null)
+      Assert Equals(sort(r), sort([
+            \ provider.item('Users/Alice/Documents'),
+            \ provider.item('Users/Alice/.bashrc'),
+            \]))
+    End
+  End
+
+  Describe #_reload()
+    Before
+      let item = extend(
+            \ provider.item('Users'),
+            \ {'status': STATUS_EXPANDED},
+            \)
+      let items = [
+            \ item,
+            \ provider.item('Users/Alice'),
+            \ provider.item('Users/Catherin'),
+            \ provider.item('Volumes'),
+            \]
+    End
+
+    It reload children of item
+      let p = fila#tree#util#_reload('Users', items, provider)
+      let [r, e] = Promise.wait(p, TIMEOUT)
+      Assert Equals(e, v:null)
+      Assert Equals(sort(r), sort([
+           \ item,
+           \ provider.item('Users/Alice'),
+           \ provider.item('Users/Bob'),
+           \ provider.item('Users/Catherin'),
+           \ provider.item('Volumes'),
+           \]))
+      Assert Equals(sort(items), sort([
+           \ item,
+           \ provider.item('Users/Alice'),
+           \ provider.item('Users/Catherin'),
+           \ provider.item('Volumes'),
+           \]))
+    End
+  End
+
+  Describe #_expand()
+    Before
+      let item = extend(
+           \ provider.item('Users'),
+           \ {'status': STATUS_COLLAPSED},
+           \)
+      let items = [
+           \ item,
+           \ provider.item('Volumes'),
+           \]
+    End
+
+    It extends items with children of item and assigns STATUS_EXPANDED
+      let p = fila#tree#util#_expand('Users', items, provider)
+      let [r, e] = Promise.wait(p, TIMEOUT)
+      Assert Equals(e, v:null)
+      Assert Equals(sort(r), sort([
+           \ extend(provider.item('Users'), {'status': STATUS_EXPANDED}),
+           \ provider.item('Users/Alice'),
+           \ provider.item('Users/Bob'),
+           \ provider.item('Users/Catherin'),
+           \ provider.item('Volumes'),
+           \]))
+      Assert Equals(sort(items), sort([
+           \ item,
+           \ provider.item('Volumes'),
+           \]))
+    End
+  End
+
+  Describe #_collapse()
+    Before
+      let item = extend(
+           \ provider.item('Users'),
+           \ {'status': STATUS_EXPANDED},
+           \)
+      let items = [
+           \ item,
+           \ provider.item('Users/Alice'),
+           \ provider.item('Users/Bob'),
+           \ provider.item('Users/Catherin'),
+           \ provider.item('Volumes'),
+           \]
+    End
+
+    It collapses children of item and assign STATUS_COLLAPSED
+      let p = fila#tree#util#_collapse('Users', items, provider)
+      let [r, e] = Promise.wait(p, TIMEOUT)
+      Assert Equals(e, v:null)
+      Assert Equals(sort(r), sort([
+           \ extend(provider.item('Users'), {'status': STATUS_COLLAPSED}),
+           \ provider.item('Volumes'),
+           \]))
+      Assert Equals(sort(items), sort([
+           \ item,
+           \ provider.item('Users/Alice'),
+           \ provider.item('Users/Bob'),
+           \ provider.item('Users/Catherin'),
+           \ provider.item('Volumes'),
+           \]))
+    End
+  End
+End
