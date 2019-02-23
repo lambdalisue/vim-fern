@@ -56,6 +56,10 @@ function! s:reduce(list, fn, ...) abort
   return accumulator
 endfunction
 
+function! s:tap_f(fn) abort
+  return { v -> s:pass(v, a:fn(v)) }
+endfunction
+
 function! s:map_f(fn) abort
   return { list -> s:map(list, a:fn) }
 endfunction
