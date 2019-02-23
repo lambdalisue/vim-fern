@@ -6,7 +6,7 @@ function! fila#viewer#open(bufname, options) abort
         \}, a:options)
   let options.notifier = 1
   return fila#buffer#open(a:bufname, options)
-        \.catch({ e -> fila#error#handle(e) })
+        \.catch({ e -> fila#_error#handle(e) })
 endfunction
 
 function! fila#viewer#BufReadCmd(factory) abort
@@ -51,7 +51,7 @@ function! fila#viewer#BufReadCmd(factory) abort
           \.then({ h -> h.redraw() })
           \.then({ h -> h.cursor_node(winid, root, 1) })
           \.then({ h -> s:notify(h.bufnr) })
-          \.catch({ e -> fila#error#handle(e) })
+          \.catch({ e -> fila#_error#handle(e) })
 
     doautocmd <nomodeline> User FilaViewerInit
   else
@@ -62,7 +62,7 @@ function! fila#viewer#BufReadCmd(factory) abort
           \.then({ h -> h.redraw() })
           \.then({ h -> h.cursor_node(winid, root, 1) })
           \.then({ h -> s:notify(h.bufnr) })
-          \.catch({ e -> fila#error#handle(e) })
+          \.catch({ e -> fila#_error#handle(e) })
   endif
   setlocal filetype=fila
 

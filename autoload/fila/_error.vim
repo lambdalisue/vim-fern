@@ -1,4 +1,4 @@
-function! fila#error#new(...) abort
+function! fila#_error#new(...) abort
   let exception = a:0 > 0 ? a:1 : v:exception
   let throwpoint = a:0 > 1 ? a:2 : v:throwpoint
   if type(exception) is# v:t_dict && has_key(exception, 'exception')
@@ -19,8 +19,8 @@ function! fila#error#new(...) abort
   endif
 endfunction
 
-function! fila#error#handle(error) abort
-  let error = fila#error#new(a:error)
+function! fila#_error#handle(error) abort
+  let error = fila#_error#new(a:error)
   if error.exception =~# '^Cancelled'
     echohl Title
     echo 'Cancelled'

@@ -74,7 +74,7 @@ function! s:open_system(range, params, helper) abort
   let path = node.__path
   call fila#scheme#file#util#open(node.__path)
         \.then({ -> fila#message#notify('%s is opened', path) })
-        \.catch({ e -> fila#error#handle(e) })
+        \.catch({ e -> fila#_error#handle(e) })
 endfunction
 
 function! s:new_file(range, params, helper) abort
@@ -95,7 +95,7 @@ function! s:new_file(range, params, helper) abort
         \.then({ -> a:helper.redraw() })
         \.then({ -> a:helper.cursor_node(winid, fila#scheme#file#node#new(path)) })
         \.then({ -> fila#message#notify('%s is created', name) })
-        \.catch({ e -> fila#error#handle(e) })
+        \.catch({ e -> fila#_error#handle(e) })
 endfunction
 
 function! s:new_directory(range, params, helper) abort
@@ -116,7 +116,7 @@ function! s:new_directory(range, params, helper) abort
         \.then({ -> a:helper.redraw() })
         \.then({ -> a:helper.cursor_node(winid, fila#scheme#file#node#new(path)) })
         \.then({ -> fila#message#notify('%s is created', name) })
-        \.catch({ e -> fila#error#handle(e) })
+        \.catch({ e -> fila#_error#handle(e) })
 endfunction
 
 function! s:move(range, params, helper) abort
@@ -141,7 +141,7 @@ function! s:move(range, params, helper) abort
         \.then({ -> a:helper.reload_node(a:helper.get_root_node()) })
         \.then({ -> a:helper.redraw() })
         \.then({ -> fila#message#notify('%d items are moved', len(nodes)) })
-        \.catch({ e -> fila#error#handle(e) })
+        \.catch({ e -> fila#_error#handle(e) })
 endfunction
 
 function! s:copy_clipboard(range, params, helper) abort
@@ -153,7 +153,7 @@ function! s:copy_clipboard(range, params, helper) abort
   call a:helper.set_marks([])
   call a:helper.redraw()
         \.then({ -> fila#message#notify('%d items are copied', len(g:fila_file_clipboard)) })
-        \.catch({ e -> fila#error#handle(e) })
+        \.catch({ e -> fila#_error#handle(e) })
 endfunction
 
 function! s:paste_clipboard(range, params, helper) abort
@@ -179,7 +179,7 @@ function! s:paste_clipboard(range, params, helper) abort
         \.then({ -> a:helper.reload_node(node) })
         \.then({ -> a:helper.redraw() })
         \.then({ -> fila#message#notify('%d items are copied', len(g:fila_file_clipboard)) })
-        \.catch({ e -> fila#error#handle(e) })
+        \.catch({ e -> fila#_error#handle(e) })
 endfunction
 
 function! s:clear_clipboard(range, params, helper) abort
@@ -214,7 +214,7 @@ function! s:delete_trash(range, params, helper) abort
         \.then({ -> a:helper.reload_node(a:helper.get_root_node()) })
         \.then({ -> a:helper.redraw() })
         \.then({ -> fila#message#notify('%d items are trashed', len(nodes)) })
-        \.catch({ e -> fila#error#handle(e) })
+        \.catch({ e -> fila#_error#handle(e) })
 endfunction
 
 function! s:delete_remove(range, params, helper) abort
@@ -245,5 +245,5 @@ function! s:delete_remove(range, params, helper) abort
         \.then({ -> a:helper.reload_node(a:helper.get_root_node()) })
         \.then({ -> a:helper.redraw() })
         \.then({ -> fila#message#notify('%d items are removed', len(nodes)) })
-        \.catch({ e -> fila#error#handle(e) })
+        \.catch({ e -> fila#_error#handle(e) })
 endfunction

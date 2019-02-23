@@ -142,7 +142,7 @@ function! s:edit(range, params, helper) abort
         \ 'opener': empty(a:params) ? 'edit' : a:params,
         \ 'locator': fila#viewer#drawer#is_drawer(win_getid()),
         \})
-        \.catch({ e -> fila#error#handle(e) })
+        \.catch({ e -> fila#_error#handle(e) })
 endfunction
 
 function! s:edit_side(range, params, helper) abort
@@ -161,7 +161,7 @@ function! s:enter(range, params, helper) abort
   let winid = win_getid()
   return a:helper.enter_node(node)
         \.then({ h -> h.cursor_node(winid, node, 1) })
-        \.catch({ e -> fila#error#handle(e) })
+        \.catch({ e -> fila#_error#handle(e) })
 endfunction
 
 function! s:leave(range, params, helper) abort
@@ -173,7 +173,7 @@ function! s:leave(range, params, helper) abort
   let winid = win_getid()
   return a:helper.enter_node(node)
         \.then({ h -> h.cursor_node(winid, root) })
-        \.catch({ e -> fila#error#handle(e) })
+        \.catch({ e -> fila#_error#handle(e) })
 endfunction
 
 function! s:reload(range, params, helper) abort
@@ -184,7 +184,7 @@ function! s:reload(range, params, helper) abort
   let winid = win_getid()
   return a:helper.reload_node(node)
         \.then({ h -> h.redraw() })
-        \.catch({ e -> fila#error#handle(e) })
+        \.catch({ e -> fila#_error#handle(e) })
 endfunction
 
 function! s:expand(range, params, helper) abort
@@ -196,7 +196,7 @@ function! s:expand(range, params, helper) abort
   return a:helper.expand_node(node)
         \.then({ h -> h.redraw() })
         \.then({ h -> h.cursor_node(winid, node, 1) })
-        \.catch({ e -> fila#error#handle(e) })
+        \.catch({ e -> fila#_error#handle(e) })
 endfunction
 
 function! s:collapse(range, params, helper) abort
@@ -214,7 +214,7 @@ function! s:collapse(range, params, helper) abort
   return a:helper.collapse_node(node)
         \.then({ h -> h.redraw() })
         \.then({ h -> h.cursor_node(winid, node) })
-        \.catch({ e -> fila#error#handle(e) })
+        \.catch({ e -> fila#_error#handle(e) })
 endfunction
 
 function! s:enter_or_edit(range, params, helper) abort
@@ -246,7 +246,7 @@ function! s:mark_set(range, params, helper) abort
   endfor
   call a:helper.set_marks(uniq(marks))
   return a:helper.redraw()
-        \.catch({ e -> fila#error#handle(e) })
+        \.catch({ e -> fila#_error#handle(e) })
 endfunction
 
 function! s:mark_unset(range, params, helper) abort
@@ -260,7 +260,7 @@ function! s:mark_unset(range, params, helper) abort
   endfor
   call a:helper.set_marks(uniq(marks))
   return a:helper.redraw()
-        \.catch({ e -> fila#error#handle(e) })
+        \.catch({ e -> fila#_error#handle(e) })
 endfunction
 
 function! s:mark_toggle(range, params, helper) abort
@@ -276,13 +276,13 @@ function! s:mark_toggle(range, params, helper) abort
   endfor
   call a:helper.set_marks(uniq(marks))
   return a:helper.redraw()
-        \.catch({ e -> fila#error#handle(e) })
+        \.catch({ e -> fila#_error#handle(e) })
 endfunction
 
 function! s:mark_clear(range, params, helper) abort
   call a:helper.set_marks([])
   return a:helper.redraw()
-        \.catch({ e -> fila#error#handle(e) })
+        \.catch({ e -> fila#_error#handle(e) })
 endfunction
 
 function! s:hidden_set(range, params, helper) abort
@@ -291,7 +291,7 @@ function! s:hidden_set(range, params, helper) abort
   call a:helper.set_hidden(1)
   return a:helper.redraw()
         \.then({ h -> h.cursor_node(winid, node) })
-        \.catch({ e -> fila#error#handle(e) })
+        \.catch({ e -> fila#_error#handle(e) })
 endfunction
 
 function! s:hidden_unset(range, params, helper) abort
@@ -301,7 +301,7 @@ function! s:hidden_unset(range, params, helper) abort
   call a:helper.set_hidden(0)
   return a:helper.redraw()
         \.then({ h -> h.cursor_node(winid, node) })
-        \.catch({ e -> fila#error#handle(e) })
+        \.catch({ e -> fila#_error#handle(e) })
 endfunction
 
 function! s:hidden_toggle(range, params, helper) abort
@@ -313,5 +313,5 @@ function! s:hidden_toggle(range, params, helper) abort
   call a:helper.set_hidden(!a:helper.get_hidden())
   return a:helper.redraw()
         \.then({ h -> h.cursor_node(winid, node) })
-        \.catch({ e -> fila#error#handle(e) })
+        \.catch({ e -> fila#_error#handle(e) })
 endfunction
