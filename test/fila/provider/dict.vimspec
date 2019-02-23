@@ -1,0 +1,97 @@
+Describe fila#provider#dict
+  Before all
+    let tree = {
+          \ 'Users': {
+          \   'Alice': {
+          \     'Documents': {},
+          \     '.bashrc': 0,
+          \   },
+          \   'Bob': {
+          \     'Documents': {},
+          \     '.bashrc': 0,
+          \   },
+          \   'Catherin': {
+          \     'Documents': {},
+          \     '.bashrc': 0,
+          \   },
+          \ },
+          \ 'Volumes': {},
+          \}
+  End
+
+  Describe #new
+    It create a new provider instance from {tree} instance
+      let provider = fila#provider#dict#new(tree)
+      Assert True(fila#test#is#provider(provider))
+    End
+  End
+
+  Describe a provider instance
+    Before
+      let provider = fila#provider#dict#new(tree)
+    End
+
+    Describe #item()
+      It throws an exception when no such resource
+        Throws /resource does not exist/ provider.item('Missing')
+      End
+
+      It returns an item instance for a given resource_uri
+        let item = provider.item('Users')
+        Assert True(fila#test#is#item(item))
+      End
+
+      It returns a fresh unique item instance for each call
+        let item1 = provider.item('Users')
+        let item2 = provider.item('Users')
+        let item3 = provider.item('Volumes')
+        Assert NotSame(item1, item2)
+        Assert NotSame(item1, item3)
+        Assert Equals(item1, item2)
+        Assert NotEquals(item1, item3)
+      End
+    End
+
+    Describe #parent()
+      It throws an exception when no such resource
+        Throws /resource does not exist/ provider.parent('Missing')
+      End
+
+      It returns an empty string for an empty string
+        let parent = provider.parent('')
+        Assert Equals(parent, '')
+      End
+
+      It returns a parent resource_uri for a given resource_uri
+        let parent = provider.parent('Users/Alice')
+        Assert Equals(parent, 'Users')
+
+        let parent = provider.parent('Users')
+        Assert Equals(parent, '')
+      End
+    End
+
+    Describe #children()
+      It throws an exception when no such resource
+        Throws /resource does not exist/ provider.children('Missing')
+      End
+
+      It returns a list of resource_uri for children (root)
+        let children = provider.children('')
+        Assert Equals(sort(children), sort([
+              \ 'Users',
+              \ 'Volumes',
+              \]))
+      End
+
+      It returns a list of resource_uri for children (non root)
+        let children = provider.children('Users')
+        Assert Equals(sort(children), sort([
+              \ 'Users/Alice',
+              \ 'Users/Bob',
+              \ 'Users/Catherin',
+              \]))
+      End
+    End
+  End
+End
