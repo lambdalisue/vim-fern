@@ -2,6 +2,7 @@ let s:Dict = vital#fila#import('Data.Dict')
 let s:Promise = vital#fila#import('Async.Promise')
 let s:Lambda = vital#fila#import('Lambda')
 let s:Scenario = vital#fila#import('App.Scenario')
+let s:Revelator = vital#fila#import('App.Revelator')
 
 let s:STATUS_NONE      = g:fila#tree#item#STATUS_NONE
 let s:STATUS_COLLAPSED = g:fila#tree#item#STATUS_COLLAPSED
@@ -36,35 +37,36 @@ function! fila#ui#action#actions() abort
         \   'visibility': 0,
         \ }),
         \ fila#ui#action#define('mark:set', funcref('s:mark_set'), {
-        \   'visibility': 0,
         \   'mapping_mode': 'nv',
         \ }),
         \ fila#ui#action#define('mark:unset', funcref('s:mark_unset'), {
-        \   'visibility': 0,
         \   'mapping_mode': 'nv',
         \ }),
         \ fila#ui#action#define('mark:toggle', funcref('s:mark_toggle'), {
-        \   'visibility': 0,
         \   'mapping_mode': 'nv',
         \ }),
-        \ fila#ui#action#define('mark:clear', funcref('s:mark_clear'), {
-        \   'visibility': 0,
-        \ }),
+        \ fila#ui#action#define('mark:clear', funcref('s:mark_clear')),
         \ fila#ui#action#define('mark', 'mark:toggle', {
         \   'mapping_mode': 'nv',
         \ }),
-        \ fila#ui#action#define('hidden:set', funcref('s:hidden_set'), {
-        \   'visibility': 0,
-        \ }),
-        \ fila#ui#action#define('hidden:unset', funcref('s:hidden_unset'), {
-        \   'visibility': 0,
-        \ }),
-        \ fila#ui#action#define('hidden:toggle', funcref('s:hidden_toggle'), {
-        \   'visibility': 0,
-        \ }),
-        \ fila#ui#action#define('hidden', 'hidden:toggle', {
-        \   'visibility': 1,
-        \ }),
+        \ fila#ui#action#define('hidden:set', funcref('s:hidden_set')),
+        \ fila#ui#action#define('hidden:unset', funcref('s:hidden_unset')),
+        \ fila#ui#action#define('hidden:toggle', funcref('s:hidden_toggle')),
+        \ fila#ui#action#define('hidden', 'hidden:toggle'),
+        \ fila#ui#action#define('edit', funcref('s:edit')),
+        \ fila#ui#action#define('edit:select', 'edit select'),
+        \ fila#ui#action#define('edit:split', 'edit split'),
+        \ fila#ui#action#define('edit:vsplit', 'edit vsplit'),
+        \ fila#ui#action#define('edit:tabedit', 'edit tabedit'),
+        \ fila#ui#action#define('edit:pedit', 'edit pedit'),
+        \ fila#ui#action#define('edit:above', 'edit leftabove split'),
+        \ fila#ui#action#define('edit:left', 'edit leftabove vsplit'),
+        \ fila#ui#action#define('edit:below', 'edit rightbelow split'),
+        \ fila#ui#action#define('edit:right', 'edit rightbelow vsplit'),
+        \ fila#ui#action#define('edit:top', 'edit topleft split'),
+        \ fila#ui#action#define('edit:leftest', 'edit topleft vsplit'),
+        \ fila#ui#action#define('edit:bottom', 'edit botright split'),
+        \ fila#ui#action#define('edit:rightest', 'edit botright vsplit'),
         \]
   return s:actions
 endfunction
@@ -84,6 +86,19 @@ function! s:echo(range, params) abort
           \ 'resource_uri', 'label', 'status', 'hidden',
           \]))
   endfor
+endfunction
+
+function! s:edit(range, params) abort
+  let helper = fila#ui#helper#get()
+  let item = helper.get_cursor_item(a:range)
+  let bufname = get(item, 'bufname', v:null)
+  if bufname is# v:null
+    throw s:Revelator.info('the item does not have bufname')
+  endif
+  return fila#buffer#open(bufname, {
+        \ 'opener': empty(a:params) ? 'edit' : a:params,
+        \})
+        \.catch({ e -> fila#error#handle(e) })
 endfunction
 
 function! s:reload(range, params) abort
