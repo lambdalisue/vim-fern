@@ -67,14 +67,14 @@ Asynchronous file explorer written in Pure Vim script.
 
 ### Split window style
 ```
-:Fila {url} [-opener=edit]
+:Fila {url} [-opener=edit] [-reveal={path}]
 ```
 
 ![Split window style](https://user-images.githubusercontent.com/546312/48725703-4e5cd880-ec70-11e8-9376-3d25c1a4fc0b.png)
 
 ### Project drawer style
 ```
-:Fila {url} -drawer [-toggle] [-width=30]
+:Fila {url} -drawer [-toggle] [-keep] [-width=30] [-reveal={path}] 
 ```
 
 ![Project drawer style](https://user-images.githubusercontent.com/546312/48725677-40a75300-ec70-11e8-9577-23cd841ca137.png)
