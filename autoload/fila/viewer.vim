@@ -5,7 +5,7 @@ function! fila#viewer#open(bufname, options) abort
         \ 'opener': g:fila#viewer#opener,
         \}, a:options)
   let options.notifier = 1
-  return fila#buffer#open(a:bufname, options)
+  return fila#lib#buffer#open(a:bufname, options)
         \.catch({ e -> fila#error#handle(e) })
 endfunction
 

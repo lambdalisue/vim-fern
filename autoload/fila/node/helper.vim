@@ -223,7 +223,7 @@ endfunction
 function! s:enter_node(node) abort dict
   let marks = self.get_marks()
   let hidden = self.get_hidden()
-  return fila#buffer#open(a:node.bufname, {
+  return fila#lib#buffer#open(a:node.bufname, {
         \ 'opener': 'edit',
         \ 'locator': 0,
         \ 'notifier': 1,

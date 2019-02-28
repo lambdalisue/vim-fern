@@ -138,7 +138,7 @@ function! s:edit(range, params, helper) abort
   if !has_key(node, 'bufname')
     throw s:Revelator.info('the node does not have bufname')
   endif
-  return fila#buffer#open(node.bufname, {
+  return fila#lib#buffer#open(node.bufname, {
         \ 'opener': empty(a:params) ? 'edit' : a:params,
         \ 'locator': fila#viewer#drawer#is_drawer(win_getid()),
         \})

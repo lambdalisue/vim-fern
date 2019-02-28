@@ -3,7 +3,7 @@ let s:WindowLocator = vital#fila#import('Vim.Window.Locator')
 let s:WindowSelector = vital#fila#import('Vim.Window.Selector')
 let s:Promise = vital#fila#import('Async.Promise')
 
-function! fila#buffer#open(bufname, options) abort
+function! fila#lib#buffer#open(bufname, options) abort
   let options = extend({
         \ 'opener': 'edit',
         \ 'mods': '',
@@ -22,6 +22,14 @@ function! fila#buffer#open(bufname, options) abort
     endif
   endif
   return s:Promise.new(funcref('s:executor', [a:bufname, options]))
+endfunction
+
+function! fila#lib#buffer#call(bufnr, fn, args, ...) abort
+  if a:0
+    return s:call(a:bufnr, function(a:fn, a:args, a:1))
+  else
+    return s:call(a:bufnr, function(a:fn, a:args))
+  endif
 endfunction
 
 function! s:executor(bufname, options, resolve, reject) abort
@@ -52,4 +60,37 @@ function! s:window_select() abort
   return s:WindowSelector.select(ws, {
         \ 'auto_select': 1,
         \})
+endfunction
+
+function! s:call(bufnr, fn) abort
+  if bufnr('%') is# a:bufnr
+    call a:fn()
+  elseif bufwinid(a:bufnr) isnot# -1
+    call s:call_on_window(a:bufnr)
+  else
+    call s:call_on_hidden(a:bufnr)
+  endif
+endfunction
+
+function! s:call_on_window(bufnr, fn, args, instance) abort
+  let winid = win_getid()
+  try
+    call win_gotoid(bufwinid(a:bufnr))
+    call a:fn()
+  finally
+    call win_gotoid(winid)
+  endtry
+endfunction
+
+function! s:call_on_hidden(bufnr, fn, args, instance) abort
+  let bufnr = bufnr('%')
+  let bufhidden = &bufhidden
+  try
+    setlocal bufhidden=hide
+    silent execute printf('keepjumps keepalt %dbuffer', a:bufnr)
+    call a:fn()
+  finally
+    silent execute printf('keepjumps keepalt %dbuffer', bufnr)
+    let &bufhidden = bufhidden
+  endtry
 endfunction
