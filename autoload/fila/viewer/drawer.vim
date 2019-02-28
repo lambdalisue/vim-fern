@@ -11,6 +11,7 @@ endfunction
 
 function! fila#viewer#drawer#open(bufname, options) abort
   let options = extend({
+        \ 'keep': g:fila#viewer#drawer#keep,
         \ 'width': g:fila#viewer#drawer#width,
         \ 'toggle': g:fila#viewer#drawer#toggle,
         \}, a:options)
@@ -18,7 +19,7 @@ function! fila#viewer#drawer#open(bufname, options) abort
     if options.toggle
       call fila#viewer#drawer#close()
     else
-      call fila#viewer#drawer#focus()
+      call fila#viewer#drawer#focus(options)
     endif
     return s:Promise.resolve()
   else
@@ -26,15 +27,16 @@ function! fila#viewer#drawer#open(bufname, options) abort
           \ 'opener': printf('topleft %dvsplit', options.width),
           \ 'cmdarg': '+setlocal\ winfixwidth',
           \})
-          \.then({ -> s:init() })
+          \.then({ -> s:init(options) })
           \.catch({ e -> fila#lib#error#handle(e) })
   endif
 endfunction
 
-function! fila#viewer#drawer#focus() abort
+function! fila#viewer#drawer#focus(...) abort
   if !fila#viewer#drawer#is_opened()
     return
   endif
+  let t:fila_drawer_options = get(a:000, 0, t:fila_drawer_options)
   call win_gotoid(s:get_winid())
 endfunction
 
@@ -56,8 +58,9 @@ function! s:get_winid() abort
   return get(t:, 'fila_drawer_winid', -1)
 endfunction
 
-function! s:init() abort
+function! s:init(options) abort
   let t:fila_drawer_winid = win_getid()
+  let t:fila_drawer_options = a:options
   augroup fila_viewer_drawer_internal
     autocmd! *
     autocmd BufEnter <buffer> call s:BufEnter()
@@ -66,22 +69,22 @@ endfunction
 
 function! s:BufEnter() abort
   if winnr('$') isnot# 1
-    execute 'vertical resize' g:fila#viewer#drawer#width
+    execute 'vertical resize' t:fila_drawer_options.width
     return
   elseif tabpagenr('$') isnot# 1
     close
-  elseif !g:fila#viewer#drawer#keep
+  elseif !t:fila_drawer_options.keep
     quit
   else
     vertical new
     keepjumps wincmd p
-    execute 'vertical resize' g:fila#viewer#drawer#width
+    execute 'vertical resize' t:fila_drawer_options.width
     keepjumps wincmd p
   endif
 endfunction
 
 call s:Config.config(expand('<sfile>:p'), {
+      \ 'keep': 0,
       \ 'width': 30,
       \ 'toggle': 0,
-      \ 'keep': 0,
       \})
