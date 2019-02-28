@@ -27,7 +27,7 @@ function! fila#viewer#drawer#open(bufname, options) abort
           \ 'cmdarg': '+setlocal\ winfixwidth',
           \})
           \.then({ c -> s:set_winid(bufwinid(c.bufnr)) })
-          \.catch({ e -> fila#error#handle(e) })
+          \.catch({ e -> fila#lib#error#handle(e) })
   endif
 endfunction
 
