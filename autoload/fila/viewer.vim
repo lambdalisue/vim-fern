@@ -7,8 +7,17 @@ function! fila#viewer#open(bufname, options) abort
         \ 'opener': g:fila#viewer#opener,
         \}, a:options)
   let options.notifier = 1
-  return fila#lib#buffer#open(a:bufname, options)
+  let bufname = a:bufname =~# '#[a-f0-9]\+$'
+        \ ? a:bufname
+        \ : a:bufname . '#' . sha256(localtime())
+  return fila#lib#buffer#open(bufname, options)
         \.catch({ e -> fila#lib#error#handle(e) })
+endfunction
+
+function! fila#viewer#bufname(expr) abort
+  let bufname = expand(a:expr)
+  let bufname = matchstr(bufname, '^.*\ze#[a-f0-9]\+$')
+  return bufname
 endfunction
 
 function! fila#viewer#BufReadCmd(factory) abort
