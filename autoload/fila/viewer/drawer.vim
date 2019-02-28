@@ -26,7 +26,7 @@ function! fila#viewer#drawer#open(bufname, options) abort
           \ 'opener': printf('topleft %dvsplit', options.width),
           \ 'cmdarg': '+setlocal\ winfixwidth',
           \})
-          \.then({ -> s:set_winid(win_getid()) })
+          \.then({ -> s:init() })
           \.catch({ e -> fila#lib#error#handle(e) })
   endif
 endfunction
@@ -56,11 +56,32 @@ function! s:get_winid() abort
   return get(t:, 'fila_drawer_winid', -1)
 endfunction
 
-function! s:set_winid(winid) abort
-  let t:fila_drawer_winid = a:winid
+function! s:init() abort
+  let t:fila_drawer_winid = win_getid()
+  augroup fila_viewer_drawer_internal
+    autocmd! *
+    autocmd BufEnter <buffer> call s:BufEnter()
+  augroup END
+endfunction
+
+function! s:BufEnter() abort
+  if winnr('$') isnot# 1
+    execute 'vertical resize' g:fila#viewer#drawer#width
+    return
+  elseif tabpagenr('$') isnot# 1
+    close
+  elseif !g:fila#viewer#drawer#keep
+    quit
+  else
+    vertical new
+    keepjumps wincmd p
+    execute 'vertical resize' g:fila#viewer#drawer#width
+    keepjumps wincmd p
+  endif
 endfunction
 
 call s:Config.config(expand('<sfile>:p'), {
       \ 'width': 30,
       \ 'toggle': 0,
+      \ 'keep': 0,
       \})
