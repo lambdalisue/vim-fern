@@ -1,3 +1,5 @@
+let s:Promise = vital#fila#import('Async.Promise')
+let s:Lambda = vital#fila#import('Lambda')
 let s:Config = vital#fila#import('Config')
 
 function! fila#viewer#open(bufname, options) abort
@@ -12,74 +14,74 @@ endfunction
 function! fila#viewer#BufReadCmd(factory) abort
   doautocmd <nomodeline> BufReadPre
 
-  let bufnr = str2nr(expand('<abuf>'))
-  let helper = fila#node#helper#new(bufnr)
-
   if !exists('b:fila_ready') || v:cmdbang
     let b:fila_ready = 1
-    setlocal buftype=nofile bufhidden=unload
-    setlocal noswapfile nobuflisted nomodifiable readonly
-
-    augroup fila_viewer_internal
-      autocmd! * <buffer>
-      autocmd BufEnter <buffer> setlocal nobuflisted
-    augroup END
-
-    call fila#viewer#action#_init()
-    call fila#viewer#action#_define()
-
-    if !g:fila#viewer#skip_default_mappings
-      nmap <buffer><nowait> <Backspace> <Plug>(fila-action-leave)
-      nmap <buffer><nowait> <C-h>       <Plug>(fila-action-leave)
-      nmap <buffer><nowait> <Return>    <Plug>(fila-action-enter-or-edit)
-      nmap <buffer><nowait> <C-m>       <Plug>(fila-action-enter-or-edit)
-      nmap <buffer><nowait> <F5>        <Plug>(fila-action-reload)
-      nmap <buffer><nowait> l           <Plug>(fila-action-expand-or-edit)
-      nmap <buffer><nowait> h           <Plug>(fila-action-collapse)
-      nmap <buffer><nowait> -           <Plug>(fila-action-mark-toggle)
-      vmap <buffer><nowait> -           <Plug>(fila-action-mark-toggle)
-      nmap <buffer><nowait> !           <Plug>(fila-action-hidden-toggle)
-      nmap <buffer><nowait> e           <Plug>(fila-action-edit)
-      nmap <buffer><nowait> t           <Plug>(fila-action-edit-tabedit)
-      nmap <buffer><nowait> E           <Plug>(fila-action-edit-side)
-    endif
-
-    let winid = win_getid()
-    let root = a:factory()
-    call helper.init(root)
-    call helper.expand_node(root)
-          \.then({ h -> h.redraw() })
-          \.then({ h -> h.cursor_node(winid, root, 1) })
-          \.then({ h -> s:notify(h.bufnr) })
-          \.catch({ e -> fila#error#handle(e) })
-
-    doautocmd <nomodeline> User FilaViewerInit
+    call s:init(a:factory)
   else
-    let winid = win_getid()
-    let root = helper.get_root_node()
-    call helper.set_marks([])
-    call helper.reload_node(root)
-          \.then({ h -> h.redraw() })
-          \.then({ h -> h.cursor_node(winid, root, 1) })
-          \.then({ h -> s:notify(h.bufnr) })
-          \.catch({ e -> fila#error#handle(e) })
+    call s:reload()
   endif
-  setlocal filetype=fila
 
+  setlocal filetype=fila
   doautocmd <nomodeline> BufReadPost
 endfunction
 
-function! s:notify(bufnr) abort
-  if bufnr('%') is# a:bufnr
-    call s:notify_on_local()
-  elseif bufwinid(a:bufnr) isnot# -1
-    call s:notify_on_window(a:bufnr)
-  else
-    call s:notify_on_hidden(a:bufnr)
+function! s:init(factory) abort
+  setlocal buftype=nofile bufhidden=unload
+  setlocal noswapfile nobuflisted nomodifiable readonly
+
+  augroup fila_viewer_internal
+    autocmd! * <buffer>
+    autocmd BufEnter <buffer> setlocal nobuflisted
+  augroup END
+
+  call fila#viewer#action#_init()
+  call fila#viewer#action#_define()
+
+  if !g:fila#viewer#skip_default_mappings
+    nmap <buffer><nowait> <Backspace> <Plug>(fila-action-leave)
+    nmap <buffer><nowait> <C-h>       <Plug>(fila-action-leave)
+    nmap <buffer><nowait> <Return>    <Plug>(fila-action-enter-or-edit)
+    nmap <buffer><nowait> <C-m>       <Plug>(fila-action-enter-or-edit)
+    nmap <buffer><nowait> <F5>        <Plug>(fila-action-reload)
+    nmap <buffer><nowait> l           <Plug>(fila-action-expand-or-edit)
+    nmap <buffer><nowait> h           <Plug>(fila-action-collapse)
+    nmap <buffer><nowait> -           <Plug>(fila-action-mark-toggle)
+    vmap <buffer><nowait> -           <Plug>(fila-action-mark-toggle)
+    nmap <buffer><nowait> !           <Plug>(fila-action-hidden-toggle)
+    nmap <buffer><nowait> e           <Plug>(fila-action-edit)
+    nmap <buffer><nowait> t           <Plug>(fila-action-edit-tabedit)
+    nmap <buffer><nowait> E           <Plug>(fila-action-edit-side)
   endif
+
+  let bufnr = bufnr('%')
+  let winid = win_getid()
+  let helper = fila#node#helper#new(bufnr)
+  let factory = a:factory()
+  let factory = s:Promise.is_promise(factory) ? factory : s:Promise.resolve(factory)
+  call factory
+        \.then({ root -> helper.init(root) })
+        \.then({ h -> h.expand_node(h.get_root_node()) })
+        \.then({ h -> h.redraw() })
+        \.then({ h -> h.cursor_node(winid, h.get_root_node(), 1) })
+        \.then({ h -> fila#lib#buffer#call(bufnr, funcref('s:FilaViewerRead'), []) })
+        \.catch({ e -> fila#error#handle(e) })
+  doautocmd <nomodeline> User FilaViewerInit
 endfunction
 
-function! s:notify_on_local() abort
+function! s:reload() abort
+  let bufnr = bufnr('%')
+  let winid = win_getid()
+  let helper = fila#node#helper#new(bufnr)
+  let root = helper.get_root_node()
+  call helper.set_marks([])
+  call helper.reload_node(root)
+        \.then({ h -> h.redraw() })
+        \.then({ h -> h.cursor_node(winid, root, 1) })
+        \.then({ h -> fila#lib#buffer#call(bufnr, funcref('s:FilaViewerRead'), []) })
+        \.catch({ e -> fila#error#handle(e) })
+endfunction
+
+function! s:FilaViewerRead() abort
   let notifier = get(b:, 'fila_notifier', v:null)
   if notifier isnot# v:null
     let b:fila_notifier = v:null
@@ -88,34 +90,11 @@ function! s:notify_on_local() abort
   doautocmd <nomodeline> User FilaViewerRead
 endfunction
 
-function! s:notify_on_window(bufnr) abort
-  let winid = win_getid()
-  try
-    call win_gotoid(bufwinid(a:bufnr))
-    call s:notify_on_local()
-  finally
-    call win_gotoid(winid)
-  endtry
-endfunction
-
-function! s:notify_on_hidden(bufnr) abort
-  let bufnr = bufnr('%')
-  let bufhidden = &bufhidden
-  try
-    setlocal bufhidden=hide
-    silent execute printf('keepjumps keepalt %dbuffer', a:bufnr)
-    call s:notify_on_local()
-  finally
-    silent execute printf('keepjumps keepalt %dbuffer', bufnr)
-    let &bufhidden = bufhidden
-  endtry
-endfunction
-
 augroup fila_viewer_internal
   autocmd! *
   autocmd User FilaViewerInit :
   autocmd User FilaViewerRead :
-  autocmd BufReadPre  fila://*   :
+  autocmd BufReadPre  fila://* :
   autocmd BufReadPost fila://* :
 augroup END
 
