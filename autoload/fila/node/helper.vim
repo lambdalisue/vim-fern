@@ -228,7 +228,7 @@ function! s:enter_node(node) abort dict
         \ 'locator': 0,
         \ 'notifier': 1,
         \})
-        \.then({ c -> fila#node#helper#new(c.bufnr) })
+        \.then({ -> fila#node#helper#new() })
 endfunction
 
 function! s:cursor_node(winid, node, ...) abort dict
