@@ -26,7 +26,7 @@ function! fila#viewer#drawer#open(bufname, options) abort
           \ 'opener': printf('topleft %dvsplit', options.width),
           \ 'cmdarg': '+setlocal\ winfixwidth',
           \})
-          \.then({ c -> s:set_winid(bufwinid(c.bufnr)) })
+          \.then({ -> s:set_winid(win_getid()) })
           \.catch({ e -> fila#lib#error#handle(e) })
   endif
 endfunction
