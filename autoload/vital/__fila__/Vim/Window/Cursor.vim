@@ -2,9 +2,6 @@ function! s:_vital_created(module) abort
   if exists('*nvim_win_get_cursor')
     let a:module.get_cursor = function('nvim_win_get_cursor')
   endif
-  if exists('*nvim_win_set_cursor')
-    let a:module.set_cursor = function('nvim_win_set_cursor')
-  endif
 endfunction
 
 if !exists('*nvim_win_get_cursor')
@@ -38,5 +35,13 @@ if !exists('*nvim_win_set_cursor')
         call win_gotoid(winid_saved)
       endtry
     endif
+  endfunction
+else
+  function! s:set_cursor(winid, pos) abort
+    try
+      call nvim_win_set_cursor(a:winid, a:pos)
+    catch /Cursor position outside buffer/
+      " Do nothing
+    endtry
   endfunction
 endif
