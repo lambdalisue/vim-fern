@@ -155,6 +155,7 @@ endfunction
 function! s:init(root) abort dict
   call self.set_marks([])
   call self.set_nodes([a:root])
+  return s:Promise.resolve(self)
 endfunction
 
 function! s:redraw() abort dict
