@@ -18,7 +18,7 @@ function! fila#lib#buffer#open(bufname, options) abort
     endif
   else
     if options.locator
-      call s:WindowLocator.focus(winnr())
+      call s:WindowLocator.focus(winnr('#'))
     endif
   endif
   return s:Promise.new(funcref('s:executor', [a:bufname, options]))
