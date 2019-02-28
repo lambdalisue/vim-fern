@@ -2,13 +2,19 @@ let s:Lambda = vital#fila#import('Lambda')
 let s:Promise = vital#fila#import('Async.Promise')
 let s:Process = vital#fila#import('Async.Promise.Process')
 
+function! fila#scheme#file#root(path) abort
+  let root = s:node(simplify(a:path))
+  let root.keyof = funcref('s:keyof')
+  let root.parent = s:node(simplify(fnamemodify(a:path, ':p:h:h')))
+  return root
+endfunction
+
 function! fila#scheme#file#node(path) abort
   return s:node(simplify(a:path))
 endfunction
 
 function! s:node(path) abort
   let path = fnamemodify(a:path, ':p')
-  let key = split(fnamemodify(path, ':gs?\\?/?'), '/')
   if isdirectory(path)
     let options = {
           \ '__path': path,
@@ -23,7 +29,11 @@ function! s:node(path) abort
           \ 'hidden': s:is_hidden(path),
           \}
   endif
-  return fila#node#new(key, options)
+  return fila#node#new(s:keyof(path), options)
+endfunction
+
+function! s:keyof(path) abort
+  return split(fnamemodify(simplify(a:path), ':p:gs?\\?/?'), '/')
 endfunction
 
 if executable('ls')

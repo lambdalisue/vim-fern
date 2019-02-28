@@ -43,6 +43,7 @@ function! fila#node#helper#new(...) abort
         \ 'expand_node': funcref('s:expand_node'),
         \ 'collapse_node': funcref('s:collapse_node'),
         \ 'reveal_node': funcref('s:reveal_node'),
+        \ 'keyof': funcref('s:keyof'),
         \}
   return extend(copy(s:helper), {
         \ 'bufnr': bufnr,
@@ -260,6 +261,11 @@ endfunction
 
 function! s:reveal_node(node) abort dict
   return self.reveal(a:node.key)
+endfunction
+
+function! s:keyof(path) abort dict
+  let root = self.get_root_node()
+  return root.keyof(a:path)
 endfunction
 
 
