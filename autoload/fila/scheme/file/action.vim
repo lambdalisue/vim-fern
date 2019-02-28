@@ -11,10 +11,10 @@ function! fila#scheme#file#action#define(action) abort
   call a:action.define('lcd', funcref('s:cd', ['lcd']))
   call a:action.define('tcd', funcref('s:cd', ['tcd']))
   call a:action.define('open:system', funcref('s:open_system'))
-  call a:action.define('new:file', funcref('s:new_file'), {
+  call a:action.define('new:file', funcref('s:create_file'), {
         \ 'repeat': 0,
         \})
-  call a:action.define('new:directory', funcref('s:new_directory'), {
+  call a:action.define('new:directory', funcref('s:create_directory'), {
         \ 'repeat': 0,
         \})
   call a:action.define('move', funcref('s:move'), {
@@ -42,6 +42,7 @@ function! fila#scheme#file#action#define(action) abort
         \ 'hidden': 1,
         \ 'mapping_mode': 'nv',
         \})
+  call a:action.define('open', 'open:system')
   call a:action.define('copy', 'copy:clipboard', {
         \ 'repeat': 0,
         \ 'mapping_mode': 'nv',
@@ -72,12 +73,12 @@ endfunction
 function! s:open_system(range, params, helper) abort
   let node = a:helper.get_cursor_node(a:range)
   let path = node.__path
-  call fila#scheme#file#util#open(node.__path)
+  call fila#lib#fs#open(node.__path)
         \.then({ -> fila#message#notify('%s is opened', path) })
         \.catch({ e -> fila#error#handle(e) })
 endfunction
 
-function! s:new_file(range, params, helper) abort
+function! s:create_file(range, params, helper) abort
   let name = s:Prompt.ask('New file: ', '', 'file')
   if empty(name)
     throw s:Revelator.info('Cancelled')
@@ -90,15 +91,15 @@ function! s:new_file(range, params, helper) abort
   endif
   let path = s:Path.join(node.__path, name)
   let winid = win_getid()
-  call fila#scheme#file#util#new_file(path)
+  call fila#lib#fs#create_file(path)
         \.then({ -> a:helper.reload_node(node) })
         \.then({ -> a:helper.redraw() })
-        \.then({ -> a:helper.cursor_node(winid, fila#scheme#file#node#new(path)) })
+        \.then({ -> a:helper.cursor_node(winid, fila#scheme#file#node(path)) })
         \.then({ -> fila#message#notify('%s is created', name) })
         \.catch({ e -> fila#error#handle(e) })
 endfunction
 
-function! s:new_directory(range, params, helper) abort
+function! s:create_directory(range, params, helper) abort
   let name = s:Prompt.ask('New directory: ', '', 'file')
   if empty(name)
     return
@@ -111,10 +112,10 @@ function! s:new_directory(range, params, helper) abort
   endif
   let path = s:Path.join(node.__path, name)
   let winid = win_getid()
-  call fila#scheme#file#util#new_directory(path)
+  call fila#lib#fs#create_directory(path)
         \.then({ -> a:helper.reload_node(node) })
         \.then({ -> a:helper.redraw() })
-        \.then({ -> a:helper.cursor_node(winid, fila#scheme#file#node#new(path)) })
+        \.then({ -> a:helper.cursor_node(winid, fila#scheme#file#node(path)) })
         \.then({ -> fila#message#notify('%s is created', name) })
         \.catch({ e -> fila#error#handle(e) })
 endfunction
@@ -134,7 +135,7 @@ function! s:move(range, params, helper) abort
     if empty(dst) || node.__path ==# dst
       continue
     endif
-    call add(ps, fila#scheme#file#util#move(src, dst))
+    call add(ps, fila#lib#fs#move(src, dst))
   endfor
   call s:Promise.all(ps)
         \.then({ -> a:helper.set_marks([]) })
@@ -173,7 +174,7 @@ function! s:paste_clipboard(range, params, helper) abort
           \ 'coping %s to %s ...',
           \ src, dst,
           \)
-    call add(ps, fila#scheme#file#util#copy(src, dst))
+    call add(ps, fila#lib#fs#copy(src, dst))
   endfor
   call s:Promise.all(ps)
         \.then({ -> a:helper.reload_node(node) })
@@ -208,7 +209,7 @@ function! s:delete_trash(range, params, helper) abort
     call fila#message#echo(
           \ 'deleting %s ...', name,
           \)
-    call add(ps, fila#scheme#file#util#trash(name))
+    call add(ps, fila#lib#fs#trash(name))
   endfor
   call s:Promise.all(ps)
         \.then({ -> a:helper.reload_node(a:helper.get_root_node()) })
@@ -239,7 +240,7 @@ function! s:delete_remove(range, params, helper) abort
     call fila#message#echo(
           \ 'deleting %s ...', name,
           \)
-    call add(ps, fila#scheme#file#util#remove(name))
+    call add(ps, fila#lib#fs#remove(name))
   endfor
   call s:Promise.all(ps)
         \.then({ -> a:helper.reload_node(a:helper.get_root_node()) })
