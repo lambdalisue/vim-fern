@@ -21,6 +21,10 @@ function! fila#scheme#file#action#define(action) abort
         \ 'repeat': 0,
         \ 'mapping_mode': 'nv',
         \})
+  call a:action.define('rename', funcref('s:rename'), {
+        \ 'repeat': 0,
+        \ 'mapping_mode': 'nv',
+        \})
   call a:action.define('copy:clipboard', funcref('s:copy_clipboard'), {
         \ 'hidden': 1,
         \ 'repeat': 0,
@@ -138,6 +142,20 @@ function! s:move(range, params, helper) abort
     call add(ps, fila#lib#fs#move(src, dst))
   endfor
   call s:Promise.all(ps)
+        \.then({ -> a:helper.set_marks([]) })
+        \.then({ -> a:helper.reload_node(a:helper.get_root_node()) })
+        \.then({ -> a:helper.redraw() })
+        \.then({ -> fila#lib#message#notify('%d items are moved', len(nodes)) })
+        \.catch({ e -> fila#lib#error#handle(e) })
+endfunction
+
+function! s:rename(range, params, helper) abort
+  let nodes = a:helper.get_marked_nodes()
+  if empty(nodes)
+    let nodes = a:helper.get_selection_nodes(a:range)
+  endif
+  let paths = map(nodes, { -> s:Path.remove_last_separator(v:val.__path) })
+  call fila#lib#renamer#rename(paths)
         \.then({ -> a:helper.set_marks([]) })
         \.then({ -> a:helper.reload_node(a:helper.get_root_node()) })
         \.then({ -> a:helper.redraw() })
