@@ -1,0 +1,128 @@
+Describe trea#internal#node
+  Before
+    let TIMEOUT = 5000
+    let Promise = vital#trea#import('Async.Promise')
+    let CancellationToken = vital#trea#import('Async.CancellationToken')
+    let token = CancellationToken.none
+    let provider = trea#scheme#debug#provider#new()
+  End
+
+  Describe #debug()
+    It returns a debug information of a given node as string
+      let node = trea#internal#node#root('debug://shallow', provider)
+      Assert IsString(trea#internal#node#debug(node))
+    End
+  End
+
+  Describe #index()
+    Before
+      let root = trea#internal#node#root('debug://', provider)
+      let [children, _] = Promise.wait(
+            \ trea#internal#node#children(root, provider, token),
+            \ { 'timeout': TIMEOUT },
+            \)
+      let nodes = [root] + children
+    End
+
+    It returns an index of node which has a given key
+      Assert Equals(trea#internal#node#index([], nodes), 0)
+      Assert Equals(trea#internal#node#index(['shallow'], nodes), 1)
+      Assert Equals(trea#internal#node#index(['deep'], nodes), 2)
+      Assert Equals(trea#internal#node#index(['heavy'], nodes), 3)
+      Assert Equals(trea#internal#node#index(['leaf'], nodes), 4)
+    End
+
+    It returns -1 when no node exists for a given key
+      Assert Equals(trea#internal#node#index(['missing'], nodes), -1)
+    End
+  End
+
+  Describe #find()
+    Before
+      let root = trea#internal#node#root('debug://', provider)
+      let [children, _] = Promise.wait(
+            \ trea#internal#node#children(root, provider, token),
+            \ { 'timeout': TIMEOUT },
+            \)
+      let nodes = [root] + children
+    End
+
+    It returns an index of node which has a given key
+      Assert Equals(trea#internal#node#find([], nodes), nodes[0])
+      Assert Equals(trea#internal#node#find(['shallow'], nodes), nodes[1])
+      Assert Equals(trea#internal#node#find(['deep'], nodes), nodes[2])
+      Assert Equals(trea#internal#node#find(['heavy'], nodes), nodes[3])
+      Assert Equals(trea#internal#node#find(['leaf'], nodes), nodes[4])
+    End
+
+    It returns v:null when no node exists for a given key
+      Assert Equals(trea#internal#node#find(['missing'], nodes), v:null)
+    End
+  End
+
+  Describe #root()
+    It returns a node instance of a given URL and provider
+      let node = trea#internal#node#root('debug://shallow', provider)
+      Assert KeyExists(node, 'name')
+      Assert KeyExists(node, 'status')
+      Assert KeyExists(node, 'label')
+      Assert KeyExists(node, 'hidden')
+      Assert KeyExists(node, 'bufname')
+      Assert KeyExists(node, '__key')
+      Assert KeyExists(node, '__owner')
+      Assert KeyExists(node, '__processing')
+      Assert KeyExists(node, '__cache')
+      Assert KeyExists(node, '__promise')
+    End
+  End
+
+  Describe #parent()
+    Before
+      let node = trea#internal#node#root('debug://shallow/alpha', provider)
+    End
+
+    It returns a promise
+      let p = trea#internal#node#parent(node, provider, token)
+      Assert True(Promise.is_promise(p))
+    End
+
+    It resolves to a parent node of a given node
+      let [r, e] = Promise.wait(
+            \ trea#internal#node#parent(node, provider, token),
+            \ { 'timeout': TIMEOUT },
+            \)
+      Assert Equals(e, v:null)
+      Assert Equals(r._uri, 'shallow')
+
+      let [r, e] = Promise.wait(
+            \ trea#internal#node#parent(r, provider, token),
+            \ { 'timeout': TIMEOUT },
+            \)
+      Assert Equals(e, v:null)
+      Assert Equals(r._uri, '')
+    End
+  End
+
+  Describe #children()
+    Before
+      let node = trea#internal#node#root('debug://shallow', provider)
+    End
+
+    It returns a promise
+      let p = trea#internal#node#children(node, provider, token)
+      Assert True(Promise.is_promise(p))
+    End
+
+    It resolves to a list of child nodes of a given node
+      let [r, e] = Promise.wait(
+            \ trea#internal#node#children(node, provider, token),
+            \ { 'timeout': TIMEOUT },
+            \)
+      Assert Equals(e, v:null)
+      Assert Equals(len(r), 3)
+      Assert Equals(r[0]._uri, 'shallow/alpha')
+      Assert Equals(r[1]._uri, 'shallow/beta')
+      Assert Equals(r[2]._uri, 'shallow/gamma')
+    End
+  End
+End
