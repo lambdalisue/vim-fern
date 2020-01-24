@@ -1,0 +1,17 @@
+trea
+b8641ed90604ae5c36273b1e4c24866a24aa3c25
+
+App.Spinner
+Async.CancellationTokenSource
+Async.File
+Async.Lambda
+Async.Later
+Async.Promise
+Async.Promise.Process
+Config
+Lambda
+System.Filepath
+Vim.Buffer.Opener
+Vim.Window.Cursor
+Vim.Window.Locator
+Vim.Window.Selector
