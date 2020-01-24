@@ -39,7 +39,8 @@ function! s:provider_get_node(tree, url) abort
 endfunction
 
 function! s:provider_get_parent(tree, node, ...) abort
-  let uri = matchstr(a:node._uri, '.*\ze/[^/]*$')
+  let uri = matchstr(a:node._uri, '.*\ze/[^/]\{-}$')
+  let uri = empty(uri) ? '/' : uri
   try
     let node = s:provider_get_node(a:tree, 'debug://' . uri)
     return s:Promise.resolve(node)
@@ -58,7 +59,7 @@ function! s:provider_get_children(tree, node, ...) abort
   try
     let children = map(
           \ copy(entry.children),
-          \ { -> s:provider_get_node(a:tree, 'debug://' . join(base + [v:val], '/')) },
+          \ { -> s:provider_get_node(a:tree, 'debug:///' . join(base + [v:val], '/')) },
           \)
     return s:sleep(get(entry, 'delay', 0)).then({ -> children })
   catch
@@ -68,7 +69,7 @@ endfunction
 
 
 let s:tree = {
-      \ '': {
+      \ '/': {
       \   'parent': v:null,
       \   'children': [
       \     'shallow',
@@ -77,69 +78,69 @@ let s:tree = {
       \     'leaf',
       \   ],
       \ },
-      \ 'shallow': {
-      \   'parent': '',
+      \ '/shallow': {
+      \   'parent': '/',
       \   'children': [
       \     'alpha',
       \     'beta',
       \     'gamma',
       \   ],
       \ },
-      \ 'shallow/alpha': {
-      \   'parent': 'shallow',
+      \ '/shallow/alpha': {
+      \   'parent': '/shallow',
       \   'children': [],
       \ },
-      \ 'shallow/beta': {
-      \   'parent': 'shallow',
+      \ '/shallow/beta': {
+      \   'parent': '/shallow',
       \   'children': [],
       \ },
-      \ 'shallow/gamma': {
-      \   'parent': 'shallow',
+      \ '/shallow/gamma': {
+      \   'parent': '/shallow',
       \ },
-      \ 'deep': {
-      \   'parent': '',
+      \ '/deep': {
+      \   'parent': '/',
       \   'children': [
       \     'alpha',
       \   ],
       \ },
-      \ 'deep/alpha': {
-      \   'parent': 'deep',
+      \ '/deep/alpha': {
+      \   'parent': '/deep',
       \   'children': [
       \     'beta',
       \   ],
       \ },
-      \ 'deep/alpha/beta': {
-      \   'parent': 'deep/alpha',
+      \ '/deep/alpha/beta': {
+      \   'parent': '/deep/alpha',
       \   'children': [
       \     'gamma',
       \   ],
       \ },
-      \ 'deep/alpha/beta/gamma': {
-      \   'parent': 'deep/alpha/beta',
+      \ '/deep/alpha/beta/gamma': {
+      \   'parent': '/deep/alpha/beta',
       \ },
-      \ 'heavy': {
+      \ '/heavy': {
       \   'delay': 1000,
-      \   'parent': '',
+      \   'parent': '/',
       \   'children': [
       \     'alpha',
       \     'beta',
       \     'gamma',
       \   ],
       \ },
-      \ 'heavy/alpha': {
+      \ '/heavy/alpha': {
       \   'delay': 2000,
-      \   'parent': 'heavy',
+      \   'parent': '/heavy',
       \   'children': [],
       \ },
-      \ 'heavy/beta': {
+      \ '/heavy/beta': {
       \   'delay': 3000,
-      \   'parent': 'heavy',
+      \   'parent': '/heavy',
       \   'children': [],
       \ },
-      \ 'heavy/gamma': {
-      \   'parent': 'heavy',
+      \ '/heavy/gamma': {
+      \   'parent': '/heavy',
       \ },
-      \ 'leaf': {
-      \   'parent': '',
+      \ '/leaf': {
+      \   'parent': '/',
       \ },
       \}
