@@ -1,0 +1,340 @@
+Describe trea#lib#url
+  Before
+    let Path = vital#trea#import('System.Filepath')
+    let scope = themis#helper('scope')
+    let funcs = scope.funcs(Path.join('autoload', 'trea', 'lib', 'url.vim'))
+    let percent_encodings = [
+          \ [":", "%3a"],
+          \ ["/", "%2f"],
+          \ ["?", "%3f"],
+          \ ["#", "%23"],
+          \ ["[", "%5b"],
+          \ ["]", "%5d"],
+          \ ["@", "%40"],
+          \ ["!", "%21"],
+          \ ["$", "%24"],
+          \ ["&", "%26"],
+          \ ["'", "%27"],
+          \ ["(", "%28"],
+          \ [")", "%29"],
+          \ ["*", "%2a"],
+          \ ["+", "%2b"],
+          \ [",", "%2c"],
+          \ [";", "%3b"],
+          \ ["=", "%3d"],
+          \ ["%", "%25"],
+          \ [" ", "%20"],
+          \]
+  End
+
+  Describe #parse()
+    It returns an url instance
+      let url = trea#lib#url#parse('https://john.doe@www.example.com:123/forum/questions/?tag=networking&order=newest#top')
+      Assert Equals(url.scheme, 'https')
+      Assert Equals(url.authority, {
+            \ 'userinfo': 'john.doe',
+            \ 'host': 'www.example.com',
+            \ 'port': '123',
+            \})
+      Assert Equals(url.path, '/forum/questions/')
+      Assert Equals(url.query, {
+            \ 'tag': 'networking',
+            \ 'order': 'newest',
+            \})
+      Assert Equals(url.fragment, 'top')
+      Assert Equals(url.to_string(), 'https://john.doe@www.example.com:123/forum/questions/?tag=networking&order=newest#top')
+
+      let url = trea#lib#url#parse('ldap://[2001:db8::7]/c=GB?objectClass?one')
+      Assert Equals(url.scheme, 'ldap')
+      Assert Equals(url.authority, {
+            \ 'userinfo': '',
+            \ 'host': '[2001:db8::7]',
+            \ 'port': '',
+            \})
+      Assert Equals(url.path, '/c=GB')
+      Assert Equals(url.query, {
+            \ 'objectClass?one': v:true,
+            \})
+      Assert Equals(url.fragment, '')
+      Assert Equals(url.to_string(), 'ldap://[2001:db8::7]/c=GB?objectClass%3fone')
+
+      let url = trea#lib#url#parse('mailto:John.Doe@example.com')
+      Assert Equals(url.scheme, 'mailto')
+      Assert Equals(url.authority, {})
+      Assert Equals(url.path, 'John.Doe@example.com')
+      Assert Equals(url.query, {})
+      Assert Equals(url.fragment, '')
+      Assert Equals(url.to_string(), 'mailto:John.Doe@example.com')
+
+      let url = trea#lib#url#parse('news:comp.infosystems.www.servers.unix')
+      Assert Equals(url.scheme, 'news')
+      Assert Equals(url.authority, {})
+      Assert Equals(url.path, 'comp.infosystems.www.servers.unix')
+      Assert Equals(url.query, {})
+      Assert Equals(url.fragment, '')
+      Assert Equals(url.to_string(), 'news:comp.infosystems.www.servers.unix')
+
+      let url = trea#lib#url#parse('tel:+1-816-555-1212')
+      Assert Equals(url.scheme, 'tel')
+      Assert Equals(url.authority, {})
+      Assert Equals(url.path, '+1-816-555-1212')
+      Assert Equals(url.query, {})
+      Assert Equals(url.fragment, '')
+      Assert Equals(url.to_string(), 'tel:+1-816-555-1212')
+
+      let url = trea#lib#url#parse('telnet://192.0.2.16:80/')
+      Assert Equals(url.scheme, 'telnet')
+      Assert Equals(url.authority, {
+            \ 'userinfo': '',
+            \ 'host': '192.0.2.16',
+            \ 'port': '80',
+            \})
+      Assert Equals(url.path, '/')
+      Assert Equals(url.query, {})
+      Assert Equals(url.fragment, '')
+      Assert Equals(url.to_string(), 'telnet://192.0.2.16:80/')
+
+      let url = trea#lib#url#parse('urn:oasis:names:specification:docbook:dtd:xml:4.1.2')
+      Assert Equals(url.scheme, 'urn')
+      Assert Equals(url.authority, {})
+      Assert Equals(url.path, 'oasis:names:specification:docbook:dtd:xml:4.1.2')
+      Assert Equals(url.query, {})
+      Assert Equals(url.fragment, '')
+      Assert Equals(url.to_string(), 'urn:oasis:names:specification:docbook:dtd:xml:4.1.2')
+    End
+  End
+
+  Describe s:encode()
+    It encodes percent-encoding characters
+      for r in percent_encodings
+        Assert Equals(funcs.encode(r[0]), r[1])
+      endfor
+    End
+  End
+
+  Describe s:decode()
+    It decodes percent-encoding characters
+      for r in percent_encodings
+        Assert Equals(funcs.decode(r[1]), r[0])
+      endfor
+    End
+  End
+
+  Describe s:parse_url()
+    It parses URL into bare, query, and fragment
+      let ts = funcs.parse_url('https://john.doe@www.example.com:123/forum/questions/?tag=networking&order=newest#top')
+      Assert Equals(ts, {
+            \ 'bare': 'https://john.doe@www.example.com:123/forum/questions/',
+            \ 'query': '?tag=networking&order=newest',
+            \ 'fragment': '#top',
+            \})
+
+      let ts = funcs.parse_url('ldap://[2001:db8::7]/c=GB?objectClass?one')
+      Assert Equals(ts, {
+            \ 'bare': 'ldap://[2001:db8::7]/c=GB',
+            \ 'query': '?objectClass?one',
+            \ 'fragment': '',
+            \})
+
+      let ts = funcs.parse_url('mailto:John.Doe@example.com')
+      Assert Equals(ts, {
+            \ 'bare': 'mailto:John.Doe@example.com',
+            \ 'query': '',
+            \ 'fragment': '',
+            \})
+
+      let ts = funcs.parse_url('news:comp.infosystems.www.servers.unix')
+      Assert Equals(ts, {
+            \ 'bare': 'news:comp.infosystems.www.servers.unix',
+            \ 'query': '',
+            \ 'fragment': '',
+            \})
+
+      let ts = funcs.parse_url('tel:+1-816-555-1212')
+      Assert Equals(ts, {
+            \ 'bare': 'tel:+1-816-555-1212',
+            \ 'query': '',
+            \ 'fragment': '',
+            \})
+
+      let ts = funcs.parse_url('telnet://192.0.2.16:80/')
+      Assert Equals(ts, {
+            \ 'bare': 'telnet://192.0.2.16:80/',
+            \ 'query': '',
+            \ 'fragment': '',
+            \})
+
+      let ts = funcs.parse_url('urn:oasis:names:specification:docbook:dtd:xml:4.1.2')
+      Assert Equals(ts, {
+            \ 'bare': 'urn:oasis:names:specification:docbook:dtd:xml:4.1.2',
+            \ 'query': '',
+            \ 'fragment': '',
+            \})
+    End
+  End
+
+  Describe s:parse_bare()
+    It parses bare URL into scheme, authority, and path
+      let ts = funcs.parse_bare('https://john.doe@www.example.com:123/forum/questions/')
+      Assert Equals(ts, {
+            \ 'scheme': 'https',
+            \ 'authority': '//john.doe@www.example.com:123',
+            \ 'path': '/forum/questions/',
+            \})
+
+      let ts = funcs.parse_bare('ldap://[2001:db8::7]/c=GB')
+      Assert Equals(ts, {
+            \ 'scheme': 'ldap',
+            \ 'authority': '//[2001:db8::7]',
+            \ 'path': '/c=GB',
+            \})
+
+      let ts = funcs.parse_bare('mailto:John.Doe@example.com')
+      Assert Equals(ts, {
+            \ 'scheme': 'mailto',
+            \ 'authority': '',
+            \ 'path': 'John.Doe@example.com',
+            \})
+
+      let ts = funcs.parse_bare('news:comp.infosystems.www.servers.unix')
+      Assert Equals(ts, {
+            \ 'scheme': 'news',
+            \ 'authority': '',
+            \ 'path': 'comp.infosystems.www.servers.unix',
+            \})
+
+      let ts = funcs.parse_bare('tel:+1-816-555-1212')
+      Assert Equals(ts, {
+            \ 'scheme': 'tel',
+            \ 'authority': '',
+            \ 'path': '+1-816-555-1212',
+            \})
+
+      let ts = funcs.parse_bare('telnet://192.0.2.16:80/')
+      Assert Equals(ts, {
+            \ 'scheme': 'telnet',
+            \ 'authority': '//192.0.2.16:80',
+            \ 'path': '/',
+            \})
+
+      let ts = funcs.parse_bare('urn:oasis:names:specification:docbook:dtd:xml:4.1.2')
+      Assert Equals(ts, {
+            \ 'scheme': 'urn',
+            \ 'authority': '',
+            \ 'path': 'oasis:names:specification:docbook:dtd:xml:4.1.2',
+            \})
+    End
+  End
+
+  Describe s:parse_authority()
+    It parses authority into userinfo, host, and port
+      let ts = funcs.parse_authority('//john.doe@www.example.com:123')
+      Assert Equals(ts, {
+            \ 'userinfo': 'john.doe',
+            \ 'host': 'www.example.com',
+            \ 'port': '123',
+            \})
+
+      let ts = funcs.parse_authority('//[2001:db8::7]')
+      Assert Equals(ts, {
+            \ 'userinfo': '',
+            \ 'host': '[2001:db8::7]',
+            \ 'port': '',
+            \})
+
+      let ts = funcs.parse_authority('//192.0.2.16:80')
+      Assert Equals(ts, {
+            \ 'userinfo': '',
+            \ 'host': '192.0.2.16',
+            \ 'port': '80',
+            \})
+
+      let ts = funcs.parse_authority('')
+      Assert Equals(ts, {})
+    End
+  End
+
+  Describe s:format_authority()
+    It parses authority into userinfo, host, and port
+      let r = funcs.format_authority({
+            \ 'userinfo': 'john.doe',
+            \ 'host': 'www.example.com',
+            \ 'port': '123',
+            \})
+      Assert Equals(r, '//john.doe@www.example.com:123')
+
+      let r = funcs.format_authority({
+            \ 'userinfo': '',
+            \ 'host': '[2001:db8::7]',
+            \ 'port': '',
+            \})
+      Assert Equals(r, '//[2001:db8::7]')
+
+      let r = funcs.format_authority({
+            \ 'userinfo': '',
+            \ 'host': '192.0.2.16',
+            \ 'port': '80',
+            \})
+      Assert Equals(r, '//192.0.2.16:80')
+
+      let r = funcs.format_authority({})
+      Assert Equals(r, '')
+    End
+  End
+
+  Describe s:parse_query()
+    It parses query and return an object
+      let ts = funcs.parse_query('?tag=networking&order=newest')
+      Assert Equals(ts, {
+            \ 'tag': 'networking',
+            \ 'order': 'newest',
+            \})
+
+      let ts = funcs.parse_query('?objectClass?one')
+      Assert Equals(ts, {
+            \ 'objectClass?one': v:true,
+            \})
+
+      let ts = funcs.parse_query('')
+      Assert Equals(ts, {})
+    End
+  End
+
+  Describe s:format_query()
+    It formats an object into a query string
+      let r = funcs.format_query({
+            \ 'tag': 'networking',
+            \ 'order': 'newest',
+            \})
+      Assert Equals(r, '?tag=networking&order=newest')
+
+      let r = funcs.format_query({
+            \ 'objectClass?one': v:true,
+            \})
+      Assert Equals(r, '?objectClass%3fone')
+
+      let r = funcs.format_query({})
+      Assert Equals(r, '')
+    End
+  End
+
+  Describe s:parse_fragment()
+    It parses fragment
+      let r = funcs.parse_fragment('#helloworld')
+      Assert Equals(r, 'helloworld')
+
+      let r = funcs.parse_fragment('')
+      Assert Equals(r, '')
+    End
+  End
+
+  Describe s:format_fragment()
+    It formats fragment
+      let r = funcs.format_fragment('helloworld')
+      Assert Equals(r, '#helloworld')
+
+      let r = funcs.format_fragment('')
+      Assert Equals(r, '')
+    End
+  End
+End

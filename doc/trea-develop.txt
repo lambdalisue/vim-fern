@@ -16,10 +16,88 @@ g:trae_debug						*g:trea_debug*
 -----------------------------------------------------------------------------
 FUNCTION				*trea-develop-api-function*
 
+				*trea#lib#url#parse()*
+trea#lib#url#parse({url})
+	Parse the {url} (|String|) and return an URL instnce which has the
+	following attributes:
+
+	Name		Description~
+	"scheme"	|String| which represent the SCHEME part of the {url}.
+
+	"authority"	|Dict| which has the following attributes to represent
+			the AUTHORITY part of the {url}:
+
+			"userinfo"	|String| for the USERINFO part
+			"host"		|String| for the HOST part
+			"port"		|String| for the PORT part
+
+			Or an empty |Dict| if the {url} does not include
+			AUTHORITY part (e.g. "mailto:John.Doe@example.com")
+
+	"path"		|String| which represent the PATH part of the {url}.
+
+	"query"		|Dict| which represents the QUERY part of the {url}.
+			The part is assumed to have key or key-value pairs
+			separated by ampersand (&) like "key1&key2=value2".
+			The value become |v:true| when no corresponding value
+			exist (e.g. "key1" in above example.)
+			The value become |String| when coressponding value
+			exists (e.g "key2=value2" in above example.)
+
+	"fragment"	|String| which represents the FRAGMENT part of the
+			{url}.
+
+	And the instance has the following methods:
+
+	Name		Description~
+	"to_string()"	Return |String| representation of the instance.
+
+	The {url} is assumed to follow the syntax of a generic URI which
+	syntax consists of a hierarchical sequence of five components:
+>
+	URI = SCHEME:[//AUTHORITY]PATH[?QUERY][#FRAGMENT]
+<
+	where the AUTHORITY components divides into three subcomponents:
+>
+	AUTHORITY = [USERINFO@]HOST[:PORT]
+<
+	For example
+>
+	          userinfo       host      port
+	          ┌──┴───┐ ┌──────┴──────┐ ┌┴┐
+	  https://john.doe@www.example.com:123/forum/questions/?tag=networking&order=newest#top
+	  └─┬─┘   └───────────┬──────────────┘└───────┬───────┘ └───────────┬─────────────┘ └┬┘
+	  scheme          authority                  path                 query           fragment
+	
+	  ldap://[2001:db8::7]/c=GB?objectClass?one
+	  └┬─┘   └─────┬─────┘└─┬─┘ └──────┬──────┘
+	  scheme   authority   path      query
+	
+	  mailto:John.Doe@example.com
+	  └─┬──┘ └────┬─────────────┘
+	  scheme     path
+	
+	  news:comp.infosystems.www.servers.unix
+	  └┬─┘ └─────────────┬─────────────────┘
+	  scheme            path
+	
+	  tel:+1-816-555-1212
+	  └┬┘ └──────┬──────┘
+	  scheme    path
+	
+	  telnet://192.0.2.16:80/
+	  └─┬──┘   └─────┬─────┘│
+	  scheme     authority  path
+	
+	  urn:oasis:names:specification:docbook:dtd:xml:4.1.2
+	  └┬┘ └──────────────────────┬──────────────────────┘
+	  scheme                    path
+<
+	https://en.wikipedia.org/wiki/Uniform_Resource_Identifier#Examples
+
 				*trea#scheme#{scheme}#provider#new()*
 trea#scheme#{scheme}#provider#new()
 	Return a provider instance (|trea-develop-provider|) of the {scheme}.
-
 
 =============================================================================
 PROVIDER					*trea-develop-provider*
