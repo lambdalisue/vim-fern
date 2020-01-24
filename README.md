@@ -1,4 +1,4 @@
-# fila.vim
+# trea.vim
 
 ![Version 0.2.0](https://img.shields.io/badge/version-0.2.0-yellow.svg)
 ![Support Vim 8.1 or above](https://img.shields.io/badge/support-Vim%208.1%20or%20above-yellowgreen.svg)
