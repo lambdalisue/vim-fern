@@ -1,0 +1,17 @@
+*trea-develop.txt*		Developer guide for trea development
+
+Author:  Alisue <lambdalisue@hashnote.net>
+License: MIT license
+
+=============================================================================
+API						*trea-develop-api*
+
+-----------------------------------------------------------------------------
+VARIABLE				*trea-develop-api-variable*
+
+g:trae_debug						*g:trea_debug*
+	Set 1 to enable trea debug mode.
+
+
+=============================================================================
+vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl
