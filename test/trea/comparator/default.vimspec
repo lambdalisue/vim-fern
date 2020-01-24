@@ -1,0 +1,132 @@
+Describe trea#comparator#default
+  Before
+    let provider = trea#scheme#debug#provider#new()
+    let Compare = function('trea#comparator#default#compare')
+  End
+
+  Describe #compare()
+    It returns 0 when n1.__key is equal to n2.__key
+      let n1 = trea#internal#node#root('debug://shallow', provider)
+      let n1.__key = ['shallow']
+      let n2 = trea#internal#node#root('debug://shallow', provider)
+      let n2.__key = ['shallow']
+      Assert Equals(Compare(n1, n2), 0)
+    End
+
+    It returns -1 when n1.__key is shorter than n2.__key
+      let n1 = trea#internal#node#root('debug://shallow', provider)
+      let n1.__key = ['shallow']
+      let n2 = trea#internal#node#root('debug://shallow/alpha', provider)
+      let n2.__key = ['shallow', 'alpha']
+      Assert Equals(Compare(n1, n2), -1)
+    End
+
+    It returns 1 when n1.__key is longer than n2.__key
+      let n1 = trea#internal#node#root('debug://shallow/alpha', provider)
+      let n1.__key = ['shallow', 'alpha']
+      let n2 = trea#internal#node#root('debug://shallow', provider)
+      let n2.__key = ['shallow']
+      Assert Equals(Compare(n1, n2), 1)
+    End
+
+    It returns -1 when a term in n1.__key is smaller than a term in n2.__key when n1 and n2 are leaf
+      let n1 = trea#internal#node#root('debug://shallow/alpha', provider)
+      let n1.__key = ['shallow', 'alpha']
+      let n1.status = 0
+      let n2 = trea#internal#node#root('debug://shallow/beta', provider)
+      let n2.__key = ['shallow', 'beta']
+      let n2.status = 0
+      Assert Equals(Compare(n1, n2), -1)
+    End
+
+    It returns -1 when a term in n1.__key is smaller than a term in n2.__key when n1 and n2 are branch
+      let n1 = trea#internal#node#root('debug://shallow/alpha', provider)
+      let n1.__key = ['shallow', 'alpha']
+      let n1.status = 0
+      let n2 = trea#internal#node#root('debug://shallow/beta', provider)
+      let n2.__key = ['shallow', 'beta']
+      let n2.status = 0
+      Assert Equals(Compare(n1, n2), -1)
+    End
+
+    It returns 1 when a term in n1.__key is smaller than a term in n2.__key when n1 is leaf and n2 is branch
+      let n1 = trea#internal#node#root('debug://shallow/alpha', provider)
+      let n1.__key = ['shallow', 'alpha']
+      let n1.status = 0
+      let n2 = trea#internal#node#root('debug://shallow/beta', provider)
+      let n2.__key = ['shallow', 'beta']
+      let n2.status = 1
+      Assert Equals(Compare(n1, n2), 1)
+    End
+
+    It returns -1 when a term in n1.__key is smaller than a term in n2.__key when n1 is branch and n2 is leaf
+      let n1 = trea#internal#node#root('debug://shallow/alpha', provider)
+      let n1.__key = ['shallow', 'alpha']
+      let n1.status = 1
+      let n2 = trea#internal#node#root('debug://shallow/beta', provider)
+      let n2.__key = ['shallow', 'beta']
+      let n2.status = 0
+      Assert Equals(Compare(n1, n2), -1)
+    End
+
+    It returns 1 when a term in n1.__key is larger than a term in n2.__key when n1 and n2 are leaf
+      let n1 = trea#internal#node#root('debug://shallow/beta', provider)
+      let n1.__key = ['shallow', 'beta']
+      let n1.status = 0
+      let n2 = trea#internal#node#root('debug://shallow/alpha', provider)
+      let n2.__key = ['shallow', 'alpha']
+      let n2.status = 0
+      Assert Equals(Compare(n1, n2), 1)
+    End
+
+    It returns 1 when a term in n1.__key is larger than a term in n2.__key when n1 and n2 are branch
+      let n1 = trea#internal#node#root('debug://shallow/beta', provider)
+      let n1.__key = ['shallow', 'beta']
+      let n1.status = 1
+      let n2 = trea#internal#node#root('debug://shallow/alpha', provider)
+      let n2.__key = ['shallow', 'alpha']
+      let n2.status = 1
+      Assert Equals(Compare(n1, n2), 1)
+    End
+
+    It returns -1 when a term in n1.__key is larger than a term in n2.__key but n1 is leaf and n2 is branch
+      let n1 = trea#internal#node#root('debug://shallow/beta', provider)
+      let n1.__key = ['shallow', 'beta']
+      let n1.status = 0
+      let n2 = trea#internal#node#root('debug://shallow/alpha', provider)
+      let n2.__key = ['shallow', 'alpha']
+      let n2.status = 1
+      Assert Equals(Compare(n1, n2), 1)
+    End
+
+    It returns -1 when a term in n1.__key is larger than a term in n2.__key but n1 is branch and n2 is leaf
+      let n1 = trea#internal#node#root('debug://shallow/beta', provider)
+      let n1.__key = ['shallow', 'beta']
+      let n1.status = 1
+      let n2 = trea#internal#node#root('debug://shallow/alpha', provider)
+      let n2.__key = ['shallow', 'alpha']
+      let n2.status = 0
+      Assert Equals(Compare(n1, n2), -1)
+    End
+
+    It returns -1 when n1 is branch but n2 is leaf
+      let n1 = trea#internal#node#root('debug://shallow/alpha', provider)
+      let n1.__key = ['shallow', 'alpha']
+      let n1.status = 1
+      let n2 = trea#internal#node#root('debug://shallow/alpha', provider)
+      let n2.__key = ['shallow', 'alpha']
+      let n2.status = 0
+      Assert Equals(Compare(n1, n2), -1)
+    End
+
+    It returns 1 when n1 is leaf but n2 is branch
+      let n1 = trea#internal#node#root('debug://shallow/alpha', provider)
+      let n1.__key = ['shallow', 'alpha']
+      let n1.status = 0
+      let n2 = trea#internal#node#root('debug://shallow/alpha', provider)
+      let n2.__key = ['shallow', 'alpha']
+      let n2.status = 1
+      Assert Equals(Compare(n1, n2), 1)
+    End
+  End
+End
