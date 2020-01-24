@@ -1,0 +1,114 @@
+Describe trea#scheme#debug#provider
+  Before
+    let Promise = vital#trea#import('Async.Promise')
+    let TIMEOUT = 5000
+  End
+
+  Describe #new()
+    It returns a provider instance
+      let provider = trea#scheme#debug#provider#new()
+      Assert KeyExists(provider, 'get_node')
+      Assert KeyExists(provider, 'get_parent')
+      Assert KeyExists(provider, 'get_children')
+    End
+  End
+
+  Describe a provider instance
+    Before
+      let provider = trea#scheme#debug#provider#new()
+    End
+
+    Describe .get_node()
+      It returns a node instance
+        let n = provider.get_node('debug://')
+        Assert KeyExists(n, 'name')
+        Assert KeyExists(n, 'status')
+      End
+
+      It returns a node of given URL (debug://...)
+        let n = provider.get_node('debug://')
+        Assert Equals(n._uri, '')
+
+        let n = provider.get_node('debug://shallow')
+        Assert Equals(n._uri, 'shallow')
+
+        let n = provider.get_node('debug://shallow/gamma')
+        Assert Equals(n._uri, 'shallow/gamma')
+      End
+
+      It throws error when no node of given URL exist
+        Throws /no such entry/ provider.get_node('debug://missing')
+      End
+    End
+
+    Describe .get_parent()
+      Before
+        let node = provider.get_node('debug://shallow/alpha')
+        let root = provider.get_node('debug://')
+      End
+
+      It returns a promise
+        let p = provider.get_parent(node)
+        Assert True(Promise.is_promise(p))
+      End
+
+      It resolves to a parent node of given node
+        let [r, e] = Promise.wait(
+              \ provider.get_parent(node),
+              \ { 'timeout': TIMEOUT },
+              \)
+        Assert Equals(e, v:null)
+        Assert Equals(r._uri, 'shallow')
+
+        let [r, e] = Promise.wait(
+              \ provider.get_parent(r),
+              \ { 'timeout': TIMEOUT },
+              \)
+        Assert Equals(e, v:null)
+        Assert Equals(r._uri, '')
+      End
+
+      It resolves to a node itself if the node does not have parent
+        let [r, e] = Promise.wait(
+              \ provider.get_parent(root),
+              \ { 'timeout': TIMEOUT },
+              \)
+        Assert Equals(e, v:null)
+        Assert Equals(r._uri, '')
+      End
+    End
+
+    Describe .get_children()
+      Before
+        let node = provider.get_node('debug://shallow')
+        let leaf = provider.get_node('debug://shallow/gamma')
+      End
+
+      It returns a promise
+        let p = provider.get_children(node)
+        Assert True(Promise.is_promise(p))
+      End
+
+      It resolves to child nodes of given node
+        let [r, e] = Promise.wait(
+              \ provider.get_children(node),
+              \ { 'timeout': TIMEOUT },
+              \)
+        Assert Equals(e, v:null)
+        Assert Equals(len(r), 3)
+        Assert Equals(r[0]._uri, 'shallow/alpha')
+        Assert Equals(r[1]._uri, 'shallow/beta')
+        Assert Equals(r[2]._uri, 'shallow/gamma')
+      End
+
+      It rejects when the node is a leaf node (no children)
+        let [r, e] = Promise.wait(
+              \ provider.get_children(leaf),
+              \ { 'timeout': TIMEOUT },
+              \)
+        Assert Equals(e, "no children exists for shallow/gamma")
+        Assert Equals(r, v:null)
+      End
+    End
+  End
+End

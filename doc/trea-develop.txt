@@ -13,5 +13,52 @@ g:trae_debug						*g:trea_debug*
 	Set 1 to enable trea debug mode.
 
 
+-----------------------------------------------------------------------------
+FUNCTION				*trea-develop-api-function*
+
+				*trea#scheme#{scheme}#provider#new()*
+trea#scheme#{scheme}#provider#new()
+	Return a provider instance (|trea-develop-provider|) of the {scheme}.
+
+
+=============================================================================
+PROVIDER					*trea-develop-provider*
+
+A provider instance must have the following methods.
+
+				*trea-develop-provider.get_node()*
+.get_node({url})		
+	Return a (partial) node instance of the {url} (|String|).
+	It throws error when no node is found for the {url}.
+
+	The node instance MUST have the following attributes.
+
+	"name"		The name of the node (required)
+	"status"	1/0 to indicate if the node is branch (required)
+
+	And may have the following attributes.
+
+	"label"		Label to display the node in a tree view
+	"hidden"	1/0 to indicate if the node should be hidden
+	"bufname"	Buffer name used to open the node or |v:null|
+	"_{ANY}"	Scheme specific variables (e.g. "_path" in file)
+
+				*trea-develop-provider.get_parent()*
+.get_parent({node}, {token})
+	Return a promise which is resolved to a parent node of the {node}.
+	It resolves the {node} itself when the {node} does not have parent.
+
+	The {token} is CancellationToken which can be used to cancel the
+	internal process. Use ... to ignore that argument.
+
+				*trea-develop-provider.get_children()*
+.get_children({node}, {token})
+	Return a promise which is resolved to a list of child nodes of the
+	{node}. It rejects when the {node} is leaf node.
+
+	The {token} is CancellationToken which can be used to cancel the
+	internal process. Use ... to ignore that argument.
+
+
 =============================================================================
 vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl
