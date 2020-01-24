@@ -5,6 +5,7 @@ Describe trea#internal#node
     let CancellationToken = vital#trea#import('Async.CancellationToken')
     let token = CancellationToken.none
     let provider = trea#scheme#debug#provider#new()
+    let Comparator = function('trea#comparator#default#compare')
   End
 
   Describe #debug()
@@ -123,6 +124,150 @@ Describe trea#internal#node
       Assert Equals(r[0]._uri, 'shallow/alpha')
       Assert Equals(r[1]._uri, 'shallow/beta')
       Assert Equals(r[2]._uri, 'shallow/gamma')
+    End
+  End
+
+  Describe #expand()
+    Before
+      let root = trea#internal#node#root('debug://', provider)
+    End
+
+    It returns a promise
+      let p = trea#internal#node#expand(root, [root], provider, Comparator, token)
+      Assert True(Promise.is_promise(p))
+    End
+
+    It resolves to a list of nodes
+      let [r, e] = Promise.wait(
+            \ trea#internal#node#expand(root, [root], provider, Comparator, token),
+            \ { 'timeout': TIMEOUT },
+            \)
+      Assert Equals(e, v:null)
+      Assert Equals(len(r), 5)
+      Assert Equals(r[0]._uri, '')
+      Assert Equals(r[1]._uri, 'deep')
+      Assert Equals(r[2]._uri, 'heavy')
+      Assert Equals(r[3]._uri, 'shallow')
+      Assert Equals(r[4]._uri, 'leaf')
+
+      let node = r[3]
+      let [r, e] = Promise.wait(
+            \ trea#internal#node#expand(node, r, provider, Comparator, token),
+            \ { 'timeout': TIMEOUT },
+            \)
+      Assert Equals(e, v:null)
+      Assert Equals(len(r), 8)
+      Assert Equals(r[0]._uri, '')
+      Assert Equals(r[1]._uri, 'deep')
+      Assert Equals(r[2]._uri, 'heavy')
+      Assert Equals(r[3]._uri, 'shallow')
+      Assert Equals(r[4]._uri, 'shallow/alpha')
+      Assert Equals(r[5]._uri, 'shallow/beta')
+      Assert Equals(r[6]._uri, 'shallow/gamma')
+      Assert Equals(r[7]._uri, 'leaf')
+    End
+  End
+
+  Describe #collapse()
+    Before
+      let root = trea#internal#node#root('debug://', provider)
+      let [nodes, e] = Promise.wait(
+            \ trea#internal#node#expand(root, [root], provider, Comparator, token),
+            \ { 'timeout': TIMEOUT },
+            \)
+      let node = nodes[3]
+      let [nodes, e] = Promise.wait(
+            \ trea#internal#node#expand(node, nodes, provider, Comparator, token),
+            \ { 'timeout': TIMEOUT },
+            \)
+    End
+
+    It returns a promise
+      let p = trea#internal#node#collapse(node, nodes, provider, Comparator, token)
+      Assert True(Promise.is_promise(p))
+    End
+
+    It resolves to a list of nodes
+      let [r, e] = Promise.wait(
+            \ trea#internal#node#collapse(node, nodes, provider, Comparator, token),
+            \ { 'timeout': TIMEOUT },
+            \)
+      Assert Equals(e, v:null)
+      Assert Equals(len(r), 5)
+      Assert Equals(r[0]._uri, '')
+      Assert Equals(r[1]._uri, 'deep')
+      Assert Equals(r[2]._uri, 'heavy')
+      Assert Equals(r[3]._uri, 'shallow')
+      Assert Equals(r[4]._uri, 'leaf')
+    End
+  End
+
+  Describe #reload()
+    Before
+      let root = trea#internal#node#root('debug://', provider)
+      let [nodes, e] = Promise.wait(
+            \ trea#internal#node#expand(root, [root], provider, Comparator, token),
+            \ { 'timeout': TIMEOUT },
+            \)
+      let node = nodes[3]
+      let [nodes, e] = Promise.wait(
+            \ trea#internal#node#expand(node, nodes, provider, Comparator, token),
+            \ { 'timeout': TIMEOUT },
+            \)
+    End
+
+    It returns a promise
+      let p = trea#internal#node#reload(node, nodes, provider, Comparator, token)
+      Assert True(Promise.is_promise(p))
+    End
+
+    It resolves to a list of nodes
+      let [r, e] = Promise.wait(
+            \ trea#internal#node#reload(node, nodes, provider, Comparator, token),
+            \ { 'timeout': TIMEOUT },
+            \)
+      Assert Equals(e, v:null)
+      Assert Equals(len(r), 8)
+      Assert Equals(r[0]._uri, '')
+      Assert Equals(r[1]._uri, 'deep')
+      Assert Equals(r[2]._uri, 'heavy')
+      Assert Equals(r[3]._uri, 'shallow')
+      Assert Equals(r[4]._uri, 'shallow/alpha')
+      Assert Equals(r[5]._uri, 'shallow/beta')
+      Assert Equals(r[6]._uri, 'shallow/gamma')
+      Assert Equals(r[7]._uri, 'leaf')
+    End
+  End
+
+  Describe #reveal()
+    Before
+      let root = trea#internal#node#root('debug://', provider)
+      let [nodes, e] = Promise.wait(
+            \ trea#internal#node#expand(root, [root], provider, Comparator, token),
+            \ { 'timeout': TIMEOUT },
+            \)
+    End
+
+    It returns a promise
+      let p = trea#internal#node#reveal([], nodes, provider, Comparator, token)
+      Assert True(Promise.is_promise(p))
+    End
+
+    It resolves to a list of nodes
+      let [r, e] = Promise.wait(
+            \ trea#internal#node#reveal(['deep', 'alpha', 'beta', 'gamma'], nodes, provider, Comparator, token),
+            \ { 'timeout': TIMEOUT },
+            \)
+      Assert Equals(e, v:null)
+      Assert Equals(len(r), 8)
+      Assert Equals(r[0]._uri, '')
+      Assert Equals(r[1]._uri, 'deep')
+      Assert Equals(r[2]._uri, 'deep/alpha')
+      Assert Equals(r[3]._uri, 'deep/alpha/beta')
+      Assert Equals(r[4]._uri, 'deep/alpha/beta/gamma')
+      Assert Equals(r[5]._uri, 'heavy')
+      Assert Equals(r[6]._uri, 'shallow')
+      Assert Equals(r[7]._uri, 'leaf')
     End
   End
 End
