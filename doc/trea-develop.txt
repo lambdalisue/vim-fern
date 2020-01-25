@@ -11,6 +11,7 @@ VARIABLE				*trea-develop-api-variable*
 
 g:trae_debug						*g:trea_debug*
 	Set 1 to enable trea debug mode.
+	Default: 0
 
 
 -----------------------------------------------------------------------------
