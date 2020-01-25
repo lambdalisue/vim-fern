@@ -229,6 +229,16 @@ g:trea#lib#buffer#window_locator_threshold
 	  "winheight": &lines / 3,
 	}
 
+			*g:trea#mapping#disable_default_mappings*
+g:trea#mapping#disable_default_mappings
+	Set 1 to disable default mappings.
+	Default: 0
+
+			*g:trea#mapping#enabled_mapping_presets*
+g:trea#mapping#enabled_mapping_presets
+	A |List| of |String| which is a name under trea#mapping namespace.
+	Default: ['tree', 'node', 'mark', 'filter']
+
 -----------------------------------------------------------------------------
 FUNCTION				*trea-develop-api-function*
 
@@ -346,6 +356,81 @@ trea#lib#url#parse({url})
 	  scheme                    path
 <
 	https://en.wikipedia.org/wiki/Uniform_Resource_Identifier#Examples
+
+				*trea#mapping#call()*
+trea#mapping#call({fn}[, {args}])
+	A utility wrapper function to call mapping function.
+
+	The {fn} (|Function|) will be called with
+
+	1. A |trea-develop-helper| instance as a first argument
+	2. Exception occured is properly printed
+	3. Rejectec promise is properly printed
+
+	Create a script local function which use this function to define
+	mappings like:
+>
+	function! s:init() abort
+	  nnoremap <buffer><silent>
+	        \ <Plug>(trea-action-echo)
+	        \ :<C-u>call <SID>call('echo')<CR>
+	endfunction
+
+	function! s:call(name) abort
+	  let Fn = funcref(printf('s:map_%s', a:name))
+	  call trea#mapping#call(Fn)
+	endfunction
+
+	function! s:map_echo(helper) abort
+	  echo a:helper.get_cursor_node().name
+	endfunction
+<
+				*trea#mapping#smart()*
+trea#mapping#smart({leaf}, {collapsed}[, {expanded}])
+	Return a |String| for |map-<expr>| determined from a cursor node.
+	If the cursor node is leaf, the {leaf} is returned.
+	If the cursor node is collapsed, the {collapsed} is returned.
+	If the cursor node is expanded, the {collapsed} or {expanded} if
+	specified is retunred.
+	IF the cursor node is not found, |<Nop>| is retunred.
+>
+	nmap <buffer><silent><expr>
+	      \ <Plug>(trea-open-or-expand-or-collapse)
+	      \ trea#mapping#smart(
+	      \   "\<Plug>(trea-action-open)",
+	      \   "\<Plug>(trea-action-expand)",
+	      \   "\<Plug>(trea-action-collapse)",
+	      \ )
+<
+				*trea#mapping#init()*
+trea#mapping#init({scheme})
+	Define mappings by calling |trea#mapping#{preset}#init()| sequentially.
+	Called mappings are defined by |g:trea#mapping#enabled_mapping_presets|.
+	Note that it also call |trea#scheme#{scheme}#mapping#init()| for
+	scheme specific mappings.
+
+				*trea#mapping#{preset}#init()*
+trea#mapping#{preset}#init({disable_default_mappings})
+	Function called on a trea buffer to define {preset} mappings.
+	Note that mappings name starts from "trea-action-" will be registered
+	in actions.
+>
+	function! trea#mapping#test#init(disable_default_mappings) abort
+	  nnoremap <buffer><silent>
+	        \ <Plug>(trea-action-echo)
+	        \ :<C-u>call <SID>call('echo')<CR>
+
+	  if a:disable_default_mappings
+	    nmap <buffer><silent> E <Plug>(trea-action-echo)
+	  endif
+	endfunction
+<
+	To custom mappings, modify |g:trea#mapping#enabled_mapping_presets|.
+
+				*trea#scheme#{scheme}#mapping#init()*
+trea#scheme#{scheme}#mapping#init({disable_default_mappings})
+	Function called on a trea buffer to define scheme specific mappings.
+	See |trea#mapping#{name}#init()| for detail.
 
 				*trea#message#info()*
 				*trea#message#title()*

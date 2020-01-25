@@ -40,6 +40,7 @@ function! trea#internal#viewer#init() abort
   let provider = trea#scheme#{scheme}#provider#new()
   let b:trea = trea#internal#core#new(url.path, provider)
 
+  call trea#mapping#init(scheme)
   call trea#internal#action#init()
   call trea#internal#spinner#start()
   call trea#internal#renderer#highlight()
