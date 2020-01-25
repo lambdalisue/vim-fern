@@ -27,15 +27,11 @@ function! trea#internal#viewer#init() abort
   augroup END
 
   " Add unique fragment to make each buffer uniq
-  let bufname = bufname('%')
-  if bufname !~# '#[a-f0-9]\+$'
-    let bufname = printf("%s#%s", bufname, sha256(localtime())[:7])
-    execute printf("keepalt file %s", fnameescape(bufname))
+  let url = trea#lib#url#parse(bufname('%'))
+  if empty(url.fragment)
+    let url.fragment = sha256(localtime())[:7]
+    execute printf("keepalt file %s", fnameescape(url.to_string()))
   endif
-
-  let bufnr = bufnr('%')
-  let url = trea#lib#url#parse(bufname)
-  let query = url.query is# v:null ? {} : url.query
   let scheme = trea#lib#url#parse(url.path).scheme
   let provider = trea#scheme#{scheme}#provider#new()
   let b:trea = trea#internal#core#new(url.path, provider)
@@ -48,12 +44,32 @@ function! trea#internal#viewer#init() abort
 
   let helper = trea#helper#new()
   let root = helper.get_root_node()
-  let reveal = split(get(query, 'reveal', ''), '/')
+  let reveal = split(get(url.query, 'reveal', ''), '/')
   return s:Promise.resolve()
         \.then({ -> helper.expand_node(root.__key) })
         \.then({ -> helper.reveal_node(reveal) })
         \.then({ -> helper.redraw() })
         \.then({ -> helper.focus_node(reveal) })
+endfunction
+
+function! trea#internal#viewer#focus_next(...) abort
+  let options = extend({
+        \ 'origin': winnr() + 1,
+        \ 'predicator': { -> 1 },
+        \}, a:0 ? a:1 : {},
+        \)
+  let P = { n -> bufname(winbufnr(n)) =~# '^trea:' && options.predicator(n) }
+  let winnr = trea#lib#window#find(P, options.origin)
+  if winnr
+    execute printf('%dwincmd w', winnr)
+    return 1
+  endif
+endfunction
+
+function! trea#internal#viewer#do_next(command, ...) abort
+  if trea#internal#viewer#focus_next(a:0 ? a:1 : {})
+    execute a:command
+  endif
 endfunction
 
 function! s:BufReadCmd() abort
