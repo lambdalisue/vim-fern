@@ -51,6 +51,161 @@ g:trea#internal#node#STATUS_EXPANDED
 	STATUS_COLLAPSED means that the node is branch and collapsed (closed).
 	STATUS_EXPANDED means that the node is branch and expanded (opened).
 
+				*g:trea#internal#renderer#leading*
+g:trea#internal#renderer#leading
+	A |String| which is prepended to each node to indicates the nested
+	level of the node.
+
+	For example, when the value is " ", the renderer output become:
+>
+	  root
+	  |- deep
+	   |- alpha
+	    |- beta
+	     |  gamma
+<
+	And when the value is "~~":
+>
+	  root
+	  |- deep
+	  ~~|- alpha
+	  ~~~~|- beta
+	  ~~~~~~|  gamma
+<
+	Default: " "
+
+				*g:trea#internal#renderer#root_symbol*
+g:trea#internal#renderer#root_symbol
+	A |String| which is prepended to a  root node.
+
+	For example, when the value is "", the renderer output become:
+>
+	  root
+	  |- shallow
+	   |+ alpha
+	   |- beta
+	   |  gamma
+<
+	And when the value is "--> ":
+>
+	  --> root
+	  |- shallow
+	   |+ alpha
+	   |- beta
+	   |  gamma
+<
+	Default: ""
+
+				*g:trea#internal#renderer#leaf_symbol*
+g:trea#internal#renderer#leaf_symbol
+	A |String| which is prepended to leaf nodes.
+
+	For example, when the value is "|  ", the renderer output become:
+>
+	  root
+	  |- shallow
+	   |+ alpha
+	   |- beta
+	   |  gamma
+<
+	And when the value is "--> ":
+>
+	  root
+	  |- shallow
+	   |+ alpha
+	   |- beta
+	   --> gamma
+<
+	Default: "|  "
+
+				*g:trea#internal#renderer#collapsed_symbol*
+g:trea#internal#renderer#collapsed_symbol
+	A |String| which is prepended to collapsed nodes (closed branch node).
+
+	For example, when the value is "|+ ", the renderer output become:
+>
+	  root
+	  |- shallow
+	   |+ alpha
+	   |- beta
+	   |  gamma
+<
+	And when the value is "--> ":
+>
+	  root
+	  |- shallow
+	   --> alpha
+	   |- beta
+	   |  gamma
+<
+	Default: "|+ "
+
+				*g:trea#internal#renderer#expanded_symbol*
+g:trea#internal#renderer#expanded_symbol
+	A |String| which is prepended to expanded nodes (opened branch node).
+
+	For example, when the value is "|- ", the renderer output become:
+>
+	  root
+	  |- shallow
+	   |+ alpha
+	   |- beta
+	   |  gamma
+<
+	And when the value is "--> ":
+>
+	  root
+	  --> shallow
+	   |+ alpha
+	   --> beta
+	   |  gamma
+<
+	Default: "|- "
+
+				*g:trea#internal#renderer#marked_symbol*
+g:trea#internal#renderer#marked_symbol
+	A |String| which is prepended to marked nodes.
+
+	For example, when the value is "* ", the renderer output become:
+>
+	* root
+	  |- shallow
+	*  |+ alpha
+	   |- beta
+	*  |  gamma
+<
+	And when the value is "--> ":
+>
+	--> root
+	  |- shallow
+	--> |+ alpha
+	   |- beta
+	--> |  gamma
+<
+	Default: "* "
+
+				*g:trea#internal#renderer#unmarked_symbol*
+g:trea#internal#renderer#unmarked_symbol
+	A |String| which is prepended to nodes which is not marked.
+
+	For example, when the value is "  ", the renderer output become:
+>
+	* root
+	  |- shallow
+	*  |+ alpha
+	   |- beta
+	*  |  gamma
+<
+	And when the value is "--> ":
+>
+	* root
+	--> |- shallow
+	* |+ alpha
+	--> |- beta
+	* |  gamma
+<
+	Default: "  "
+
 -----------------------------------------------------------------------------
 FUNCTION				*trea-develop-api-function*
 

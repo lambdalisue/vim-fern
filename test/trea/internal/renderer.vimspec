@@ -1,0 +1,76 @@
+Describe trea#internal#renderer
+  Before
+    let TIMEOUT = 5000
+    let STATUS_EXPANDED = g:trea#internal#node#STATUS_EXPANDED
+    let Promise = vital#trea#import('Async.Promise')
+    let provider = trea#scheme#debug#provider#new()
+  End
+
+  Describe #render()
+    Before
+      let nodes = [
+            \ trea#internal#node#root('debug:///', provider),
+            \ trea#internal#node#root('debug:///shallow', provider),
+            \ trea#internal#node#root('debug:///shallow/alpha', provider),
+            \ trea#internal#node#root('debug:///shallow/beta', provider),
+            \ trea#internal#node#root('debug:///shallow/gamma', provider),
+            \]
+      let nodes[1].__key = ['shallow']
+      let nodes[1].status = STATUS_EXPANDED
+      let nodes[2].__key = ['shallow', 'alpha']
+      let nodes[3].__key = ['shallow', 'beta']
+      let nodes[4].__key = ['shallow', 'gamma']
+    End
+
+    It returns a promise
+      let p = trea#internal#renderer#render(nodes, [])
+      Assert True(Promise.is_promise(p))
+    End
+
+    It resolves to a string list for a buffer content
+      let [r, e] = Promise.wait(
+            \ trea#internal#renderer#render(nodes, []),
+            \ { 'timeout': TIMEOUT },
+            \)
+      Assert Equals(e, v:null)
+      Assert Equals(r, [
+            \ '  root',
+            \ '  |- shallow',
+            \ '   |+ alpha',
+            \ '   |+ beta',
+            \ '   |  gamma',
+            \])
+    End
+
+    It prepend marked symbol for marked nodes
+      let marks = [
+            \ ['shallow', 'alpha'],
+            \ ['shallow', 'gamma'],
+            \]
+      let [r, e] = Promise.wait(
+            \ trea#internal#renderer#render(nodes, marks),
+            \ { 'timeout': TIMEOUT },
+            \)
+      Assert Equals(e, v:null)
+      Assert Equals(r, [
+            \ '  root',
+            \ '  |- shallow',
+            \ '*  |+ alpha',
+            \ '   |+ beta',
+            \ '*  |  gamma',
+            \])
+    End
+  End
+
+  Describe #syntax()
+    It does not raise exception
+      call trea#internal#renderer#syntax()
+    End
+  End
+
+  Describe #highlight()
+    It does not raise exception
+      call trea#internal#renderer#highlight()
+    End
+  End
+End
