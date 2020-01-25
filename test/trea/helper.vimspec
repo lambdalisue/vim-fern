@@ -37,6 +37,8 @@ Describe trea#helper
           \ 'set_hide',
           \ 'set_include',
           \ 'set_exclude',
+          \ 'enter_tree',
+          \ 'leave_tree',
           \]
   End
 

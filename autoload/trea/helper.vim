@@ -229,3 +229,31 @@ function! s:helper.set_exclude(pattern) abort
   let self.trea.exclude = a:pattern
   return self.update_nodes(self.trea.nodes)
 endfunction
+
+function! s:helper.enter_tree(node) abort
+  if a:node.status is# self.STATUS_NONE
+    return s:Promise.reject()
+  endif
+  return s:Promise.resolve(a:node)
+        \.then({ n -> s:enter(self.trea, n) })
+endfunction
+
+function! s:helper.leave_tree() abort
+  return s:Promise.resolve(self.trea.root)
+        \.then({ root -> trea#internal#node#parent(
+        \   root,
+        \   self.trea.provider,
+        \   self.trea.source.token,
+        \ )
+        \})
+        \.then({ n -> s:enter(self.trea, n) })
+endfunction
+
+
+" Private
+function! s:enter(trea, node) abort
+  if !has_key(a:node, 'bufname')
+    return s:Promise.reject('the node does not have bufname attribute')
+  endif
+  call trea#internal#viewer#open(a:node.bufname, bufname("%"))
+endfunction

@@ -579,5 +579,18 @@ current buffer by calling |trea#helper#new()|.
 .set_exclude({pattern})
 	Return a promise to set include/exclude.
 
+			*trea-develop-helper.enter_tree()*
+.enter_tree({node})
+	Return a promise to enter a tree which root node become the {node}.
+	Note that "bufname" of the {node} must be properly configured to use
+	this feature.
+
+			*trea-develop-helper.leave_tree()*
+.leave_tree()
+	Return a promise to enter a tree which root node become a parent node
+	of the current root node.
+	Note that "bufname" of the parent node must be properly configured to
+	use this feature.
+
 =============================================================================
 vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl
