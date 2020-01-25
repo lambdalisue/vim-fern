@@ -142,8 +142,13 @@ function! s:map_open(helper, opener) abort
   if node is# v:null
     return s:Promise.reject("no node found on a cursor line")
   endif
-  return trea#lib#buffer#open(node.bufname, {
-        \ 'opener': a:opener,
-        \ 'locator': a:helper.is_drawer(),
-        \})
+  try
+    call trea#lib#buffer#open(node.bufname, {
+          \ 'opener': a:opener,
+          \ 'locator': a:helper.is_drawer(),
+          \})
+    return s:Promise.resolve()
+  catch
+    return s:Promise.reject(v:exception)
+  endtry
 endfunction

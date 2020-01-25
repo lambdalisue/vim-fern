@@ -29,29 +29,32 @@ function! trea#command#trea#command(mods, qargs) abort
     let url.path = fnamemodify(expand(url.path), ':p:gs?\\?/?')
   endif
 
-  if !empty(get(options, 'drawer'))
-    let url.query = extend(url.query, {
-          \ 'drawer': v:true,
-          \ 'width': get(options, 'width', v:false),
-          \ 'keep': get(options, 'keep', v:false),
-          \ 'reveal': get(options, 'reveal', v:false),
-          \})
-    call trea#internal#drawer#open(url.to_string(), {
-          \ 'mods': a:mods,
-          \ 'opener': get(options, 'opener', g:trea#command#trea#drawer_opener),
-          \ 'toggle': get(options, 'toggle', 0),
-          \})
-          \.catch({ e -> trea#message#error(e) })
-  else
-    let url.query = extend(url.query, {
-          \ 'reveal': get(options, 'reveal', v:false),
-          \})
-    call trea#internal#viewer#open(url.to_string(), {
-          \ 'mods': a:mods,
-          \ 'opener': get(options, 'opener', g:trea#command#trea#viewer_opener),
-          \})
-          \.catch({ e -> trea#message#error(e) })
-  endif
+  try
+    if !empty(get(options, 'drawer'))
+      let url.query = extend(url.query, {
+            \ 'drawer': v:true,
+            \ 'width': get(options, 'width', v:false),
+            \ 'keep': get(options, 'keep', v:false),
+            \ 'reveal': get(options, 'reveal', v:false),
+            \})
+      call trea#internal#drawer#open(url.to_string(), {
+            \ 'mods': a:mods,
+            \ 'opener': get(options, 'opener', g:trea#command#trea#drawer_opener),
+            \ 'toggle': get(options, 'toggle', 0),
+            \})
+    else
+      let url.query = extend(url.query, {
+            \ 'reveal': get(options, 'reveal', v:false),
+            \})
+      call trea#internal#viewer#open(url.to_string(), {
+            \ 'mods': a:mods,
+            \ 'opener': get(options, 'opener', g:trea#command#trea#viewer_opener),
+            \})
+    endif
+  catch
+    call trea#message#error(v:exception)
+    call trea#message#debug(v:throwpoint)
+  endtry
 endfunction
 
 function! trea#command#trea#complete(arglead, cmdline, cursorpos) abort

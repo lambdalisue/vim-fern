@@ -259,7 +259,12 @@ function! s:enter(trea, node) abort
   if !has_key(a:node, 'bufname')
     return s:Promise.reject('the node does not have bufname attribute')
   endif
-  return trea#internal#viewer#open(a:node.bufname, {
-        \ 'base': bufname("%"),
-        \})
+  try
+    call trea#internal#viewer#open(a:node.bufname, {
+          \ 'base': bufname("%"),
+          \})
+    return s:Promise.resolve()
+  catch
+    return s:Promise.reject(v:exception)
+  endtry
 endfunction
