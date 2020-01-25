@@ -1,0 +1,303 @@
+Describe trea#internal#core
+  Before
+    let TIMEOUT = 5000
+    let STATUS_EXPANDED = g:trea#internal#node#STATUS_EXPANDED
+    let Promise = vital#trea#import('Async.Promise')
+    let provider = trea#scheme#debug#provider#new()
+  End
+
+  Describe #new()
+    It returns a trea instance of given url and provider
+      let trea = trea#internal#core#new('debug:///', provider)
+      Assert KeyExists(trea, 'source')
+      Assert KeyExists(trea, 'provider')
+      Assert KeyExists(trea, 'comparator')
+      Assert KeyExists(trea, 'root')
+      Assert KeyExists(trea, 'nodes')
+      Assert KeyExists(trea, 'visible_nodes')
+      Assert KeyExists(trea, 'marks')
+      Assert KeyExists(trea, 'hidden')
+      Assert KeyExists(trea, 'include')
+      Assert KeyExists(trea, 'exclude')
+    End
+  End
+
+  Describe #cancel()
+    Before
+      let trea = trea#internal#core#new('debug:///', provider)
+    End
+
+    It cancels the source and assign new CancellationTokenSource instance
+      let trea = trea#internal#core#new('debug:///', provider)
+      let source = trea.source
+      let token = source.token
+      call trea#internal#core#cancel(trea)
+      Assert True(token.cancellation_requested())
+      Assert NotEqual(source, trea.source)
+    End
+  End
+
+  Describe #update_nodes()
+    Before
+      let trea = trea#internal#core#new('debug:///', provider)
+      let [children, _] = Promise.wait(
+            \ trea#internal#node#children(trea.root, provider, trea.source.token),
+            \ { 'timeout': TIMEOUT },
+            \)
+    End
+
+    It returns a promise
+      let p = trea#internal#core#update_nodes(trea, [trea.root] + children)
+      Assert True(Promise.is_promise(p))
+    End
+
+    It updates 'nodes'
+      let [r, e] = Promise.wait(
+            \ trea#internal#core#update_nodes(trea, [trea.root] + children),
+            \ { 'timeout': TIMEOUT },
+            \)
+      Assert Equals(e, v:null)
+      Assert Equals(r, 0)
+      Assert Equals(map(copy(trea.nodes), { -> v:val._uri }), [
+            \ '/',
+            \ '/shallow',
+            \ '/deep',
+            \ '/heavy',
+            \ '/leaf',
+            \])
+    End
+
+    It updates 'visible_nodes'
+      let [r, e] = Promise.wait(
+            \ trea#internal#core#update_nodes(trea, [trea.root] + children),
+            \ { 'timeout': TIMEOUT },
+            \)
+      Assert Equals(e, v:null)
+      Assert Equals(r, 0)
+      Assert Equals(map(copy(trea.visible_nodes), { -> v:val._uri }), [
+            \ '/',
+            \ '/shallow',
+            \ '/deep',
+            \ '/heavy',
+            \ '/leaf',
+            \])
+    End
+
+    It removes HIDDEN nodes from 'visible_nodes'
+      let children[1].hidden = 1
+      let children[3].hidden = 1
+      let [r, e] = Promise.wait(
+            \ trea#internal#core#update_nodes(trea, [trea.root] + children),
+            \ { 'timeout': TIMEOUT },
+            \)
+      Assert Equals(e, v:null)
+      Assert Equals(r, 0)
+      Assert Equals(map(copy(trea.nodes), { -> v:val._uri }), [
+            \ '/',
+            \ '/shallow',
+            \ '/deep',
+            \ '/heavy',
+            \ '/leaf',
+            \])
+      Assert Equals(map(copy(trea.visible_nodes), { -> v:val._uri }), [
+            \ '/',
+            \ '/shallow',
+            \ '/heavy',
+            \])
+    End
+
+    It does NOT remove HIDDEN nodes from 'visible_nodes' if the nodes are expanded
+      let children[1].hidden = 1
+      let children[1].status = STATUS_EXPANDED
+      let children[3].hidden = 1
+      let [r, e] = Promise.wait(
+            \ trea#internal#core#update_nodes(trea, [trea.root] + children),
+            \ { 'timeout': TIMEOUT },
+            \)
+      Assert Equals(e, v:null)
+      Assert Equals(r, 0)
+      Assert Equals(map(copy(trea.nodes), { -> v:val._uri }), [
+            \ '/',
+            \ '/shallow',
+            \ '/deep',
+            \ '/heavy',
+            \ '/leaf',
+            \])
+      Assert Equals(map(copy(trea.visible_nodes), { -> v:val._uri }), [
+            \ '/',
+            \ '/shallow',
+            \ '/deep',
+            \ '/heavy',
+            \])
+    End
+
+    It does NOT remove HIDDEN nodes from 'visible_nodes' when trea.hidden is TRUE
+      let children[1].hidden = 1
+      let children[3].hidden = 1
+      let trea.hidden = 1
+      let [r, e] = Promise.wait(
+            \ trea#internal#core#update_nodes(trea, [trea.root] + children),
+            \ { 'timeout': TIMEOUT },
+            \)
+      Assert Equals(e, v:null)
+      Assert Equals(r, 0)
+      Assert Equals(map(copy(trea.nodes), { -> v:val._uri }), [
+            \ '/',
+            \ '/shallow',
+            \ '/deep',
+            \ '/heavy',
+            \ '/leaf',
+            \])
+      Assert Equals(map(copy(trea.visible_nodes), { -> v:val._uri }), [
+            \ '/',
+            \ '/shallow',
+            \ '/deep',
+            \ '/heavy',
+            \ '/leaf',
+            \])
+    End
+
+    It removes non INCLUDE nodes from 'visible_nodes' by trea.include
+      let trea.include = '^\%(root\|shallow\|heavy\)$'
+      let [r, e] = Promise.wait(
+            \ trea#internal#core#update_nodes(trea, [trea.root] + children),
+            \ { 'timeout': TIMEOUT },
+            \)
+      Assert Equals(e, v:null)
+      Assert Equals(r, 0)
+      Assert Equals(map(copy(trea.nodes), { -> v:val._uri }), [
+            \ '/',
+            \ '/shallow',
+            \ '/deep',
+            \ '/heavy',
+            \ '/leaf',
+            \])
+      Assert Equals(map(copy(trea.visible_nodes), { -> v:val._uri }), [
+            \ '/',
+            \ '/shallow',
+            \ '/heavy',
+            \])
+    End
+
+    It does NOT removes non INCLUDE nodes from 'visible_nodes' if the nodes are expanded
+      let children[1].status = STATUS_EXPANDED
+      let trea.include = '^\%(root\|shallow\|heavy\)$'
+      let [r, e] = Promise.wait(
+            \ trea#internal#core#update_nodes(trea, [trea.root] + children),
+            \ { 'timeout': TIMEOUT },
+            \)
+      Assert Equals(e, v:null)
+      Assert Equals(r, 0)
+      Assert Equals(map(copy(trea.nodes), { -> v:val._uri }), [
+            \ '/',
+            \ '/shallow',
+            \ '/deep',
+            \ '/heavy',
+            \ '/leaf',
+            \])
+      Assert Equals(map(copy(trea.visible_nodes), { -> v:val._uri }), [
+            \ '/',
+            \ '/shallow',
+            \ '/deep',
+            \ '/heavy',
+            \])
+    End
+
+    It removes EXCLUDE nodes from 'visible_nodes' by trea.exclude
+      let trea.exclude = '^\%(deep\|leaf\)$'
+      let [r, e] = Promise.wait(
+            \ trea#internal#core#update_nodes(trea, [trea.root] + children),
+            \ { 'timeout': TIMEOUT },
+            \)
+      Assert Equals(e, v:null)
+      Assert Equals(r, 0)
+      Assert Equals(map(copy(trea.nodes), { -> v:val._uri }), [
+            \ '/',
+            \ '/shallow',
+            \ '/deep',
+            \ '/heavy',
+            \ '/leaf',
+            \])
+      Assert Equals(map(copy(trea.visible_nodes), { -> v:val._uri }), [
+            \ '/',
+            \ '/shallow',
+            \ '/heavy',
+            \])
+    End
+
+    It does NOT removes EXCLUDE nodes from 'visible_nodes' if the nodes are expanded
+      let children[1].status = STATUS_EXPANDED
+      let trea.exclude = '^\%(deep\|leaf\)$'
+      let [r, e] = Promise.wait(
+            \ trea#internal#core#update_nodes(trea, [trea.root] + children),
+            \ { 'timeout': TIMEOUT },
+            \)
+      Assert Equals(e, v:null)
+      Assert Equals(r, 0)
+      Assert Equals(map(copy(trea.nodes), { -> v:val._uri }), [
+            \ '/',
+            \ '/shallow',
+            \ '/deep',
+            \ '/heavy',
+            \ '/leaf',
+            \])
+      Assert Equals(map(copy(trea.visible_nodes), { -> v:val._uri }), [
+            \ '/',
+            \ '/shallow',
+            \ '/deep',
+            \ '/heavy',
+            \])
+    End
+  End
+
+  Describe #update_marks()
+    Before
+      let trea = trea#internal#core#new('debug:///', provider)
+      let [children, _] = Promise.wait(
+            \ trea#internal#node#children(trea.root, provider, trea.source.token),
+            \ { 'timeout': TIMEOUT },
+            \)
+      let [_, _] = Promise.wait(
+            \ trea#internal#core#update_nodes(trea, [trea.root] + children),
+            \ { 'timeout': TIMEOUT },
+            \)
+    End
+
+    It returns a promise
+      let p = trea#internal#core#update_marks(trea, [['shallow'], ['deep'], ['leaf']])
+      Assert True(Promise.is_promise(p))
+    End
+
+    It updates 'marks'
+      let [r, e] = Promise.wait(
+            \ trea#internal#core#update_marks(trea, [['shallow'], ['deep'], ['leaf']]),
+            \ { 'timeout': TIMEOUT },
+            \)
+      Assert Equals(e, v:null)
+      Assert Equals(r, 0)
+      Assert Equals(trea.marks, [
+            \ ['shallow'],
+            \ ['deep'],
+            \ ['leaf'],
+            \])
+    End
+
+    It removes marks for HIDDEN nodes
+      let children[1].hidden = 1
+      let children[3].hidden = 1
+      let [_, _] = Promise.wait(
+            \ trea#internal#core#update_nodes(trea, [trea.root] + children),
+            \ { 'timeout': TIMEOUT },
+            \)
+      let [r, e] = Promise.wait(
+            \ trea#internal#core#update_marks(trea, [['shallow'], ['deep'], ['leaf']]),
+            \ { 'timeout': TIMEOUT },
+            \)
+      Assert Equals(e, v:null)
+      Assert Equals(r, 0)
+      Assert Equals(trea.marks, [
+            \ ['shallow'],
+            \])
+    End
+  End
+End
