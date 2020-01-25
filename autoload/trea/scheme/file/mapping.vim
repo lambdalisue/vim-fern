@@ -20,6 +20,7 @@ function! trea#scheme#file#mapping#init(disable_default_mappings) abort
   nnoremap <buffer><silent> <Plug>(trea-action-clipboard-clear)  :<C-u>call <SID>call('clipboard_clear')<CR>
   nnoremap <buffer><silent> <Plug>(trea-action-trash)            :<C-u>call <SID>call('trash')<CR>
   nnoremap <buffer><silent> <Plug>(trea-action-remove)           :<C-u>call <SID>call('remove')<CR>
+  nnoremap <buffer><silent> <Plug>(trea-action-rename)           :<C-u>call <SID>call('rename')<CR>
 
   " Alias
   nmap <buffer> <Plug>(trea-action-cd) <Plug>(trea-action-cd:tcd)
@@ -32,6 +33,7 @@ function! trea#scheme#file#mapping#init(disable_default_mappings) abort
     nmap <buffer><nowait> c <Plug>(trea-action-clipboard-copy)
     nmap <buffer><nowait> p <Plug>(trea-action-clipboard-paste)
     nmap <buffer><nowait> d <Plug>(trea-action-trash)
+    nmap <buffer><nowait> R <Plug>(trea-action-rename)
   endif
 endfunction
 
@@ -210,4 +212,31 @@ function! s:map_remove(helper) abort
         \.then({ -> a:helper.reload_node(root.__key) })
         \.then({ -> a:helper.redraw() })
         \.then({ -> trea#message#info(printf('%d items are removed', len(ps))) })
+endfunction
+
+function! s:map_rename(helper) abort
+  let root = a:helper.get_root_node()
+  let Factory = { -> map(copy(a:helper.get_selected_nodes()), { _, n -> n._path }) }
+  let ns = {}
+  return trea#internal#renamer#rename(Factory)
+        \.then({ r -> s:_map_rename(a:helper, r) })
+        \.then({ n -> s:Lambda.let(ns, 'n', n) })
+        \.then({ -> a:helper.reload_node(root.__key) })
+        \.then({ -> a:helper.redraw() })
+        \.then({ -> trea#message#info(printf('%d items are renamed', ns.n)) })
+endfunction
+
+function! s:_map_rename(helper, result) abort
+  let token = a:helper.trea.source.token
+  let ps = []
+  for pair in a:result
+    let [src, dst] = pair
+    if !filereadable(src) && isdirectory(src)
+      call trea#message#error(printf("%s does not exist", src))
+      continue
+    endif
+    call add(ps, trea#scheme#file#shutil#move(src, dst, token))
+  endfor
+  return s:Promise.all(ps)
+        \.then({ -> len(ps) })
 endfunction
