@@ -3,6 +3,11 @@ if exists('g:trea_loaded')
 endif
 let g:trea_loaded = 1
 
+command! -nargs=*
+      \ -complete=customlist,trea#command#trea#complete
+      \ Trea
+      \ call trea#command#trea#command(<q-mods>, <q-args>)
+
 augroup trea_internal
   autocmd! *
   autocmd BufReadCmd trea:*/* nested call trea#internal#viewer#init()
