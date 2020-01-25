@@ -71,7 +71,7 @@ Describe trea#internal#node
       Assert KeyExists(node, 'bufname')
       Assert KeyExists(node, '__key')
       Assert KeyExists(node, '__owner')
-      Assert KeyExists(node, '__processing')
+      Assert KeyExists(node, 'processing')
       Assert KeyExists(node, '__cache')
       Assert KeyExists(node, '__promise')
     End

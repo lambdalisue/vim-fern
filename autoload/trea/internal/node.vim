@@ -54,7 +54,7 @@ function! trea#internal#node#parent(node, provider, token, ...) abort
   elseif has_key(a:node.__promise, 'parent')
     return a:node.__promise.parent
   endif
-  let a:node.__processing += 1
+  let a:node.processing += 1
   let p = a:provider.get_parent(a:node, a:token)
         \.then({ n -> s:new(n, {
         \   '__key': [],
@@ -62,7 +62,7 @@ function! trea#internal#node#parent(node, provider, token, ...) abort
         \ })
         \})
         \.then({ n -> s:Lambda.pass(n, s:Lambda.let(a:node.__cache, 'parent', n)) })
-        \.finally({ -> s:Lambda.let(a:node, '__processing', a:node.__processing - 1) })
+        \.finally({ -> s:Lambda.let(a:node, 'processing', a:node.processing - 1) })
   let a:node.__promise.parent = p
         \.finally({ -> s:Lambda.unlet(a:node.__promise, 'parent') })
   return p
@@ -82,7 +82,7 @@ function! trea#internal#node#children(node, provider, token, ...) abort
   elseif has_key(a:node.__promise, 'children')
     return a:node.__promise.children
   endif
-  let a:node.__processing += 1
+  let a:node.processing += 1
   let p = a:provider.get_children(a:node, a:token)
         \.then(s:AsyncLambda.map_f({ n ->
         \   s:new(n, {
@@ -91,7 +91,7 @@ function! trea#internal#node#children(node, provider, token, ...) abort
         \   })
         \ }))
         \.then({ v -> s:Lambda.pass(v, s:Lambda.let(a:node.__cache, 'children', v)) })
-        \.finally({ -> s:Lambda.let(a:node, '__processing', a:node.__processing - 1) })
+        \.finally({ -> s:Lambda.let(a:node, 'processing', a:node.processing - 1) })
   let a:node.__promise.children = p
         \.finally({ -> s:Lambda.unlet(a:node.__promise, 'children') })
   return p
@@ -121,11 +121,11 @@ function! trea#internal#node#expand(node, nodes, provider, comparator, token) ab
   elseif has_key(a:node, '__promise.collapse')
     return a:node.__promise.collapse
   endif
-  let a:node.__processing += 1
+  let a:node.processing += 1
   let p = trea#internal#node#children(a:node, a:provider, a:token)
         \.then({ v -> s:sort(v, a:comparator) })
         \.then({ v -> s:extend(a:node.__key, a:nodes, v) })
-        \.finally({ -> s:Lambda.let(a:node, '__processing', a:node.__processing - 1) })
+        \.finally({ -> s:Lambda.let(a:node, 'processing', a:node.processing - 1) })
   call p.then({ -> s:Lambda.let(a:node, 'status', s:STATUS_EXPANDED) })
   let a:node.__promise.expand = p
         \.finally({ -> s:Lambda.unlet(a:node.__promise, 'expand') })
@@ -159,10 +159,10 @@ function! trea#internal#node#collapse(node, nodes, provider, comparator, token) 
   let k = a:node.__key
   let n = len(k) - 1
   let K = n < 0 ? { v -> [] } : { v -> v.__key[:n] }
-  let a:node.__processing += 1
+  let a:node.processing += 1
   let p = s:Promise.resolve(a:nodes)
         \.then(s:AsyncLambda.filter_f({ v -> v.__key == k || K(v) != k  }))
-        \.finally({ -> s:Lambda.let(a:node, '__processing', a:node.__processing - 1) })
+        \.finally({ -> s:Lambda.let(a:node, 'processing', a:node.processing - 1) })
   call p.then({ -> s:Lambda.let(a:node, 'status', s:STATUS_COLLAPSED) })
   let a:node.__promise.collapse = p
         \.finally({ -> s:Lambda.unlet(a:node.__promise, 'collapse') })
@@ -194,12 +194,12 @@ function! trea#internal#node#reload(node, nodes, provider, comparator, token) ab
         \ }))
         \.then({ v -> s:Promise.all(v) })
         \.then(s:AsyncLambda.reduce_f({ a, v -> a + v }, []))
-  let a:node.__processing += 1
+  let a:node.processing += 1
   return s:Promise.all([outer, inner, descendants])
         \.then(s:AsyncLambda.reduce_f({ a, v -> a + v }, []))
         \.then({ v -> s:sort(v, a:comparator) })
         \.then({ v -> s:uniq(v) })
-        \.finally({ -> s:Lambda.let(a:node, '__processing', a:node.__processing - 1) })
+        \.finally({ -> s:Lambda.let(a:node, 'processing', a:node.processing - 1) })
 endfunction
 
 function! trea#internal#node#reveal(key, nodes, provider, comparator, token) abort
@@ -222,9 +222,9 @@ function! s:new(node, ...) abort
         \ 'label': label,
         \ 'hidden': get(a:node, 'hidden', 0),
         \ 'bufname': get(a:node, 'bufname', v:null),
+        \ 'processing': 0,
         \ '__key': [],
         \ '__owner': v:null,
-        \ '__processing': 0,
         \ '__cache': {},
         \ '__promise': {},
         \})
