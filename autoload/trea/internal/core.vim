@@ -33,7 +33,7 @@ function! trea#internal#core#cancel(trea) abort
 endfunction
 
 function! trea#internal#core#update_nodes(trea, nodes) abort
-  let a:trea.nodes = copy(a:nodes)
+  let a:trea.nodes = a:nodes
   let include = a:trea.include
   let exclude = a:trea.exclude
   let Hidden = !a:trea.hide
