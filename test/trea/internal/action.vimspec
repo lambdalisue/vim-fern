@@ -1,0 +1,42 @@
+Describe trea#internal#action
+  After all
+    %bwipeout!
+  End
+
+  Before
+    %bwipeout!
+  End
+
+  Describe #init()
+    It defines <Plug> mappings for actions
+      call trea#internal#action#init()
+      let rs = map(
+            \ split(execute('nmap <Plug>(trea-action'), '\n'),
+            \ { -> split(v:val)[1] },
+            \)
+      Assert Equals(sort(rs), sort([
+            \ '<Plug>(trea-action-choice)',
+            \ '<Plug>(trea-action-repeat)',
+            \]))
+    End
+  End
+
+  Describe #call()
+    It invoke a corresponding mapping of a given name
+      function! s:map_test() abort
+        let b:called = 1
+      endfunction
+
+      nnoremap <buffer><silent> <Plug>(trea-action-test) :<C-u>call <SID>map_test()<CR>
+
+      call trea#internal#action#init()
+      call trea#internal#action#call('test')
+      Assert Equals(b:called, 1)
+    End
+
+    It throws exception when no corresponding mapping exists
+      call trea#internal#action#init()
+      Throws /no action test found in the buffer/ trea#internal#action#call('test')
+    End
+  End
+End

@@ -13,6 +13,11 @@ g:trae_debug						*g:trea_debug*
 	Set 1 to enable trea debug mode.
 	Default: 0
 
+			*g:trea#internal#action#disable_default_mappings*
+g:trea#internal#action#disable_default_mappings
+	Set 1 to disable default mappings for action.
+	Default: 0
+
 					*g:trea#internal#core#include*
 g:trea#internal#core#include
 	A |pattern| to include (allow) nodes to be display.
