@@ -1,4 +1,4 @@
-let s:Flag = vital#fila#import('App.Flag')
+let s:Flag = vital#trea#import('App.Flag')
 
 let s:options = ['-drawer']
 
