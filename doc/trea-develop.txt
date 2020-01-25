@@ -13,6 +13,33 @@ g:trae_debug						*g:trea_debug*
 	Set 1 to enable trea debug mode.
 	Default: 0
 
+					*g:trea#internal#core#include*
+g:trea#internal#core#include
+	A |pattern| to include (allow) nodes to be display.
+	The pattern is compared to "label" attribute of each nodes.
+	Default: ""
+
+					*g:trea#internal#core#exclude*
+g:trea#internal#core#exclude
+	A |pattern| to exclude (disallow) nodes to be display.
+	The pattern is compared to "label" attribute of each nodes.
+	Default: ""
+
+					*g:trea#internal#core#comparator*
+g:trea#internal#core#comparator
+	A |String| name of comparator used to sort tree items. Allowed value is a key
+	of |g:trea#internal#core#comparators|.
+	Default: "default"
+
+					*g:trea#internal#core#comparators*
+g:trea#internal#core#comparators
+	A |Dict| which key is a name of comparator and value is a function
+	reference.
+	Default: {
+	  "default": function('trea#comparator#default#compare'),
+	  "lexical": function('trea#comparator#lexical#compare'),
+	}
+
 				*g:trea#internal#node#STATUS_NONE*
 				*g:trea#internal#node#STATUS_COLLAPSED*
 				*g:trea#internal#node#STATUS_EXPANDED*
