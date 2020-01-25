@@ -20,7 +20,7 @@ function! trea#internal#core#new(url, provider, ...) abort
         \ 'nodes': [root],
         \ 'visible_nodes': [root],
         \ 'marks': [],
-        \ 'hidden': 0,
+        \ 'hide': g:trea#internal#core#hide,
         \ 'include': g:trea#internal#core#include,
         \ 'exclude': g:trea#internal#core#exclude,
         \}
@@ -36,7 +36,7 @@ function! trea#internal#core#update_nodes(trea, nodes) abort
   let a:trea.nodes = copy(a:nodes)
   let include = a:trea.include
   let exclude = a:trea.exclude
-  let Hidden = a:trea.hidden
+  let Hidden = !a:trea.hide
        \ ? { -> 1 }
        \ : { n -> n.status is# s:STATUS_EXPANDED || !n.hidden }
   let Include = empty(include)
@@ -61,6 +61,7 @@ function! trea#internal#core#update_marks(trea, marks) abort
 endfunction
 
 call s:Config.config(expand('<sfile>:p'), {
+      \ 'hide': 1,
       \ 'include': '',
       \ 'exclude': '',
       \ 'comparator': 'default',

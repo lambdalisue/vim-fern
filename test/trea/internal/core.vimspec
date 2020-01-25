@@ -16,7 +16,7 @@ Describe trea#internal#core
       Assert KeyExists(trea, 'nodes')
       Assert KeyExists(trea, 'visible_nodes')
       Assert KeyExists(trea, 'marks')
-      Assert KeyExists(trea, 'hidden')
+      Assert KeyExists(trea, 'hide')
       Assert KeyExists(trea, 'include')
       Assert KeyExists(trea, 'exclude')
     End
@@ -131,10 +131,10 @@ Describe trea#internal#core
             \])
     End
 
-    It does NOT remove HIDDEN nodes from 'visible_nodes' when trea.hidden is TRUE
+    It does NOT remove HIDDEN nodes from 'visible_nodes' when trea.hide is FALSE
       let children[1].hidden = 1
       let children[3].hidden = 1
-      let trea.hidden = 1
+      let trea.hide = 0
       let [r, e] = Promise.wait(
             \ trea#internal#core#update_nodes(trea, [trea.root] + children),
             \ { 'timeout': TIMEOUT },

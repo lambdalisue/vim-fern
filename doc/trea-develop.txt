@@ -18,6 +18,11 @@ g:trea#internal#action#disable_default_mappings
 	Set 1 to disable default mappings for action.
 	Default: 0
 
+					*g:trea#internal#core#hide*
+g:trea#internal#core#hide
+	Set 1 to hide hidden nodes.
+	Default: 1
+
 					*g:trea#internal#core#include*
 g:trea#internal#core#include
 	A |pattern| to include (allow) nodes to be display.
@@ -417,8 +422,8 @@ Name		Description~
 
 "label"		A |String| used to display the node in a tree view.
 
-"hidden"	A 1/0 to indicate if the node should be hidden. All hidden
-		nodes become visible once trea enter hidden mode.
+"hide"		A 1/0 to indicate if the node should be hide. All hide nodes
+		become visible once trea enter hide mode.
 
 "bufname"	A |String| buffer name used to open the node or |v:null|.
 		This value is used when users want to enter a branch node so
