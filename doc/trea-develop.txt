@@ -206,8 +206,57 @@ g:trea#internal#renderer#unmarked_symbol
 <
 	Default: "  "
 
+				*g:trea#lib#buffer#window_locator_threshold*
+g:trea#lib#buffer#window_locator_threshold
+	A |Dict| which has "winwidth" and/or "winheight" to customize the size
+	of suitable window in |trea-develop-window-locator|.
+
+	Note that the value is used ONLY when initialized. Any changes
+	after initialization will not applied.
+
+	Default: {
+	  "winwidth": &columns / 4,
+	  "winheight": &lines / 3,
+	}
+
 -----------------------------------------------------------------------------
 FUNCTION				*trea-develop-api-function*
+
+				*trea#lib#buffer#replace()*
+trea#lib#buffer#replace({bufnr}, {content})
+	Replace a content of the buffer {bufnr} (|Number|) to the {content}
+	(|List| of |String|).
+	Note that 'modifiable' of the target buffer does not affect.
+	Note that 'modified' of the target buffer will not changed.
+
+				*trea#lib#buffer#open()*
+trea#lib#buffer#open({bufname}[, {options}])
+	Open a new buffer with the {bufname} (|String|).
+	The following are avaialble in the {options}.
+
+	"opener"	An opener |String| used to open the buffer.
+			"|edit|", "|split|", "|vsplit|", "|tabedit|", or
+			"select" (|trea-develop-window-selector|).
+
+	"mods"		A |String| |mods| which is used to open command.
+			
+	"cmdarg"	A |String| |cmdarg| which is used to open command.
+
+	"locator"	1/0 to indicate whether |trea-develop-window-locator|
+			should be used prior to open a buffer.
+
+					*trea-develop-window-selector*
+	Window selector open a prompt to select window visually.
+	This feature has strongly inspired by t9md/vim-choosewin.
+
+					*trea-develop-window-locator*
+	Window locator is used to select an anchor window automatically.
+	It find all suitable window; a window which is not 'previewwindow' and
+	has enough space; and focus the nearest suitable window if a current
+	window is not suitable.
+	See |g:trea#lib#buffer#window_locator_threshold| to custom the size
+	of the suitable window.
+
 
 				*trea#lib#url#parse()*
 trea#lib#url#parse({url})

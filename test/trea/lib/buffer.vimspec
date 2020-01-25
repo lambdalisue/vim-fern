@@ -1,0 +1,140 @@
+Describe trea#lib#buffer
+  After all
+    %bwipeout!
+  End
+
+  Before
+    %bwipeout!
+  End
+
+  Describe #replace()
+    It replaces a content of a given buffer to a given content
+      let bufnr = bufnr('%')
+      call setline(1, [
+            \ "Hello",
+            \ "Darkness",
+            \ "My",
+            \ "Old",
+            \ "Friend",
+            \])
+      new
+      call trea#lib#buffer#replace(bufnr, [
+            \ "Hello",
+            \ "World",
+            \])
+      Assert Equals(getbufline(bufnr, 1, '$'), [
+            \ "Hello",
+            \ "World",
+            \])
+
+      let bufnr = bufnr('%')
+      call setline(1, [
+            \ "Hello",
+            \ "Darkness",
+            \ "My",
+            \ "Old",
+            \ "Friend",
+            \])
+      new
+      call trea#lib#buffer#replace(bufnr, [
+            \ "hello",
+            \ "darkness",
+            \ "my",
+            \ "old",
+            \ "friend",
+            \])
+      Assert Equals(getbufline(bufnr, 1, '$'), [
+            \ "hello",
+            \ "darkness",
+            \ "my",
+            \ "old",
+            \ "friend",
+            \])
+    End
+
+    It success with 'nomodifiable'
+      let bufnr = bufnr('%')
+      call setline(1, [
+            \ "Hello",
+            \ "Darkness",
+            \ "My",
+            \ "Old",
+            \ "Friend",
+            \])
+      setlocal nomodifiable
+      new
+      call trea#lib#buffer#replace(bufnr, [
+            \ "Hello",
+            \ "World",
+            \])
+      Assert Equals(getbufline(bufnr, 1, '$'), [
+            \ "Hello",
+            \ "World",
+            \])
+      Assert Equals(getbufvar(bufnr, '&modifiable'), 0)
+    End
+
+    It does not touch 'modified'
+      let bufnr = bufnr('%')
+      call setline(1, [
+            \ "Hello",
+            \ "Darkness",
+            \ "My",
+            \ "Old",
+            \ "Friend",
+            \])
+      setlocal nomodified
+      new
+      call trea#lib#buffer#replace(bufnr, [
+            \ "Hello",
+            \ "World",
+            \])
+      Assert Equals(getbufline(bufnr, 1, '$'), [
+            \ "Hello",
+            \ "World",
+            \])
+      Assert Equals(getbufvar(bufnr, '&modified'), 0)
+
+      let bufnr = bufnr('%')
+      call setline(1, [
+            \ "Hello",
+            \ "Darkness",
+            \ "My",
+            \ "Old",
+            \ "Friend",
+            \])
+      setlocal modified
+      new
+      call trea#lib#buffer#replace(bufnr, [
+            \ "Hello",
+            \ "World",
+            \])
+      Assert Equals(getbufline(bufnr, 1, '$'), [
+            \ "Hello",
+            \ "World",
+            \])
+      Assert Equals(getbufvar(bufnr, '&modified'), 1)
+    End
+  End
+
+  Describe #open()
+    It opens a new buffer with opener
+      call trea#lib#buffer#open('hello', {
+            \ 'opener': 'edit',
+            \})
+      Assert Equals(winnr('$'), 1)
+      %bwipeout!
+
+      call trea#lib#buffer#open('hello', {
+            \ 'opener': 'split',
+            \})
+      Assert Equals(winnr('$'), 2)
+      %bwipeout!
+
+      call trea#lib#buffer#open('hello', {
+            \ 'opener': 'vsplit',
+            \})
+      Assert Equals(winnr('$'), 2)
+    End
+  End
+End
