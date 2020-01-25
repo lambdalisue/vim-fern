@@ -28,7 +28,7 @@ function! s:update(timer, spinner, bufnr) abort
   call execute(printf('sign unplace * group=trea buffer=%d', a:bufnr))
   let info = getwininfo(winid)[0]
   for lnum in range(info.topline, info.botline)
-    let node = get(trea.nodes, lnum - 1, v:null)
+    let node = get(trea.visible_nodes, lnum - 1, v:null)
     if node is# v:null
       return
     elseif node.processing is# 0
