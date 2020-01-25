@@ -95,6 +95,20 @@ trea#lib#url#parse({url})
 <
 	https://en.wikipedia.org/wiki/Uniform_Resource_Identifier#Examples
 
+				*trea#message#info()*
+				*trea#message#title()*
+				*trea#message#error()*
+				*trea#message#debug()*
+trea#message#info({object}...)
+trea#message#title({object}...)
+trea#message#error({object}...)
+trea#message#debug({object}...)
+	Show |String| representation of each {object} when Vim is idle.
+	The info shows without higlight.
+	The title shows with |hl-Title|.
+	The error shows with |hl-Error|.
+	The debug shows with |hl-Comment| when |g:trea_debug| is TRUE.
+
 				*trea#scheme#{scheme}#provider#new()*
 trea#scheme#{scheme}#provider#new()
 	Return a provider instance (|trea-develop-provider|) of the {scheme}.
