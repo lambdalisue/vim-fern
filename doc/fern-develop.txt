@@ -1,0 +1,698 @@
+*fern-develop.txt*		Developer guide for fern development
+
+Author:  Alisue <lambdalisue@hashnote.net>
+License: MIT license
+
+=============================================================================
+API						*fern-develop-api*
+
+-----------------------------------------------------------------------------
+VARIABLE				*fern-develop-api-variable*
+
+g:trae_debug						*g:fern_debug*
+	Set 1 to enable fern debug mode.
+	Default: 0
+
+			*g:fern#internal#action#disable_default_mappings*
+g:fern#internal#action#disable_default_mappings
+	Set 1 to disable default mappings for action.
+	Default: 0
+
+					*g:fern#internal#core#hide*
+g:fern#internal#core#hide
+	Set 1 to hide hidden nodes.
+	Default: 1
+
+					*g:fern#internal#core#include*
+g:fern#internal#core#include
+	A |pattern| to include (allow) nodes to be display.
+	The pattern is compared to "label" attribute of each nodes.
+	Default: ""
+
+					*g:fern#internal#core#exclude*
+g:fern#internal#core#exclude
+	A |pattern| to exclude (disallow) nodes to be display.
+	The pattern is compared to "label" attribute of each nodes.
+	Default: ""
+
+					*g:fern#internal#core#comparator*
+g:fern#internal#core#comparator
+	A |String| name of comparator used to sort tree items. Allowed value is a key
+	of |g:fern#internal#core#comparators|.
+	Default: "default"
+
+					*g:fern#internal#core#comparators*
+g:fern#internal#core#comparators
+	A |Dict| which key is a name of comparator and value is a function
+	reference.
+	Default: {
+	  "default": function('fern#comparator#default#compare'),
+	  "lexical": function('fern#comparator#lexical#compare'),
+	}
+
+				*g:fern#internal#node#STATUS_NONE*
+				*g:fern#internal#node#STATUS_COLLAPSED*
+				*g:fern#internal#node#STATUS_EXPANDED*
+g:fern#internal#node#STATUS_NONE
+g:fern#internal#node#STATUS_COLLAPSED
+g:fern#internal#node#STATUS_EXPANDED
+	Constant |Number| which indicates a node status.
+	STATUS_NONE means that the node is leaf and does not have any status.
+	STATUS_COLLAPSED means that the node is branch and collapsed (closed).
+	STATUS_EXPANDED means that the node is branch and expanded (opened).
+
+				*g:fern#internal#renderer#leading*
+g:fern#internal#renderer#leading
+	A |String| which is prepended to each node to indicates the nested
+	level of the node.
+
+	For example, when the value is " ", the renderer output become:
+>
+	  root
+	  |- deep
+	   |- alpha
+	    |- beta
+	     |  gamma
+<
+	And when the value is "~~":
+>
+	  root
+	  |- deep
+	  ~~|- alpha
+	  ~~~~|- beta
+	  ~~~~~~|  gamma
+<
+	Default: " "
+
+				*g:fern#internal#renderer#root_symbol*
+g:fern#internal#renderer#root_symbol
+	A |String| which is prepended to a  root node.
+
+	For example, when the value is "", the renderer output become:
+>
+	  root
+	  |- shallow
+	   |+ alpha
+	   |- beta
+	   |  gamma
+<
+	And when the value is "--> ":
+>
+	  --> root
+	  |- shallow
+	   |+ alpha
+	   |- beta
+	   |  gamma
+<
+	Default: ""
+
+				*g:fern#internal#renderer#leaf_symbol*
+g:fern#internal#renderer#leaf_symbol
+	A |String| which is prepended to leaf nodes.
+
+	For example, when the value is "|  ", the renderer output become:
+>
+	  root
+	  |- shallow
+	   |+ alpha
+	   |- beta
+	   |  gamma
+<
+	And when the value is "--> ":
+>
+	  root
+	  |- shallow
+	   |+ alpha
+	   |- beta
+	   --> gamma
+<
+	Default: "|  "
+
+				*g:fern#internal#renderer#collapsed_symbol*
+g:fern#internal#renderer#collapsed_symbol
+	A |String| which is prepended to collapsed nodes (closed branch node).
+
+	For example, when the value is "|+ ", the renderer output become:
+>
+	  root
+	  |- shallow
+	   |+ alpha
+	   |- beta
+	   |  gamma
+<
+	And when the value is "--> ":
+>
+	  root
+	  |- shallow
+	   --> alpha
+	   |- beta
+	   |  gamma
+<
+	Default: "|+ "
+
+				*g:fern#internal#renderer#expanded_symbol*
+g:fern#internal#renderer#expanded_symbol
+	A |String| which is prepended to expanded nodes (opened branch node).
+
+	For example, when the value is "|- ", the renderer output become:
+>
+	  root
+	  |- shallow
+	   |+ alpha
+	   |- beta
+	   |  gamma
+<
+	And when the value is "--> ":
+>
+	  root
+	  --> shallow
+	   |+ alpha
+	   --> beta
+	   |  gamma
+<
+	Default: "|- "
+
+				*g:fern#internal#renderer#marked_symbol*
+g:fern#internal#renderer#marked_symbol
+	A |String| which is prepended to marked nodes.
+
+	For example, when the value is "* ", the renderer output become:
+>
+	* root
+	  |- shallow
+	*  |+ alpha
+	   |- beta
+	*  |  gamma
+<
+	And when the value is "--> ":
+>
+	--> root
+	  |- shallow
+	--> |+ alpha
+	   |- beta
+	--> |  gamma
+<
+	Default: "* "
+
+				*g:fern#internal#renderer#unmarked_symbol*
+g:fern#internal#renderer#unmarked_symbol
+	A |String| which is prepended to nodes which is not marked.
+
+	For example, when the value is "  ", the renderer output become:
+>
+	* root
+	  |- shallow
+	*  |+ alpha
+	   |- beta
+	*  |  gamma
+<
+	And when the value is "--> ":
+>
+	* root
+	--> |- shallow
+	* |+ alpha
+	--> |- beta
+	* |  gamma
+<
+	Default: "  "
+
+				*g:fern#lib#window#locator_threshold*
+g:fern#lib#window#locator_threshold
+	A |Dict| which has "winwidth" and/or "winheight" to customize the size
+	of suitable window in |fern-develop-window-locator|.
+
+	Note that the value is used ONLY when initialized. Any changes
+	after initialization will not applied.
+	Note that's why the variable is |locked| after initialization.
+
+	Default: {
+	  "winwidth": &columns / 4,
+	  "winheight": &lines / 3,
+	}
+
+				*g:fern#lib#window#auto_select*
+g:fern#lib#window#auto_select
+	Set 1 to automatically select window when there is only one suitable
+	window exists in |fern-develop-window-selector|.
+	Default: 1
+
+			*g:fern#mapping#disable_default_mappings*
+g:fern#mapping#disable_default_mappings
+	Set 1 to disable default mappings.
+	Default: 0
+
+			*g:fern#mapping#enabled_mapping_presets*
+g:fern#mapping#enabled_mapping_presets
+	A |List| of |String| which is a name under fern#mapping namespace.
+	Default: ['tree', 'node', 'mark', 'filter']
+
+-----------------------------------------------------------------------------
+FUNCTION				*fern-develop-api-function*
+
+				*fern#lib#buffer#replace()*
+fern#lib#buffer#replace({bufnr}, {content})
+	Replace a content of the buffer {bufnr} (|Number|) to the {content}
+	(|List| of |String|).
+	Note that 'modifiable' of the target buffer does not affect.
+	Note that 'modified' of the target buffer will not changed.
+
+				*fern#lib#buffer#open()*
+fern#lib#buffer#open({bufname}[, {options}])
+	Open a new buffer with the {bufname} (|String|).
+	The following are avaialble in the {options}.
+
+	"opener"	An opener |String| used to open the buffer.
+			"|edit|", "|split|", "|vsplit|", "|tabedit|", or
+			"select" (|fern-develop-window-selector|).
+
+	"mods"		A |String| |mods| which is used to open command.
+			
+	"cmdarg"	A |String| |cmdarg| which is used to open command.
+
+	"locator"	1/0 to indicate whether |fern-develop-window-locator|
+			should be used prior to open a buffer.
+
+				*fern#lib#url#parse()*
+fern#lib#url#parse({url})
+	Parse the {url} (|String|) and return an URL instnce which has the
+	following attributes:
+
+	Name		Description~
+	"scheme"	|String| which represent the SCHEME part of the {url}.
+
+	"authority"	|Dict| which has the following attributes to represent
+			the AUTHORITY part of the {url}:
+
+			"userinfo"	|String| for the USERINFO part
+			"host"		|String| for the HOST part
+			"port"		|String| for the PORT part
+
+			Or an empty |Dict| if the {url} does not include
+			AUTHORITY part (e.g. "mailto:John.Doe@example.com")
+
+	"path"		|String| which represent the PATH part of the {url}.
+
+	"query"		|Dict| which represents the QUERY part of the {url}.
+			The part is assumed to have key or key-value pairs
+			separated by ampersand (&) like "key1&key2=value2".
+			The value become |v:true| when no corresponding value
+			exist (e.g. "key1" in above example.)
+			The value become |String| when coressponding value
+			exists (e.g "key2=value2" in above example.)
+
+	"fragment"	|String| which represents the FRAGMENT part of the
+			{url}.
+
+	And the instance has the following methods:
+
+	Name		Description~
+	"to_string()"	Return |String| representation of the instance.
+
+	The {url} is assumed to follow the syntax of a generic URI which
+	syntax consists of a hierarchical sequence of five components:
+>
+	URI = SCHEME:[//AUTHORITY]PATH[?QUERY][#FRAGMENT]
+<
+	where the AUTHORITY components divides into three subcomponents:
+>
+	AUTHORITY = [USERINFO@]HOST[:PORT]
+<
+	For example
+>
+	          userinfo       host      port
+	          ┌──┴───┐ ┌──────┴──────┐ ┌┴┐
+	  https://john.doe@www.example.com:123/forum/questions/?tag=networking&order=newest#top
+	  └─┬─┘   └───────────┬──────────────┘└───────┬───────┘ └───────────┬─────────────┘ └┬┘
+	  scheme          authority                  path                 query           fragment
+	
+	  ldap://[2001:db8::7]/c=GB?objectClass?one
+	  └┬─┘   └─────┬─────┘└─┬─┘ └──────┬──────┘
+	  scheme   authority   path      query
+	
+	  mailto:John.Doe@example.com
+	  └─┬──┘ └────┬─────────────┘
+	  scheme     path
+	
+	  news:comp.infosystems.www.servers.unix
+	  └┬─┘ └─────────────┬─────────────────┘
+	  scheme            path
+	
+	  tel:+1-816-555-1212
+	  └┬┘ └──────┬──────┘
+	  scheme    path
+	
+	  telnet://192.0.2.16:80/
+	  └─┬──┘   └─────┬─────┘│
+	  scheme     authority  path
+	
+	  urn:oasis:names:specification:docbook:dtd:xml:4.1.2
+	  └┬┘ └──────────────────────┬──────────────────────┘
+	  scheme                    path
+<
+	https://en.wikipedia.org/wiki/Uniform_Resource_Identifier#Examples
+
+				*fern#lib#window#find()*
+fern#lib#window#find({predicator}[, {origin}])
+	Find a first |winnr| which {predicator} (|Function|) returns True.
+	The search starts from the {origin} (|Number|) window.
+
+				*fern#lib#window#locate()*
+				*fern-develop-window-locator*
+fern#lib#window#locate([{origin}])
+	Find a first |winnr| which is suitable; a window which is not
+	'previewwindow' and has enough space; from the {origin} (|Number|).
+	If {origin} is omitted, a previous window is used.
+	See |g:fern#lib#window#locator_threshold| to custom the size of the
+	suitable window.
+
+				*fern#lib#window#select()*
+				*fern-develop-window-selector*
+fern#lib#window#select()
+	Open a prompt to select a window visually to focus. 
+	This feature has strongly inspired by t9md/vim-choosewin.
+	Note that non suitable window is not listed unless there is suitable
+	window.
+	See |g:fern#lib#window#auto_select| to disable auto select feature.
+
+				*fern#mapping#call()*
+fern#mapping#call({fn}[, {args}])
+	A utility wrapper function to call mapping function.
+
+	The {fn} (|Function|) will be called with
+
+	1. A |fern-develop-helper| instance as a first argument
+	2. Exception occured is properly printed
+	3. Rejectec promise is properly printed
+
+	Create a script local function which use this function to define
+	mappings like:
+>
+	function! s:init() abort
+	  nnoremap <buffer><silent>
+	        \ <Plug>(fern-action-echo)
+	        \ :<C-u>call <SID>call('echo')<CR>
+	endfunction
+
+	function! s:call(name) abort
+	  let Fn = funcref(printf('s:map_%s', a:name))
+	  call fern#mapping#call(Fn)
+	endfunction
+
+	function! s:map_echo(helper) abort
+	  echo a:helper.get_cursor_node().name
+	endfunction
+<
+				*fern#mapping#smart()*
+fern#mapping#smart({leaf}, {collapsed}[, {expanded}])
+	Return a |String| for |map-<expr>| determined from a cursor node.
+	If the cursor node is leaf, the {leaf} is returned.
+	If the cursor node is collapsed, the {collapsed} is returned.
+	If the cursor node is expanded, the {collapsed} or {expanded} if
+	specified is retunred.
+	IF the cursor node is not found, |<Nop>| is retunred.
+>
+	nmap <buffer><silent><expr>
+	      \ <Plug>(fern-open-or-expand-or-collapse)
+	      \ fern#mapping#smart(
+	      \   "\<Plug>(fern-action-open)",
+	      \   "\<Plug>(fern-action-expand)",
+	      \   "\<Plug>(fern-action-collapse)",
+	      \ )
+<
+				*fern#mapping#init()*
+fern#mapping#init({scheme})
+	Define mappings by calling |fern#mapping#{preset}#init()| sequentially.
+	Called mappings are defined by |g:fern#mapping#enabled_mapping_presets|.
+	Note that it also call |fern#scheme#{scheme}#mapping#init()| for
+	scheme specific mappings.
+
+				*fern#mapping#{preset}#init()*
+fern#mapping#{preset}#init({disable_default_mappings})
+	Function called on a fern buffer to define {preset} mappings.
+	Note that mappings name starts from "fern-action-" will be registered
+	in actions.
+>
+	function! fern#mapping#test#init(disable_default_mappings) abort
+	  nnoremap <buffer><silent>
+	        \ <Plug>(fern-action-echo)
+	        \ :<C-u>call <SID>call('echo')<CR>
+
+	  if a:disable_default_mappings
+	    nmap <buffer><silent> E <Plug>(fern-action-echo)
+	  endif
+	endfunction
+<
+	To custom mappings, modify |g:fern#mapping#enabled_mapping_presets|.
+
+				*fern#scheme#{scheme}#mapping#init()*
+fern#scheme#{scheme}#mapping#init({disable_default_mappings})
+	Function called on a fern buffer to define scheme specific mappings.
+	See |fern#mapping#{name}#init()| for detail.
+
+				*fern#message#info()*
+				*fern#message#title()*
+				*fern#message#error()*
+				*fern#message#debug()*
+fern#message#info({object}...)
+fern#message#title({object}...)
+fern#message#error({object}...)
+fern#message#debug({object}...)
+	Show |String| representation of each {object} when Vim is idle.
+	The info shows without higlight.
+	The title shows with |hl-Title|.
+	The error shows with |hl-Error|.
+	The debug shows with |hl-Comment| when |g:fern_debug| is TRUE.
+
+				*fern#scheme#{scheme}#provider#new()*
+fern#scheme#{scheme}#provider#new()
+	Return a provider instance (|fern-develop-provider|) of the {scheme}.
+
+=============================================================================
+PROVIDER					*fern-develop-provider*
+
+A provider instance must have the following methods.
+
+				*fern-develop-provider.get_node()*
+.get_node({url})		
+	Return a (partial) node instance of the {url} (|String|).
+	It throws error when no node is found for the {url}.
+
+	The node instance MUST have the following attributes.
+
+	"name"		The name of the node (required)
+	"status"	1/0 to indicate if the node is branch (required)
+
+	And may have the following attributes.
+
+	"label"		Label to display the node in a tree view
+	"hidden"	1/0 to indicate if the node should be hidden
+	"bufname"	Buffer name used to open the node or |v:null|
+	"_{ANY}"	Scheme specific variables (e.g. "_path" in file)
+
+	The partial node will be filled by fern to become |fern-develop-node|.
+
+				*fern-develop-provider.get_parent()*
+.get_parent({node}, {token})
+	Return a promise which is resolved to a parent node of the {node}.
+	It resolves the {node} itself when the {node} does not have parent.
+
+	The {token} is CancellationToken which can be used to cancel the
+	internal process. Use ... to ignore that argument.
+
+				*fern-develop-provider.get_children()*
+.get_children({node}, {token})
+	Return a promise which is resolved to a list of child nodes of the
+	{node}. It rejects when the {node} is leaf node.
+
+	The {token} is CancellationToken which can be used to cancel the
+	internal process. Use ... to ignore that argument.
+
+=============================================================================
+NODE						*fern-develop-node*
+
+A node instance is a tree item which has the following attributes:
+
+Name		Description~
+"name"		A |String| name of the node. This value is used in "__key"
+		thus must be unique among nodes which has same "__owner".
+
+"status"	A |Number| which indicates the node status. One of the
+		followings:
+		|g:fern#internal#node#STATUS_NONE|	Leaf node
+		|g:fern#internal#node#STATUS_COLLAPSED|	Branch node (close)
+		|g:fern#internal#node#STATUS_EXPANDED|	Branch node (open)
+
+"label"		A |String| used to display the node in a tree view.
+
+"hide"		A 1/0 to indicate if the node should be hide. All hide nodes
+		become visible once fern enter hide mode.
+
+"bufname"	A |String| buffer name used to open the node or |v:null|.
+		This value is used when users want to enter a branch node so
+		scheme developers SHOULD assign a proper value to this
+		attribute. Otherwise users cannot enter the branch node.
+
+"processing"	A |Number| which indicate that the node is in processing.
+		If the value is greater than 0, a spinner is displayed in sign
+		area of the node to indicate that the node is processing.
+
+"__key"		A |List| of |String| which represents the location of the
+		node in the tree.
+		This value is automatically assigned by fern and developers
+		should NOT touch unless for debugging purpose.
+
+"__owner"	An owner node instance of the node in the tree.
+		This value is automatically assigned by fern and developers
+		should NOT touch unless for debugging purpose.
+
+"__cache"	A |Dict| used to cache value. Only attribute names of this
+		field are shown in debug output so developers should store
+		complex values which may failed to display in this field.
+
+"__promise"	A |Dict| used to store processing promise. Only attribute
+		names of this field are shown in debug output so developers
+		should store temporary promise in this field.
+
+"_{XXX}"	Any attribute starts from a single underscore (_) is opened
+		for each scheme. Note that any complex value should be stored
+		in "__cache" instead to avoid display error.
+
+=============================================================================
+HELPER						*fern-develop-helper*
+
+A helper instance is used for writing features in mappings. Developers can
+pass a helper instance to the first argument of functions by calling the
+function with |fern#helper#call()| or create a new helper instance of the
+current buffer by calling |fern#helper#new()|.
+
+			*fern-develop-helper.get_root_node()*
+.get_root_node()
+	Return a root node instance.
+
+			*fern-develop-helper.get_cursor_node()*
+.get_cursor_node()
+	Return a node under the cursor.
+
+			*fern-develop-helper.get_marked_nodes()*
+.get_marked_nodes()
+	Return a list of nodes which has marked.
+
+			*fern-develop-helper.get_selected_nodes()*
+.get_selected_nodes()
+	Return a list of nodes 1) which has marked when at least one marked
+	node exists 2) a node under the cursor.
+	This is equivalent to the following code
+>
+	function! s:get_selected_nodes(helper) abort
+	  let nodes = a:helper.get_selected_nodes()
+	  return empty(nodes) ? [a:helper.get_cursor_node()] : nodes
+	endfunction
+<
+			*fern-develop-helper.get_cursor()*
+.get_cursor()
+	Return a list which indicates the cursor position. Note that the value
+	is slightly different from the value from |getcurpos()| or whatever.
+
+			*fern-develop-helper.set_cursor()*
+.set_cursor({cursor})
+	Move cursor to the {cursor}.
+
+			*fern-develop-helper.save_cursor()*
+.save_cursor()
+	Save cursor position to restore later. It saves the node under cursor
+	to restore cursor even after the content changes.
+
+			*fern-develop-helper.restore_cursor()*
+.restore_cursor()
+	Restore saved cursor position by searching a corresponding node.
+
+			*fern-develop-helper.cancel()*
+.cancel()
+	Emit cancel request through cancellation token and assign a new
+	cancellation token to the tree for later processes.
+
+			*fern-develop-helper.process_node()*
+.process_node({node})
+	Mark the {node} PROCESSING and return a function to restore the {node}.
+	The PROCESSING nodes are displayed with a spinner |sign|.
+>
+	function! s:map_slow_operation(helper) abort
+	  let node = a:helper.get_cursor_node()
+	  let Done = a:helper.process_node(node)
+	  return s:slow_operation(node).finally({ -> Done() })
+	endfunction
+<
+			*fern-develop-helper.sleep()*
+.sleep({ms})
+	Return a promise which will resolves to 0 after {ms} milliseconds.
+
+			*fern-develop-helper.redraw()*
+.redraw()
+	Return a promise to redraw the content.
+
+			*fern-develop-helper.update_nodes()*
+			*fern-develop-helper.update_marks()*
+.update_nodes({nodes})
+.update_marks({marks})
+	Return a promise to update nodes/marks to the {nodes}/{marks}.
+
+			*fern-develop-helper.expand_node()*
+.expand_node({key})
+	Return a promise to expand a node identified by the {key}.
+	It reloads the node instead when the node has expanded or leaf.
+
+			*fern-develop-helper.collapse_node()*
+.collapse_node({key})
+	Return a promise to collapse a node identified by the {key}.
+	It reloads the node instead when the node has collapsed or leaf.
+
+			*fern-develop-helper.reload_node()*
+.reload_node({key})
+	Return a promise to reload a node identified by the {key} and it's
+	descended.
+
+			*fern-develop-helper.reveal_node()*
+.reveal_node({key})
+	Return a promise to reveal a node identified by the {key}.
+	The term "reveal" here means "recursively expand nested nodes until
+	reached to the target node."
+
+			*fern-develop-helper.focus_node()*
+.focus_node({key}[, {options}])
+	Return a promise to focus a node identified by the {key}.
+	The following options are available in the {options}.
+
+	"offset"	A |Number| for line offset.
+	"previous"	A node instance or |v:null|. If a node instance has
+			specified, it focus node only when the current node
+			has not changed from the specified previous one.
+
+			*fern-develop-helper.set_mark()*
+.set_mark({key}, {value})
+	Return a promise to set mark to a node identified by the {key}.
+
+			*fern-develop-helper.set_hide()*
+.set_hide({value})
+	Return a promise to set hide.
+
+			*fern-develop-helper.set_include()*
+			*fern-develop-helper.set_exclude()*
+.set_include({pattern})
+.set_exclude({pattern})
+	Return a promise to set include/exclude.
+
+			*fern-develop-helper.enter_tree()*
+.enter_tree({node})
+	Return a promise to enter a tree which root node become the {node}.
+	Note that "bufname" of the {node} must be properly configured to use
+	this feature.
+
+			*fern-develop-helper.leave_tree()*
+.leave_tree()
+	Return a promise to enter a tree which root node become a parent node
+	of the current root node.
+	Note that "bufname" of the parent node must be properly configured to
+	use this feature.
+
+=============================================================================
+vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl

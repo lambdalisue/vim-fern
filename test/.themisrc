@@ -5,8 +5,8 @@ endif
 " Profile ------------------------------------------------------------------
 if $PROFILE !=# ''
   execute 'profile start' $PROFILE
-  profile! file ./autoload/fila/*
-  profile! file ./autoload/vital/__fila__/*
+  profile! file ./autoload/fern/*
+  profile! file ./autoload/vital/__fern__/*
 endif
 
 " Force English interface

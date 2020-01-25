@@ -1,0 +1,303 @@
+Describe fern#internal#core
+  Before
+    let TIMEOUT = 5000
+    let STATUS_EXPANDED = g:fern#internal#node#STATUS_EXPANDED
+    let Promise = vital#fern#import('Async.Promise')
+    let provider = fern#scheme#debug#provider#new()
+  End
+
+  Describe #new()
+    It returns a fern instance of given url and provider
+      let fern = fern#internal#core#new('debug:///', provider)
+      Assert KeyExists(fern, 'source')
+      Assert KeyExists(fern, 'provider')
+      Assert KeyExists(fern, 'comparator')
+      Assert KeyExists(fern, 'root')
+      Assert KeyExists(fern, 'nodes')
+      Assert KeyExists(fern, 'visible_nodes')
+      Assert KeyExists(fern, 'marks')
+      Assert KeyExists(fern, 'hide')
+      Assert KeyExists(fern, 'include')
+      Assert KeyExists(fern, 'exclude')
+    End
+  End
+
+  Describe #cancel()
+    Before
+      let fern = fern#internal#core#new('debug:///', provider)
+    End
+
+    It cancels the source and assign new CancellationTokenSource instance
+      let fern = fern#internal#core#new('debug:///', provider)
+      let source = fern.source
+      let token = source.token
+      call fern#internal#core#cancel(fern)
+      Assert True(token.cancellation_requested())
+      Assert NotEqual(source, fern.source)
+    End
+  End
+
+  Describe #update_nodes()
+    Before
+      let fern = fern#internal#core#new('debug:///', provider)
+      let [children, _] = Promise.wait(
+            \ fern#internal#node#children(fern.root, provider, fern.source.token),
+            \ { 'timeout': TIMEOUT },
+            \)
+    End
+
+    It returns a promise
+      let p = fern#internal#core#update_nodes(fern, [fern.root] + children)
+      Assert True(Promise.is_promise(p))
+    End
+
+    It updates 'nodes'
+      let [r, e] = Promise.wait(
+            \ fern#internal#core#update_nodes(fern, [fern.root] + children),
+            \ { 'timeout': TIMEOUT },
+            \)
+      Assert Equals(e, v:null)
+      Assert Equals(r, 0)
+      Assert Equals(map(copy(fern.nodes), { -> v:val._uri }), [
+            \ '/',
+            \ '/shallow',
+            \ '/deep',
+            \ '/heavy',
+            \ '/leaf',
+            \])
+    End
+
+    It updates 'visible_nodes'
+      let [r, e] = Promise.wait(
+            \ fern#internal#core#update_nodes(fern, [fern.root] + children),
+            \ { 'timeout': TIMEOUT },
+            \)
+      Assert Equals(e, v:null)
+      Assert Equals(r, 0)
+      Assert Equals(map(copy(fern.visible_nodes), { -> v:val._uri }), [
+            \ '/',
+            \ '/shallow',
+            \ '/deep',
+            \ '/heavy',
+            \ '/leaf',
+            \])
+    End
+
+    It removes HIDDEN nodes from 'visible_nodes'
+      let children[1].hidden = 1
+      let children[3].hidden = 1
+      let [r, e] = Promise.wait(
+            \ fern#internal#core#update_nodes(fern, [fern.root] + children),
+            \ { 'timeout': TIMEOUT },
+            \)
+      Assert Equals(e, v:null)
+      Assert Equals(r, 0)
+      Assert Equals(map(copy(fern.nodes), { -> v:val._uri }), [
+            \ '/',
+            \ '/shallow',
+            \ '/deep',
+            \ '/heavy',
+            \ '/leaf',
+            \])
+      Assert Equals(map(copy(fern.visible_nodes), { -> v:val._uri }), [
+            \ '/',
+            \ '/shallow',
+            \ '/heavy',
+            \])
+    End
+
+    It does NOT remove HIDDEN nodes from 'visible_nodes' if the nodes are expanded
+      let children[1].hidden = 1
+      let children[1].status = STATUS_EXPANDED
+      let children[3].hidden = 1
+      let [r, e] = Promise.wait(
+            \ fern#internal#core#update_nodes(fern, [fern.root] + children),
+            \ { 'timeout': TIMEOUT },
+            \)
+      Assert Equals(e, v:null)
+      Assert Equals(r, 0)
+      Assert Equals(map(copy(fern.nodes), { -> v:val._uri }), [
+            \ '/',
+            \ '/shallow',
+            \ '/deep',
+            \ '/heavy',
+            \ '/leaf',
+            \])
+      Assert Equals(map(copy(fern.visible_nodes), { -> v:val._uri }), [
+            \ '/',
+            \ '/shallow',
+            \ '/deep',
+            \ '/heavy',
+            \])
+    End
+
+    It does NOT remove HIDDEN nodes from 'visible_nodes' when fern.hide is FALSE
+      let children[1].hidden = 1
+      let children[3].hidden = 1
+      let fern.hide = 0
+      let [r, e] = Promise.wait(
+            \ fern#internal#core#update_nodes(fern, [fern.root] + children),
+            \ { 'timeout': TIMEOUT },
+            \)
+      Assert Equals(e, v:null)
+      Assert Equals(r, 0)
+      Assert Equals(map(copy(fern.nodes), { -> v:val._uri }), [
+            \ '/',
+            \ '/shallow',
+            \ '/deep',
+            \ '/heavy',
+            \ '/leaf',
+            \])
+      Assert Equals(map(copy(fern.visible_nodes), { -> v:val._uri }), [
+            \ '/',
+            \ '/shallow',
+            \ '/deep',
+            \ '/heavy',
+            \ '/leaf',
+            \])
+    End
+
+    It removes non INCLUDE nodes from 'visible_nodes' by fern.include
+      let fern.include = '^\%(root\|shallow\|heavy\)$'
+      let [r, e] = Promise.wait(
+            \ fern#internal#core#update_nodes(fern, [fern.root] + children),
+            \ { 'timeout': TIMEOUT },
+            \)
+      Assert Equals(e, v:null)
+      Assert Equals(r, 0)
+      Assert Equals(map(copy(fern.nodes), { -> v:val._uri }), [
+            \ '/',
+            \ '/shallow',
+            \ '/deep',
+            \ '/heavy',
+            \ '/leaf',
+            \])
+      Assert Equals(map(copy(fern.visible_nodes), { -> v:val._uri }), [
+            \ '/',
+            \ '/shallow',
+            \ '/heavy',
+            \])
+    End
+
+    It does NOT removes non INCLUDE nodes from 'visible_nodes' if the nodes are expanded
+      let children[1].status = STATUS_EXPANDED
+      let fern.include = '^\%(root\|shallow\|heavy\)$'
+      let [r, e] = Promise.wait(
+            \ fern#internal#core#update_nodes(fern, [fern.root] + children),
+            \ { 'timeout': TIMEOUT },
+            \)
+      Assert Equals(e, v:null)
+      Assert Equals(r, 0)
+      Assert Equals(map(copy(fern.nodes), { -> v:val._uri }), [
+            \ '/',
+            \ '/shallow',
+            \ '/deep',
+            \ '/heavy',
+            \ '/leaf',
+            \])
+      Assert Equals(map(copy(fern.visible_nodes), { -> v:val._uri }), [
+            \ '/',
+            \ '/shallow',
+            \ '/deep',
+            \ '/heavy',
+            \])
+    End
+
+    It removes EXCLUDE nodes from 'visible_nodes' by fern.exclude
+      let fern.exclude = '^\%(deep\|leaf\)$'
+      let [r, e] = Promise.wait(
+            \ fern#internal#core#update_nodes(fern, [fern.root] + children),
+            \ { 'timeout': TIMEOUT },
+            \)
+      Assert Equals(e, v:null)
+      Assert Equals(r, 0)
+      Assert Equals(map(copy(fern.nodes), { -> v:val._uri }), [
+            \ '/',
+            \ '/shallow',
+            \ '/deep',
+            \ '/heavy',
+            \ '/leaf',
+            \])
+      Assert Equals(map(copy(fern.visible_nodes), { -> v:val._uri }), [
+            \ '/',
+            \ '/shallow',
+            \ '/heavy',
+            \])
+    End
+
+    It does NOT removes EXCLUDE nodes from 'visible_nodes' if the nodes are expanded
+      let children[1].status = STATUS_EXPANDED
+      let fern.exclude = '^\%(deep\|leaf\)$'
+      let [r, e] = Promise.wait(
+            \ fern#internal#core#update_nodes(fern, [fern.root] + children),
+            \ { 'timeout': TIMEOUT },
+            \)
+      Assert Equals(e, v:null)
+      Assert Equals(r, 0)
+      Assert Equals(map(copy(fern.nodes), { -> v:val._uri }), [
+            \ '/',
+            \ '/shallow',
+            \ '/deep',
+            \ '/heavy',
+            \ '/leaf',
+            \])
+      Assert Equals(map(copy(fern.visible_nodes), { -> v:val._uri }), [
+            \ '/',
+            \ '/shallow',
+            \ '/deep',
+            \ '/heavy',
+            \])
+    End
+  End
+
+  Describe #update_marks()
+    Before
+      let fern = fern#internal#core#new('debug:///', provider)
+      let [children, _] = Promise.wait(
+            \ fern#internal#node#children(fern.root, provider, fern.source.token),
+            \ { 'timeout': TIMEOUT },
+            \)
+      let [_, _] = Promise.wait(
+            \ fern#internal#core#update_nodes(fern, [fern.root] + children),
+            \ { 'timeout': TIMEOUT },
+            \)
+    End
+
+    It returns a promise
+      let p = fern#internal#core#update_marks(fern, [['shallow'], ['deep'], ['leaf']])
+      Assert True(Promise.is_promise(p))
+    End
+
+    It updates 'marks'
+      let [r, e] = Promise.wait(
+            \ fern#internal#core#update_marks(fern, [['shallow'], ['deep'], ['leaf']]),
+            \ { 'timeout': TIMEOUT },
+            \)
+      Assert Equals(e, v:null)
+      Assert Equals(r, 0)
+      Assert Equals(fern.marks, [
+            \ ['shallow'],
+            \ ['deep'],
+            \ ['leaf'],
+            \])
+    End
+
+    It removes marks for HIDDEN nodes
+      let children[1].hidden = 1
+      let children[3].hidden = 1
+      let [_, _] = Promise.wait(
+            \ fern#internal#core#update_nodes(fern, [fern.root] + children),
+            \ { 'timeout': TIMEOUT },
+            \)
+      let [r, e] = Promise.wait(
+            \ fern#internal#core#update_marks(fern, [['shallow'], ['deep'], ['leaf']]),
+            \ { 'timeout': TIMEOUT },
+            \)
+      Assert Equals(e, v:null)
+      Assert Equals(r, 0)
+      Assert Equals(fern.marks, [
+            \ ['shallow'],
+            \])
+    End
+  End
+End
