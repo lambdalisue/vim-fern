@@ -8,9 +8,9 @@ let s:clipboard = []
 let s:STATUS_EXPANDED = g:fern#internal#node#STATUS_EXPANDED
 
 function! fern#scheme#file#mapping#init(disable_default_mappings) abort
-  nnoremap <buffer><silent> <Plug>(fern-action-cd:cd)            :<C-u>call <SID>call('cd', 'cd')<CR>
-  nnoremap <buffer><silent> <Plug>(fern-action-cd:lcd)           :<C-u>call <SID>call('cd', 'lcd')<CR>
-  nnoremap <buffer><silent> <Plug>(fern-action-cd:tcd)           :<C-u>call <SID>call('cd', 'tcd')<CR>
+  nnoremap <buffer><silent> <Plug>(fern-action-cd)               :<C-u>call <SID>call('cd', 'cd')<CR>
+  nnoremap <buffer><silent> <Plug>(fern-action-lcd)              :<C-u>call <SID>call('cd', 'lcd')<CR>
+  nnoremap <buffer><silent> <Plug>(fern-action-tcd)              :<C-u>call <SID>call('cd', 'tcd')<CR>
   nnoremap <buffer><silent> <Plug>(fern-action-open:system)      :<C-u>call <SID>call('open_system')<CR>
   nnoremap <buffer><silent> <Plug>(fern-action-mkfile)           :<C-u>call <SID>call('mkfile')<CR>
   nnoremap <buffer><silent> <Plug>(fern-action-mkdir)            :<C-u>call <SID>call('mkdir')<CR>
@@ -21,9 +21,6 @@ function! fern#scheme#file#mapping#init(disable_default_mappings) abort
   nnoremap <buffer><silent> <Plug>(fern-action-trash)            :<C-u>call <SID>call('trash')<CR>
   nnoremap <buffer><silent> <Plug>(fern-action-remove)           :<C-u>call <SID>call('remove')<CR>
   nnoremap <buffer><silent> <Plug>(fern-action-rename)           :<C-u>call <SID>call('rename')<CR>
-
-  " Alias
-  nmap <buffer> <Plug>(fern-action-cd) <Plug>(fern-action-cd:tcd)
 
   if !a:disable_default_mappings
     nmap <buffer><nowait> x <Plug>(fern-action-open:system)
