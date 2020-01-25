@@ -1,0 +1,42 @@
+Describe fern#internal#action
+  After all
+    %bwipeout!
+  End
+
+  Before
+    %bwipeout!
+  End
+
+  Describe #init()
+    It defines <Plug> mappings for actions
+      call fern#internal#action#init()
+      let rs = map(
+            \ split(execute('nmap <Plug>(fern-action'), '\n'),
+            \ { -> split(v:val)[1] },
+            \)
+      Assert Equals(sort(rs), sort([
+            \ '<Plug>(fern-action-choice)',
+            \ '<Plug>(fern-action-repeat)',
+            \]))
+    End
+  End
+
+  Describe #call()
+    It invoke a corresponding mapping of a given name
+      function! s:map_test() abort
+        let b:called = 1
+      endfunction
+
+      nnoremap <buffer><silent> <Plug>(fern-action-test) :<C-u>call <SID>map_test()<CR>
+
+      call fern#internal#action#init()
+      call fern#internal#action#call('test')
+      Assert Equals(b:called, 1)
+    End
+
+    It throws exception when no corresponding mapping exists
+      call fern#internal#action#init()
+      Throws /no action test found in the buffer/ fern#internal#action#call('test')
+    End
+  End
+End
