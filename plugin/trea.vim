@@ -8,6 +8,11 @@ command! -nargs=*
       \ Trea
       \ call trea#command#trea#command(<q-mods>, <q-args>)
 
+command! -nargs=*
+      \ -complete=customlist,trea#command#focus#complete
+      \ TreaFocus
+      \ call trea#command#focus#command(<q-mods>, <q-args>)
+
 augroup trea_internal
   autocmd! *
   autocmd BufReadCmd trea:*/* nested call trea#internal#viewer#init()
