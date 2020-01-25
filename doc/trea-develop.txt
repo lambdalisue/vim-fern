@@ -455,6 +455,129 @@ Name		Description~
 		for each scheme. Note that any complex value should be stored
 		in "__cache" instead to avoid display error.
 
+=============================================================================
+HELPER						*trea-develop-helper*
+
+A helper instance is used for writing features in mappings. Developers can
+pass a helper instance to the first argument of functions by calling the
+function with |trea#helper#call()| or create a new helper instance of the
+current buffer by calling |trea#helper#new()|.
+
+			*trea-develop-helper.get_root_node()*
+.get_root_node()
+	Return a root node instance.
+
+			*trea-develop-helper.get_cursor_node()*
+.get_cursor_node()
+	Return a node under the cursor.
+
+			*trea-develop-helper.get_marked_nodes()*
+.get_marked_nodes()
+	Return a list of nodes which has marked.
+
+			*trea-develop-helper.get_selected_nodes()*
+.get_selected_nodes()
+	Return a list of nodes 1) which has marked when at least one marked
+	node exists 2) a node under the cursor.
+	This is equivalent to the following code
+>
+	function! s:get_selected_nodes(helper) abort
+	  let nodes = a:helper.get_selected_nodes()
+	  return empty(nodes) ? [a:helper.get_cursor_node()] : nodes
+	endfunction
+<
+			*trea-develop-helper.get_cursor()*
+.get_cursor()
+	Return a list which indicates the cursor position. Note that the value
+	is slightly different from the value from |getcurpos()| or whatever.
+
+			*trea-develop-helper.set_cursor()*
+.set_cursor({cursor})
+	Move cursor to the {cursor}.
+
+			*trea-develop-helper.save_cursor()*
+.save_cursor()
+	Save cursor position to restore later. It saves the node under cursor
+	to restore cursor even after the content changes.
+
+			*trea-develop-helper.restore_cursor()*
+.restore_cursor()
+	Restore saved cursor position by searching a corresponding node.
+
+			*trea-develop-helper.cancel()*
+.cancel()
+	Emit cancel request through cancellation token and assign a new
+	cancellation token to the tree for later processes.
+
+			*trea-develop-helper.process_node()*
+.process_node({node})
+	Mark the {node} PROCESSING and return a function to restore the {node}.
+	The PROCESSING nodes are displayed with a spinner |sign|.
+>
+	function! s:map_slow_operation(helper) abort
+	  let node = a:helper.get_cursor_node()
+	  let Done = a:helper.process_node(node)
+	  return s:slow_operation(node).finally({ -> Done() })
+	endfunction
+<
+			*trea-develop-helper.sleep()*
+.sleep({ms})
+	Return a promise which will resolves to 0 after {ms} milliseconds.
+
+			*trea-develop-helper.redraw()*
+.redraw()
+	Return a promise to redraw the content.
+
+			*trea-develop-helper.update_nodes()*
+			*trea-develop-helper.update_marks()*
+.update_nodes({nodes})
+.update_marks({marks})
+	Return a promise to update nodes/marks to the {nodes}/{marks}.
+
+			*trea-develop-helper.expand_node()*
+.expand_node({key})
+	Return a promise to expand a node identified by the {key}.
+	It reloads the node instead when the node has expanded or leaf.
+
+			*trea-develop-helper.collapse_node()*
+.collapse_node({key})
+	Return a promise to collapse a node identified by the {key}.
+	It reloads the node instead when the node has collapsed or leaf.
+
+			*trea-develop-helper.reload_node()*
+.reload_node({key})
+	Return a promise to reload a node identified by the {key} and it's
+	descended.
+
+			*trea-develop-helper.reveal_node()*
+.reveal_node({key})
+	Return a promise to reveal a node identified by the {key}.
+	The term "reveal" here means "recursively expand nested nodes until
+	reached to the target node."
+
+			*trea-develop-helper.focus_node()*
+.focus_node({key}[, {options}])
+	Return a promise to focus a node identified by the {key}.
+	The following options are available in the {options}.
+
+	"offset"	A |Number| for line offset.
+	"previous"	A node instance or |v:null|. If a node instance has
+			specified, it focus node only when the current node
+			has not changed from the specified previous one.
+
+			*trea-develop-helper.set_mark()*
+.set_mark({key}, {value})
+	Return a promise to set mark to a node identified by the {key}.
+
+			*trea-develop-helper.set_hide()*
+.set_hide({value})
+	Return a promise to set hide.
+
+			*trea-develop-helper.set_include()*
+			*trea-develop-helper.set_exclude()*
+.set_include({pattern})
+.set_exclude({pattern})
+	Return a promise to set include/exclude.
 
 =============================================================================
 vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl

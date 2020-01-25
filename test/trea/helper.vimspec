@@ -1,0 +1,184 @@
+Describe trea#helper
+  After all
+    %bwipeout!
+  End
+
+  Before
+    %bwipeout!
+    let TIMEOUT = 5000
+    let STATUS_EXPANDED = g:trea#internal#node#STATUS_EXPANDED
+    let Promise = vital#trea#import('Async.Promise')
+    let provider = trea#scheme#debug#provider#new()
+    let b:trea = trea#internal#core#new('debug:///', provider)
+
+    let sync_methods = [
+          \ 'get_root_node',
+          \ 'get_cursor_node',
+          \ 'get_marked_nodes',
+          \ 'get_selected_nodes',
+          \ 'get_cursor',
+          \ 'set_cursor',
+          \ 'save_cursor',
+          \ 'restore_cursor',
+          \ 'cancel',
+          \ 'process_node',
+          \]
+    let async_methods = [
+          \ 'sleep',
+          \ 'redraw',
+          \ 'update_nodes',
+          \ 'update_marks',
+          \ 'expand_node',
+          \ 'collapse_node',
+          \ 'reload_node',
+          \ 'reveal_node',
+          \ 'focus_node',
+          \ 'set_mark',
+          \ 'set_hide',
+          \ 'set_include',
+          \ 'set_exclude',
+          \]
+  End
+
+  Describe #new()
+    It returns a new helper instance
+      let helper = trea#helper#new()
+      Assert KeyExists(helper, 'trea')
+      Assert KeyExists(helper, 'bufnr')
+      Assert KeyExists(helper, 'winid')
+      Assert KeyExists(helper, 'STATUS_NONE')
+      Assert KeyExists(helper, 'STATUS_COLLAPSED')
+      Assert KeyExists(helper, 'STATUS_EXPANDED')
+
+      for sync_method in sync_methods
+        Assert KeyExists(helper, sync_method)
+        Assert IsFunction(helper[sync_method])
+      endfor
+
+      for async_method in async_methods
+        Assert KeyExists(helper, async_method)
+        Assert IsFunction(helper[async_method])
+      endfor
+    End
+  End
+
+  Describe a helper instance
+    Before
+      let helper = trea#helper#new()
+    End
+
+    Describe Synchronous methods
+      Describe .get_root_node()
+        It returns a root node
+          Assert Equals(helper.get_root_node(), helper.trea.root)
+        End
+      End
+
+      Describe .get_cursor_node()
+        It returns a cursor node
+          Assert Equals(helper.get_cursor_node(), helper.trea.root)
+        End
+      End
+
+      Describe .get_marked_nodes()
+        It returns marked nodes
+          Assert Equals(helper.get_marked_nodes(), [])
+
+          let helper.set_mark([], 1)
+          Assert Equals(helper.get_marked_nodes(), [helper.trea.root])
+        End
+      End
+
+      Describe .get_selected_nodes()
+        It returns marked nodes if at least one node has marked
+          let helper.set_mark([], 1)
+          Assert Equals(helper.get_selected_nodes(), helper.get_marked_nodes())
+        End
+
+        It returns a cursor node in list if no node has marked
+          Assert Equals(helper.get_selected_nodes(), [helper.get_cursor_node()])
+        End
+      End
+
+      Describe .get_cursor()
+        It returns a [line, col - 1] list
+          Assert Equals(helper.get_cursor(), [line('.'), col('.') - 1])
+        End
+      End
+
+      Describe .set_cursor()
+        It move cursor position
+          call setline(1, ["Hello", "World"])
+          call helper.set_cursor([2, 4])
+          Assert Equals(line('.'), 2)
+          Assert Equals(col('.'), 5)
+        End
+      End
+
+      Describe .save_cursor()
+        It does not raise exception
+          call helper.save_cursor()
+        End
+      End
+
+      Describe .restore_cursor()
+        It does not raise exception
+          call helper.restore_cursor()
+        End
+      End
+
+      Describe .cancel()
+        It does not raise exception
+          call helper.cancel()
+        End
+      End
+
+      Describe .process_node()
+        It does not raise exception
+          let root = helper.get_root_node()
+          call helper.process_node(root)
+        End
+
+        It returns a function
+          let root = helper.get_root_node()
+          Assert IsFunction(helper.process_node(root))
+        End
+      End
+    End
+
+    Describe Asynchronous methods
+      Describe .sleep()
+        It returns a promise
+          let p = helper.sleep(1)
+          Assert True(Promise.is_promise(p))
+        End
+
+        It does not reject the promise
+          let [r, e] = Promise.wait(
+                \ helper.sleep(1),
+                \ { 'timoeut': TIMEOUT },
+                \)
+          Assert Equals(e, v:null)
+        End
+      End
+
+      Describe .redraw()
+        It returns a promise
+          let p = helper.redraw()
+          Assert True(Promise.is_promise(p))
+        End
+
+        It does not reject the promise
+          let [r, e] = Promise.wait(
+                \ helper.redraw(),
+
+                \ { 'timoeut': TIMEOUT },
+                \)
+          Assert Equals(e, v:null)
+        End
+      End
+
+      " TODO Write tests
+    End
+  End
+End
