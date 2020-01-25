@@ -1,3 +1,22 @@
+let s:Promise = vital#trea#import('Async.Promise')
+
+function! trea#internal#drawer#open(bufname, ...) abort
+  let options = extend({
+        \ 'toggle': 0,
+        \}, a:0 ? a:1 : {},
+        \)
+  if trea#internal#drawer#focus_next()
+    if winnr('$') > 1
+      if options.toggle
+        close
+        return s:Promise.resolve()
+      endif
+      let options.opener = 'edit'
+    endif
+  endif
+  return trea#internal#viewer#open(a:bufname, options)
+endfunction
+
 function! trea#internal#drawer#init() abort
   if empty(trea#internal#drawer#parse(bufname('%')))
     return
