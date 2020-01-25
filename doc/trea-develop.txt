@@ -13,6 +13,16 @@ g:trae_debug						*g:trea_debug*
 	Set 1 to enable trea debug mode.
 	Default: 0
 
+				*g:trea#internal#node#STATUS_NONE*
+				*g:trea#internal#node#STATUS_COLLAPSED*
+				*g:trea#internal#node#STATUS_EXPANDED*
+g:trea#internal#node#STATUS_NONE
+g:trea#internal#node#STATUS_COLLAPSED
+g:trea#internal#node#STATUS_EXPANDED
+	Constant |Number| which indicates a node status.
+	STATUS_NONE means that the node is leaf and does not have any status.
+	STATUS_COLLAPSED means that the node is branch and collapsed (closed).
+	STATUS_EXPANDED means that the node is branch and expanded (opened).
 
 -----------------------------------------------------------------------------
 FUNCTION				*trea-develop-api-function*
@@ -136,6 +146,8 @@ A provider instance must have the following methods.
 	"bufname"	Buffer name used to open the node or |v:null|
 	"_{ANY}"	Scheme specific variables (e.g. "_path" in file)
 
+	The partial node will be filled by trea to become |trea-develop-node|.
+
 				*trea-develop-provider.get_parent()*
 .get_parent({node}, {token})
 	Return a promise which is resolved to a parent node of the {node}.
@@ -151,6 +163,56 @@ A provider instance must have the following methods.
 
 	The {token} is CancellationToken which can be used to cancel the
 	internal process. Use ... to ignore that argument.
+
+=============================================================================
+NODE						*trea-develop-node*
+
+A node instance is a tree item which has the following attributes:
+
+Name		Description~
+"name"		A |String| name of the node. This value is used in "__key"
+		thus must be unique among nodes which has same "__owner".
+
+"status"	A |Number| which indicates the node status. One of the
+		followings:
+		|g:trea#internal#node#STATUS_NONE|	Leaf node
+		|g:trea#internal#node#STATUS_COLLAPSED|	Branch node (close)
+		|g:trea#internal#node#STATUS_EXPANDED|	Branch node (open)
+
+"label"		A |String| used to display the node in a tree view.
+
+"hidden"	A 1/0 to indicate if the node should be hidden. All hidden
+		nodes become visible once trea enter hidden mode.
+
+"bufname"	A |String| buffer name used to open the node or |v:null|.
+		This value is used when users want to enter a branch node so
+		scheme developers SHOULD assign a proper value to this
+		attribute. Otherwise users cannot enter the branch node.
+
+"processing"	A |Number| which indicate that the node is in processing.
+		If the value is greater than 0, a spinner is displayed in sign
+		area of the node to indicate that the node is processing.
+
+"__key"		A |List| of |String| which represents the location of the
+		node in the tree.
+		This value is automatically assigned by trea and developers
+		should NOT touch unless for debugging purpose.
+
+"__owner"	An owner node instance of the node in the tree.
+		This value is automatically assigned by trea and developers
+		should NOT touch unless for debugging purpose.
+
+"__cache"	A |Dict| used to cache value. Only attribute names of this
+		field are shown in debug output so developers should store
+		complex values which may failed to display in this field.
+
+"__promise"	A |Dict| used to store processing promise. Only attribute
+		names of this field are shown in debug output so developers
+		should store temporary promise in this field.
+
+"_{XXX}"	Any attribute starts from a single underscore (_) is opened
+		for each scheme. Note that any complex value should be stored
+		in "__cache" instead to avoid display error.
 
 
 =============================================================================
