@@ -1,11 +1,14 @@
 let s:Promise = vital#trea#import('Async.Promise')
 
 function! trea#internal#viewer#open(bufname, ...) abort
-  let base = a:0 ? a:1 : 'trea:file:///'
-  let url = trea#lib#url#parse(base)
+  let options = extend({
+        \ 'base': 'trea:file:///',
+        \}, a:0 ? a:1 : {},
+        \)
+  let url = trea#lib#url#parse(options.base)
   let url.path = a:bufname
   let url.query = filter(url.query, { -> index(['reveal'], v:key) is# -1 })
-  execute printf('edit %s', fnameescape(url.to_string()))
+  return trea#lib#buffer#open(url.to_string(), options)
 endfunction
 
 function! trea#internal#viewer#init() abort
