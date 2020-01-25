@@ -173,7 +173,6 @@ Describe trea#helper
         It does not reject the promise
           let [r, e] = Promise.wait(
                 \ helper.redraw(),
-
                 \ { 'timoeut': TIMEOUT },
                 \)
           Assert Equals(e, v:null)
