@@ -351,6 +351,11 @@ trea#lib#url#parse({url})
 <
 	https://en.wikipedia.org/wiki/Uniform_Resource_Identifier#Examples
 
+				*trea#lib#window#find()*
+trea#lib#window#find({predicator}[, {origin}])
+	Find a first |winnr| which {predicator} (|Function|) returns True.
+	The search starts from the {origin} (|Number|) window.
+
 				*trea#lib#window#locate()*
 				*trea-develop-window-locator*
 trea#lib#window#locate([{origin}])

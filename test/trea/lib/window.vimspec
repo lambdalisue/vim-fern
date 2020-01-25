@@ -1,0 +1,22 @@
+Describe trea#lib#window
+  After all
+    %bwipeout!
+  End
+
+  Before
+    %bwipeout!
+  End
+
+  Describe #find()
+    It returns a first winnr where the given predicator returns True
+      new foo1
+      new foo2
+      new foo3
+      new foo4
+      new foo5
+      let Predicator = { n -> bufname(winbufnr(n)) ==# 'foo3' }
+      let winnr = trea#lib#window#find(Predicator)
+      Assert Equals(bufname(winbufnr(winnr)), 'foo3')
+    End
+  End
+End

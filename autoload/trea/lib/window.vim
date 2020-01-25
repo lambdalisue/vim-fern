@@ -2,6 +2,24 @@ let s:Config = vital#trea#import('Config')
 let s:WindowLocator = vital#trea#import('Vim.Window.Locator')
 let s:WindowSelector = vital#trea#import('Vim.Window.Selector')
 
+function! trea#lib#window#find(predicator, ...) abort
+  let n = winnr('$')
+  if n is# 1
+    return 1
+  endif
+  let origin = (a:0 ? a:1 : winnr()) - 1
+  let s = origin % n
+  let e = (s - 1) % n
+  let former = range(s < 0 ? s + n : s, n - 1)
+  let latter = range(0, e < 0 ? e + n : e)
+  for winnr in (former + latter)
+    if a:predicator(winnr + 1)
+      return winnr + 1
+    endif
+  endfor
+  return 0
+endfunction
+
 function! trea#lib#window#locate(...) abort
   let winnr = a:0 ? a:1 : winnr('#')
   call s:WindowLocator.focus(winnr('#'))
