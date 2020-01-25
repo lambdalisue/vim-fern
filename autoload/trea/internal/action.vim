@@ -23,8 +23,8 @@ function! trea#internal#action#call(name) abort
   if expr is# v:null
     throw printf('no action %s found in the buffer', a:name)
   endif
-  execute printf("normal \<Plug>(%s)", expr)
   let b:trea_action.previous = a:name
+  execute printf("normal \<Plug>(%s)", expr)
 endfunction
 
 function! s:map_choice() abort
