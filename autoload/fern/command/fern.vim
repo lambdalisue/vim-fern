@@ -18,7 +18,7 @@ function! fern#command#fern#command(mods, qargs) abort
     return
   endif
 
-  let url = fern#lib#url#parse(get(remains, 0, '.'))
+  let url = fern#lib#url#parse(expand(get(remains, 0, '.')))
   if empty(url.scheme)
     let url.scheme = 'file'
     let url.authority = {
@@ -26,26 +26,26 @@ function! fern#command#fern#command(mods, qargs) abort
           \ 'host': '',
           \ 'port': '',
           \}
-    let url.path = fnamemodify(expand(url.path), ':p:gs?\\?/?')
   endif
-
+  let url.query = extend(url.query, {
+        \ 'reveal':get(options, 'reveal', v:false),
+        \ 'drawer': get(options, 'drawer', v:false),
+        \ 'width': get(options, 'width', v:false),
+        \ 'keep': get(options, 'keep', v:false),
+        \})
   try
-    if !empty(get(options, 'drawer'))
-      let url.query = extend(url.query, {
-            \ 'drawer': v:true,
-            \ 'width': get(options, 'width', v:false),
-            \ 'keep': get(options, 'keep', v:false),
-            \ 'reveal': get(options, 'reveal', v:false),
-            \})
+    let url = fern#scheme#{url.scheme}#command#norm(url)
+  catch /^Vim\%((\a\+)\)\=:E117: [^:]\+: fern#scheme#[^#]\+#command#norm/
+    " the scheme does not provide command, ignore
+  endtry
+  try
+    if !empty(get(url.query, 'drawer'))
       call fern#internal#drawer#open(url.to_string(), {
             \ 'mods': a:mods,
             \ 'opener': get(options, 'opener', g:fern#command#fern#drawer_opener),
             \ 'toggle': get(options, 'toggle', 0),
             \})
     else
-      let url.query = extend(url.query, {
-            \ 'reveal': get(options, 'reveal', v:false),
-            \})
       call fern#internal#viewer#open(url.to_string(), {
             \ 'mods': a:mods,
             \ 'opener': get(options, 'opener', g:fern#command#fern#viewer_opener),
