@@ -216,18 +216,25 @@ g:trea#internal#renderer#unmarked_symbol
 <
 	Default: "  "
 
-				*g:trea#lib#buffer#window_locator_threshold*
-g:trea#lib#buffer#window_locator_threshold
+				*g:trea#lib#window#locator_threshold*
+g:trea#lib#window#locator_threshold
 	A |Dict| which has "winwidth" and/or "winheight" to customize the size
 	of suitable window in |trea-develop-window-locator|.
 
 	Note that the value is used ONLY when initialized. Any changes
 	after initialization will not applied.
+	Note that's why the variable is |locked| after initialization.
 
 	Default: {
 	  "winwidth": &columns / 4,
 	  "winheight": &lines / 3,
 	}
+
+				*g:trea#lib#window#auto_select*
+g:trea#lib#window#auto_select
+	Set 1 to automatically select window when there is only one suitable
+	window exists in |trea-develop-window-selector|.
+	Default: 1
 
 			*g:trea#mapping#disable_default_mappings*
 g:trea#mapping#disable_default_mappings
@@ -264,19 +271,6 @@ trea#lib#buffer#open({bufname}[, {options}])
 
 	"locator"	1/0 to indicate whether |trea-develop-window-locator|
 			should be used prior to open a buffer.
-
-					*trea-develop-window-selector*
-	Window selector open a prompt to select window visually.
-	This feature has strongly inspired by t9md/vim-choosewin.
-
-					*trea-develop-window-locator*
-	Window locator is used to select an anchor window automatically.
-	It find all suitable window; a window which is not 'previewwindow' and
-	has enough space; and focus the nearest suitable window if a current
-	window is not suitable.
-	See |g:trea#lib#buffer#window_locator_threshold| to custom the size
-	of the suitable window.
-
 
 				*trea#lib#url#parse()*
 trea#lib#url#parse({url})
@@ -356,6 +350,24 @@ trea#lib#url#parse({url})
 	  scheme                    path
 <
 	https://en.wikipedia.org/wiki/Uniform_Resource_Identifier#Examples
+
+				*trea#lib#window#locate()*
+				*trea-develop-window-locator*
+trea#lib#window#locate([{origin}])
+	Find a first |winnr| which is suitable; a window which is not
+	'previewwindow' and has enough space; from the {origin} (|Number|).
+	If {origin} is omitted, a previous window is used.
+	See |g:trea#lib#window#locator_threshold| to custom the size of the
+	suitable window.
+
+				*trea#lib#window#select()*
+				*trea-develop-window-selector*
+trea#lib#window#select()
+	Open a prompt to select a window visually to focus. 
+	This feature has strongly inspired by t9md/vim-choosewin.
+	Note that non suitable window is not listed unless there is suitable
+	window.
+	See |g:trea#lib#window#auto_select| to disable auto select feature.
 
 				*trea#mapping#call()*
 trea#mapping#call({fn}[, {args}])

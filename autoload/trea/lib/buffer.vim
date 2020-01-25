@@ -1,6 +1,4 @@
 let s:Opener = vital#trea#import('Vim.Buffer.Opener')
-let s:WindowLocator = vital#trea#import('Vim.Window.Locator')
-let s:WindowSelector = vital#trea#import('Vim.Window.Selector')
 let s:Promise = vital#trea#import('Async.Promise')
 
 function! trea#lib#buffer#replace(bufnr, content) abort
@@ -26,12 +24,12 @@ function! trea#lib#buffer#open(bufname, ...) abort
         \)
   if options.opener ==# 'select'
     let options.opener = 'edit'
-    if s:window_select()
+    if trea#lib#window#select()
       return s:Promise.reject('Cancelled')
     endif
   else
     if options.locator
-      call s:WindowLocator.focus(winnr('#'))
+      call trea#lib#window#locate()
     endif
   endif
   return s:Promise.new(funcref('s:executor', [a:bufname, options]))
@@ -45,21 +43,3 @@ function! s:executor(bufname, options, resolve, reject) abort
         \})
   call a:resolve(context)
 endfunction
-
-function! s:window_select() abort
-  let ws = filter(
-        \ range(1, winnr('$')),
-        \ { -> s:WindowLocator.is_suitable(v:val) },
-        \)
-  if empty(ws)
-    let ws = range(1, winnr('$'))
-  endif
-  return s:WindowSelector.select(ws, {
-        \ 'auto_select': 1,
-        \})
-endfunction
-
-call s:WindowLocator.set_thresholds(get(g:, 'trea#lib#buffer#window_locator_threshold', {
-      \ 'winwidth': &columns / 4,
-      \ 'winheight': &lines / 3,
-      \}))
