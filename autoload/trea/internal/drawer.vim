@@ -29,9 +29,11 @@ function! trea#internal#drawer#focus_next(...) abort
         \ 'predicator': { -> 1 },
         \}, a:0 ? a:1 : {},
         \)
-  let P = { n -> trea#internal#drawer#parse(bufname(winbufnr(n))) isnot# v:null && options.predicator(n) }
+  let P = options.predicator
   return trea#internal#viewer#focus_next(extend(options, {
-        \ 'predicator': P,
+        \ 'predicator': { n ->
+        \   trea#internal#drawer#parse(bufname(winbufnr(n))) isnot# v:null && P(n)
+        \ }
         \}))
 endfunction
 
