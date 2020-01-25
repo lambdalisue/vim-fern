@@ -46,6 +46,10 @@ function! trea#mapping#node#init(disable_default_mappings) abort
     nmap <buffer><nowait> l <Plug>(trea-open-or-expand)
     nmap <buffer><nowait> h <Plug>(trea-action-collapse)
     nmap <buffer><nowait> i <Plug>(trea-action-reveal)
+    nmap <buffer><nowait> s <Plug>(trea-action-open:select)
+    nmap <buffer><nowait> e <Plug>(trea-action-open:edit)
+    nmap <buffer><nowait> E <Plug>(trea-action-open:side)
+    nmap <buffer><nowait> t <Plug>(trea-action-open:tabedit)
   endif
 endfunction
 
