@@ -84,6 +84,10 @@ function! s:helper.process_node(node) abort
   return trea#internal#node#process(a:node)
 endfunction
 
+function! s:helper.is_drawer() abort
+  return trea#internal#drawer#parse(bufname(self.bufnr)) isnot# v:null
+endfunction
+
 
 " Async
 function! s:helper.sleep(ms) abort

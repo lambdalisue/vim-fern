@@ -25,6 +25,13 @@ function! trea#mapping#smart(leaf, branch, ...) abort
   endif
 endfunction
 
+function! trea#mapping#drawer(drawer, viewer) abort
+  let helper = trea#helper#new()
+  return helper.is_drawer()
+        \ ? a:drawer
+        \ : a:viewer
+endfunction
+
 function! trea#mapping#init(scheme) abort
   let disable_default_mappings = g:trea#mapping#disable_default_mappings
   for name in g:trea#mapping#enabled_mapping_presets

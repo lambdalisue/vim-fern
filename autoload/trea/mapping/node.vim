@@ -27,6 +27,9 @@ function! trea#mapping#node#init(disable_default_mappings) abort
 
   " Smart map
   nmap <buffer><silent><expr>
+        \ <Plug>(trea-action-open:side)
+        \ trea#mapping#drawer("\<Plug>(trea-action-open:left)", "\<Plug>(trea-action-open:right)")
+  nmap <buffer><silent><expr>
         \ <Plug>(trea-open-or-enter)
         \ trea#mapping#smart("\<Plug>(trea-action-open)", "\<Plug>(trea-action-enter)")
   nmap <buffer><silent><expr>
@@ -137,5 +140,6 @@ function! s:map_open(helper, opener) abort
   endif
   return trea#lib#buffer#open(node.bufname, {
         \ 'opener': a:opener,
+        \ 'locator': a:helper.is_drawer(),
         \})
 endfunction

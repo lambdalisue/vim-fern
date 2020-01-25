@@ -41,6 +41,7 @@ function! trea#internal#viewer#init() abort
   call trea#internal#spinner#start()
   call trea#internal#renderer#highlight()
   call trea#internal#renderer#syntax()
+  call trea#internal#drawer#init()
 
   let helper = trea#helper#new()
   let root = helper.get_root_node()
