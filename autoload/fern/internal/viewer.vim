@@ -13,7 +13,7 @@ endfunction
 
 function! fern#internal#viewer#init() abort
   if exists('b:fern') && !get(g:, 'fern_debug')
-    return
+    return s:Promise.resolve()
   endif
 
   setlocal buftype=nofile bufhidden=unload
