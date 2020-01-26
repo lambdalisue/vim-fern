@@ -150,6 +150,8 @@ function! s:map_open(helper, opener) abort
   let node = a:helper.get_cursor_node()
   if node is# v:null
     return s:Promise.reject("no node found on a cursor line")
+  elseif node.bufname is# v:null
+    return s:Promise.reject("the node does not have bufname")
   endif
   try
     call fern#lib#buffer#open(node.bufname, {
