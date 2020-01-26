@@ -45,14 +45,14 @@ function! fern#internal#viewer#init() abort
         \)
 
   call fern#mapping#init(scheme)
-  call fern#internal#action#init()
-  call fern#internal#spinner#start()
   call fern#internal#drawer#init()
+  call fern#internal#spinner#start()
+  call fern#internal#renderer#highlight()
 
   " now the buffer is ready so set filetype to emit FileType
   setlocal filetype=fern
-  call fern#internal#renderer#highlight()
   call fern#internal#renderer#syntax()
+  call fern#internal#action#init()
 
   let helper = fern#helper#new()
   let root = helper.get_root_node()
