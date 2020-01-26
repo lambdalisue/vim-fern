@@ -1,25 +1,24 @@
-function! fern#scheme#file#command#norm(url) abort
-  let path = s:norm_path(a:url.path)
-  let path = filereadable(path) ? fnamemodify(path, ':h') : path
-
-  if !empty(get(a:url.query, 'reveal'))
-    let a:url.query.reveal = s:norm_reveal(path, a:url.query.reveal)
-  endif
-
-  return extend(a:url, { 'path': path })
+function! fern#scheme#file#command#init(url, options) abort
+  let a:url.authority = {
+        \ 'userinfo': '',
+        \ 'host': '',
+        \ 'port': '',
+        \}
+  let a:url.path = s:norm_path(a:url.path, 1)
+  let a:url.query.reveal = empty(a:url.query.reveal)
+        \ ? a:url.query.reveal
+        \ : s:norm_path(expand(a:url.query.reveal), 0)
 endfunction
 
-function! s:norm_path(path) abort
-  let path = simplify(expand(a:path))
-  let path = fnamemodify(path, ':p')
+function! s:norm_path(path, force_directory) abort
+  let path = a:path =~# '^file://'
+        \ ? fern#lib#url#parse(a:path).path
+        \ : simplify(fnamemodify(a:path, ':p'))
+  if a:force_directory
+    let path = filereadable(path) && !isdirectory(path)
+          \ ? fnamemodify(path, ':h')
+          \ : path
+  endif
   let path = fnamemodify(path, ':gs?\\?/?')
   return path
-endfunction
-
-function! s:norm_reveal(path, reveal) abort
-  let reveal = s:norm_path(a:reveal)
-  if reveal =~# '^' . fern#lib#string#escape_pattern(a:path)
-    return reveal[len(a:path):]
-  endif
-  return fnamemodify(reveal, ':.')
 endfunction
