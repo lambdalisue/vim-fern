@@ -501,6 +501,7 @@ A provider instance must have the following methods.
 	"label"		Label to display the node in a tree view
 	"hidden"	1/0 to indicate if the node should be hidden
 	"bufname"	Buffer name used to open the node or |v:null|
+	"concealed"	Namespace for storing complex object
 	"_{ANY}"	Scheme specific variables (e.g. "_path" in file)
 
 	The partial node will be filled by fern to become |fern-develop-node|.
@@ -546,6 +547,11 @@ Name		Description~
 		scheme developers SHOULD assign a proper value to this
 		attribute. Otherwise users cannot enter the branch node.
 
+"concealed"	A |Dict| used as a namespace object to store complex objects
+		which is not suitable to output.
+		Developers MUST follow same convention of naming under this
+		namespace as well.
+
 "processing"	A |Number| which indicate that the node is in processing.
 		If the value is greater than 0, a spinner is displayed in sign
 		area of the node to indicate that the node is processing.
@@ -559,17 +565,9 @@ Name		Description~
 		This value is automatically assigned by fern and developers
 		should NOT touch unless for debugging purpose.
 
-"__cache"	A |Dict| used to cache value. Only attribute names of this
-		field are shown in debug output so developers should store
-		complex values which may failed to display in this field.
-
-"__promise"	A |Dict| used to store processing promise. Only attribute
-		names of this field are shown in debug output so developers
-		should store temporary promise in this field.
-
 "_{XXX}"	Any attribute starts from a single underscore (_) is opened
 		for each scheme. Note that any complex value should be stored
-		in "__cache" instead to avoid display error.
+		in "concealed" instead to avoid display error.
 
 =============================================================================
 HELPER						*fern-develop-helper*

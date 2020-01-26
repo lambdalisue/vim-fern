@@ -12,8 +12,7 @@ function! fern#internal#node#debug(node) abort
   endif
   let meta = extend(copy(a:node), {
         \ '__owner': a:node.__owner is# v:null ? '' : a:node.__owner.label,
-        \ '__cache': keys(a:node.__cache),
-        \ '__promise': keys(a:node.__promise),
+        \ 'concealed': keys(a:node.concealed),
         \})
   let size = max(map(keys(meta), { -> len(v:val) }))
   let text = ""
@@ -54,10 +53,10 @@ function! fern#internal#node#parent(node, provider, token, ...) abort
   let options = extend({
         \ 'cache': 1,
         \}, a:0 ? a:1 : {})
-  if has_key(a:node.__cache, 'parent') && options.cache
-    return s:Promise.resolve(a:node.__cache.parent)
-  elseif has_key(a:node.__promise, 'parent')
-    return a:node.__promise.parent
+  if has_key(a:node.concealed, '__cache_parent') && options.cache
+    return s:Promise.resolve(a:node.concealed.__cache_parent)
+  elseif has_key(a:node.concealed, '__promise_parent')
+    return a:node.concealed.__promise_parent
   endif
   let Done = fern#internal#node#process(a:node)
   let p = a:provider.get_parent(a:node, a:token)
@@ -66,10 +65,10 @@ function! fern#internal#node#parent(node, provider, token, ...) abort
         \   '__owner': v:null,
         \ })
         \})
-        \.then({ n -> s:Lambda.pass(n, s:Lambda.let(a:node.__cache, 'parent', n)) })
+        \.then({ n -> s:Lambda.pass(n, s:Lambda.let(a:node.concealed, '__cache_parent', n)) })
         \.finally({ -> Done() })
-  let a:node.__promise.parent = p
-        \.finally({ -> s:Lambda.unlet(a:node.__promise, 'parent') })
+  let a:node.concealed.__promise_parent = p
+        \.finally({ -> s:Lambda.unlet(a:node.concealed, '__promise_parent') })
   return p
 endfunction
 
@@ -79,13 +78,13 @@ function! fern#internal#node#children(node, provider, token, ...) abort
         \}, a:0 ? a:1 : {})
   if a:node.status is# s:STATUS_NONE
     return s:Promise.reject('leaf node does not have children')
-  elseif has_key(a:node.__cache, 'children') && options.cache
+  elseif has_key(a:node.concealed, '__cache_children') && options.cache
     return s:AsyncLambda.map(
-          \ a:node.__cache.children,
+          \ a:node.concealed.__cache_children,
           \ { v -> extend(v, { 'status': v.status > 0 }) },
           \)
-  elseif has_key(a:node.__promise, 'children')
-    return a:node.__promise.children
+  elseif has_key(a:node.concealed, '__promise_children')
+    return a:node.concealed.__promise_children
   endif
   let Done = fern#internal#node#process(a:node)
   let p = a:provider.get_children(a:node, a:token)
@@ -95,10 +94,10 @@ function! fern#internal#node#children(node, provider, token, ...) abort
         \     '__owner': a:node,
         \   })
         \ }))
-        \.then({ v -> s:Lambda.pass(v, s:Lambda.let(a:node.__cache, 'children', v)) })
+        \.then({ v -> s:Lambda.pass(v, s:Lambda.let(a:node.concealed, '__cache_children', v)) })
         \.finally({ -> Done() })
-  let a:node.__promise.children = p
-        \.finally({ -> s:Lambda.unlet(a:node.__promise, 'children') })
+  let a:node.concealed.__promise_children = p
+        \.finally({ -> s:Lambda.unlet(a:node.concealed, '__promise_children') })
   return p
 endfunction
 
@@ -121,10 +120,10 @@ function! fern#internal#node#expand(node, nodes, provider, comparator, token) ab
           \ a:comparator,
           \ a:token,
           \)
-  elseif has_key(a:node.__promise, 'expand')
-    return a:node.__promise.expand
-  elseif has_key(a:node, '__promise.collapse')
-    return a:node.__promise.collapse
+  elseif has_key(a:node.concealed, '__promise_expand')
+    return a:node.concealed.__promise_expand
+  elseif has_key(a:node, 'concealed.__promise_collapse')
+    return a:node.concealed.__promise_collapse
   endif
   let Done = fern#internal#node#process(a:node)
   let p = fern#internal#node#children(a:node, a:provider, a:token)
@@ -132,8 +131,8 @@ function! fern#internal#node#expand(node, nodes, provider, comparator, token) ab
         \.then({ v -> s:extend(a:node.__key, a:nodes, v) })
         \.finally({ -> Done() })
   call p.then({ -> s:Lambda.let(a:node, 'status', s:STATUS_EXPANDED) })
-  let a:node.__promise.expand = p
-        \.finally({ -> s:Lambda.unlet(a:node.__promise, 'expand') })
+  let a:node.concealed.__promise_expand = p
+        \.finally({ -> s:Lambda.unlet(a:node.concealed, '__promise_expand') })
   return p
 endfunction
 
@@ -156,10 +155,10 @@ function! fern#internal#node#collapse(node, nodes, provider, comparator, token) 
           \ a:comparator,
           \ a:token,
           \)
-  elseif has_key(a:node.__promise, 'expand')
-    return a:node.__promise.expand
-  elseif has_key(a:node, '__promise.collapse')
-    return a:node.__promise.collapse
+  elseif has_key(a:node.concealed, '__promise_expand')
+    return a:node.concealed.__promise_expand
+  elseif has_key(a:node, 'concealed.__promise_collapse')
+    return a:node.concealed.__promise_collapse
   endif
   let k = a:node.__key
   let n = len(k) - 1
@@ -169,18 +168,18 @@ function! fern#internal#node#collapse(node, nodes, provider, comparator, token) 
         \.then(s:AsyncLambda.filter_f({ v -> v.__key == k || K(v) != k  }))
         \.finally({ -> Done() })
   call p.then({ -> s:Lambda.let(a:node, 'status', s:STATUS_COLLAPSED) })
-  let a:node.__promise.collapse = p
-        \.finally({ -> s:Lambda.unlet(a:node.__promise, 'collapse') })
+  let a:node.concealed.__promise_collapse = p
+        \.finally({ -> s:Lambda.unlet(a:node.concealed, '__promise_collapse') })
   return p
 endfunction
 
 function! fern#internal#node#reload(node, nodes, provider, comparator, token) abort
   if a:node.status is# s:STATUS_NONE || a:node.status is# s:STATUS_COLLAPSED
     return s:Promise.resolve(copy(a:nodes))
-  elseif has_key(a:node.__promise, 'expand')
-    return a:node.__promise.expand
-  elseif has_key(a:node.__promise, 'collapse')
-    return a:node.__promise.collapse
+  elseif has_key(a:node.concealed, '__promise_expand')
+    return a:node.concealed.__promise_expand
+  elseif has_key(a:node.concealed, '__promise_collapse')
+    return a:node.concealed.__promise_collapse
   endif
   let k = a:node.__key
   let n = len(k) - 1
@@ -227,11 +226,10 @@ function! s:new(node, ...) abort
         \ 'label': label,
         \ 'hidden': get(a:node, 'hidden', 0),
         \ 'bufname': get(a:node, 'bufname', v:null),
+        \ 'concealed': get(a:node, 'concealed', {}),
         \ 'processing': 0,
         \ '__key': [],
         \ '__owner': v:null,
-        \ '__cache': {},
-        \ '__promise': {},
         \})
   let node = extend(node, a:0 ? a:1 : {})
   return node

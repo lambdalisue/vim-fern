@@ -72,8 +72,8 @@ Describe fern#internal#node
       Assert KeyExists(node, '__key')
       Assert KeyExists(node, '__owner')
       Assert KeyExists(node, 'processing')
-      Assert KeyExists(node, '__cache')
-      Assert KeyExists(node, '__promise')
+      Assert KeyExists(node, 'concealed')
+      Assert KeyExists(node, 'concealed')
     End
   End
 
