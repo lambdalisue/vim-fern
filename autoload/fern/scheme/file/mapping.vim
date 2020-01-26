@@ -130,7 +130,7 @@ function! s:map_clipboard_copy(helper) abort
   return s:Promise.resolve()
         \.then({ -> a:helper.update_marks([]) })
         \.then({ -> a:helper.redraw() })
-        \.then({ -> fern#message#info(printf('%d items are stacked', len(ps))) })
+        \.then({ -> fern#message#info(printf('%d items are stacked', len(nodes))) })
 endfunction
 
 function! s:map_clipboard_paste(helper) abort
