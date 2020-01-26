@@ -24,8 +24,8 @@ function! fern#scheme#file#mapping#init(disable_default_mappings) abort
 
   if !a:disable_default_mappings
     nmap <buffer><nowait> x <Plug>(fern-action-open:system)
-    nmap <buffer><nowait> N <Plug>(fern-action-mkfile)
-    nmap <buffer><nowait> K <Plug>(fern-action-mkdir)
+    nmap <buffer><nowait> N <Plug>(fern-action-new-file)
+    nmap <buffer><nowait> K <Plug>(fern-action-new-dir)
     nmap <buffer><nowait> m <Plug>(fern-action-move)
     nmap <buffer><nowait> c <Plug>(fern-action-clipboard-copy)
     nmap <buffer><nowait> p <Plug>(fern-action-clipboard-paste)
