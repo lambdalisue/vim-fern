@@ -28,13 +28,22 @@ function! fern#mapping#node#init(disable_default_mappings) abort
   " Smart map
   nmap <buffer><silent><expr>
         \ <Plug>(fern-action-open:side)
-        \ fern#mapping#drawer("\<Plug>(fern-action-open:left)", "\<Plug>(fern-action-open:right)")
+        \ fern#smart#drawer(
+        \   "\<Plug>(fern-action-open:left)",
+        \   "\<Plug>(fern-action-open:right)",
+        \ )
   nmap <buffer><silent><expr>
         \ <Plug>(fern-open-or-enter)
-        \ fern#mapping#smart("\<Plug>(fern-action-open)", "\<Plug>(fern-action-enter)")
+        \ fern#smart#leaf(
+        \   "\<Plug>(fern-action-open)",
+        \   "\<Plug>(fern-action-enter)",
+        \ )
   nmap <buffer><silent><expr>
         \ <Plug>(fern-open-or-expand)
-        \ fern#mapping#smart("\<Plug>(fern-action-open)", "\<Plug>(fern-action-expand)")
+        \ fern#smart#leaf(
+        \   "\<Plug>(fern-action-open)",
+        \   "\<Plug>(fern-action-expand)",
+        \ )
 
   " Alias map
   nmap <buffer><silent> <Plug>(fern-action-open) <Plug>(fern-action-open:edit)

@@ -145,5 +145,49 @@ COMMAND							*fern-command*
 	drawer window.
 
 
+-----------------------------------------------------------------------------
+FUNCTION						*fern-function*
+
+						*fern#smart#leaf()*
+fern#smart#leaf({leaf}, {collapsed}[, {expanded}])
+	Return one of a given mapping expression determined by a status of a
+	node under the cursor. If the node is leaf, the {leaf} is returned.
+	If the node is branch and collapsed, the {collapsed} is returned. If
+	the node is branch and expanded, the {expanded} or {collapsed} is
+	returned.
+>
+	" Perform 'open' on leaf node and 'enter' on branch node
+	nmap <buffer><expr>
+	      \ <Plug>(fern-open-or-enter)
+	      \ fern#smart#leaf(
+	      \   "\<Plug>(fern-action-open)",
+	      \   "\<Plug>(fern-action-enter)",
+	      \ )
+
+	" Perform 'open' on leaf node, 'expand' on collapsed node, and
+	" 'collapse' on expanded node.
+	nmap <buffer><expr>
+	      \ <Plug>(fern-open-or-expand-or-collapse)
+	      \ fern#smart#leaf(
+	      \   "\<Plug>(fern-action-open)",
+	      \   "\<Plug>(fern-action-expand)",
+	      \   "\<Plug>(fern-action-collapse)",
+	      \ )
+<
+						*fern#smart#drawer()*
+fern#smart#drawer({drawer}, {explorer})
+	Return one of a given mapping expression determined by the style of
+	a current buffer. If the current buffer is drawer, the {drawer} is
+	returned. Otherwise the {explorer} is retunred.
+>
+	" Perform 'expand' on drawer and 'enter' on explorer
+	nmap <buffer><expr>
+	      \ <Plug>(fern-expand-or-enter)
+	      \ fern#smart#drawer(
+	      \   "\<Plug>(fern-action-expand)",
+	      \   "\<Plug>(fern-action-enter)",
+	      \ )
+<
+
 =============================================================================
 vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl

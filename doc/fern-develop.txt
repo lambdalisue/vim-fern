@@ -433,23 +433,6 @@ fern#mapping#call({fn}[, {args}])
 	  echo a:helper.get_cursor_node().name
 	endfunction
 <
-				*fern#mapping#smart()*
-fern#mapping#smart({leaf}, {collapsed}[, {expanded}])
-	Return a |String| for |map-<expr>| determined from a cursor node.
-	If the cursor node is leaf, the {leaf} is returned.
-	If the cursor node is collapsed, the {collapsed} is returned.
-	If the cursor node is expanded, the {collapsed} or {expanded} if
-	specified is retunred.
-	IF the cursor node is not found, |<Nop>| is retunred.
->
-	nmap <buffer><silent><expr>
-	      \ <Plug>(fern-open-or-expand-or-collapse)
-	      \ fern#mapping#smart(
-	      \   "\<Plug>(fern-action-open)",
-	      \   "\<Plug>(fern-action-expand)",
-	      \   "\<Plug>(fern-action-collapse)",
-	      \ )
-<
 				*fern#mapping#init()*
 fern#mapping#init({scheme})
 	Define mappings by calling |fern#mapping#{preset}#init()| sequentially.
