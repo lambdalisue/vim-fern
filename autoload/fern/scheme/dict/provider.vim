@@ -53,7 +53,7 @@ function! s:parse_url(url) abort
   let url = fern#lib#url#parse(a:url)
   let m = matchlist(url.path, '^\([^/]*\)/\(.*\)$')
   if empty(m)
-    throw printf("Invalid dict URL: %s", a:url)
+    return s:parse_url(a:url . '/')
   endif
   return {
         \ 'varname': fern#lib#url#decode(m[1]),
