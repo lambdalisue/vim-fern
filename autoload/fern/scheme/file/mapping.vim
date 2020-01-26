@@ -12,8 +12,8 @@ function! fern#scheme#file#mapping#init(disable_default_mappings) abort
   nnoremap <buffer><silent> <Plug>(fern-action-lcd)              :<C-u>call <SID>call('cd', 'lcd')<CR>
   nnoremap <buffer><silent> <Plug>(fern-action-tcd)              :<C-u>call <SID>call('cd', 'tcd')<CR>
   nnoremap <buffer><silent> <Plug>(fern-action-open:system)      :<C-u>call <SID>call('open_system')<CR>
-  nnoremap <buffer><silent> <Plug>(fern-action-mkfile)           :<C-u>call <SID>call('mkfile')<CR>
-  nnoremap <buffer><silent> <Plug>(fern-action-mkdir)            :<C-u>call <SID>call('mkdir')<CR>
+  nnoremap <buffer><silent> <Plug>(fern-action-new-file)         :<C-u>call <SID>call('new_file')<CR>
+  nnoremap <buffer><silent> <Plug>(fern-action-new-dir)          :<C-u>call <SID>call('new_dir')<CR>
   nnoremap <buffer><silent> <Plug>(fern-action-move)             :<C-u>call <SID>call('move')<CR>
   nnoremap <buffer><silent> <Plug>(fern-action-clipboard-copy)   :<C-u>call <SID>call('clipboard_copy')<CR>
   nnoremap <buffer><silent> <Plug>(fern-action-clipboard-paste)  :<C-u>call <SID>call('clipboard_paste')<CR>
@@ -64,7 +64,7 @@ function! s:map_open_system(helper) abort
         \.finally({ -> Done() })
 endfunction
 
-function! s:map_mkfile(helper) abort
+function! s:map_new_file(helper) abort
   let name = s:Prompt.ask('New file: ', '', 'file')
   if empty(name)
     return s:Promise.reject('Cancelled')
@@ -82,8 +82,8 @@ function! s:map_mkfile(helper) abort
         \.then({ -> a:helper.focus_node(key, { 'previous': previous }) })
 endfunction
 
-function! s:map_mkdir(helper) abort
-  let name = s:Prompt.ask('New directory: ', '', 'file')
+function! s:map_new_dir(helper) abort
+  let name = s:Prompt.ask('New directory: ', '', 'dir')
   if empty(name)
     return s:Promise.reject('Cancelled')
   endif
