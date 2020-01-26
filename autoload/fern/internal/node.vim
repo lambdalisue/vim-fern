@@ -253,10 +253,7 @@ endfunction
 function! s:expand_recursively(keys, nodes, provider, comparator, token) abort
   let node = fern#internal#node#find(a:keys[-1], a:nodes)
   if node is# v:null
-    return s:Promise.reject(printf(
-          \ 'no node %s exists',
-          \ a:keys[-1],
-          \))
+    return s:Promise.resolve(a:nodes)
   endif
   return fern#internal#node#expand(node, a:nodes, a:provider, a:comparator, a:token)
         \.then({ v -> s:Lambda.pass(v, remove(a:keys, -1)) })
