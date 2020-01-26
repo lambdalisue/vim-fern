@@ -77,6 +77,7 @@ function! s:map_mkfile(helper) abort
   let previous = a:helper.get_cursor_node()
   return fern#scheme#file#shutil#mkfile(path, token)
         \.then({ -> a:helper.reload_node(node.__key) })
+        \.then({ -> a:helper.reveal_node(key) })
         \.then({ -> a:helper.redraw() })
         \.then({ -> a:helper.focus_node(key, { 'previous': previous }) })
 endfunction
@@ -94,6 +95,7 @@ function! s:map_mkdir(helper) abort
   let previous = a:helper.get_cursor_node()
   return fern#scheme#file#shutil#mkdir(path, token)
         \.then({ -> a:helper.reload_node(node.__key) })
+        \.then({ -> a:helper.reveal_node(key) })
         \.then({ -> a:helper.redraw() })
         \.then({ -> a:helper.focus_node(key, { 'previous': previous }) })
 endfunction
