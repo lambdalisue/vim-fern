@@ -1,6 +1,6 @@
 let s:Flag = vital#fern#import('App.Flag')
 
-function! fern#command#parse(qargs) abort
+function! fern#internal#command#parse(qargs) abort
   let [opts, args] = s:Flag.parse(s:Flag.split(a:qargs))
   let options = {
         \ 'pop': funcref('s:options_pop', [opts]),

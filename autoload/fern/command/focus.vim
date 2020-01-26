@@ -2,7 +2,7 @@ let s:options = ['-drawer']
 
 function! fern#command#focus#command(mods, qargs) abort
   try
-    let [options, _] = fern#command#parse(a:qargs)
+    let [options, _] = fern#internal#command#parse(a:qargs)
 
     let drawer = options.pop('drawer', v:null)
 

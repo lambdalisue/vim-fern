@@ -12,7 +12,7 @@ let s:options = [
 
 function! fern#command#fern#command(mods, qargs) abort
   try
-    let [options, args] = fern#command#parse(a:qargs)
+    let [options, args] = fern#internal#command#parse(a:qargs)
 
     if len(args) is# 0
       throw 'at least one argument is required'
