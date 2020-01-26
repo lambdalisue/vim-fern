@@ -53,13 +53,11 @@ endfunction
 
 function! s:parse_url(url) abort
   let url = fern#lib#url#parse(a:url)
-  let m = matchlist(url.path, '^\([^/]*\)/\(.*\)$')
-  if empty(m)
-    return s:parse_url(a:url . '/')
-  endif
+  let varname = matchstr(url.path, '^[^/]*\ze')
+  let path = matchstr(url.path, '/\zs.*$')
   return {
-        \ 'varname': fern#lib#url#decode(m[1]),
-        \ 'path': m[2],
+        \ 'varname': fern#lib#url#decode(varname),
+        \ 'path': path,
         \}
 endfunction
 
