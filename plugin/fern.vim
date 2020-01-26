@@ -20,3 +20,18 @@ augroup fern_internal
 augroup END
 
 let g:fern_debug = get(g:, 'fern_debug', 0)
+let g:fern_sample_tree = {
+      \ 'shallow': {
+      \   'alpha': {},
+      \   'beta': {},
+      \   'gamma': 'value',
+      \ },
+      \ 'deep': {
+      \   'alpha': {
+      \     'beta': {
+      \       'gamma': 'value',
+      \     },
+      \   },
+      \ },
+      \ 'leaf': 'value',
+      \}
