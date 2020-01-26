@@ -1,16 +1,19 @@
 function! fern#internal#action#init() abort
+  nnoremap <buffer><silent> <Plug>(fern-action-choice) :<C-u>call <SID>map_choice()<CR>
+  nnoremap <buffer><silent> <Plug>(fern-action-repeat) :<C-u>call <SID>map_repeat()<CR>
+  nnoremap <buffer><silent> <Plug>(fern-action-help)   :<C-u>call <SID>map_help()<CR>
+
+  if !g:fern_disable_default_mappings
+    nmap <buffer> a <Plug>(fern-action-choice)
+    nmap <buffer> . <Plug>(fern-action-repeat)
+    nmap <buffer> ? <Plug>(fern-action-help)
+  endif
+
   let prefix = 'fern-action-'
   let b:fern_action = {
         \ 'actions': s:build_actions(prefix),
         \ 'previous': '',
         \}
-  nnoremap <buffer><silent> <Plug>(fern-action-choice) :<C-u>call <SID>map_choice()<CR>
-  nnoremap <buffer><silent> <Plug>(fern-action-repeat) :<C-u>call <SID>map_repeat()<CR>
-
-  if !g:fern_disable_default_mappings
-    nmap <buffer> a <Plug>(fern-action-choice)
-    nmap <buffer> . <Plug>(fern-action-repeat)
-  endif
 endfunction
 
 function! fern#internal#action#call(name) abort
@@ -54,6 +57,43 @@ function! s:map_repeat() abort
   call fern#internal#action#call(b:fern_action.previous)
 endfunction
 
+function! s:map_help() abort
+  let Sort = { a, b -> s:compare(a[1], b[1]) }
+  let rs = split(execute('nmap'), '\n')
+  call map(rs, { _, v -> v[3:] })
+  call map(rs, { _, v -> matchlist(v, '^\([^ ]\+\)\s*\*\?@\?\(.*\)$')[1:2] })
+
+  let rs1 = map(copy(rs), { _, v -> v + [matchstr(v[1], '^<Plug>(fern-action-\zs.*\ze)$')] })
+  call filter(rs1, { _, v -> !empty(v[2]) })
+  call filter(rs1, { _, v -> v[0] !~# '^<Plug>' })
+  call map(rs1, { _, v -> [v[0], v[2], v[1]] })
+
+  let rs2 = map(copy(rs), { _, v -> v + [matchstr(v[0], '^<Plug>(fern-action-\zs.*\ze)$')] })
+  call filter(rs2, { _, v -> !empty(v[2]) })
+  call map(rs2, { _, v -> ['', v[2], v[0]] })
+
+  let rs = uniq(sort(rs1 + rs2, Sort), Sort)
+  let len0 = max(map(copy(rs), { -> len(v:val[0]) }))
+  let len1 = max(map(copy(rs), { -> len(v:val[1]) }))
+  let len2 = max(map(copy(rs), { -> len(v:val[2]) }))
+  call map(rs, { _, v -> [
+       \   printf(printf("%%-%dS", len0), v[0]),
+       \   printf(printf("%%-%dS", len1), v[1]),
+       \   printf(printf("%%-%dS", len2), v[2]),
+       \ ]
+       \})
+  call map(rs, { -> join(v:val, "  ") })
+  execute printf('botright %dnew', len(rs) + 1)
+  call setline(1, rs)
+  setlocal buftype=nofile bufhidden=wipe
+  setlocal noswapfile nobuflisted
+  setlocal nomodifiable nomodified
+  setlocal nolist signcolumn=no
+  setlocal nonumber norelativenumber
+  setlocal cursorline
+  nnoremap <buffer><silent> q :<C-u>q<CR>
+endfunction
+
 function! s:build_actions(prefix) abort
   let ms = split(execute(printf('nmap <Plug>(%s', a:prefix)), '\n')
   call map(ms, { _, v -> split(v)[1] })
@@ -76,4 +116,8 @@ function! s:complete_choice(arglead, cmdline, cursorpos) abort
     call filter(names, { -> v:val !~# ':' })
   endif
   return filter(names, { -> v:val =~# '^' . a:arglead })
+endfunction
+
+function! s:compare(i1, i2) abort
+  return a:i1 == a:i2 ? 0 : a:i1 > a:i2 ? 1 : -1
 endfunction
