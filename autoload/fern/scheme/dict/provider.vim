@@ -1,30 +1,24 @@
 let s:Promise = vital#fern#import('Async.Promise')
 
 function! fern#scheme#dict#provider#new(...) abort
-  let tree = a:0 ? a:1 : {}
   return {
-        \ 'get_node': funcref('s:get_node', [tree]),
+        \ 'get_node': funcref('s:get_node'),
         \ 'get_parent': funcref('s:get_parent'),
         \ 'get_children': funcref('s:get_children'),
+        \ '_tree': a:0 ? a:1 : deepcopy(s:sample_tree),
         \}
 endfunction
 
-function! s:get_node(tree, url) abort
-  let meta = s:parse_url(a:url)
-  if empty(meta.varname)
-    let tree = a:tree
-  else
-    sandbox let tree = eval(meta.varname)
-  endif
-  let cursor = tree
+function! s:get_node(url) abort dict
   let path = []
-  let node = s:node(meta, path, 'root', cursor, v:null)
-  for term in split(meta.path, '/')
+  let cursor = self._tree
+  let node = s:node(path, 'root', cursor, v:null)
+  for term in split(matchstr(a:url, 'dict:\zs.*'), '/')
     if !has_key(cursor, term)
       throw printf("no %s exists: %s", term, a:url)
     endif
     call add(path, term)
-    let node = s:node(meta, path, term, cursor[term], node)
+    let node = s:node(path, term, cursor[term], node)
   endfor
   return node
 endfunction
@@ -43,7 +37,7 @@ function! s:get_children(node, ...) abort
     let ref = a:node.concealed._value
     let children = map(
           \ keys(ref),
-          \ { _, v -> s:node(a:node._meta, a:node._path + [v], v, ref[v], a:node)},
+          \ { _, v -> s:node(a:node._path + [v], v, ref[v], a:node)},
           \)
     return s:Promise.resolve(children)
   catch
@@ -51,20 +45,9 @@ function! s:get_children(node, ...) abort
   endtry
 endfunction
 
-function! s:parse_url(url) abort
-  let url = fern#lib#url#parse(a:url)
-  let varname = matchstr(url.path, '^[^/]*\ze')
-  let path = matchstr(url.path, '/\zs.*$')
-  return {
-        \ 'varname': fern#lib#url#decode(varname),
-        \ 'path': path,
-        \}
-endfunction
-
-function! s:node(meta, path, name, value, parent) abort
+function! s:node(path, name, value, parent) abort
   let status = type(a:value) is# v:t_dict
-  let varname = fern#lib#url#encode(a:meta.varname)
-  let bufname = status ? printf('dict:%s/%s', varname, join(a:path, '/')) : v:null
+  let bufname = status ? printf('dict:/%s', join(a:path, '/')) : v:null
   return {
         \ 'name': a:name,
         \ 'status': status,
@@ -74,6 +57,22 @@ function! s:node(meta, path, name, value, parent) abort
         \   '_parent': a:parent,
         \ },
         \ '_path': a:path,
-        \ '_meta': a:meta,
         \}
 endfunction
+
+
+let s:sample_tree = {
+      \ 'shallow': {
+      \   'alpha': {},
+      \   'beta': {},
+      \   'gamma': 'value',
+      \ },
+      \ 'deep': {
+      \   'alpha': {
+      \     'beta': {
+      \       'gamma': 'value',
+      \     },
+      \   },
+      \ },
+      \ 'leaf': 'value',
+      \}
