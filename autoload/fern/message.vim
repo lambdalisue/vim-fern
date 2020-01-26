@@ -1,7 +1,7 @@
 let s:Later = vital#fern#import('Async.Later')
 
 function! fern#message#debug(...) abort
-  if !get(g:, 'fern#debug')
+  if !get(g:, 'fern_debug')
     return
   endif
   call s:Later.call(funcref('s:message', ['Comment'] + a:000))
