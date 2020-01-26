@@ -7,14 +7,178 @@
 [![Powered by vital-Whisky](https://img.shields.io/badge/powered%20by-vital--Whisky-80273f.svg)](https://github.com/lambdalisue/vital-Whisky)
 [![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
-General purpose asynchronous tree explorer written in Pure Vim script.
+General purpose asynchronous tree viewer written in Pure Vim script.
 
 **WARNING: This project is in beta stage. Any changes are applied without announcements.**
 
-### Drawer style (NERDTree like)
+## Concept
 
-![Drawer style](https://user-images.githubusercontent.com/546312/48725677-40a75300-ec70-11e8-9577-23cd841ca137.png)
+- Supports both Vim and Neovim without any external dependencies
+- Support _split windows_ and _project drawer_ explained in [this article](http://vimcasts.org/blog/2013/01/oil-and-vinegar-split-windows-and-project-drawer/)
+- Provide features as actions so that user don't have to remember mappings
+- Make operation asynchronous as much as possible to keep latency
+- User experience is more important than simplicity (maintainability)
+- Custamizability is less important than simplicity (maintainability)
+- Easy to create 3rd party plugins to support any kind of trees
 
-### Explorer style (netrw like)
+## Installation
 
-![Explorer style](https://user-images.githubusercontent.com/546312/48725703-4e5cd880-ec70-11e8-9376-3d25c1a4fc0b.png)
+fern.vim has no extra dependencies so use your favorite Vim plugin manager or see [How to install](https://github.com/lambdalisue/fern.vim/wiki/How-to-install) page for detail.
+
+## Usage
+
+### Command
+
+Open fern on a current working directory by:
+
+```vim
+:Fern .
+```
+
+Or open fern on a parent directory of a current buffer by:
+
+```vim
+:Fern %:h
+```
+
+Or open fern on a current working directory with a current buffer focused by:
+
+```vim
+:Fern . -reveal=%
+```
+
+![Screenshot of fern in split windows style](https://user-images.githubusercontent.com/546312/73137975-11287d80-40a1-11ea-91eb-c75c71aa420e.png)
+
+The following options are available for _split windows_ style:
+
+| Option    | Default | Description                                                                                                                                                    |
+| --------- | ------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `-opener` | `edit`  | An opener to open the buffer. Available value is one of `select`, `edit`, `split`, `vsplit`, `tabedit`, or those values with modifiers (e.g. `topleft vsplit`) |
+| `-reveal` |         | Recursively expand branches and focus the node. It must be a relative path from the root node of the tree. Otherwise the value is ignored.                     |
+
+```
+:Fern {url} [-opener={opener}] [-reveal={reveal}]
+```
+
+All usage above open fern as [*split windows style*][]. To open fern as [*project drawer style*][], use `-drawer` option like:
+
+```vim
+:Fern . -drawer
+```
+
+![Screenshot of fern in project drawer style](https://user-images.githubusercontent.com/546312/73138033-81370380-40a1-11ea-9054-73ccee248910.png)
+
+A fern window with _project drawer_ style always appeared to the most left side of Vim and behaviors of some mappings/actions are slightly modified (e.g. a buffer in the next window will be used as an anchor buffer in a project drawer style to open a new buffer.)
+
+Note that addtional to the all options available for _split windows_ style, _project drawer_ style enables the follwoing options:
+
+| Option    | Default | Description                                                      |
+| --------- | ------- | ---------------------------------------------------------------- |
+| `-width`  | `30`    | The width of the project drawer window                           |
+| `-keep`   |         | Disable to quit Vim when there is only one project drawer buffer |
+| `-toggle` |         | Close existing project drawer rather than focus                  |
+
+```
+:Fern {url} -drawer [-opener={opener}] [-reveal={reveal}] [-width=30] [-keep] [-toggle]
+```
+
+[*split windows style*]: http://vimcasts.org/blog/2013/01/oil-and-vinegar-split-windows-and-project-drawer/
+[*project drawer style*]: http://vimcasts.org/blog/2013/01/oil-and-vinegar-split-windows-and-project-drawer/
+
+### Mappings/Actions
+
+The following mappings/actions are available among any fern buffer
+
+| Mapping             | Action          | Description                                                                  |
+| ------------------- | --------------- | ---------------------------------------------------------------------------- |
+| `a`                 |                 | Open a prompt to input an action name to perform                             |
+| `.`                 |                 | Repeat previous action invoked from a prompt                                 |
+| `?`                 |                 | Show mappings/actions help (_NOT IMPLEMENTED YET_)                           |
+| `<C-c>`             | `cancel`        | Cancel any operation under processing                                        |
+| `<C-l>`             | `redraw`        | Redraw content of the buffer                                                 |
+|                     | `debug`         | Show a debug informatin of a node under the cursor                           |
+| `<F5>`              | `reload`        | Reload node itself and descendent nodes of a node under the cursor           |
+|                     | `expand`        | Expand (open) a node under the cursor                                        |
+| `h`                 | `collapse`      | Collapse (close) a node under the cursor                                     |
+| `i`                 | `reveal`        | Reveal (recursively focus and expand) a node which input by user             |
+|                     | `enter`         | Enter a new tree which root node is a node under the cursor                  |
+| `<BS>`, `<C-h>`     | `leave`         | Leave to a new tree which root is the parent node of a current root node     |
+| `s`                 | `open:select`   | Select window to open a node under the cursor (like [t9md/vim-choosewin][])  |
+| `e`                 | `open`          | An alias of `open:edit` action                                               |
+| `E`                 | `open:side`     | Open a node under the cursor on right side of the fern buffer                |
+|                     | `open:edit`     | Open a node under the cursor with `edit`                                     |
+|                     | `open:split`    | Open a node under the cursor with `split`                                    |
+|                     | `open:vsplit`   | Open a node under the cursor with `vsplit`                                   |
+| `t`                 | `open:tabedit`  | Open a node under the cursor with `tabedit`                                  |
+|                     | `open:above`    | Open a node under the cursor with `leftabove split`                          |
+|                     | `open:left`     | Open a node under the cursor with `leftabove vsplit`                         |
+|                     | `open:below`    | Open a node under the cursor with `rightbelow split`                         |
+|                     | `open:right`    | Open a node under the cursor with `rightbelow vsplit`                        |
+|                     | `open:top`      | Open a node under the cursor with `topleft split`                            |
+|                     | `open:leftest`  | Open a node under the cursor with `topleft vsplit`                           |
+|                     | `open:bottom`   | Open a node under the cursor with `botright split`                           |
+|                     | `open:rightest` | Open a node under the cursor with `botright vsplit`                          |
+| `<Return>`, `<C-m>` |                 | Invoke `open` whe a node under the cursor is leaf. Otherwise invoke `enter`  |
+| `l`                 |                 | Invoke `open` whe a node under the cursor is leaf. Otherwise invoke `expand` |
+
+[t9md/vim-choosewin]: https://github.com/t9md/vim-choosewin
+
+And the following mappings/actions are available in builtin `file` scheme
+
+| Mapping | Action            | Description                                                                                                       |
+| ------- | ----------------- | ----------------------------------------------------------------------------------------------------------------- |
+|         | `cd`              | Chnage directory to the root node of the tree with `cd` command                                                   |
+|         | `lcd`             | Chnage directory to the root node of the tree with `lcd` command                                                  |
+|         | `tcd`             | Chnage directory to the root node of the tree with `tcd` command                                                  |
+| `x`     | `open:system`     | Open a node under the cursor with a system program                                                                |
+| `N`     | `new-file`        | Create a new file under a node under the cursor                                                                   |
+| `K`     | `new-dir`         | Create a new directory under a node under the cursor                                                              |
+| `m`     | `move`            | Move files/directories of selected nodes to new locations sequentially                                            |
+| `c`     | `clipboard-copy`  | Copy files/directories of selected nodes to the internal clipboard                                                |
+| `p`     | `clipboard-pate`  | Paste files/directories to a node under the cursor from the internal clipboard                                    |
+|         | `clipboard-clear` | Clear the internal clipboard                                                                                      |
+| `d`     | `trash`           | Move files/directries of selected nodes to the system trash-bin                                                   |
+|         | `remove`          | Remove files/directries of selected nodes                                                                         |
+| `R`     | `rename`          | Start renamer to rename multiple files/directories by using Vim buffer (like exrename in [Shougo/vimfiler.vim][]) |
+
+[shougo/vimfiler.vim]: https://github.com/Shougo/vimfiler.vim
+
+## Customize
+
+Use `FileType fern` autocmd to execute initialization scripts for fern buffer like:
+
+```vim
+function! s:init_fern() abort
+  " Use 'select' instead of 'edit' for default 'open' action
+  nmap <buffer> <Plug>(fern-action-open) <Plug>(fern-action-open:select)
+endfunction
+
+augroup fern-custom
+  autocmd! *
+  autocmd FileType fern call s:init_fern()
+augroup END
+```
+
+The `FileType` autocmd will be invoked AFTER a fern buffer has initialized but BEFORE contents of a buffer become ready.
+So avoid accessing actual contents in the above function.
+
+See [Tips](https://github.com/lambdalisue/fern.vim/wiki/Tips) pages to find tips, or write pages to share your tips ;-)
+
+# Plugins
+
+The fern.vim supports 3rd party plugin system for scheme and mappings.
+See [Plugins](https://github.com/lambdalisue/fern.vim/wiki/Plugins) pages to find 3rd party plugins of fern.vim.
+
+# Contribution
+
+Any contribution including documentations are welcome.
+
+Contributors who change codes should install [thinca/vim-themis][] to run tests before complete a PR.
+PRs which does not pass tests won't be accepted.
+
+[thinca/vim-themis]: https://github.com/thinca/vim-themis
+
+# License
+
+The code in fern.vim follows MIT license texted in [LICENSE](./LICENSE).
+Contributors need to agree that any modifications sent in this repository follow the license.

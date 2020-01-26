@@ -9,15 +9,6 @@ API						*fern-develop-api*
 -----------------------------------------------------------------------------
 VARIABLE				*fern-develop-api-variable*
 
-g:trae_debug						*g:fern_debug*
-	Set 1 to enable fern debug mode.
-	Default: 0
-
-			*g:fern#internal#action#disable_default_mappings*
-g:fern#internal#action#disable_default_mappings
-	Set 1 to disable default mappings for action.
-	Default: 0
-
 					*g:fern#internal#core#hide*
 g:fern#internal#core#hide
 	Set 1 to hide hidden nodes.
@@ -235,11 +226,6 @@ g:fern#lib#window#auto_select
 	Set 1 to automatically select window when there is only one suitable
 	window exists in |fern-develop-window-selector|.
 	Default: 1
-
-			*g:fern#internal#mapping#disable_default_mappings*
-g:fern#internal#mapping#disable_default_mappings
-	Set 1 to disable default mappings.
-	Default: 0
 
 			*g:fern#internal#mapping#enabled_mapping_presets*
 g:fern#internal#mapping#enabled_mapping_presets

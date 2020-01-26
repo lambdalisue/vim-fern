@@ -1,5 +1,3 @@
-let s:Config = vital#fern#import('Config')
-
 function! fern#internal#action#init() abort
   let prefix = 'fern-action-'
   let b:fern_action = {
@@ -9,7 +7,7 @@ function! fern#internal#action#init() abort
   nnoremap <buffer><silent> <Plug>(fern-action-choice) :<C-u>call <SID>map_choice()<CR>
   nnoremap <buffer><silent> <Plug>(fern-action-repeat) :<C-u>call <SID>map_repeat()<CR>
 
-  if !g:fern#internal#action#disable_default_mappings
+  if !g:fern_disable_default_mappings
     nmap <buffer> a <Plug>(fern-action-choice)
     nmap <buffer> . <Plug>(fern-action-repeat)
   endif
@@ -79,7 +77,3 @@ function! s:complete_choice(arglead, cmdline, cursorpos) abort
   endif
   return filter(names, { -> v:val =~# '^' . a:arglead })
 endfunction
-
-call s:Config.config(expand('<sfile>:p'), {
-      \ 'disable_default_mappings': 0,
-      \})

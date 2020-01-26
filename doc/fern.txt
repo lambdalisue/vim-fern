@@ -9,6 +9,9 @@ CONTENTS						*fern-contents*
 INTRODUCTION				|fern-introduction|
 USAGE					|fern-usage|
 INTERFACE				|fern-interface|
+  VARIABLE				|fern-variable|
+  COMMAND				|fern-command|
+  FUNCTION				|fern-function|
 
 
 =============================================================================
@@ -17,132 +20,68 @@ INTRODUCTION						*fern-introduction*
 *fern.vim* (fern) is a general purpose asynchronous tree explorer written in
 pure Vim script.
 
-It provides the following features
-
-- Explorer or Drawer style
-  - :Fern {url} to open in explorer style
-  - :Fern {url} -drawer to open in drawer style
-- Options are buffer name based to support re-opening
-  - :e to reload content as like other buffer
-  - Friendly for session
-- Action based features
-  - Hit a to choose action to perform
-  - Hit . to repeat previous action
-- Generic multi item renamer (like exrename in Shougo/vimfiler.vim)
-  - "file" scheme provides multi file/directory renamer
-
-And a builtin "file" scheme provides the following features
-
-- Basic local file operations are supported
-  - Perform |cd|, |lcd|, and |tcd| to a directory
-  - Open file/directory with a system application
-  - Create file/directory
-  - Move file/directory
-  - Remove file/directory
-  - Copy/Paste file/directory through the internal clipboard
-- System Trash-bin is supported
-  - By osascript in macOS
-  - By PowerShell in Windows
-  - By andeafrancia/trash-cli
-  - By b4b4r07/gomi
-
-This plugin has strongly inspired by the following plugins
-
-https://github.com/Shougo/vimfiler.vim
-https://github.com/thinca/vim-qfreplace
-https://github.com/lambdalisue/gina.vim
-
-
-=============================================================================
-USAGE							*fern-usage*
-
-Open fern explorer for builtin "file" scheme, execute the following command:
->
-	:Fern
-<
-Then a fern explorer like below will be opened with a working directory:
->
-  fern.vim
-  |+ autoload
-  |+ doc
-  |+ ftplugin
-  |+ plugin
-  |+ test
-  |  LICENSE
-  |  README.md
-<
-If you would like to give a root directory explicitly, specify it as a first
-argument like:
->
-	:Ferm ~/Desktop
-<
-						*fern-usage-reveal*
-If you would like to open fern with focusing a current buffer or whatever, use
-"-reveal=..." option like
->
-	:Fern . -reveal=autoload/fern/comparator/default.vim
-<
-Then the explorer opend like following
->
-  fern.vim
-  |- autoload
-   |- fern
-    |+ command
-    |- comparator
-     |  default.vim
-     |  lexical.vim
-    |+ internal
-    |+ lib
-    |+ mapping
-    |+ scheme
-    |  helper.vim
-    |  mapping.vim
-    |  message.vim
-   |+ vital
-  |+ doc
-  |+ ftplugin
-  |+ plugin
-  |+ test
-  |  LICENSE
-  |  README.md
-<
-Note that if you would like to use "%", use '<C-r>=expand("%")<CR>'.
->
-	:Fern . -reveal=<C-r>=expand("%")<CR>
-<
-						*fern-usage-drawer*
-If you prefer a drawer style (e.g. NERDTree), add "-drawer" to the command
-like:
->
-	:Fern -drawer
-<
-Then a fern drawer will be popped up to the left side. Note that behavior
-between explorer and drawer is slightly different (e.g. "open:side" action.)
-
 
 =============================================================================
 INTERFACE						*fern-interface*
 
 -----------------------------------------------------------------------------
+VARIABLE						*fern-variable*
+
+
+							*g:fern_debug*
+g:fern_debug
+	Set 1 to enable fern debug mode.
+	Default: 0
+
+					*g:fern_disable_default_mappings*
+g:fern_disable_default_mappings
+	Set 1 to disable default mappings
+	Default: 0
+
+-----------------------------------------------------------------------------
 COMMAND							*fern-command*
 
 							*:Fern*
-:Fern {url} [-reveal={path}] [-opener={opener}]
-	Open fern window in explorer style with {opner} (default: "edit").
-	Note that {path} for reveal must be a relative path from {url}.
+:Fern {url} [-reveal={reveal}] [-opener={opener}]
+	Open a fern buffer in split windows style with the {opener}.
+
+	If {reveal} is specified, parent nodes of the node which is identified
+	by the {reveal} are expanded and the node will be focused.
+	The {reveal} must be a relative path separated by "/" from the
+	specfied {url}.
+	Note that if the {url} is for "file" scheme, an absolute path can be
+	specified to the {reveal}.
+								*fern-opener*
+	The following value are available for the {opener}:
+
+	"select"	Open a prompt to select window to open a fern buffer
+			(like t9md/vim-choosewin)
+	"edit"		Open a fern buffer on the current buffer by |edit|
+	"split"		Open a fern buffer on a side of the current buffer by
+			|split|
+	"vsplit"	Open a fern buffer on a vertical side of the current
+			buffer by |vsplit|
+	"tabedit"	Open a fern buffer on a new tabpage by |tabedit|
+
+	Additionally, any modifiers (|mods|) are allowd to be prepend.
 
 							*:Fern-drawer*
 :Fern {url} -drawer [-reveal={path}] [-width={width}] [-keep] [-toggle]
-	Open fern window in drawer style with {width} (default: 30).
-	If -keep has sepcified, the buffer will not close even there are only
-	this buffer and no named buffer.
-	If -toggle has specified, it open or closes existing fern drawer.
-	Note that {path} for reveal must be a relative path from {url}.
+	Open a fern buffer in project drawer style with the {width}.
+
+	If the {width} is specified, the width of the window is regulated to
+	the specified value.
+	If "-keep" options is specified, the buffer won't close even there is
+	only this window exist.
+	If "-toggle" option is specified, existing fern buffer will be closed
+	rather than opening a new fern buffer when exist.
+
+	See |:Fern| for other arguments and options.
 
 							*:FernFocus*
 :FernFocus [-drawer]
-	Focus fern explorer or drawer. If -drawer is specified, it focus only
-	drawer window.
+	Focus a next fern viewer. If "-drawer" option is specified, it focus
+	only a project drawer style fern.
 
 
 -----------------------------------------------------------------------------

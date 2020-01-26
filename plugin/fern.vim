@@ -25,3 +25,4 @@ augroup fern_internal
 augroup END
 
 let g:fern_debug = get(g:, 'fern_debug', 0)
+let g:fern_disable_default_mappings = get(g:, 'fern_disable_default_mappings', 0)
