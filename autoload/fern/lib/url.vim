@@ -199,7 +199,7 @@ endfunction
 let s:url = {}
 
 function! s:url.to_string() abort
-  let url = printf("%s:", self.scheme)
+  let url = empty(self.scheme) ? '' : printf("%s:", self.scheme)
   let url .= s:format_authority(self.authority)
   let url .= self.path
   let url .= s:format_query(self.query)

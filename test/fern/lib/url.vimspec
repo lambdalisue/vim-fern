@@ -102,6 +102,26 @@ Describe fern#lib#url
       Assert Equals(url.fragment, '')
       Assert Equals(url.to_string(), 'urn:oasis:names:specification:docbook:dtd:xml:4.1.2')
     End
+
+    It parses '.' correctly
+      let url = fern#lib#url#parse('.')
+      Assert Equals(url.scheme, '')
+      Assert Equals(url.authority, {})
+      Assert Equals(url.path, '.')
+      Assert Equals(url.query, {})
+      Assert Equals(url.fragment, '')
+      Assert Equals(url.to_string(), '.')
+    End
+
+    It parses a fern URL correctly
+      let url = fern#lib#url#parse('fern:file:///foo/bar/hoge')
+      Assert Equals(url.scheme, 'fern')
+      Assert Equals(url.authority, {})
+      Assert Equals(url.path, 'file:///foo/bar/hoge')
+      Assert Equals(url.query, {})
+      Assert Equals(url.fragment, '')
+      Assert Equals(url.to_string(), 'fern:file:///foo/bar/hoge')
+    End
   End
 
   Describe #simplify()
@@ -222,6 +242,15 @@ Describe fern#lib#url
             \ 'fragment': '',
             \})
     End
+
+    It parses '.'
+      let ts = funcs.parse_url('.')
+      Assert Equals(ts, {
+            \ 'bare': '.',
+            \ 'query': '',
+            \ 'fragment': '',
+            \})
+    End
   End
 
   Describe s:parse_bare()
@@ -273,6 +302,15 @@ Describe fern#lib#url
             \ 'scheme': 'urn',
             \ 'authority': '',
             \ 'path': 'oasis:names:specification:docbook:dtd:xml:4.1.2',
+            \})
+    End
+
+    It parses '.'
+      let ts = funcs.parse_bare('.')
+      Assert Equals(ts, {
+            \ 'scheme': '',
+            \ 'authority': '',
+            \ 'path': '.',
             \})
     End
   End
