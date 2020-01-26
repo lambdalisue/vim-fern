@@ -78,6 +78,14 @@ function! fern#lib#url#relative(path, base) abort
   return prefix . join(path, '/')
 endfunction
 
+function! fern#lib#url#encode(str) abort
+  return s:encode(a:str)
+endfunction
+
+function! fern#lib#url#decode(str) abort
+  return s:decode(a:str)
+endfunction
+
 function! s:encode(str) abort
   let pattern = '^$~.*[]\'
   let chars = "%:/?#[]@!$&'()*+,;= "

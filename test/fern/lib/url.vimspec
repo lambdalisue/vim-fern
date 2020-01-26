@@ -120,7 +120,25 @@ Describe fern#lib#url
       Assert Equals(url.path, 'file:///foo/bar/hoge')
       Assert Equals(url.query, {})
       Assert Equals(url.fragment, 'e22df093')
-      Assert Equals(fern#lib#url#format(url), 'fern:file:///foo/bar/hoge')
+      Assert Equals(fern#lib#url#format(url), 'fern:file:///foo/bar/hoge#e22df093')
+    End
+
+    It parses a dict URL correctly
+      let url = fern#lib#url#parse('dict:/foo/bar')
+      Assert Equals(url.scheme, 'dict')
+      Assert Equals(url.authority, {})
+      Assert Equals(url.path, '/foo/bar')
+      Assert Equals(url.query, {})
+      Assert Equals(url.fragment, '')
+      Assert Equals(fern#lib#url#format(url), 'dict:/foo/bar')
+
+      let url = fern#lib#url#parse('dict:g:fern%23scheme%23dict%23provier%23sample_tree/foo/bar')
+      Assert Equals(url.scheme, 'dict')
+      Assert Equals(url.authority, {})
+      Assert Equals(url.path, 'g:fern%23scheme%23dict%23provier%23sample_tree/foo/bar')
+      Assert Equals(url.query, {})
+      Assert Equals(url.fragment, '')
+      Assert Equals(fern#lib#url#format(url), 'dict:g:fern%23scheme%23dict%23provier%23sample_tree/foo/bar')
     End
   End
 

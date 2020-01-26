@@ -382,6 +382,14 @@ fern#lib#url#relative({path}, {base})
 	echo fern#lib#url#relative('/foo/bar/hoge', '/piyo/puyo')
 	" -> '../../foo/bar/hoge'
 <
+				*fern#lib#url#encode()*
+fern#lib#url#encode({str})
+	Return percent-encoding encoded |String| of the {str} (|String|).
+
+				*fern#lib#url#decode()*
+fern#lib#url#decode({str})
+	Return percent-encoding decoded |String| of the {str} (|String|).
+
 				*fern#lib#window#find()*
 fern#lib#window#find({predicator}[, {origin}])
 	Find a first |winnr| which {predicator} (|Function|) returns True.
