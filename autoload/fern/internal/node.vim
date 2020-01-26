@@ -221,9 +221,8 @@ function! fern#internal#node#reveal(key, nodes, provider, comparator, token) abo
 endfunction
 
 function! s:new(node, ...) abort
-  let label = get(a:node, 'label', a:node.name)
   let node = extend(a:node, {
-        \ 'label': label,
+        \ 'label': get(a:node, 'label', a:node.name),
         \ 'hidden': get(a:node, 'hidden', 0),
         \ 'bufname': get(a:node, 'bufname', v:null),
         \ 'concealed': get(a:node, 'concealed', {}),
