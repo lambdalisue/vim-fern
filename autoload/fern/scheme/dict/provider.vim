@@ -6,19 +6,33 @@ function! fern#scheme#dict#provider#new(...) abort
         \ 'get_parent': funcref('s:get_parent'),
         \ 'get_children': funcref('s:get_children'),
         \ '_tree': a:0 ? a:1 : deepcopy(s:sample_tree),
+        \ '_parse_url': { u -> split(matchstr(u, '^dict:\zs.*$'), '/') },
+        \ '_update_tree': { -> 0 },
+        \ '_create_label': { n ->
+        \   n.status
+        \     ? n.name
+        \     : printf('%s [%s]', n.name, n.concealed._value)
+        \ },
+        \ '_extend_node': { n -> n },
+        \ '_root_name_factory': { -> 'root' },
+        \ '_leaf_name_factory': { -> 'leaf' },
+        \ '_branch_name_factory': { -> 'branch' },
         \}
 endfunction
 
 function! s:get_node(url) abort dict
+  let terms = self._parse_url(a:url)
+  let name = self._root_name_factory(a:url)
   let path = []
   let cursor = self._tree
-  let node = s:node(path, 'root', cursor, v:null)
-  for term in split(matchstr(a:url, 'dict:\zs.*'), '/')
+  let node = s:node(self, path, name, cursor, v:null)
+  for term in terms
     if !has_key(cursor, term)
       throw printf("no %s exists: %s", term, a:url)
     endif
     call add(path, term)
-    let node = s:node(path, term, cursor[term], node)
+    let cursor = cursor[term]
+    let node = s:node(self, path, term, cursor, node)
   endfor
   return node
 endfunction
@@ -29,7 +43,7 @@ function! s:get_parent(node, ...) abort
   return s:Promise.resolve(parent)
 endfunction
 
-function! s:get_children(node, ...) abort
+function! s:get_children(node, ...) abort dict
   try
     if a:node.status is# 0
       throw printf("%s node is leaf", a:node.name)
@@ -37,7 +51,7 @@ function! s:get_children(node, ...) abort
     let ref = a:node.concealed._value
     let children = map(
           \ keys(ref),
-          \ { _, v -> s:node(a:node._path + [v], v, ref[v], a:node)},
+          \ { _, v -> s:node(self, a:node._path + [v], v, ref[v], a:node)},
           \)
     return s:Promise.resolve(children)
   catch
@@ -45,10 +59,10 @@ function! s:get_children(node, ...) abort
   endtry
 endfunction
 
-function! s:node(path, name, value, parent) abort
+function! s:node(provider, path, name, value, parent) abort
   let status = type(a:value) is# v:t_dict
   let bufname = status ? printf('dict:/%s', join(a:path, '/')) : v:null
-  return {
+  let node = {
         \ 'name': a:name,
         \ 'status': status,
         \ 'bufname': bufname,
@@ -58,6 +72,8 @@ function! s:node(path, name, value, parent) abort
         \ },
         \ '_path': a:path,
         \}
+  let node.label = a:provider._create_label(node)
+  return a:provider._extend_node(node)
 endfunction
 
 
