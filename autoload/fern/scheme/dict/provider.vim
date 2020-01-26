@@ -30,7 +30,9 @@ function! s:get_node(tree, url) abort
 endfunction
 
 function! s:get_parent(node, ...) abort
-  return s:Promise.resolve(a:node.concealed._parent)
+  let parent = a:node.concealed._parent
+  let parent = parent is# v:null ? copy(a:node) : parent
+  return s:Promise.resolve(parent)
 endfunction
 
 function! s:get_children(node, ...) abort
