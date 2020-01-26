@@ -19,7 +19,6 @@ function! fern#internal#viewer#init() abort
   setlocal buftype=nofile bufhidden=unload
   setlocal noswapfile nobuflisted nomodifiable
   setlocal signcolumn=yes
-  setlocal filetype=fern
 
   augroup fern_viewer_internal
     autocmd! * <buffer>
@@ -48,9 +47,12 @@ function! fern#internal#viewer#init() abort
   call fern#mapping#init(scheme)
   call fern#internal#action#init()
   call fern#internal#spinner#start()
+  call fern#internal#drawer#init()
+
+  " now the buffer is ready so set filetype to emit FileType
+  setlocal filetype=fern
   call fern#internal#renderer#highlight()
   call fern#internal#renderer#syntax()
-  call fern#internal#drawer#init()
 
   let helper = fern#helper#new()
   let root = helper.get_root_node()
