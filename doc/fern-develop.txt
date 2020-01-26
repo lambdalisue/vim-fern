@@ -236,14 +236,14 @@ g:fern#lib#window#auto_select
 	window exists in |fern-develop-window-selector|.
 	Default: 1
 
-			*g:fern#mapping#disable_default_mappings*
-g:fern#mapping#disable_default_mappings
+			*g:fern#internal#mapping#disable_default_mappings*
+g:fern#internal#mapping#disable_default_mappings
 	Set 1 to disable default mappings.
 	Default: 0
 
-			*g:fern#mapping#enabled_mapping_presets*
-g:fern#mapping#enabled_mapping_presets
-	A |List| of |String| which is a name under fern#mapping namespace.
+			*g:fern#internal#mapping#enabled_mapping_presets*
+g:fern#internal#mapping#enabled_mapping_presets
+	A |List| of |String| which is a name under fern#internal#mapping namespace.
 	Default: ['tree', 'node', 'mark', 'filter']
 
 -----------------------------------------------------------------------------
@@ -413,8 +413,8 @@ fern#lib#window#select()
 	window.
 	See |g:fern#lib#window#auto_select| to disable auto select feature.
 
-				*fern#mapping#call()*
-fern#mapping#call({fn}[, {args}])
+				*fern#internal#mapping#call()*
+fern#internal#mapping#call({fn}[, {args}])
 	A utility wrapper function to call mapping function.
 
 	The {fn} (|Function|) will be called with
@@ -434,27 +434,27 @@ fern#mapping#call({fn}[, {args}])
 
 	function! s:call(name) abort
 	  let Fn = funcref(printf('s:map_%s', a:name))
-	  call fern#mapping#call(Fn)
+	  call fern#internal#mapping#call(Fn)
 	endfunction
 
 	function! s:map_echo(helper) abort
 	  echo a:helper.get_cursor_node().name
 	endfunction
 <
-				*fern#mapping#init()*
-fern#mapping#init({scheme})
-	Define mappings by calling |fern#mapping#{preset}#init()| sequentially.
-	Called mappings are defined by |g:fern#mapping#enabled_mapping_presets|.
+				*fern#internal#mapping#init()*
+fern#internal#mapping#init({scheme})
+	Define mappings by calling |fern#internal#mapping#{preset}#init()| sequentially.
+	Called mappings are defined by |g:fern#internal#mapping#enabled_mapping_presets|.
 	Note that it also call |fern#scheme#{scheme}#mapping#init()| for
 	scheme specific mappings.
 
-				*fern#mapping#{preset}#init()*
-fern#mapping#{preset}#init({disable_default_mappings})
+				*fern#internal#mapping#{preset}#init()*
+fern#internal#mapping#{preset}#init({disable_default_mappings})
 	Function called on a fern buffer to define {preset} mappings.
 	Note that mappings name starts from "fern-action-" will be registered
 	in actions.
 >
-	function! fern#mapping#test#init(disable_default_mappings) abort
+	function! fern#internal#mapping#test#init(disable_default_mappings) abort
 	  nnoremap <buffer><silent>
 	        \ <Plug>(fern-action-echo)
 	        \ :<C-u>call <SID>call('echo')<CR>
@@ -464,12 +464,12 @@ fern#mapping#{preset}#init({disable_default_mappings})
 	  endif
 	endfunction
 <
-	To custom mappings, modify |g:fern#mapping#enabled_mapping_presets|.
+	To custom mappings, modify |g:fern#internal#mapping#enabled_mapping_presets|.
 
 				*fern#scheme#{scheme}#mapping#init()*
 fern#scheme#{scheme}#mapping#init({disable_default_mappings})
 	Function called on a fern buffer to define scheme specific mappings.
-	See |fern#mapping#{name}#init()| for detail.
+	See |fern#internal#mapping#{name}#init()| for detail.
 
 				*fern#message#info()*
 				*fern#message#title()*

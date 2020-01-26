@@ -49,7 +49,7 @@ function! fern#internal#viewer#init() abort
     let helper = fern#helper#new()
     let root = helper.get_root_node()
 
-    call fern#mapping#init(scheme)
+    call fern#internal#mapping#init(scheme)
     call fern#internal#drawer#init()
     call fern#internal#spinner#start()
     call fern#internal#renderer#highlight()
