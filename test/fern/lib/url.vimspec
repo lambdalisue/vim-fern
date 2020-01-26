@@ -42,7 +42,7 @@ Describe fern#lib#url
             \ 'order': 'newest',
             \})
       Assert Equals(url.fragment, 'top')
-      Assert Equals(url.to_string(), 'https://john.doe@www.example.com:123/forum/questions/?tag=networking&order=newest#top')
+      Assert Equals(fern#lib#url#format(url), 'https://john.doe@www.example.com:123/forum/questions/?tag=networking&order=newest#top')
 
       let url = fern#lib#url#parse('ldap://[2001:db8::7]/c=GB?objectClass?one')
       Assert Equals(url.scheme, 'ldap')
@@ -56,7 +56,7 @@ Describe fern#lib#url
             \ 'objectClass?one': v:true,
             \})
       Assert Equals(url.fragment, '')
-      Assert Equals(url.to_string(), 'ldap://[2001:db8::7]/c=GB?objectClass%3fone')
+      Assert Equals(fern#lib#url#format(url), 'ldap://[2001:db8::7]/c=GB?objectClass%3fone')
 
       let url = fern#lib#url#parse('mailto:John.Doe@example.com')
       Assert Equals(url.scheme, 'mailto')
@@ -64,7 +64,7 @@ Describe fern#lib#url
       Assert Equals(url.path, 'John.Doe@example.com')
       Assert Equals(url.query, {})
       Assert Equals(url.fragment, '')
-      Assert Equals(url.to_string(), 'mailto:John.Doe@example.com')
+      Assert Equals(fern#lib#url#format(url), 'mailto:John.Doe@example.com')
 
       let url = fern#lib#url#parse('news:comp.infosystems.www.servers.unix')
       Assert Equals(url.scheme, 'news')
@@ -72,7 +72,7 @@ Describe fern#lib#url
       Assert Equals(url.path, 'comp.infosystems.www.servers.unix')
       Assert Equals(url.query, {})
       Assert Equals(url.fragment, '')
-      Assert Equals(url.to_string(), 'news:comp.infosystems.www.servers.unix')
+      Assert Equals(fern#lib#url#format(url), 'news:comp.infosystems.www.servers.unix')
 
       let url = fern#lib#url#parse('tel:+1-816-555-1212')
       Assert Equals(url.scheme, 'tel')
@@ -80,7 +80,7 @@ Describe fern#lib#url
       Assert Equals(url.path, '+1-816-555-1212')
       Assert Equals(url.query, {})
       Assert Equals(url.fragment, '')
-      Assert Equals(url.to_string(), 'tel:+1-816-555-1212')
+      Assert Equals(fern#lib#url#format(url), 'tel:+1-816-555-1212')
 
       let url = fern#lib#url#parse('telnet://192.0.2.16:80/')
       Assert Equals(url.scheme, 'telnet')
@@ -92,7 +92,7 @@ Describe fern#lib#url
       Assert Equals(url.path, '/')
       Assert Equals(url.query, {})
       Assert Equals(url.fragment, '')
-      Assert Equals(url.to_string(), 'telnet://192.0.2.16:80/')
+      Assert Equals(fern#lib#url#format(url), 'telnet://192.0.2.16:80/')
 
       let url = fern#lib#url#parse('urn:oasis:names:specification:docbook:dtd:xml:4.1.2')
       Assert Equals(url.scheme, 'urn')
@@ -100,7 +100,7 @@ Describe fern#lib#url
       Assert Equals(url.path, 'oasis:names:specification:docbook:dtd:xml:4.1.2')
       Assert Equals(url.query, {})
       Assert Equals(url.fragment, '')
-      Assert Equals(url.to_string(), 'urn:oasis:names:specification:docbook:dtd:xml:4.1.2')
+      Assert Equals(fern#lib#url#format(url), 'urn:oasis:names:specification:docbook:dtd:xml:4.1.2')
     End
 
     It parses '.' correctly
@@ -110,17 +110,17 @@ Describe fern#lib#url
       Assert Equals(url.path, '.')
       Assert Equals(url.query, {})
       Assert Equals(url.fragment, '')
-      Assert Equals(url.to_string(), '.')
+      Assert Equals(fern#lib#url#format(url), '.')
     End
 
     It parses a fern URL correctly
-      let url = fern#lib#url#parse('fern:file:///foo/bar/hoge')
+      let url = fern#lib#url#parse('fern:file:///foo/bar/hoge#e22df093')
       Assert Equals(url.scheme, 'fern')
       Assert Equals(url.authority, {})
       Assert Equals(url.path, 'file:///foo/bar/hoge')
       Assert Equals(url.query, {})
-      Assert Equals(url.fragment, '')
-      Assert Equals(url.to_string(), 'fern:file:///foo/bar/hoge')
+      Assert Equals(url.fragment, 'e22df093')
+      Assert Equals(fern#lib#url#format(url), 'fern:file:///foo/bar/hoge')
     End
   End
 

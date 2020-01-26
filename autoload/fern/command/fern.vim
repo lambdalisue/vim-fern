@@ -40,13 +40,13 @@ function! fern#command#fern#command(mods, qargs) abort
   endtry
   try
     if !empty(get(url.query, 'drawer'))
-      call fern#internal#drawer#open(url.to_string(), {
+      call fern#internal#drawer#open(fern#lib#url#format(url), {
             \ 'mods': a:mods,
             \ 'opener': get(options, 'opener', g:fern#command#fern#drawer_opener),
             \ 'toggle': get(options, 'toggle', 0),
             \})
     else
-      call fern#internal#viewer#open(url.to_string(), {
+      call fern#internal#viewer#open(fern#lib#url#format(url), {
             \ 'mods': a:mods,
             \ 'opener': get(options, 'opener', g:fern#command#fern#viewer_opener),
             \})

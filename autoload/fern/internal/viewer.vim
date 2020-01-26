@@ -8,7 +8,7 @@ function! fern#internal#viewer#open(bufname, ...) abort
   let url = fern#lib#url#parse(options.base)
   let url.path = a:bufname
   let url.query = filter(url.query, { -> index(['reveal'], v:key) is# -1 })
-  return fern#lib#buffer#open(url.to_string(), options)
+  return fern#lib#buffer#open(fern#lib#url#format(url), options)
 endfunction
 
 function! fern#internal#viewer#init() abort
@@ -33,7 +33,7 @@ function! fern#internal#viewer#init() abort
   let url = fern#lib#url#parse(bufname('%'))
   if empty(url.fragment)
     let url.fragment = sha256(localtime())[:7]
-    execute printf("keepalt file %s", fnameescape(url.to_string()))
+    execute printf("keepalt file %s", fnameescape(fern#lib#url#format(url)))
   endif
   let scheme = fern#lib#url#parse(url.path).scheme
   let provider = fern#scheme#provider(scheme)

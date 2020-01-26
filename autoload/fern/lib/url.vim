@@ -1,16 +1,25 @@
-function! fern#lib#url#parse(url) abort
-  let u = s:parse_url(a:url)
+function! fern#lib#url#parse(str) abort
+  let u = s:parse_url(a:str)
   let b = s:parse_bare(u.bare)
   let a = s:parse_authority(b.authority)
   let q = s:parse_query(u.query)
   let f = s:parse_fragment(u.fragment)
-  return extend({
+  return {
         \ 'scheme': b.scheme,
         \ 'authority': a,
         \ 'path': b.path,
         \ 'query': q,
         \ 'fragment': f,
-        \}, s:url)
+        \}
+endfunction
+
+function! fern#lib#url#format(url) abort
+  let url = empty(a:url.scheme) ? '' : printf("%s:", a:url.scheme)
+  let url .= s:format_authority(a:url.authority)
+  let url .= a:url.path
+  let url .= s:format_query(a:url.query)
+  let url .= s:format_fragment(a:url.fragment)
+  return url
 endfunction
 
 function! fern#lib#url#simplify(path) abort
@@ -194,15 +203,4 @@ function! s:format_fragment(fragment) abort
     return ''
   endif
   return printf('#%s', s:encode(a:fragment))
-endfunction
-
-let s:url = {}
-
-function! s:url.to_string() abort
-  let url = empty(self.scheme) ? '' : printf("%s:", self.scheme)
-  let url .= s:format_authority(self.authority)
-  let url .= self.path
-  let url .= s:format_query(self.query)
-  let url .= s:format_fragment(self.fragment)
-  return url
 endfunction

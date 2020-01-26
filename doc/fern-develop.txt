@@ -303,11 +303,6 @@ fern#lib#url#parse({url})
 	"fragment"	|String| which represents the FRAGMENT part of the
 			{url}.
 
-	And the instance has the following methods:
-
-	Name		Description~
-	"to_string()"	Return |String| representation of the instance.
-
 	The {url} is assumed to follow the syntax of a generic URI which
 	syntax consists of a hierarchical sequence of five components:
 >
@@ -317,7 +312,8 @@ fern#lib#url#parse({url})
 >
 	AUTHORITY = [USERINFO@]HOST[:PORT]
 <
-	For example
+	For example:
+	https://en.wikipedia.org/wiki/Uniform_Resource_Identifier#Examples
 >
 	          userinfo       host      port
 	          ┌──┴───┐ ┌──────┴──────┐ ┌┴┐
@@ -349,7 +345,10 @@ fern#lib#url#parse({url})
 	  └┬┘ └──────────────────────┬──────────────────────┘
 	  scheme                    path
 <
-	https://en.wikipedia.org/wiki/Uniform_Resource_Identifier#Examples
+				*fern#lib#url#format()*
+fern#lib#url#format({URL})
+	Format a URL instance which has returend from |fern#lib#url#parse()|
+	and return a |String|.
 
 				*ferm#lib#url#simplify()*
 fern#lib#url#simplify({path})
