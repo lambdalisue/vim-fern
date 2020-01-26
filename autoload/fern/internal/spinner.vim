@@ -31,7 +31,7 @@ function! s:update(timer, spinner, bufnr) abort
     let node = get(fern.visible_nodes, lnum - 1, v:null)
     if node is# v:null
       return
-    elseif node.processing is# 0
+    elseif node.__processing is# 0
       continue
     endif
     call execute(printf(

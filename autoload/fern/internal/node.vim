@@ -24,8 +24,8 @@ function! fern#internal#node#debug(node) abort
 endfunction
 
 function! fern#internal#node#process(node) abort
-  let a:node.processing += 1
-  return { -> s:Lambda.let(a:node, 'processing', a:node.processing - 1) }
+  let a:node.__processing += 1
+  return { -> s:Lambda.let(a:node, '__processing', a:node.__processing - 1) }
 endfunction
 
 function! fern#internal#node#index(key, nodes) abort
@@ -227,7 +227,7 @@ function! s:new(node, ...) abort
         \ 'hidden': get(a:node, 'hidden', 0),
         \ 'bufname': get(a:node, 'bufname', v:null),
         \ 'concealed': get(a:node, 'concealed', {}),
-        \ 'processing': 0,
+        \ '__processing': 0,
         \ '__key': [],
         \ '__owner': v:null,
         \})

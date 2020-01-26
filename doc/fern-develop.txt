@@ -552,7 +552,7 @@ Name		Description~
 		Developers MUST follow same convention of naming under this
 		namespace as well.
 
-"processing"	A |Number| which indicate that the node is in processing.
+"__processing"	A |Number| which indicate that the node is in processing.
 		If the value is greater than 0, a spinner is displayed in sign
 		area of the node to indicate that the node is processing.
 
