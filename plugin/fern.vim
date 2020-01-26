@@ -13,10 +13,15 @@ command! -nargs=*
       \ FernFocus
       \ call fern#command#focus#command(<q-mods>, <q-args>)
 
+function! s:BufReadCmd() abort
+  call fern#internal#viewer#init()
+        \.catch({ e -> fern#message#error(e) })
+endfunction
+
 augroup fern_internal
   autocmd! *
-  autocmd BufReadCmd fern:* nested call fern#internal#viewer#init()
-  autocmd BufReadCmd fern:*/* nested call fern#internal#viewer#init()
+  autocmd BufReadCmd fern:* nested call s:BufReadCmd()
+  autocmd BufReadCmd fern:*/* nested call s:BufReadCmd()
 augroup END
 
 let g:fern_debug = get(g:, 'fern_debug', 0)

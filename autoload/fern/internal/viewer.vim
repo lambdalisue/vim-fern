@@ -34,34 +34,40 @@ function! fern#internal#viewer#init() abort
     let url.fragment = sha256(localtime())[:7]
     execute printf("keepalt file %s", fnameescape(fern#lib#url#format(url)))
   endif
+
   let scheme = fern#lib#url#parse(url.path).scheme
   let provider = fern#scheme#provider(scheme)
   if provider is# v:null
     return s:Promise.reject(printf("no such scheme %s exists", scheme))
   endif
-  let b:fern = fern#internal#core#new(
-        \ url.path,
-        \ fern#scheme#provider(scheme),
-        \)
 
-  call fern#mapping#init(scheme)
-  call fern#internal#drawer#init()
-  call fern#internal#spinner#start()
-  call fern#internal#renderer#highlight()
+  try
+    let b:fern = fern#internal#core#new(
+          \ url.path,
+          \ fern#scheme#provider(scheme),
+          \)
+    let helper = fern#helper#new()
+    let root = helper.get_root_node()
 
-  " now the buffer is ready so set filetype to emit FileType
-  setlocal filetype=fern
-  call fern#internal#renderer#syntax()
-  call fern#internal#action#init()
+    call fern#mapping#init(scheme)
+    call fern#internal#drawer#init()
+    call fern#internal#spinner#start()
+    call fern#internal#renderer#highlight()
 
-  let helper = fern#helper#new()
-  let root = helper.get_root_node()
-  let reveal = split(get(url.query, 'reveal', ''), '/')
-  return s:Promise.resolve()
-        \.then({ -> helper.expand_node(root.__key) })
-        \.then({ -> helper.reveal_node(reveal) })
-        \.then({ -> helper.redraw() })
-        \.then({ -> helper.focus_node(reveal) })
+    " now the buffer is ready so set filetype to emit FileType
+    setlocal filetype=fern
+    call fern#internal#renderer#syntax()
+    call fern#internal#action#init()
+
+    let reveal = split(get(url.query, 'reveal', ''), '/')
+    return s:Promise.resolve()
+          \.then({ -> helper.expand_node(root.__key) })
+          \.then({ -> helper.reveal_node(reveal) })
+          \.then({ -> helper.redraw() })
+          \.then({ -> helper.focus_node(reveal) })
+  catch
+    return s:Promise.reject(v:exception)
+  endtry
 endfunction
 
 function! fern#internal#viewer#focus_next(...) abort
