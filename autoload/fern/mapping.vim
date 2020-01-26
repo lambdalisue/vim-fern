@@ -37,11 +37,7 @@ function! fern#mapping#init(scheme) abort
   for name in g:fern#mapping#enabled_mapping_presets
     call fern#mapping#{name}#init(disable_default_mappings)
   endfor
-  try
-    call fern#scheme#{a:scheme}#mapping#init(disable_default_mappings)
-  catch /^Vim\%((\a\+)\)\=:E117: [^:]\+: fern#scheme#[^#]\+#mapping#init/
-    " the scheme does not provide mappings, ignore
-  endtry
+  call fern#scheme#call(a:scheme, 'mapping#init', disable_default_mappings)
 endfunction
 
 call s:Config.config(expand('<sfile>:p'), {

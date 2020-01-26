@@ -36,8 +36,14 @@ function! fern#internal#viewer#init() abort
     execute printf("keepalt file %s", fnameescape(url.to_string()))
   endif
   let scheme = fern#lib#url#parse(url.path).scheme
-  let provider = fern#scheme#{scheme}#provider#new()
-  let b:fern = fern#internal#core#new(url.path, provider)
+  let provider = fern#scheme#provider(scheme)
+  if provider is# v:null
+    return s:Promise.reject(printf("no such scheme %s exists", scheme))
+  endif
+  let b:fern = fern#internal#core#new(
+        \ url.path,
+        \ fern#scheme#provider(scheme),
+        \)
 
   call fern#mapping#init(scheme)
   call fern#internal#action#init()
