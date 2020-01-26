@@ -1,5 +1,3 @@
-let s:Promise = vital#fern#import('Async.Promise')
-
 function! fern#internal#drawer#open(bufname, ...) abort
   let options = extend({
         \ 'toggle': 0,
@@ -9,7 +7,7 @@ function! fern#internal#drawer#open(bufname, ...) abort
     if winnr('$') > 1
       if options.toggle
         close
-        return s:Promise.resolve()
+        return
       endif
       let options.opener = 'edit'
     endif
@@ -25,7 +23,7 @@ function! fern#internal#drawer#init() abort
   setlocal winfixwidth
 
   augroup fern_drawer_internal
-    autocmd! *
+    autocmd! * <buffer>
     autocmd BufEnter <buffer> nested call s:keep_width()
     autocmd BufLeave <buffer> nested call s:keep_width()
   augroup END
@@ -72,8 +70,8 @@ function! s:keep_width() abort
   elseif !options.keep
     quit
   else
-    vertical botright new
-    keepjumps wincmd p
+    noautocmd vertical botright new
+    noautocmd keepjumps wincmd p
     execute 'vertical resize' options.width
   endif
 endfunction

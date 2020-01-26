@@ -71,7 +71,11 @@ function! s:init(url, options) abort
 
   " Check if the final scheme exists
   if !fern#scheme#exists(a:url.scheme)
-    throw printf("no scheme %s is found under fern#scheme", a:url.scheme)
+    throw printf(
+          \ "no scheme %s is found under fern#scheme: %s",
+          \ a:url.scheme,
+          \ fern#lib#url#format(a:url),
+          \)
   endif
 
   " Normalize reveal
