@@ -15,6 +15,7 @@ command! -nargs=*
 
 augroup fern_internal
   autocmd! *
+  autocmd BufReadCmd fern:* nested call fern#internal#viewer#init()
   autocmd BufReadCmd fern:*/* nested call fern#internal#viewer#init()
 augroup END
 
