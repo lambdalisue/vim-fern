@@ -51,12 +51,14 @@ function! fern#mapping#node#init(disable_default_mappings) abort
   if !a:disable_default_mappings
     nmap <buffer><nowait> <F5> <Plug>(fern-action-reload)
     nmap <buffer><nowait> <Return> <Plug>(fern-open-or-enter)
+    nmap <buffer><nowait> <C-m> <Plug>(fern-open-or-enter)
     nmap <buffer><nowait> <Backspace> <Plug>(fern-action-leave)
+    nmap <buffer><nowait> <C-h> <Plug>(fern-action-leave)
     nmap <buffer><nowait> l <Plug>(fern-open-or-expand)
     nmap <buffer><nowait> h <Plug>(fern-action-collapse)
     nmap <buffer><nowait> i <Plug>(fern-action-reveal)
     nmap <buffer><nowait> s <Plug>(fern-action-open:select)
-    nmap <buffer><nowait> e <Plug>(fern-action-open:edit)
+    nmap <buffer><nowait> e <Plug>(fern-action-open)
     nmap <buffer><nowait> E <Plug>(fern-action-open:side)
     nmap <buffer><nowait> t <Plug>(fern-action-open:tabedit)
   endif
