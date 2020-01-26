@@ -26,8 +26,8 @@ function! fern#internal#drawer#init() abort
 
   augroup fern_drawer_internal
     autocmd! *
-    autocmd BufEnter <buffer> call s:keep_width()
-    autocmd BufLeave <buffer> call s:keep_width()
+    autocmd BufEnter <buffer> nested call s:keep_width()
+    autocmd BufLeave <buffer> nested call s:keep_width()
   augroup END
 endfunction
 
