@@ -351,6 +351,38 @@ fern#lib#url#parse({url})
 <
 	https://en.wikipedia.org/wiki/Uniform_Resource_Identifier#Examples
 
+				*ferm#lib#url#simplify()*
+fern#lib#url#simplify({path})
+	Return simplified URL path (|String|) of the {path} (|String|).
+
+	- Remove trailing slash
+	- Remove '' or '.' (e.g. 'a//b/./c' -> 'a/b/c')
+	- Remove '..' and corresponding path (e.g. 'a/b/../c' -> 'a/c')
+
+	Note that it prepend several '..' if the number of '..' and sub-path
+	is not matched (e.g. 'a/b/../../../../c' -> '../../c')
+
+				*ferm#lib#url#commonpath()*
+fern#lib#url#commonpath({paths})
+	Return the longest common sub-path (|String|) of each {paths} (|List|
+	of |String|).
+	It throws error when one of path in {paths} is not absolute.
+>
+	echo fern#lib#url#commonpath(['/foo/bar/hoge', '/foo/bar/fuga'])
+	" -> '/foo/bar'
+<
+				*ferm#lib#url#relative()*
+fern#lib#url#relative({path}, {base})
+	Return the relative path (|String|) of the {path} (|String|) from the
+	{base} (|String|).
+	It throws error when one of path in {paths} is not absolute.
+>
+	echo fern#lib#url#relative('/foo/bar/hoge', '/foo')
+	" -> 'bar/hoge'
+
+	echo fern#lib#url#relative('/foo/bar/hoge', '/piyo/puyo')
+	" -> '../../foo/bar/hoge'
+<
 				*fern#lib#window#find()*
 fern#lib#window#find({predicator}[, {origin}])
 	Find a first |winnr| which {predicator} (|Function|) returns True.

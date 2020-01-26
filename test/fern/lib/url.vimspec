@@ -104,6 +104,57 @@ Describe fern#lib#url
     End
   End
 
+  Describe #simplify()
+    It removes trailing slash
+      Assert Equals(fern#lib#url#simplify('foo/'), 'foo')
+    End
+
+    It keeps leading slash
+      Assert Equals(fern#lib#url#simplify('/foo'), '/foo')
+    End
+
+    It removes empty terms from path
+      Assert Equals(fern#lib#url#simplify('foo//bar//hoge'), 'foo/bar/hoge')
+    End
+
+    It removes '.' from path
+      Assert Equals(fern#lib#url#simplify('foo/./bar/./hoge'), 'foo/bar/hoge')
+    End
+
+    It removes '..' and corresponding terms from path
+      Assert Equals(fern#lib#url#simplify('foo/../bar/../hoge'), 'hoge')
+      Assert Equals(fern#lib#url#simplify('foo/../bar/../../hoge'), '../hoge')
+      Assert Equals(fern#lib#url#simplify('foo/../../bar/../../hoge'), '../../hoge')
+    End
+  End
+
+  Describe #commonpath()
+    It returns a relative path from a given base
+      Assert Equals(fern#lib#url#commonpath(['/foo/bar/hoge/a/b/c', '/foo/bar/hoge']), '/foo/bar/hoge')
+      Assert Equals(fern#lib#url#commonpath(['/foo/bar/hoge/a/b/c', '/foo1/bar1/hoge1']), '/')
+    End
+
+    It throws exception when path or base is not relative
+      Throws /path must be absolute/ fern#lib#url#commonpath(['foo/bar/bar', '/foo'])
+      Throws /path must be absolute/ fern#lib#url#commonpath(['/foo/bar/bar', 'foo'])
+    End
+  End
+
+  Describe #relative()
+    It returns a relative path from a given base
+      Assert Equals(fern#lib#url#relative('/foo/bar/hoge', '/foo'), 'bar/hoge')
+    End
+
+    It return a path contains '..' if no common prefix exists
+      Assert Equals(fern#lib#url#relative('/foo/bar/hoge', '/piyo/puyo'), '../../foo/bar/hoge')
+    End
+
+    It throws exception when path or base is not relative
+      Throws /path must be absolute/ fern#lib#url#relative('foo/bar/bar', '/foo')
+      Throws /base must be absolute/ fern#lib#url#relative('/foo/bar/bar', 'foo')
+    End
+  End
+
   Describe s:encode()
     It encodes percent-encoding characters
       for r in percent_encodings

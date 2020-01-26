@@ -13,6 +13,62 @@ function! fern#lib#url#parse(url) abort
         \}, s:url)
 endfunction
 
+function! fern#lib#url#simplify(path) abort
+  let result = []
+  let path = split(a:path, '/')
+  for term in path
+    if term ==# '..'
+      if empty(result) || result[-1] == '..'
+        call insert(result, '..', 0)
+      else
+        call remove(result, -1)
+      endif
+    elseif term ==# '.' || empty(term)
+      continue
+    else
+      call add(result, term)
+    endif
+  endfor
+  let prefix = a:path[:0] ==# '/' ? '/' : ''
+  return prefix . join(result, '/')
+endfunction
+
+function! fern#lib#url#commonpath(paths) abort
+  for path in a:paths
+    if path[:0] !=# '/'
+      throw printf("path must be absolute but %s", path)
+    endif
+  endfor
+  let paths = map(copy(a:paths), { -> split(fern#lib#url#simplify(v:val), '/') })
+  let common = []
+  for index in range(min(map(copy(paths), { -> len(v:val) })))
+    let term = paths[0][index]
+    if empty(filter(paths[1:], { -> v:val[index] !=? term }))
+      call add(common, term)
+    endif
+  endfor
+  return '/' . join(common, '/')
+endfunction
+
+function! fern#lib#url#relative(path, base) abort
+  if a:path[:0] !=# '/'
+    throw printf("path must be absolute but %s", a:path)
+  elseif a:base[:0] !=# '/'
+    throw printf("base must be absolute but %s", a:base)
+  endif
+  let path = split(fern#lib#url#simplify(a:path), '/')
+  let base = split(fern#lib#url#simplify(a:base), '/')
+  for index in range(min([len(path), len(base)]))
+    if path[0] !=? base[0]
+      break
+    endif
+    call remove(path, 0)
+    call remove(base, 0)
+  endfor
+  let prefix = repeat('../', len(base))
+  return prefix . join(path, '/')
+endfunction
+
 function! s:encode(str) abort
   let pattern = '^$~.*[]\'
   let chars = "%:/?#[]@!$&'()*+,;= "
