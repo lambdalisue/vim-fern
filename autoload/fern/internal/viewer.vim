@@ -36,7 +36,7 @@ function! fern#internal#viewer#init() abort
   endif
 
   let scheme = fern#lib#url#parse(url.path).scheme
-  let provider = fern#scheme#provider(scheme)
+  let provider = fern#internal#scheme#provider(scheme)
   if provider is# v:null
     return s:Promise.reject(printf("no such scheme %s exists", scheme))
   endif
@@ -44,7 +44,7 @@ function! fern#internal#viewer#init() abort
   try
     let b:fern = fern#internal#core#new(
           \ url.path,
-          \ fern#scheme#provider(scheme),
+          \ fern#internal#scheme#provider(scheme),
           \)
     let helper = fern#helper#new()
     let root = helper.get_root_node()

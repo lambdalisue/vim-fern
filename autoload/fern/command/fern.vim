@@ -67,10 +67,10 @@ function! s:init(url, options) abort
         \})
 
   " Scheme specific method
-  call fern#scheme#call(a:url.scheme, 'command#init', a:url, a:options)
+  call fern#internal#scheme#call(a:url.scheme, 'command#init', a:url, a:options)
 
   " Check if the final scheme exists
-  if !fern#scheme#exists(a:url.scheme)
+  if !fern#internal#scheme#exists(a:url.scheme)
     throw printf(
           \ "no scheme %s is found under fern#scheme: %s",
           \ a:url.scheme,
