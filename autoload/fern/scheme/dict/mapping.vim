@@ -27,19 +27,23 @@ function! s:map_new_leaf(helper) abort
 
   " Ask a new leaf path
   let path = provider._prompt_leaf(a:helper)
+  let key = split(path, '/')
 
   " Get parent node of a new leaf
   let node = a:helper.get_cursor_node()
   let node = node.status isnot# a:helper.STATUS_EXPANDED ? node.__owner : node
 
   " Update tree
-  call fern#scheme#dict#tree#set(node.concealed._value, path, "", {
-        \ 'create_parents': 1,
-        \})
+  call fern#scheme#dict#tree#set(
+        \ node.concealed._value,
+        \ key,
+        \ '',
+        \ { 'create_parents': 1 },
+        \)
   call provider._update_tree(provider._tree)
 
   " Update UI
-  let key = node.__key + path
+  let key = node.__key + key
   let previous = a:helper.get_cursor_node()
   return s:Promise.resolve()
         \.then({ -> a:helper.reload_node(node.__key) })
@@ -53,19 +57,23 @@ function! s:map_new_branch(helper) abort
 
   " Ask a new branch path
   let path = provider._prompt_branch(a:helper)
+  let key = split(path, '/')
 
   " Get parent node of a new branch
   let node = a:helper.get_cursor_node()
   let node = node.status isnot# a:helper.STATUS_EXPANDED ? node.__owner : node
 
   " Update tree
-  call fern#scheme#dict#tree#set(node.concealed._value, path, {}, {
-        \ 'create_parents': 1,
-        \})
+  call fern#scheme#dict#tree#set(
+        \ node.concealed._value,
+        \ key,
+        \ {},
+        \ { 'create_parents': 1 },
+        \)
   call provider._update_tree(provider._tree)
 
   " Update UI
-  let key = node.__key + path
+  let key = node.__key + key
   let previous = a:helper.get_cursor_node()
   return s:Promise.resolve()
         \.then({ -> a:helper.reload_node(node.__key) })
@@ -81,7 +89,7 @@ function! s:map_remove(helper) abort
   let paths = map(copy(nodes), { _, v -> v._path })
   let prompt = printf("The follwoing %d entries will be removed", len(paths))
   for path in paths[:5]
-    let prompt .= "\n" . join(path, '/')
+    let prompt .= "\n" . path
   endfor
   if len(paths) > 5
     let prompt .= "\n..."
@@ -93,9 +101,9 @@ function! s:map_remove(helper) abort
 
   " Update tree
   let tree = provider._tree
-  for path in paths
-    call fern#message#info(printf("Delete %s", join(path, '/')))
-    call fern#scheme#dict#tree#pop(tree, path)
+  for node in nodes
+    call fern#message#info(printf("Delete %s", node._path))
+    call fern#scheme#dict#tree#pop(tree, split(node._path, '/'))
   endfor
   call provider._update_tree(tree)
 
@@ -103,7 +111,7 @@ function! s:map_remove(helper) abort
   return s:Promise.resolve()
         \.then({ -> a:helper.reload_node(root.__key) })
         \.then({ -> a:helper.redraw() })
-        \.then({ -> fern#message#info(printf('%d items are removed', len(paths))) })
+        \.then({ -> fern#message#info(printf('%d items are removed', len(keys))) })
 endfunction
 
 function! s:map_edit_leaf(helper) abort
@@ -120,9 +128,12 @@ function! s:map_edit_leaf(helper) abort
   endif
 
   " Update tree
-  call fern#scheme#dict#tree#set(provider._tree, node._path, value, {
-        \ 'overwrite': 1,
-        \})
+  call fern#scheme#dict#tree#set(
+        \ provider._tree,
+        \ split(node._path, '/'),
+        \ value,
+        \ { 'overwrite': 1 },
+        \)
   call provider._update_tree(provider._tree)
 
   let root = a:helper.get_root_node()

@@ -43,9 +43,10 @@ function! s:get_children(node, ...) abort dict
       throw printf("%s node is leaf", a:node.name)
     endif
     let ref = a:node.concealed._value
+    let base = split(a:node._path, '/')
     let children = map(
           \ keys(ref),
-          \ { _, v -> s:node(self, a:node._path + [v], v, ref[v], a:node)},
+          \ { _, v -> s:node(self, base + [v], v, ref[v], a:node)},
           \)
     return s:Promise.resolve(children)
   catch
@@ -54,8 +55,9 @@ function! s:get_children(node, ...) abort dict
 endfunction
 
 function! s:node(provider, path, name, value, parent) abort
+  let path = '/' . join(a:path, '/')
   let status = type(a:value) is# v:t_dict
-  let bufname = status ? printf('dict:/%s', join(a:path, '/')) : v:null
+  let bufname = status ? printf('dict:%s', path) : v:null
   let label = status
         \ ? a:name
         \ : printf('%s [%s]', a:name, a:value)
@@ -68,7 +70,7 @@ function! s:node(provider, path, name, value, parent) abort
         \   '_value': a:value,
         \   '_parent': a:parent,
         \ },
-        \ '_path': a:path,
+        \ '_path': path,
         \}
   return a:provider._extend_node(node)
 endfunction
@@ -78,7 +80,7 @@ function! s:_prompt(label, helper) abort
   if empty(path)
     throw 'Cancelled'
   endif
-  return split(path, '/')
+  return path
 endfunction
 
 
