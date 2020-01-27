@@ -18,26 +18,35 @@ function! fern#command#fern#command(mods, qargs) abort
       throw 'at least one argument is required'
     endif
 
-    let opener = options.pop('opener', v:null)
     let toggle = options.pop('toggle', 0)
+    let opener = options.pop('opener', v:null)
+    let viewer_opener = opener is# v:null
+          \ ? g:fern#command#fern#viewer_opener
+          \ : opener
+    let drawer_opener = opener is# v:null
+          \ ? g:fern#command#fern#drawer_opener
+          \ : opener
     let url = s:init(fern#lib#url#parse(expand(args[0])), options)
 
     call options.throw_if_dirty()
 
+    " Force '-drawer' if the current buffer is fern:xxx?drawer and
+    " the 'opener' is 'edit' so that a new fern buffer is opened on
+    " a drawer window
+    if viewer_opener ==# 'edit' && fern#internal#drawer#parse() isnot# v:null
+      let url.query.drawer = v:true
+    endif
+
     if empty(url.query.drawer)
       call fern#internal#viewer#open(fern#lib#url#format(url), {
             \ 'mods': a:mods,
-            \ 'opener': opener is# v:null
-            \   ? g:fern#command#fern#viewer_opener
-            \   : opener,
+            \ 'opener': viewer_opener,
             \})
     else
       call fern#internal#drawer#open(fern#lib#url#format(url), {
             \ 'mods': a:mods,
-            \ 'opener': opener is# v:null
-            \   ? g:fern#command#fern#drawer_opener
-            \   : opener,
             \ 'toggle': toggle,
+            \ 'opener': drawer_opener,
             \})
     endif
   catch
