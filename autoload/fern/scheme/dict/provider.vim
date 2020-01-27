@@ -59,8 +59,8 @@ function! s:node(provider, path, name, value, parent) abort
   let status = type(a:value) is# v:t_dict
   let bufname = status ? printf('dict:%s', path) : v:null
   let label = status
-        \ ? a:name
-        \ : printf('%s [%s]', a:name, a:value)
+        \ ? fern#lib#url#decode(a:name)
+        \ : printf('%s [%s]', fern#lib#url#decode(a:name), a:value)
   let node = {
         \ 'name': a:name,
         \ 'label': label,
