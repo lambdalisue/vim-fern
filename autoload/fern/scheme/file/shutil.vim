@@ -45,6 +45,7 @@ function! fern#scheme#file#shutil#copy(src, dst, ...) abort
       return fern#scheme#file#shutil#copy(a:src, new_dst, token)
     endif
   endif
+  call mkdir(fnamemodify(a:dst, ':p:h'), 'p')
   return s:File.copy(a:src, a:dst, {
         \ 'token': token,
         \})
@@ -68,6 +69,7 @@ function! fern#scheme#file#shutil#move(src, dst, ...) abort
       return fern#scheme#file#shutil#move(a:src, new_dst, token)
     endif
   endif
+  call mkdir(fnamemodify(a:dst, ':p:h'), 'p')
   return s:File.move(a:src, a:dst, {
         \ 'token': token,
         \})
