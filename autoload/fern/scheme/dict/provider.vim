@@ -8,11 +8,6 @@ function! fern#scheme#dict#provider#new(...) abort
         \ '_tree': a:0 ? a:1 : deepcopy(s:sample_tree),
         \ '_parse_url': { u -> split(matchstr(u, '^dict:\zs.*$'), '/') },
         \ '_update_tree': { -> 0 },
-        \ '_create_label': { n ->
-        \   n.status
-        \     ? n.name
-        \     : printf('%s [%s]', n.name, n.concealed._value)
-        \ },
         \ '_extend_node': { n -> n },
         \ '_leaf_name_factory': { -> 'leaf' },
         \ '_branch_name_factory': { -> 'branch' },
@@ -60,8 +55,12 @@ endfunction
 function! s:node(provider, path, name, value, parent) abort
   let status = type(a:value) is# v:t_dict
   let bufname = status ? printf('dict:/%s', join(a:path, '/')) : v:null
+  let label = status
+        \ ? a:name
+        \ : printf('%s [%s]', a:name, a:value)
   let node = {
         \ 'name': a:name,
+        \ 'label': label,
         \ 'status': status,
         \ 'bufname': bufname,
         \ 'concealed': {
@@ -70,7 +69,6 @@ function! s:node(provider, path, name, value, parent) abort
         \ },
         \ '_path': a:path,
         \}
-  let node.label = a:provider._create_label(node)
   return a:provider._extend_node(node)
 endfunction
 
