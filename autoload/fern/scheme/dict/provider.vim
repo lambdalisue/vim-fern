@@ -1,3 +1,4 @@
+let s:Prompt = vital#fern#import('Prompt')
 let s:Promise = vital#fern#import('Async.Promise')
 
 function! fern#scheme#dict#provider#new(...) abort
@@ -9,8 +10,8 @@ function! fern#scheme#dict#provider#new(...) abort
         \ '_parse_url': { u -> split(matchstr(u, '^dict:\zs.*$'), '/') },
         \ '_update_tree': { -> 0 },
         \ '_extend_node': { n -> n },
-        \ '_leaf_name_factory': { -> 'leaf' },
-        \ '_branch_name_factory': { -> 'branch' },
+        \ '_prompt_leaf': funcref('s:_prompt', ['leaf']),
+        \ '_prompt_branch': funcref('s:_prompt', ['branch']),
         \}
 endfunction
 
@@ -70,6 +71,14 @@ function! s:node(provider, path, name, value, parent) abort
         \ '_path': a:path,
         \}
   return a:provider._extend_node(node)
+endfunction
+
+function! s:_prompt(label, helper) abort
+  let path = s:Prompt.ask(printf('New %s: ', a:label), '')
+  if empty(path)
+    throw 'Cancelled'
+  endif
+  return split(path, '/')
 endfunction
 
 

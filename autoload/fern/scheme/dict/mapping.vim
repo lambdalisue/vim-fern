@@ -26,12 +26,7 @@ function! s:map_new_leaf(helper) abort
   let provider = a:helper.fern.provider
 
   " Ask a new leaf path
-  let name = provider._leaf_name_factory(a:helper)
-  let path = s:Prompt.ask(printf('New %s: ', name), '')
-  if empty(path)
-    return s:Promise.reject('Cancelled')
-  endif
-  let path = split(path, '/')
+  let path = provider._prompt_leaf(a:helper)
 
   " Get parent node of a new leaf
   let node = a:helper.get_cursor_node()
@@ -57,12 +52,7 @@ function! s:map_new_branch(helper) abort
   let provider = a:helper.fern.provider
 
   " Ask a new branch path
-  let name = provider._branch_name_factory(a:helper)
-  let path = s:Prompt.ask(printf('New %s: ', name), '')
-  if empty(path)
-    return s:Promise.reject('Cancelled')
-  endif
-  let path = split(path, '/')
+  let path = provider._prompt_branch(a:helper)
 
   " Get parent node of a new branch
   let node = a:helper.get_cursor_node()
