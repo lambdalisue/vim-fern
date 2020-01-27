@@ -93,7 +93,7 @@ The following mappings/actions are available among any fern buffer
 | ------------------- | --------------- | ---------------------------------------------------------------------------- |
 | `a`                 |                 | Open a prompt to input an action name to perform                             |
 | `.`                 |                 | Repeat previous action invoked from a prompt                                 |
-| `?`                 |                 | Output mappings/actions to a pseudo buffer as help                           |
+| `?`                 | `help`          | Output mappings/actions to a pseudo buffer as help                           |
 | `<C-c>`             | `cancel`        | Cancel any operation under processing                                        |
 | `<C-l>`             | `redraw`        | Redraw content of the buffer                                                 |
 |                     | `debug`         | Show a debug informatin of a node under the cursor                           |
