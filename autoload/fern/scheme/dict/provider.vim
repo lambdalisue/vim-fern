@@ -14,7 +14,6 @@ function! fern#scheme#dict#provider#new(...) abort
         \     : printf('%s [%s]', n.name, n.concealed._value)
         \ },
         \ '_extend_node': { n -> n },
-        \ '_root_name_factory': { -> 'root' },
         \ '_leaf_name_factory': { -> 'leaf' },
         \ '_branch_name_factory': { -> 'branch' },
         \}
@@ -22,10 +21,9 @@ endfunction
 
 function! s:get_root(url) abort dict
   let terms = self._parse_url(a:url)
-  let name = self._root_name_factory(a:url)
   let path = []
   let cursor = self._tree
-  let node = s:node(self, path, name, cursor, v:null)
+  let node = s:node(self, path, 'root', cursor, v:null)
   for term in terms
     if !has_key(cursor, term)
       throw printf("no %s exists: %s", term, a:url)
