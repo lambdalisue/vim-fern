@@ -53,11 +53,10 @@ function! s:map_new_leaf(helper) abort
   let node = node.status isnot# a:helper.STATUS_EXPANDED ? node.__owner : node
 
   " Update tree
-  call fern#scheme#dict#tree#write(
+  call fern#scheme#dict#tree#create(
         \ node.concealed._value,
         \ path,
         \ provider._default_leaf(a:helper, node, path),
-        \ { 'parents': 1 },
         \)
   call provider._update_tree(provider._tree)
 
@@ -82,11 +81,10 @@ function! s:map_new_branch(helper) abort
   let node = node.status isnot# a:helper.STATUS_EXPANDED ? node.__owner : node
 
   " Update tree
-  call fern#scheme#dict#tree#write(
+  call fern#scheme#dict#tree#create(
         \ node.concealed._value,
         \ path,
         \ provider._default_branch(a:helper, node, path),
-        \ { 'parents': 1 },
         \)
   call provider._update_tree(provider._tree)
 

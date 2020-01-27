@@ -49,6 +49,28 @@ function! fern#scheme#dict#tree#remove(tree, path, ...) abort
   return remove(parent, name)
 endfunction
 
+function! fern#scheme#dict#tree#create(tree, path, value) abort
+  if fern#scheme#dict#tree#exists(a:tree, a:path)
+    let r = s:select_overwrite_method(a:path)
+    if empty(r)
+      return s:Promise.reject('Cancelled')
+    elseif r ==# 'r'
+      let new_path = s:Prompt.ask(
+            \ printf("New name: %s -> ", a:path),
+            \ a:path,
+            \)
+      if empty(new_path)
+        return s:Promise.reject('Cancelled')
+      endif
+      return fern#scheme#dict#tree#create(a:tree, new_path, a:value)
+    endif
+  endif
+  call fern#scheme#dict#tree#write(a:tree, a:path, a:value, {
+        \ 'parents': 1,
+        \ 'overwrite': 1,
+        \})
+endfunction
+
 function! fern#scheme#dict#tree#copy(tree, src, dst) abort
   let original = fern#scheme#dict#tree#read(a:tree, a:src)
   if fern#scheme#dict#tree#exists(a:tree, a:dst)
