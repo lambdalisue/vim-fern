@@ -133,11 +133,13 @@ And the following mappings/actions are available in builtin `file` scheme
 | `x`     | `open:system`     | Open a node under the cursor with a system program                                                                |
 | `N`     | `new-file`        | Create a new file under a node under the cursor                                                                   |
 | `K`     | `new-dir`         | Create a new directory under a node under the cursor                                                              |
+| `c`     | `copy`            | Copy files/directories of selected nodes to new locations sequentially                                            |
 | `m`     | `move`            | Move files/directories of selected nodes to new locations sequentially                                            |
-| `c`     | `clipboard-copy`  | Copy files/directories of selected nodes to the internal clipboard                                                |
-| `p`     | `clipboard-pate`  | Paste files/directories to a node under the cursor from the internal clipboard                                    |
+| `C`     | `clipboard-copy`  | Save files/directories of selected nodes to the internal clipboard to copy                                        |
+| `M`     | `clipboard-move`  | Save files/directories of selected nodes to the internal clipboard to move                                        |
+| `P`     | `clipboard-pate`  | Paste files/directories to a node under the cursor from the internal clipboard                                    |
 |         | `clipboard-clear` | Clear the internal clipboard                                                                                      |
-| `d`     | `trash`           | Move files/directries of selected nodes to the system trash-bin                                                   |
+| `D`     | `trash`           | Move files/directries of selected nodes to the system trash-bin                                                   |
 |         | `remove`          | Remove files/directries of selected nodes                                                                         |
 | `R`     | `rename`          | Start renamer to rename multiple files/directories by using Vim buffer (like exrename in [Shougo/vimfiler.vim][]) |
 

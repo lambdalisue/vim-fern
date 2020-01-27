@@ -90,7 +90,7 @@ endfunction
 function! s:select_overwrite_method(path) abort
   let prompt = join([
         \ printf(
-        \   'File/Directory "%s" already exists or not writable',
+        \   '"%s" exists or not writable',
         \   a:path,
         \ ),
         \ 'Please select an overwrite method (esc to cancel)',
