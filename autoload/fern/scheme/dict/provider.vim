@@ -12,6 +12,8 @@ function! fern#scheme#dict#provider#new(...) abort
         \ '_extend_node': { n -> n },
         \ '_prompt_leaf': funcref('s:_prompt', ['leaf']),
         \ '_prompt_branch': funcref('s:_prompt', ['branch']),
+        \ '_default_leaf': { -> '' },
+        \ '_default_branch': { -> {} },
         \}
 endfunction
 

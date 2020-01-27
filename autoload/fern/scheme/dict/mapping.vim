@@ -37,7 +37,7 @@ function! s:map_new_leaf(helper) abort
   call fern#scheme#dict#tree#set(
         \ node.concealed._value,
         \ key,
-        \ '',
+        \ provider._default_leaf(a:helper, node, path),
         \ { 'create_parents': 1 },
         \)
   call provider._update_tree(provider._tree)
@@ -67,7 +67,7 @@ function! s:map_new_branch(helper) abort
   call fern#scheme#dict#tree#set(
         \ node.concealed._value,
         \ key,
-        \ {},
+        \ provider._default_branch(a:helper, node, path),
         \ { 'create_parents': 1 },
         \)
   call provider._update_tree(provider._tree)
