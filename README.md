@@ -11,6 +11,12 @@ General purpose asynchronous tree viewer written in Pure Vim script.
 
 **WARNING: This project is in beta stage. Any changes are applied without announcements.**
 
+![Split windows](https://user-images.githubusercontent.com/546312/73183241-d89aa980-415d-11ea-876f-30bd4d80f0cd.png)
+_Split windows_
+
+![Project drawer](https://user-images.githubusercontent.com/546312/73183310-f10ac400-415d-11ea-80c8-af1609294889.png)
+_Project drawer_
+
 ## Concept
 
 - Supports both Vim and Neovim without any external dependencies
@@ -27,7 +33,9 @@ fern.vim has no extra dependencies so use your favorite Vim plugin manager or se
 
 ## Usage
 
-### Command
+### Command (Split windows)
+
+![Screencast of Split windows](https://user-images.githubusercontent.com/546312/73183457-29120700-415e-11ea-8d04-cb959659e369.gif)
 
 Open fern on a current working directory by:
 
@@ -47,9 +55,9 @@ Or open fern on a current working directory with a current buffer focused by:
 :Fern . -reveal=%
 ```
 
-![Screenshot of fern in split windows style](https://user-images.githubusercontent.com/546312/73137975-11287d80-40a1-11ea-91eb-c75c71aa420e.png)
+![](https://user-images.githubusercontent.com/546312/73183700-9aea5080-415e-11ea-8bca-e1dea78d24ca.png)
 
-The following options are available for _split windows_ style:
+The following options are available for fern viewer.
 
 | Option    | Default | Description                                                                                                                                                    |
 | --------- | ------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -60,13 +68,15 @@ The following options are available for _split windows_ style:
 :Fern {url} [-opener={opener}] [-reveal={reveal}]
 ```
 
+### Command (Project drawer)
+
+![Screencast of Project drawer](https://user-images.githubusercontent.com/546312/73184080-324fa380-415f-11ea-8280-e0b6c7a9989f.gif)
+
 All usage above open fern as [*split windows style*][]. To open fern as [*project drawer style*][], use `-drawer` option like:
 
 ```vim
 :Fern . -drawer
 ```
-
-![Screenshot of fern in project drawer style](https://user-images.githubusercontent.com/546312/73138033-81370380-40a1-11ea-9054-73ccee248910.png)
 
 A fern window with _project drawer_ style always appeared to the most left side of Vim and behaviors of some mappings/actions are slightly modified (e.g. a buffer in the next window will be used as an anchor buffer in a project drawer style to open a new buffer.)
 
@@ -85,7 +95,14 @@ Note that addtional to the all options available for _split windows_ style, _pro
 [*split windows style*]: http://vimcasts.org/blog/2013/01/oil-and-vinegar-split-windows-and-project-drawer/
 [*project drawer style*]: http://vimcasts.org/blog/2013/01/oil-and-vinegar-split-windows-and-project-drawer/
 
-### Mappings/Actions
+### Actions
+
+To execute actions, hit `a` on a fern buffer and input an action to perform.
+To see all actions available, hit `?` or execute `help` action then all available actions will be listed.
+
+![Actions](https://user-images.githubusercontent.com/546312/73184453-c91c6000-415f-11ea-8e6b-f1df4b9284de.gif)
+
+### Mappings
 
 The following mappings/actions are available among any fern buffer
 
@@ -147,6 +164,13 @@ And the following mappings/actions are available in builtin `file` scheme
 | `R`     | `rename`          | Start renamer to rename multiple files/directories by using Vim buffer (like exrename in [Shougo/vimfiler.vim][]) |
 
 [shougo/vimfiler.vim]: https://github.com/Shougo/vimfiler.vim
+
+### Renamer action (A.k.a exrename)
+
+The `rename` action open a new buffer with path of selected nodes.
+Users can edit that buffer and `:w` applies the changes.
+
+![Renamer](https://user-images.githubusercontent.com/546312/73184814-5d86c280-4160-11ea-9ed1-d5a8d66d1774.gif)
 
 ## Customize
 
