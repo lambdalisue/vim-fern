@@ -24,8 +24,8 @@ function! fern#internal#drawer#init() abort
 
   augroup fern_drawer_internal
     autocmd! * <buffer>
-    autocmd BufEnter <buffer> nested call s:keep_width()
-    autocmd BufLeave <buffer> nested call s:keep_width()
+    autocmd BufEnter <buffer> call s:keep_width()
+    autocmd BufLeave <buffer> call s:keep_width()
   augroup END
 endfunction
 
@@ -70,8 +70,8 @@ function! s:keep_width() abort
   elseif !options.keep
     quit
   else
-    noautocmd vertical botright new
-    noautocmd keepjumps wincmd p
+    vertical botright new
+    keepjumps wincmd p
     execute 'vertical resize' options.width
   endif
 endfunction
