@@ -3,7 +3,7 @@ let s:Promise = vital#fern#import('Async.Promise')
 function! fern#internal#renamer#rename(factory, ...) abort
   let options = extend({
         \ 'bufname': printf('fern-renamer:%s', sha256(localtime()))[:7],
-        \ 'opener': 'split',
+        \ 'opener': 'vsplit',
         \}, a:0 ? a:1 : {},
         \)
   return s:Promise.new(funcref('s:executor', [a:factory, options]))
