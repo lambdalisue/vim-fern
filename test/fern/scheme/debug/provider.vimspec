@@ -7,7 +7,7 @@ Describe fern#scheme#debug#provider
   Describe #new()
     It returns a provider instance
       let provider = fern#scheme#debug#provider#new()
-      Assert KeyExists(provider, 'get_node')
+      Assert KeyExists(provider, 'get_root')
       Assert KeyExists(provider, 'get_parent')
       Assert KeyExists(provider, 'get_children')
     End
@@ -18,33 +18,33 @@ Describe fern#scheme#debug#provider
       let provider = fern#scheme#debug#provider#new()
     End
 
-    Describe .get_node()
+    Describe .get_root()
       It returns a node instance
-        let n = provider.get_node('debug:///')
+        let n = provider.get_root('debug:///')
         Assert KeyExists(n, 'name')
         Assert KeyExists(n, 'status')
       End
 
       It returns a node of given URL (debug:///...)
-        let n = provider.get_node('debug:///')
+        let n = provider.get_root('debug:///')
         Assert Equals(n._uri, '/')
 
-        let n = provider.get_node('debug:///shallow')
+        let n = provider.get_root('debug:///shallow')
         Assert Equals(n._uri, '/shallow')
 
-        let n = provider.get_node('debug:///shallow/gamma')
+        let n = provider.get_root('debug:///shallow/gamma')
         Assert Equals(n._uri, '/shallow/gamma')
       End
 
       It throws error when no node of given URL exist
-        Throws /no such entry/ provider.get_node('debug:///missing')
+        Throws /no such entry/ provider.get_root('debug:///missing')
       End
     End
 
     Describe .get_parent()
       Before
-        let node = provider.get_node('debug:///shallow/alpha')
-        let root = provider.get_node('debug:///')
+        let node = provider.get_root('debug:///shallow/alpha')
+        let root = provider.get_root('debug:///')
       End
 
       It returns a promise
@@ -80,8 +80,8 @@ Describe fern#scheme#debug#provider
 
     Describe .get_children()
       Before
-        let node = provider.get_node('debug:///shallow')
-        let leaf = provider.get_node('debug:///shallow/gamma')
+        let node = provider.get_root('debug:///shallow')
+        let leaf = provider.get_root('debug:///shallow/gamma')
       End
 
       It returns a promise

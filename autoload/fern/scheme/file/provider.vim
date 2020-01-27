@@ -7,13 +7,13 @@ let s:CancellationToken = vital#fern#import('Async.CancellationToken')
 
 function! fern#scheme#file#provider#new() abort
   return {
-        \ 'get_node': funcref('s:provider_get_node'),
+        \ 'get_root': funcref('s:provider_get_root'),
         \ 'get_parent' : funcref('s:provider_get_parent'),
         \ 'get_children' : funcref('s:provider_get_children'),
         \}
 endfunction
 
-function! s:provider_get_node(url) abort
+function! s:provider_get_root(url) abort
  return s:node(a:url)
 endfunction
 

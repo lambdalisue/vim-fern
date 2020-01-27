@@ -3,7 +3,7 @@ let s:Promise = vital#fern#import('Async.Promise')
 function! fern#scheme#debug#provider#new(...) abort
   let tree = a:0 ? a:1 : s:tree
   return {
-        \ 'get_node' : funcref('s:provider_get_node', [tree]),
+        \ 'get_root' : funcref('s:provider_get_root', [tree]),
         \ 'get_parent' : funcref('s:provider_get_parent', [tree]),
         \ 'get_children' : funcref('s:provider_get_children', [tree]),
         \}
@@ -21,7 +21,7 @@ function! s:get_entry(tree, key) abort
   return entry
 endfunction
 
-function! s:provider_get_node(tree, url) abort
+function! s:provider_get_root(tree, url) abort
   let url = matchstr(a:url, '^debug://\zs.*')
   let entry = s:get_entry(a:tree, url)
   if entry is# v:null
@@ -42,7 +42,7 @@ function! s:provider_get_parent(tree, node, ...) abort
   let uri = matchstr(a:node._uri, '.*\ze/[^/]\{-}$')
   let uri = empty(uri) ? '/' : uri
   try
-    let node = s:provider_get_node(a:tree, 'debug://' . uri)
+    let node = s:provider_get_root(a:tree, 'debug://' . uri)
     return s:Promise.resolve(node)
   catch
     return s:Promise.reject(v:exception)
@@ -59,7 +59,7 @@ function! s:provider_get_children(tree, node, ...) abort
   try
     let children = map(
           \ copy(entry.children),
-          \ { -> s:provider_get_node(a:tree, 'debug:///' . join(base + [v:val], '/')) },
+          \ { -> s:provider_get_root(a:tree, 'debug:///' . join(base + [v:val], '/')) },
           \)
     return s:sleep(get(entry, 'delay', 0)).then({ -> children })
   catch

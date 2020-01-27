@@ -2,7 +2,7 @@ let s:Promise = vital#fern#import('Async.Promise')
 
 function! fern#scheme#dict#provider#new(...) abort
   return {
-        \ 'get_node': funcref('s:get_node'),
+        \ 'get_root': funcref('s:get_root'),
         \ 'get_parent': funcref('s:get_parent'),
         \ 'get_children': funcref('s:get_children'),
         \ '_tree': a:0 ? a:1 : deepcopy(s:sample_tree),
@@ -20,7 +20,7 @@ function! fern#scheme#dict#provider#new(...) abort
         \}
 endfunction
 
-function! s:get_node(url) abort dict
+function! s:get_root(url) abort dict
   let terms = self._parse_url(a:url)
   let name = self._root_name_factory(a:url)
   let path = []

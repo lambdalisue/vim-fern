@@ -46,7 +46,7 @@ function! fern#internal#node#find(key, nodes) abort
 endfunction
 
 function! fern#internal#node#root(url, provider) abort
-  return s:new(a:provider.get_node(a:url))
+  return s:new(a:provider.get_root(a:url))
 endfunction
 
 function! fern#internal#node#parent(node, provider, token, ...) abort

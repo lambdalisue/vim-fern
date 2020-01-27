@@ -480,9 +480,10 @@ PROVIDER					*fern-develop-provider*
 
 A provider instance must have the following methods.
 
-				*fern-develop-provider.get_node()*
-.get_node({url})		
+				*fern-develop-provider.get_root()*
+.get_root({url})		
 	Return a (partial) node instance of the {url} (|String|).
+	The node instance will be used as a root node of a tree.
 	It throws error when no node is found for the {url}.
 
 	The node instance MUST have the following attributes.
