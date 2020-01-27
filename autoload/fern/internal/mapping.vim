@@ -24,5 +24,6 @@ call s:Config.config(expand('<sfile>:p'), {
       \   'node',
       \   'mark',
       \   'filter',
+      \   'drawer',
       \ ],
       \})

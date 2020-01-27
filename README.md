@@ -89,37 +89,40 @@ Note that addtional to the all options available for _split windows_ style, _pro
 
 The following mappings/actions are available among any fern buffer
 
-| Mapping             | Action          | Description                                                                  |
-| ------------------- | --------------- | ---------------------------------------------------------------------------- |
-| `a`                 |                 | Open a prompt to input an action name to perform                             |
-| `.`                 |                 | Repeat previous action invoked from a prompt                                 |
-| `?`                 | `help`          | Output mappings/actions to a pseudo buffer as help                           |
-| `<C-c>`             | `cancel`        | Cancel any operation under processing                                        |
-| `<C-l>`             | `redraw`        | Redraw content of the buffer                                                 |
-|                     | `debug`         | Show a debug informatin of a node under the cursor                           |
-| `<F5>`              | `reload`        | Reload node itself and descendent nodes of a node under the cursor           |
-|                     | `expand`        | Expand (open) a node under the cursor                                        |
-| `h`                 | `collapse`      | Collapse (close) a node under the cursor                                     |
-| `i`                 | `reveal`        | Reveal (recursively focus and expand) a node which input by user             |
-|                     | `enter`         | Enter a new tree which root node is a node under the cursor                  |
-| `<BS>`, `<C-h>`     | `leave`         | Leave to a new tree which root is the parent node of a current root node     |
-| `s`                 | `open:select`   | Select window to open a node under the cursor (like [t9md/vim-choosewin][])  |
-| `e`                 | `open`          | An alias of `open:edit` action                                               |
-| `E`                 | `open:side`     | Open a node under the cursor on right side of the fern buffer                |
-|                     | `open:edit`     | Open a node under the cursor with `edit`                                     |
-|                     | `open:split`    | Open a node under the cursor with `split`                                    |
-|                     | `open:vsplit`   | Open a node under the cursor with `vsplit`                                   |
-| `t`                 | `open:tabedit`  | Open a node under the cursor with `tabedit`                                  |
-|                     | `open:above`    | Open a node under the cursor with `leftabove split`                          |
-|                     | `open:left`     | Open a node under the cursor with `leftabove vsplit`                         |
-|                     | `open:below`    | Open a node under the cursor with `rightbelow split`                         |
-|                     | `open:right`    | Open a node under the cursor with `rightbelow vsplit`                        |
-|                     | `open:top`      | Open a node under the cursor with `topleft split`                            |
-|                     | `open:leftest`  | Open a node under the cursor with `topleft vsplit`                           |
-|                     | `open:bottom`   | Open a node under the cursor with `botright split`                           |
-|                     | `open:rightest` | Open a node under the cursor with `botright vsplit`                          |
-| `<Return>`, `<C-m>` |                 | Invoke `open` whe a node under the cursor is leaf. Otherwise invoke `enter`  |
-| `l`                 |                 | Invoke `open` whe a node under the cursor is leaf. Otherwise invoke `expand` |
+| Mapping             | Action          | Description                                                                        |
+| ------------------- | --------------- | ---------------------------------------------------------------------------------- |
+| `a`                 |                 | Open a prompt to input an action name to perform                                   |
+| `.`                 |                 | Repeat previous action invoked from a prompt                                       |
+| `?`                 | `help`          | Output mappings/actions to a pseudo buffer as help                                 |
+| `<C-c>`             | `cancel`        | Cancel any operation under processing                                              |
+| `<C-l>`             | `redraw`        | Redraw content of the buffer                                                       |
+|                     | `debug`         | Show a debug informatin of a node under the cursor                                 |
+| `<F5>`              | `reload`        | Reload node itself and descendent nodes of a node under the cursor                 |
+|                     | `expand`        | Expand (open) a node under the cursor                                              |
+| `h`                 | `collapse`      | Collapse (close) a node under the cursor                                           |
+| `i`                 | `reveal`        | Reveal (recursively focus and expand) a node which input by user                   |
+|                     | `enter`         | Enter a new tree which root node is a node under the cursor                        |
+| `<BS>`, `<C-h>`     | `leave`         | Leave to a new tree which root is the parent node of a current root node           |
+| `s`                 | `open:select`   | Select window to open a node under the cursor (like [t9md/vim-choosewin][])        |
+| `e`                 | `open`          | An alias of `open:edit` action                                                     |
+| `E`                 | `open:side`     | Open a node under the cursor on right side of the fern buffer                      |
+|                     | `open:edit`     | Open a node under the cursor with `edit`                                           |
+|                     | `open:split`    | Open a node under the cursor with `split`                                          |
+|                     | `open:vsplit`   | Open a node under the cursor with `vsplit`                                         |
+| `t`                 | `open:tabedit`  | Open a node under the cursor with `tabedit`                                        |
+|                     | `open:above`    | Open a node under the cursor with `leftabove split`                                |
+|                     | `open:left`     | Open a node under the cursor with `leftabove vsplit`                               |
+|                     | `open:below`    | Open a node under the cursor with `rightbelow split`                               |
+|                     | `open:right`    | Open a node under the cursor with `rightbelow vsplit`                              |
+|                     | `open:top`      | Open a node under the cursor with `topleft split`                                  |
+|                     | `open:leftest`  | Open a node under the cursor with `topleft vsplit`                                 |
+|                     | `open:bottom`   | Open a node under the cursor with `botright split`                                 |
+|                     | `open:rightest` | Open a node under the cursor with `botright vsplit`                                |
+| `<Return>`, `<C-m>` |                 | Invoke `open` whe a node under the cursor is leaf. Otherwise invoke `enter`        |
+| `l`                 |                 | Invoke `open` whe a node under the cursor is leaf. Otherwise invoke `expand`       |
+| `z`                 | `zoom`          | An alias of `zoom:half` action                                                     |
+|                     | `zoom:half`     | Temporary increase the width of a project drawer. It does nothing on split windows |
+|                     | `zoom:full`     | Temporary increase the width of a project drawer. It does nothing on split windows |
 
 [t9md/vim-choosewin]: https://github.com/t9md/vim-choosewin
 
