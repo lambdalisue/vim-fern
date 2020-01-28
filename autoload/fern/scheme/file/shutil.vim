@@ -46,9 +46,15 @@ function! fern#scheme#file#shutil#copy(src, dst, ...) abort
     endif
   endif
   call mkdir(fnamemodify(a:dst, ':p:h'), 'p')
-  return s:File.copy(a:src, a:dst, {
-        \ 'token': token,
-        \})
+  if isdirectory(a:src)
+    return s:File.copy_dir(a:src, a:dst, {
+          \ 'token': token,
+          \})
+  else
+    return s:File.copy(a:src, a:dst, {
+          \ 'token': token,
+          \})
+  endif
 endfunction
 
 function! fern#scheme#file#shutil#move(src, dst, ...) abort

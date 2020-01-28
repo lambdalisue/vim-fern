@@ -4,7 +4,7 @@
 function! s:_SID() abort
   return matchstr(expand('<sfile>'), '<SNR>\zs\d\+\ze__SID$')
 endfunction
-execute join(['function! vital#_fern#Async#File#import() abort', printf("return map({'_vital_depends': '', 'move': '', 'is_copy_dir_supported': '', 'open': '', 'copy': '', 'is_open_supported': '', 'is_move_supported': '', 'is_trash_supported': '', 'copy_dir': '', 'trash': '', '_vital_loaded': ''}, \"vital#_fern#function('<SNR>%s_' . v:key)\")", s:_SID()), 'endfunction'], "\n")
+execute join(['function! vital#_fern#Async#File#import() abort', printf("return map({'_vital_depends': '', 'is_move_supported': '', 'is_copy_dir_supported': '', 'open': '', 'copy': '', 'move': '', 'is_open_supported': '', 'is_copy_supported': '', 'is_trash_supported': '', 'copy_dir': '', 'trash': '', '_vital_loaded': ''}, \"vital#_fern#function('<SNR>%s_' . v:key)\")", s:_SID()), 'endfunction'], "\n")
 delfunction s:_SID
 " ___vital___
 function! s:_vital_depends() abort
@@ -146,7 +146,7 @@ endif
 
 " copy()
 if has('win32') && executable('cmd')
-  function! s:is_copy_dir_supported() abort
+  function! s:is_copy_supported() abort
     return 1
   endfunction
   function! s:copy(src, dst, ...) abort
@@ -163,7 +163,7 @@ if has('win32') && executable('cmd')
           \.catch({ e -> s:_iconv_result(e) })
   endfunction
 elseif executable('cp')
-  function! s:is_copy_dir_supported() abort
+  function! s:is_copy_supported() abort
     return 1
   endfunction
   function! s:copy(src, dst, ...) abort
@@ -173,7 +173,7 @@ elseif executable('cp')
           \], options)
   endfunction
 else
-  function! s:is_copy_dir_supported() abort
+  function! s:is_copy_supported() abort
     return 0
   endfunction
   function! s:copy(src, dst, ...) abort
