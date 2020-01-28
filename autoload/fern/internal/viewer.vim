@@ -32,7 +32,7 @@ function! fern#internal#viewer#init() abort
   let url = fern#lib#url#parse(bufname('%'))
   if empty(url.fragment)
     let url.fragment = sha256(localtime())[:7]
-    execute printf("keepalt file %s", fnameescape(fern#lib#url#format(url)))
+    execute printf("silent keepalt file %s", fnameescape(fern#lib#url#format(url)))
   endif
 
   let scheme = fern#lib#url#parse(url.path).scheme
