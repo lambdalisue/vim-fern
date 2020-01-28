@@ -184,7 +184,7 @@ function! s:map_clipboard_paste(helper) abort
 
   if s:clipboard.mode ==# 'move'
     let paths = copy(s:clipboard.candidates)
-    let prompt = printf("The follwoing %d nodes will be moved", len(paths))
+    let prompt = printf("The following %d nodes will be moved", len(paths))
     for path in paths[:5]
       let prompt .= "\n" . path
     endfor
@@ -228,7 +228,7 @@ endfunction
 function! s:map_trash(helper) abort
   let nodes = a:helper.get_selected_nodes()
   let paths = map(copy(nodes), { _, v -> v._path })
-  let prompt = printf("The follwoing %d files will be trached", len(paths))
+  let prompt = printf("The following %d files will be trashed", len(paths))
   for path in paths[:5]
     let prompt .= "\n" . path
   endfor
@@ -255,7 +255,7 @@ endfunction
 function! s:map_remove(helper) abort
   let nodes = a:helper.get_selected_nodes()
   let paths = map(copy(nodes), { _, v -> v._path })
-  let prompt = printf("The follwoing %d files will be removed", len(paths))
+  let prompt = printf("The following %d files will be removed", len(paths))
   for path in paths[:5]
     let prompt .= "\n" . path
   endfor
