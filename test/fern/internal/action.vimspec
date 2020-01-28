@@ -15,9 +15,7 @@ Describe fern#internal#action
             \ { -> split(v:val)[1] },
             \)
       Assert Equals(sort(rs), sort([
-            \ '<Plug>(fern-action-choice)',
             \ '<Plug>(fern-action-help)',
-            \ '<Plug>(fern-action-repeat)',
             \]))
     End
   End
