@@ -102,6 +102,9 @@ function! s:map_help() abort
 endfunction
 
 function! s:parse_expr(expr) abort
+  if empty(a:expr)
+    return {'name' : '', 'capture': 0, 'verbose': 0}
+  endif
   let terms = split(a:expr)
   let name = remove(terms, -1)
   let Has = { ns, n -> len(filter(copy(ns), { -> v:val ==# n })) }
