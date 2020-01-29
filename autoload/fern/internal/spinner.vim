@@ -1,5 +1,5 @@
+let s:Config = vital#fern#import('Config')
 let s:Spinner = vital#fern#import('App.Spinner')
-let s:frames = s:Spinner.dots
 
 function! fern#internal#spinner#start(...) abort
   let bufnr = a:0 ? a:1 : bufnr('%')
@@ -7,7 +7,7 @@ function! fern#internal#spinner#start(...) abort
     return
   endif
   let spinner = s:Spinner.new(map(
-        \ copy(s:frames),
+        \ copy(g:fern#internal#spinner#frames),
         \ { k -> printf('FernSignSpinner%d', k) },
         \))
   call setbufvar(bufnr, 'fern_spinner_timer', timer_start(
@@ -45,13 +45,17 @@ function! s:update(timer, spinner, bufnr) abort
 endfunction
 
 function! s:define_signs() abort
-  for index in range(len(s:frames))
+  let frames = g:fern#internal#spinner#frames
+  for index in range(len(frames))
     call execute(printf(
           \ 'sign define FernSignSpinner%d text=%s',
           \ index,
-          \ s:frames[index],
+          \ frames[index],
           \))
   endfor
 endfunction
 
+call s:Config.config(expand('<sfile>:p'), {
+      \ 'frames': has('win32') ? s:Spinner.flip : s:Spinner.dots,
+      \})
 call s:define_signs()

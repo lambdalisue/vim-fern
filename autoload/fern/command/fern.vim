@@ -26,27 +26,39 @@ function! fern#command#fern#command(mods, qargs) abort
     let drawer_opener = opener is# v:null
           \ ? g:fern#command#fern#drawer_opener
           \ : opener
-    let url = s:init(fern#lib#url#parse(expand(args[0])), options)
 
-    call options.throw_if_dirty()
-
-    " Force '-drawer' if the current buffer is fern:xxx?drawer and
-    " the 'opener' is 'edit' so that a new fern buffer is opened on
-    " a drawer window
-    if viewer_opener ==# 'edit' && fern#internal#drawer#parse() isnot# v:null
-      let url.query.drawer = v:true
+    " Force project drawer style when
+    " - The current buffer is project drawer style fern
+    " - The 'opener' is 'edit'
+    if viewer_opener ==# 'edit' && fern#internal#drawer#is_drawer()
+      call options.set('drawer', v:true)
     endif
 
-    if empty(url.query.drawer)
-      call fern#internal#viewer#open(fern#lib#url#format(url), {
-            \ 'mods': a:mods,
-            \ 'opener': viewer_opener,
-            \})
-    else
-      call fern#internal#drawer#open(fern#lib#url#format(url), {
+    " Build FRI for fern buffer from argument
+    let expr = expand(args[0])
+    let fri = fern#internal#bufname#parse(expr)
+    let fri.authority = options.pop('drawer', v:false)
+          \ ? printf('drawer:%d', tabpagenr())
+          \ : ''
+    let fri.query = extend(fri.query, {
+          \ 'width': options.pop('width', v:null),
+          \ 'keep': options.pop('keep', v:null),
+          \})
+    let fri.fragment = options.pop('reveal', '')
+
+    " Does all options are handled?
+    call options.throw_if_dirty()
+
+    if fri.authority =~# '\<drawer\>'
+      call fern#internal#drawer#open(fri, {
             \ 'mods': a:mods,
             \ 'toggle': toggle,
             \ 'opener': drawer_opener,
+            \})
+    else
+      call fern#internal#viewer#open(fri, {
+            \ 'mods': a:mods,
+            \ 'opener': viewer_opener,
             \})
     endif
   catch
@@ -62,38 +74,6 @@ function! fern#command#fern#complete(arglead, cmdline, cursorpos) abort
   return getcompletion('', 'dir')
 endfunction
 
-function! s:init(url, options) abort
-  if empty(a:url.scheme)
-    let a:url.scheme = 'file'
-  endif
-
-  " Create query from the options
-  let a:url.query = extend(a:url.query, {
-        \ 'reveal': a:options.pop('reveal', v:null),
-        \ 'drawer': a:options.pop('drawer', v:null),
-        \ 'width': a:options.pop('width', v:null),
-        \ 'keep': a:options.pop('keep', v:null),
-        \})
-
-  " Scheme specific method
-  call fern#internal#scheme#call(a:url.scheme, 'command#init', a:url, a:options)
-
-  " Check if the final scheme exists
-  if !fern#internal#scheme#exists(a:url.scheme)
-    throw printf(
-          \ "no scheme %s is found under fern#scheme: %s",
-          \ a:url.scheme,
-          \ fern#lib#url#format(a:url),
-          \)
-  endif
-
-  " Normalize reveal
-  if !empty(a:url.query.reveal) && a:url.query.reveal[:0] ==# '/'
-    let a:url.query.reveal = fern#lib#url#relative(a:url.query.reveal, a:url.path)
-  endif
-
-  return a:url
-endfunction
 
 call s:Config.config(expand('<sfile>:p'), {
       \ 'viewer_opener': 'edit',

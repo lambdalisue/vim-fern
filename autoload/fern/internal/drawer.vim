@@ -1,4 +1,4 @@
-function! fern#internal#drawer#open(bufname, ...) abort
+function! fern#internal#drawer#open(fri, ...) abort
   let options = extend({
         \ 'toggle': 0,
         \}, a:0 ? a:1 : {},
@@ -12,11 +12,11 @@ function! fern#internal#drawer#open(bufname, ...) abort
       let options.opener = 'edit'
     endif
   endif
-  return fern#internal#viewer#open(a:bufname, options)
+  return fern#internal#viewer#open(a:fri, options)
 endfunction
 
 function! fern#internal#drawer#init() abort
-  if empty(fern#internal#drawer#parse(bufname('%')))
+  if !fern#internal#drawer#is_drawer()
     return
   endif
 
@@ -29,18 +29,6 @@ function! fern#internal#drawer#init() abort
   augroup END
 endfunction
 
-function! fern#internal#drawer#parse(...) abort
-  let bufname = a:0 ? a:1 : bufname('%')
-  let q = fern#lib#url#parse(bufname).query
-  if empty(get(q, 'drawer'))
-    return v:null
-  endif
-  return {
-        \ 'width': str2nr(get(q, 'width', '30')),
-        \ 'keep': !empty(get(q, 'keep', '')),
-        \}
-endfunction
-
 function! fern#internal#drawer#focus_next(...) abort
   let options = extend({
         \ 'predicator': { -> 1 },
@@ -49,7 +37,7 @@ function! fern#internal#drawer#focus_next(...) abort
   let P = options.predicator
   return fern#internal#viewer#focus_next(extend(options, {
         \ 'predicator': { n ->
-        \   fern#internal#drawer#parse(bufname(winbufnr(n))) isnot# v:null && P(n)
+        \   fern#internal#drawer#is_drawer(bufname(winbufnr(n))) && P(n)
         \ }
         \}))
 endfunction
@@ -60,18 +48,26 @@ function! fern#internal#drawer#do_next(command, ...) abort
   endif
 endfunction
 
+function! fern#internal#drawer#is_drawer(...) abort
+  let bufname = a:0 ? a:1 : bufname('%')
+  let fri = fern#internal#bufname#parse(bufname)
+  return fri.scheme ==# 'fern' && fri.authority =~# '\<drawer\>'
+endfunction
+
 function! s:keep_width() abort
-  let options = fern#internal#drawer#parse()
+  let fri = fern#internal#bufname#parse(bufname('%'))
+  let width = str2nr(get(fri.query, 'width', '50'))
+  let keep = str2nr(get(fri.query, 'keep', v:false))
   if winnr('$') isnot# 1
-    execute 'vertical resize' options.width
+    execute 'vertical resize' width
     return
   elseif tabpagenr('$') isnot# 1
     close
-  elseif !options.keep
+  elseif !keep
     quit
   else
     vertical botright new
     keepjumps wincmd p
-    execute 'vertical resize' options.width
+    execute 'vertical resize' width
   endif
 endfunction
