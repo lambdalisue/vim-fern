@@ -39,7 +39,7 @@ function! fern#internal#viewer#do_next(command, ...) abort
 endfunction
 
 function! s:open(bufname, options, resolve, reject) abort
-  let r = fern#lib#buffer#open(a:bufname, a:options)
+  let r = fern#lib#buffer#open(a:bufname . '$', a:options)
   call setbufvar(r.bufnr, 'fern_notifier', {
         \ 'resolve': a:resolve,
         \ 'reject': a:reject,
@@ -67,7 +67,7 @@ function! s:init() abort
     let bufname = fern#fri#format(fri)
     call fern#message#debug("fri", fri)
     call fern#message#debug("bufname", bufname)
-    execute printf("silent keepalt file %s", fnameescape(bufname))
+    execute printf("silent keepalt file %s$", fnameescape(bufname))
   endif
 
   let resource_uri = fri.path

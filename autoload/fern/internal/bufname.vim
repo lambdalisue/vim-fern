@@ -1,10 +1,13 @@
 function! fern#internal#bufname#parse(bufname) abort
-  if a:bufname[:6] ==# 'fern://'
-    return fern#fri#parse(a:bufname)
+  let bufname = a:bufname[-1:] ==# '$'
+        \ ? a:bufname[:-2]
+        \ : a:bufname
+  if bufname[:6] ==# 'fern://'
+    return fern#fri#parse(bufname)
   endif
-  let expr = a:bufname =~# '[^\w]\+://'
-        \ ? s:from_uri(a:bufname)
-        \ : s:from_local(a:bufname)
+  let expr = bufname =~# '[^\w]\+://'
+        \ ? s:from_uri(bufname)
+        \ : s:from_local(bufname)
   let fri = fern#fri#parse(expr)
   let out = {
         \ 'scheme': 'fern',
