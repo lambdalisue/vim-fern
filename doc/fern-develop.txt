@@ -4,6 +4,45 @@ Author:  Alisue <lambdalisue@hashnote.net>
 License: MIT license
 
 =============================================================================
+SPEC						*fern-develop-spec*
+
+-----------------------------------------------------------------------------
+FRI						*fern-develop-spec-fri*
+
+Fern Resource Identifier (FRI) is designed to use in Vim's buffer name and
+explained as the following:
+
+  FRI = scheme "://" [ auth ] "/" path [ ";" query ][ "#" fragment ]
+
+It was desigend to remove the following characters which could not be used
+in buffer names in Windows from URI definition:
+
+  unusable   = "<" | ">" | "|" | "?" | "*"
+
+The definition of each components in FRI are the followings:
+
+  scheme   = ALPHA { ALPHA | DIGIT | "_" }
+  auth     = { pchar }
+  path     = { segment "/" }
+  query    = { pchar | "/" | ";" }
+  fragment = { pchar | "/" | ";" }
+
+And the definition of each sub-components are the followings:
+
+  pct-encoded = "%" HEXDIG HEXDIG
+  reserved = gen-delims | sub-delims
+  unreserved = ALPHA | DIGIT | "-" | "."| "_" | "~"
+  gen-delims = ":" | "/" | ";" | "#" | "[" | "]" | "@"
+  sub-delims = "!" | "$" | "&" | """ | "(" | ")" | "+" | "," | "="
+  segment   = pchar { pchar }
+  pchar     = { unreserved | pct-encoded | sub-delims | ":" | "@" }
+
+Developers can use the following function to parse/format FRIs.
+
+|fern#fri#parse({expr})|
+|fern#fri#format({fri})|
+
+=============================================================================
 API						*fern-develop-api*
 
 -----------------------------------------------------------------------------
@@ -234,6 +273,25 @@ g:fern#internal#mapping#enabled_mapping_presets
 
 -----------------------------------------------------------------------------
 FUNCTION				*fern-develop-api-function*
+
+				*fern#fri#parse({expr})*
+fern#fri#parse({expr})
+	Parse the {expr} (|String|) and return a FRI instance.
+	The instance has the following attributes:
+
+	"scheme"	A |String| scheme part
+	"authority"	A |String| authority part
+	"path"		A |String| path part
+	"query"		A |Dict| query part
+	"fragment"	A |String| fragment part
+
+	See |fern-develop-spec-fri| for detail about FRI.
+
+				*fern#fri#format({fri})*
+fern#fri#format({fri})
+	Format a |String| representation of the {fri} instance.
+
+	See |fern-develop-spec-fri| for detail about FRI.
 
 				*fern#lib#buffer#replace()*
 fern#lib#buffer#replace({bufnr}, {content})

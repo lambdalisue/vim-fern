@@ -1,0 +1,147 @@
+Describe fern#fri
+  Describe #parse()
+    It returns FRI for 'file:///foo/bar'
+      let expr = 'file:///foo/bar'
+      let want = {
+            \ 'scheme': 'file',
+            \ 'authority': '',
+            \ 'path': 'foo/bar',
+            \ 'query': {},
+            \ 'fragment': '',
+            \}
+      Assert Equals(fern#fri#parse(expr), want)
+    End
+
+    It returns FRI for 'file:///foo/bar;drawer'
+      let expr = 'file:///foo/bar;drawer'
+      let want = {
+            \ 'scheme': 'file',
+            \ 'authority': '',
+            \ 'path': 'foo/bar',
+            \ 'query': {
+            \   'drawer': v:true,
+            \ },
+            \ 'fragment': '',
+            \}
+      Assert Equals(fern#fri#parse(expr), want)
+    End
+
+    It returns FRI for 'file:///foo/bar;width=50&drawer'
+      let expr = 'file:///foo/bar;width=50&drawer'
+      let want = {
+            \ 'scheme': 'file',
+            \ 'authority': '',
+            \ 'path': 'foo/bar',
+            \ 'query': {
+            \   'drawer': v:true,
+            \   'width': '50',
+            \ },
+            \ 'fragment': '',
+            \}
+      Assert Equals(fern#fri#parse(expr), want)
+    End
+
+    It returns FRI for 'file:///foo/bar;width=50&drawer#fragment'
+      let expr = 'file:///foo/bar;width=50&drawer#fragment'
+      let want = {
+            \ 'scheme': 'file',
+            \ 'authority': '',
+            \ 'path': 'foo/bar',
+            \ 'query': {
+            \   'drawer': v:true,
+            \   'width': '50',
+            \ },
+            \ 'fragment': 'fragment',
+            \}
+      Assert Equals(fern#fri#parse(expr), want)
+    End
+
+    It returns FRI for 'ssh://user:pass@example.com/foo/bar;width=50&drawer#fragment'
+      let expr = 'ssh://user:pass@example.com/foo/bar;width=50&drawer#fragment'
+      let want = {
+            \ 'scheme': 'ssh',
+            \ 'authority': 'user:pass@example.com',
+            \ 'path': 'foo/bar',
+            \ 'query': {
+            \   'drawer': v:true,
+            \   'width': '50',
+            \ },
+            \ 'fragment': 'fragment',
+            \}
+      Assert Equals(fern#fri#parse(expr), want)
+    End
+  End
+
+  Describe #format()
+    It formats FRI to 'file:///foo/bar'
+      let expr = 'file:///foo/bar'
+      let want = {
+            \ 'scheme': 'file',
+            \ 'authority': '',
+            \ 'path': 'foo/bar',
+            \ 'query': {},
+            \ 'fragment': '',
+            \}
+      Assert Equals(fern#fri#format(want), expr)
+    End
+
+    It formats FRI to 'file:///foo/bar;drawer'
+      let expr = 'file:///foo/bar;drawer'
+      let want = {
+            \ 'scheme': 'file',
+            \ 'authority': '',
+            \ 'path': 'foo/bar',
+            \ 'query': {
+            \   'drawer': v:true,
+            \ },
+            \ 'fragment': '',
+            \}
+      Assert Equals(fern#fri#format(want), expr)
+    End
+
+    It formats FRI to 'file:///foo/bar;width=50&drawer'
+      let expr = 'file:///foo/bar;width=50&drawer'
+      let want = {
+            \ 'scheme': 'file',
+            \ 'authority': '',
+            \ 'path': 'foo/bar',
+            \ 'query': {
+            \   'drawer': v:true,
+            \   'width': '50',
+            \ },
+            \ 'fragment': '',
+            \}
+      Assert Equals(fern#fri#format(want), expr)
+    End
+
+    It formats FRI to 'file:///foo/bar;width=50&drawer#fragment'
+      let expr = 'file:///foo/bar;width=50&drawer#fragment'
+      let want = {
+            \ 'scheme': 'file',
+            \ 'authority': '',
+            \ 'path': 'foo/bar',
+            \ 'query': {
+            \   'drawer': v:true,
+            \   'width': '50',
+            \ },
+            \ 'fragment': 'fragment',
+            \}
+      Assert Equals(fern#fri#format(want), expr)
+    End
+
+    It formats FRI to 'ssh://user:pass@example.com/foo/bar;drawer&width=50#fragment'
+      let expr = 'ssh://user:pass@example.com/foo/bar;width=50&drawer#fragment'
+      let want = {
+            \ 'scheme': 'ssh',
+            \ 'authority': 'user:pass@example.com',
+            \ 'path': 'foo/bar',
+            \ 'query': {
+            \   'drawer': v:true,
+            \   'width': '50',
+            \ },
+            \ 'fragment': 'fragment',
+            \}
+      Assert Equals(fern#fri#format(want), expr)
+    End
+  End
+End
