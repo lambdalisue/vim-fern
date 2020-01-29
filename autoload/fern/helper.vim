@@ -243,14 +243,17 @@ function! s:helper.enter_tree(node) abort
 endfunction
 
 function! s:helper.leave_tree() abort
-  return s:Promise.resolve(self.fern.root)
-        \.then({ root -> fern#internal#node#parent(
+  let root = self.get_root_node()
+  return s:Promise.resolve()
+        \.then({ -> fern#internal#node#parent(
         \   root,
         \   self.fern.provider,
         \   self.fern.source.token,
         \ )
         \})
         \.then({ n -> s:enter(self.fern, n) })
+        \.then({ -> fern#helper#new(winbufnr(self.winid)) })
+        \.then({ h -> h.focus_node([root.name]) })
 endfunction
 
 
@@ -264,8 +267,7 @@ function! s:enter(fern, node) abort
     let fri = fern#internal#bufname#parse(a:node.bufname)
     let fri.authority = cur.authority
     let fri.query = cur.query
-    call fern#internal#viewer#open(fri, {})
-    return s:Promise.resolve()
+    return fern#internal#viewer#open(fri, {})
   catch
     return s:Promise.reject(v:exception)
   endtry
