@@ -20,8 +20,7 @@ endfunction
 
 augroup fern_internal
   autocmd! *
-  autocmd BufReadCmd fern:* nested call s:BufReadCmd()
-  autocmd BufReadCmd fern:*/* nested call s:BufReadCmd()
+  autocmd BufReadCmd fern://* nested call s:BufReadCmd()
 augroup END
 
 let g:fern_debug = get(g:, 'fern_debug', 0)

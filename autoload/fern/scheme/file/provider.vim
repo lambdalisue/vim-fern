@@ -3,7 +3,9 @@ let s:Lambda = vital#fern#import('Lambda')
 let s:AsyncLambda = vital#fern#import('Async.Lambda')
 let s:Promise = vital#fern#import('Async.Promise')
 let s:Process = vital#fern#import('Async.Promise.Process')
+let s:Path = vital#fern#import('System.Filepath')
 let s:CancellationToken = vital#fern#import('Async.CancellationToken')
+let s:is_windows = has('win32')
 
 function! fern#scheme#file#provider#new() abort
   return {
@@ -13,12 +15,14 @@ function! fern#scheme#file#provider#new() abort
         \}
 endfunction
 
-function! s:provider_get_root(url) abort
- return s:node(a:url)
+function! s:provider_get_root(uri) abort
+  let fri = fern#fri#parse(a:uri)
+  let path = fern#scheme#file#fri#from_fri(fri)
+  return s:node(path)
 endfunction
 
 function! s:provider_get_parent(node, ...) abort
-  if a:node._path ==# '/'
+  if s:Path.is_root_directory(a:node._path)
     return s:Promise.reject("no parent node exists for the root")
   endif
   try
@@ -39,30 +43,30 @@ function! s:provider_get_children(node, ...) abort
         \.then(s:AsyncLambda.filter_f({ v -> !empty(v) }))
 endfunction
 
-function! s:node(url) abort
-  let path = s:norm(matchstr(a:url, '^\%(file://\)\?\zs.*'))
+function! s:node(path) abort
+  let path = s:Path.abspath(a:path)
+  let path = s:Path.remove_last_separator(path)
+  let path = simplify(path)
   if empty(getftype(path))
     throw printf("no such file or directory exists: %s", path)
   endif
   let name = fnamemodify(path, ':t')
   let status = isdirectory(path)
+  let bufname = status ? fern#scheme#file#fri#to_fri(path) : path
   return {
         \ 'name': name,
         \ 'label': name ==# '' ? '/' : name,
         \ 'status': status,
         \ 'hidden': name[:0] ==# '.',
-        \ 'bufname': (status ? 'file://' : '') . path,
+        \ 'bufname': bufname,
         \ '_path': path,
         \}
 endfunction
 
-function! s:norm(path) abort
-  if a:path ==# '/'
-    return '/'
-  endif
-  let abspath = fnamemodify(a:path, ':p')
-  let abspath = matchstr(abspath, '.\{-}\ze/\?$')
-  return abspath
+function! s:to_file_uri(abspath) abort
+  let path = s:Path.to_slash(a:abspath)
+  let path = join(split(path, '/'), '/')
+  return printf('file:///%s', path)
 endfunction
 
 function! s:safe(fn) abort
@@ -73,30 +77,28 @@ function! s:safe(fn) abort
   endtry
 endfunction
 
-if executable('find')
+if executable('find') && !has("win32")
   function! s:children_find(path, token) abort
-    let path = s:norm(a:path)
-    return s:Process.start(['find', path, '-maxdepth', '1'], { 'token': a:token })
+    return s:Process.start(['find', a:path, '-maxdepth', '1'], { 'token': a:token })
          \.then({ v -> v.stdout })
-         \.then(s:AsyncLambda.filter_f({ v -> !empty(v) && v !=# path }))
+         \.then(s:AsyncLambda.filter_f({ v -> !empty(v) && v !=# a:path }))
   endfunction
 endif
 
 if executable('ls')
   function! s:children_ls(path, token) abort
-    let path = s:norm(a:path)
-    return s:Process.start(['ls', '-1A', path], { 'token': a:token })
+    return s:Process.start(['ls', '-1A', a:path], { 'token': a:token })
          \.then({ v -> v.stdout })
          \.then(s:AsyncLambda.filter_f({ v -> !empty(v) }))
-         \.then(s:AsyncLambda.map_f({ v -> path . '/' . v }))
+         \.then(s:AsyncLambda.map_f({ v -> a:path . '/' . v }))
   endfunction
 endif
 
 function! s:children_vim(path, ...) abort
-  let path = s:norm(a:path)
-  let a = s:Promise.resolve(glob(path . '/*', 1, 1, 1))
-  let b = s:Promise.resolve(glob(path . '/.*', 1, 1, 1))
-        \.then(s:AsyncLambda.filter_f({ v -> v !=# path . '/.' && v !=# path .'/..' }))
+  let s = s:Path.separator()
+  let a = s:Promise.resolve(glob(a:path . s . '*', 1, 1, 1))
+  let b = s:Promise.resolve(glob(a:path . s . '.*', 1, 1, 1))
+        \.then(s:AsyncLambda.filter_f({ v -> v[-2:] !=# s . '.' && v[-3:] !=# s . '..' }))
   return s:Promise.all([a, b])
         \.then(s:AsyncLambda.reduce_f({ a, v -> a + v }, []))
 endfunction
@@ -107,5 +109,9 @@ endfunction
 
 
 call s:Config.config(expand('<sfile>:p'), {
-      \ 'impl': executable('find') ? 'find' : executable('ls') ? 'ls' : 'vim',
+      \ 'impl': exists('*s:children_find')
+      \   ? 'find'
+      \   : exists('*s:children_ls')
+      \     ? 'ls'
+      \     : 'vim',
       \})

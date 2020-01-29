@@ -1,4 +1,4 @@
-function! fern#internal#drawer#open(bufname, ...) abort
+function! fern#internal#drawer#open(fri, ...) abort
   let options = extend({
         \ 'toggle': 0,
         \}, a:0 ? a:1 : {},
@@ -12,7 +12,7 @@ function! fern#internal#drawer#open(bufname, ...) abort
       let options.opener = 'edit'
     endif
   endif
-  return fern#internal#viewer#open(a:bufname, options)
+  return fern#internal#viewer#open(a:fri, options)
 endfunction
 
 function! fern#internal#drawer#init() abort
@@ -55,9 +55,9 @@ function! fern#internal#drawer#is_drawer(...) abort
 endfunction
 
 function! s:keep_width() abort
-  let uri = fern#lib#url#parse(bufname('%'))
-  let width = str2nr(get(uri.query, 'width', '50'))
-  let keep = str2nr(get(uri.query, 'keep', v:false))
+  let fri = fern#internal#bufname#parse(bufname('%'))
+  let width = str2nr(get(fri.query, 'width', '50'))
+  let keep = str2nr(get(fri.query, 'keep', v:false))
   if winnr('$') isnot# 1
     execute 'vertical resize' width
     return

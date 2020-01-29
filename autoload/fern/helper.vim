@@ -260,9 +260,11 @@ function! s:enter(fern, node) abort
     return s:Promise.reject('the node does not have bufname attribute')
   endif
   try
-    call fern#internal#viewer#open(a:node.bufname, {
-          \ 'base': bufname("%"),
-          \})
+    let cur = fern#internal#bufname#parse(bufname('%'))
+    let fri = fern#internal#bufname#parse(a:node.bufname)
+    let fri.authority = cur.authority
+    let fri.query = cur.query
+    call fern#internal#viewer#open(fri, {})
     return s:Promise.resolve()
   catch
     return s:Promise.reject(v:exception)

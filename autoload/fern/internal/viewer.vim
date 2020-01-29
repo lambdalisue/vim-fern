@@ -1,14 +1,10 @@
 let s:Promise = vital#fern#import('Async.Promise')
 
-function! fern#internal#viewer#open(bufname, ...) abort
-  let options = extend({
-        \ 'base': 'fern:file:///',
-        \}, a:0 ? a:1 : {},
-        \)
-  let url = fern#lib#url#parse(options.base)
-  let url.path = a:bufname
-  let url.query = filter(url.query, { -> index(['reveal'], v:key) is# -1 })
-  return fern#lib#buffer#open(fern#lib#url#format(url), options)
+function! fern#internal#viewer#open(fri, options) abort
+  let bufname = fern#fri#format(a:fri)
+  call fern#message#debug("fri", a:fri)
+  call fern#message#debug("bufname", bufname)
+  return fern#lib#buffer#open(bufname, a:options)
 endfunction
 
 function! fern#internal#viewer#init() abort
@@ -29,13 +25,18 @@ function! fern#internal#viewer#init() abort
   augroup END
 
   " Add unique fragment to make each buffer uniq
-  let url = fern#lib#url#parse(bufname('%'))
-  if empty(url.fragment)
-    let url.fragment = sha256(localtime())[:7]
-    execute printf("silent keepalt file %s", fnameescape(fern#lib#url#format(url)))
+  let bufname = bufname('%')
+  let fri = fern#internal#bufname#parse(bufname)
+  if empty(fri.authority)
+    let fri.authority = sha256(localtime())[:7]
+    let bufname = fern#fri#format(fri)
+    call fern#message#debug("fri", fri)
+    call fern#message#debug("bufname", bufname)
+    execute printf("silent keepalt file %s", fnameescape(bufname))
   endif
 
-  let scheme = fern#lib#url#parse(url.path).scheme
+  let resource_uri = fri.path
+  let scheme = fern#fri#parse(resource_uri).scheme
   let provider = fern#internal#scheme#provider(scheme)
   if provider is# v:null
     return s:Promise.reject(printf("no such scheme %s exists", scheme))
@@ -43,7 +44,7 @@ function! fern#internal#viewer#init() abort
 
   try
     let b:fern = fern#internal#core#new(
-          \ url.path,
+          \ resource_uri,
           \ fern#internal#scheme#provider(scheme),
           \)
     let helper = fern#helper#new()
@@ -59,7 +60,7 @@ function! fern#internal#viewer#init() abort
     call fern#internal#renderer#syntax()
     call fern#internal#action#init()
 
-    let reveal = split(get(url.query, 'reveal', ''), '/')
+    let reveal = split(fri.fragment, '/')
     return s:Promise.resolve()
           \.then({ -> helper.expand_node(root.__key) })
           \.then({ -> helper.reveal_node(reveal) })
