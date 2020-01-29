@@ -44,10 +44,13 @@ function! fern#command#fern#command(mods, qargs) abort
           \ 'width': options.pop('width', v:null),
           \ 'keep': options.pop('keep', v:null),
           \})
-    let fri.fragment = options.pop('reveal', '')
+    let fri.fragment = expand(options.pop('reveal', ''))
 
     " Does all options are handled?
     call options.throw_if_dirty()
+
+    " Normalize fragment
+    call s:norm_fragment(fri)
 
     if fri.authority =~# '\<drawer\>'
       call fern#internal#drawer#open(fri, {
@@ -72,6 +75,19 @@ function! fern#command#fern#complete(arglead, cmdline, cursorpos) abort
     return filter(copy(s:options), { -> v:val =~# '^' . a:arglead })
   endif
   return getcompletion('', 'dir')
+endfunction
+
+function! s:norm_fragment(fri) abort
+  if empty(a:fri.fragment)
+    return
+  endif
+  let root = split(fern#fri#parse(a:fri.path).path, '/')
+  let reveal = split(a:fri.fragment, '/')
+  call fern#message#debug(a:fri.path, root)
+  call fern#message#debug(a:fri.fragment, reveal)
+  let reveal = fern#internal#path#relative(reveal, root)
+  let a:fri.fragment = join(reveal, '/')
+  call fern#message#debug(a:fri.fragment, reveal)
 endfunction
 
 
