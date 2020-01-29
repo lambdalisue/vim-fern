@@ -234,14 +234,16 @@ function! s:map_remove(helper) abort
 
   " Update tree
   let tree = provider._tree
+  let ps = []
   for node in nodes
     echo printf("Delete %s", node._path)
-    call fern#scheme#dict#tree#remove(tree, node._path)
+    let p = a:helper.collapse_node(node.__key)
+          \.then({ -> fern#scheme#dict#tree#remove(tree, node._path) })
+    call add(ps, p)
   endfor
-  call provider._update_tree(tree)
-
   let root = a:helper.get_root_node()
-  return s:Promise.resolve()
+  return s:Promise.all(ps)
+        \.then({ -> provider._update_tree(tree) })
         \.then({ -> a:helper.reload_node(root.__key) })
         \.then({ -> a:helper.redraw() })
         \.then({ -> fern#message#info(printf('%d items are removed', len(nodes))) })
