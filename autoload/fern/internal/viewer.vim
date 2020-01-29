@@ -1,17 +1,52 @@
+let s:Lambda = vital#fern#import('Lambda')
 let s:Promise = vital#fern#import('Async.Promise')
 
 function! fern#internal#viewer#open(fri, options) abort
   let bufname = fern#fri#format(a:fri)
   call fern#message#debug("fri", a:fri)
   call fern#message#debug("bufname", bufname)
-  return fern#lib#buffer#open(bufname, a:options)
+  return s:Promise.new(funcref('s:open', [bufname, a:options]))
 endfunction
 
 function! fern#internal#viewer#init() abort
   if exists('b:fern') && !get(g:, 'fern_debug')
     return s:Promise.resolve()
   endif
+  let bufnr = bufnr('%')
+  return s:init()
+        \.then({ -> s:notify(bufnr, v:null) })
+        \.catch({ e -> s:Lambda.pass(e, s:notify(bufnr, e)) })
+endfunction
 
+function! fern#internal#viewer#focus_next(...) abort
+  let options = extend({
+        \ 'origin': winnr() + 1,
+        \ 'predicator': { -> 1 },
+        \}, a:0 ? a:1 : {},
+        \)
+  let P = { n -> bufname(winbufnr(n)) =~# '^fern:' && options.predicator(n) }
+  let winnr = fern#lib#window#find(P, options.origin)
+  if winnr
+    execute printf('%dwincmd w', winnr)
+    return 1
+  endif
+endfunction
+
+function! fern#internal#viewer#do_next(command, ...) abort
+  if fern#internal#viewer#focus_next(a:0 ? a:1 : {})
+    execute a:command
+  endif
+endfunction
+
+function! s:open(bufname, options, resolve, reject) abort
+  let r = fern#lib#buffer#open(a:bufname, a:options)
+  call setbufvar(r.bufnr, 'fern_notifier', {
+        \ 'resolve': a:resolve,
+        \ 'reject': a:reject,
+        \})
+endfunction
+
+function! s:init() abort
   setlocal buftype=nofile bufhidden=unload
   setlocal noswapfile nobuflisted nomodifiable
   setlocal signcolumn=yes
@@ -71,23 +106,15 @@ function! fern#internal#viewer#init() abort
   endtry
 endfunction
 
-function! fern#internal#viewer#focus_next(...) abort
-  let options = extend({
-        \ 'origin': winnr() + 1,
-        \ 'predicator': { -> 1 },
-        \}, a:0 ? a:1 : {},
-        \)
-  let P = { n -> bufname(winbufnr(n)) =~# '^fern:' && options.predicator(n) }
-  let winnr = fern#lib#window#find(P, options.origin)
-  if winnr
-    execute printf('%dwincmd w', winnr)
-    return 1
-  endif
-endfunction
-
-function! fern#internal#viewer#do_next(command, ...) abort
-  if fern#internal#viewer#focus_next(a:0 ? a:1 : {})
-    execute a:command
+function! s:notify(bufnr, error) abort
+  let notifier = getbufvar(a:bufnr, 'fern_notifier', v:null)
+  if notifier isnot# v:null
+    call setbufvar(a:bufnr, 'fern_notifier', v:null)
+    if a:error is# v:null
+      call notifier.resolve(a:bufnr)
+    else
+      call notifier.reject([a:bufnr, a:error])
+    endif
   endif
 endfunction
 
