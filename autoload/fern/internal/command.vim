@@ -10,6 +10,10 @@ function! fern#internal#command#parse(qargs) abort
   return [options, args]
 endfunction
 
+function! s:options_set(opts, name, value) abort
+  let a:opts[a:name] = a:value
+endfunction
+
 function! s:options_pop(opts, name, default) abort
   return has_key(a:opts, a:name)
         \ ? remove(a:opts, a:name)
