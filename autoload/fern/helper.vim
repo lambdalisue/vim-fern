@@ -85,7 +85,7 @@ function! s:helper.process_node(node) abort
 endfunction
 
 function! s:helper.is_drawer() abort
-  return fern#internal#drawer#parse(bufname(self.bufnr)) isnot# v:null
+  return fern#internal#drawer#is_drawer(bufname(self.bufnr))
 endfunction
 
 

@@ -17,7 +17,7 @@ function! s:call(name, ...) abort
 endfunction
 
 function! s:map_zoom(helper, alpha) abort
-  if fern#internal#drawer#parse() isnot# v:null
+  if fern#internal#drawer#is_drawer()
     let width = &columns * a:alpha
     execute printf('%d wincmd |', float2nr(width))
   endif

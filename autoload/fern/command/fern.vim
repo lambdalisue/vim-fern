@@ -33,7 +33,7 @@ function! fern#command#fern#command(mods, qargs) abort
     " Force '-drawer' if the current buffer is fern:xxx?drawer and
     " the 'opener' is 'edit' so that a new fern buffer is opened on
     " a drawer window
-    if viewer_opener ==# 'edit' && fern#internal#drawer#parse() isnot# v:null
+    if viewer_opener ==# 'edit' && fern#internal#drawer#is_drawer()
       let url.query.drawer = v:true
     endif
 
