@@ -79,7 +79,7 @@ function! s:safe(fn) abort
   endtry
 endfunction
 
-if executable('find') && !s:is_windows
+if !s:is_windows && executable('find')
   function! s:children_find(path, token) abort
     let Profile = fern#profile#start('fern#scheme#file#provider:children_find')
     return s:Process.start(['find', a:path, '-maxdepth', '1'], { 'token': a:token })
@@ -89,7 +89,7 @@ if executable('find') && !s:is_windows
   endfunction
 endif
 
-if executable('ls') && !s:is_windows
+if !s:is_windows && executable('ls')
   function! s:children_ls(path, token) abort
     let Profile = fern#profile#start('fern#scheme#file#provider:children_ls')
     return s:Process.start(['ls', '-1A', a:path], { 'token': a:token })
