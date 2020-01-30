@@ -106,7 +106,7 @@ if exists('*readdir')
     let s = s:Path.separator()
     return s:Promise.resolve(readdir(a:path))
           \.then(s:AsyncLambda.map_f({ v -> a:path . s . v }))
-          \.finally({ -> Promise() })
+          \.finally({ -> Profile() })
   endfunction
 endif
 
