@@ -13,5 +13,6 @@ function! fern#scheme#file#fri#from_fri(fri) abort
   let path = s:Path.from_slash(path)
   let path = s:Path.abspath(path)
   let path = s:Path.remove_last_separator(path)
+  let path = empty(path) ? '/' : path
   return path
 endfunction
