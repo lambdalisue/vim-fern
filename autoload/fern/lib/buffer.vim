@@ -16,7 +16,7 @@ endfunction
 
 function! fern#lib#buffer#open(bufname, ...) abort
   let options = extend({
-        \ 'opener': 'edit/split',
+        \ 'opener': 'edit',
         \ 'mods': '',
         \ 'cmdarg': '',
         \ 'locator': 0,
