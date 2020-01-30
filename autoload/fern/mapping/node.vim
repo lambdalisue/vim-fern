@@ -12,7 +12,6 @@ function! fern#mapping#node#init(disable_default_mappings) abort
   nnoremap <buffer><silent> <Plug>(fern-action-leave)         :<C-u>call <SID>call('leave')<CR>
 
   nnoremap <buffer><silent> <Plug>(fern-action-open:select)   :<C-u>call <SID>call('open', 'select')<CR>
-  nnoremap <buffer><silent> <Plug>(fern-action-open:edit)     :<C-u>call <SID>call('open', 'edit')<CR>
   nnoremap <buffer><silent> <Plug>(fern-action-open:split)    :<C-u>call <SID>call('open', 'split')<CR>
   nnoremap <buffer><silent> <Plug>(fern-action-open:vsplit)   :<C-u>call <SID>call('open', 'vsplit')<CR>
   nnoremap <buffer><silent> <Plug>(fern-action-open:tabedit)  :<C-u>call <SID>call('open', 'tabedit')<CR>
@@ -24,6 +23,10 @@ function! fern#mapping#node#init(disable_default_mappings) abort
   nnoremap <buffer><silent> <Plug>(fern-action-open:leftest)  :<C-u>call <SID>call('open', 'topleft vsplit')<CR>
   nnoremap <buffer><silent> <Plug>(fern-action-open:bottom)   :<C-u>call <SID>call('open', 'botright split')<CR>
   nnoremap <buffer><silent> <Plug>(fern-action-open:rightest) :<C-u>call <SID>call('open', 'botright vsplit')<CR>
+  nnoremap <buffer><silent> <Plug>(fern-action-open:edit-or-error)   :<C-u>call <SID>call('open', 'edit')<CR>
+  nnoremap <buffer><silent> <Plug>(fern-action-open:edit-or-split)   :<C-u>call <SID>call('open', 'edit/split')<CR>
+  nnoremap <buffer><silent> <Plug>(fern-action-open:edit-or-vsplit)  :<C-u>call <SID>call('open', 'edit/vsplit')<CR>
+  nnoremap <buffer><silent> <Plug>(fern-action-open:edit-or-tabedit) :<C-u>call <SID>call('open', 'edit/tabedit')<CR>
 
   " Smart map
   nmap <buffer><silent><expr>
@@ -46,6 +49,7 @@ function! fern#mapping#node#init(disable_default_mappings) abort
         \ )
 
   " Alias map
+  nmap <buffer><silent> <Plug>(fern-action-open:edit) <Plug>(fern-action-open:edit-or-error)
   nmap <buffer><silent> <Plug>(fern-action-open) <Plug>(fern-action-open:edit)
 
   if !a:disable_default_mappings

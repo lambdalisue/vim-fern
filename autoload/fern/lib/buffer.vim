@@ -1,4 +1,5 @@
 let s:Opener = vital#fern#import('Vim.Buffer.Opener')
+let s:edit_or_opener_pattern = '\<edit/\zs\%(split\|vsplit\|tabedit\)\>'
 
 function! fern#lib#buffer#replace(bufnr, content) abort
   let modified_saved = getbufvar(a:bufnr, '&modified')
@@ -15,7 +16,7 @@ endfunction
 
 function! fern#lib#buffer#open(bufname, ...) abort
   let options = extend({
-        \ 'opener': 'edit',
+        \ 'opener': 'edit/split',
         \ 'mods': '',
         \ 'cmdarg': '',
         \ 'locator': 0,
@@ -30,6 +31,10 @@ function! fern#lib#buffer#open(bufname, ...) abort
     if options.locator
       call fern#lib#window#locate()
     endif
+  endif
+  if options.opener =~# s:edit_or_opener_pattern
+    let opener2 = matchstr(options.opener, s:edit_or_opener_pattern)
+    let options.opener = &modified ? opener2 : options.opener
   endif
   return s:Opener.open(a:bufname, {
         \ 'opener': options.opener,
