@@ -45,19 +45,30 @@ function! fern#internal#core#update_nodes(fern, nodes) abort
   let Exclude  = empty(exclude)
        \ ? { -> 1 }
        \ : { n -> n.status is# s:STATUS_EXPANDED || n.label !~ exclude }
+  let Profile = fern#profile#start("fern#internal#core#update_nodes")
   return s:Promise.resolve(a:fern.nodes)
         \.then(s:AsyncLambda.filter_f(Hidden))
+        \.finally({ -> Profile("hidden") })
         \.then(s:AsyncLambda.filter_f(Include))
+        \.finally({ -> Profile("include") })
         \.then(s:AsyncLambda.filter_f(Exclude))
+        \.finally({ -> Profile("exclude") })
         \.then({ ns -> s:Lambda.let(a:fern, 'visible_nodes', ns) })
+        \.finally({ -> Profile("let") })
         \.then({ -> fern#internal#core#update_marks(a:fern, a:fern.marks) })
+        \.finally({ -> Profile() })
 endfunction
 
 function! fern#internal#core#update_marks(fern, marks) abort
+  let Profile = fern#profile#start("fern#internal#core#update_marks")
   return s:Promise.resolve(a:fern.visible_nodes)
+        \.finally({ -> Profile("resolve") })
         \.then(s:AsyncLambda.map_f({ n -> n.__key }))
+        \.finally({ -> Profile("key") })
         \.then({ ks -> s:AsyncLambda.filter(a:marks, { m -> index(ks, m) isnot# -1 }) })
+        \.finally({ -> Profile("filter") })
         \.then({ ms -> s:Lambda.let(a:fern, 'marks', ms) })
+        \.finally({ -> Profile() })
 endfunction
 
 call s:Config.config(expand('<sfile>:p'), {

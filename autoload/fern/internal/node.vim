@@ -58,6 +58,7 @@ function! fern#internal#node#parent(node, provider, token, ...) abort
   elseif has_key(a:node.concealed, '__promise_parent')
     return a:node.concealed.__promise_parent
   endif
+  let Profile = fern#profile#start("fern#internal#node#parent")
   let Done = fern#internal#node#process(a:node)
   let p = a:provider.get_parent(a:node, a:token)
         \.then({ n -> s:new(n, {
@@ -67,6 +68,7 @@ function! fern#internal#node#parent(node, provider, token, ...) abort
         \})
         \.then({ n -> s:Lambda.pass(n, s:Lambda.let(a:node.concealed, '__cache_parent', n)) })
         \.finally({ -> Done() })
+        \.finally({ -> Profile() })
   let a:node.concealed.__promise_parent = p
         \.finally({ -> s:Lambda.unlet(a:node.concealed, '__promise_parent') })
   return p
@@ -86,6 +88,7 @@ function! fern#internal#node#children(node, provider, token, ...) abort
   elseif has_key(a:node.concealed, '__promise_children')
     return a:node.concealed.__promise_children
   endif
+  let Profile = fern#profile#start("fern#internal#node#children")
   let Done = fern#internal#node#process(a:node)
   let p = a:provider.get_children(a:node, a:token)
         \.then(s:AsyncLambda.map_f({ n ->
@@ -96,6 +99,7 @@ function! fern#internal#node#children(node, provider, token, ...) abort
         \ }))
         \.then({ v -> s:Lambda.pass(v, s:Lambda.let(a:node.concealed, '__cache_children', v)) })
         \.finally({ -> Done() })
+        \.finally({ -> Profile() })
   let a:node.concealed.__promise_children = p
         \.finally({ -> s:Lambda.unlet(a:node.concealed, '__promise_children') })
   return p
@@ -125,11 +129,16 @@ function! fern#internal#node#expand(node, nodes, provider, comparator, token) ab
   elseif has_key(a:node, 'concealed.__promise_collapse')
     return a:node.concealed.__promise_collapse
   endif
+  let Profile = fern#profile#start("fern#internal#node#expand")
   let Done = fern#internal#node#process(a:node)
   let p = fern#internal#node#children(a:node, a:provider, a:token)
+        \.finally({ -> Profile("children") })
         \.then({ v -> s:sort(v, a:comparator) })
+        \.finally({ -> Profile("sort") })
         \.then({ v -> s:extend(a:node.__key, a:nodes, v) })
+        \.finally({ -> Profile("extend") })
         \.finally({ -> Done() })
+        \.finally({ -> Profile() })
   call p.then({ -> s:Lambda.let(a:node, 'status', s:STATUS_EXPANDED) })
   let a:node.concealed.__promise_expand = p
         \.finally({ -> s:Lambda.unlet(a:node.concealed, '__promise_expand') })
@@ -160,6 +169,7 @@ function! fern#internal#node#collapse(node, nodes, provider, comparator, token) 
   elseif has_key(a:node, 'concealed.__promise_collapse')
     return a:node.concealed.__promise_collapse
   endif
+  let Profile = fern#profile#start("fern#internal#node#collapse")
   let k = a:node.__key
   let n = len(k) - 1
   let K = n < 0 ? { v -> [] } : { v -> v.__key[:n] }
@@ -167,6 +177,7 @@ function! fern#internal#node#collapse(node, nodes, provider, comparator, token) 
   let p = s:Promise.resolve(a:nodes)
         \.then(s:AsyncLambda.filter_f({ v -> v.__key == k || K(v) != k  }))
         \.finally({ -> Done() })
+        \.finally({ -> Profile() })
   call p.then({ -> s:Lambda.let(a:node, 'status', s:STATUS_COLLAPSED) })
   let a:node.concealed.__promise_collapse = p
         \.finally({ -> s:Lambda.unlet(a:node.concealed, '__promise_collapse') })
@@ -181,6 +192,7 @@ function! fern#internal#node#reload(node, nodes, provider, comparator, token) ab
   elseif has_key(a:node.concealed, '__promise_collapse')
     return a:node.concealed.__promise_collapse
   endif
+  let Profile = fern#profile#start("fern#internal#node#reload")
   let k = a:node.__key
   let n = len(k) - 1
   let K = n < 0 ? { v -> [] } : { v -> v.__key[:n] }
@@ -200,16 +212,22 @@ function! fern#internal#node#reload(node, nodes, provider, comparator, token) ab
         \.then(s:AsyncLambda.reduce_f({ a, v -> a + v }, []))
   let Done = fern#internal#node#process(a:node)
   return s:Promise.all([outer, inner, descendants])
+        \.finally({ -> Profile("all") })
         \.then(s:AsyncLambda.reduce_f({ a, v -> a + v }, []))
+        \.finally({ -> Profile("reduce") })
         \.then({ v -> s:sort(v, a:comparator) })
+        \.finally({ -> Profile("sort") })
         \.then({ v -> s:uniq(v) })
+        \.finally({ -> Profile("uniq") })
         \.finally({ -> Done() })
+        \.finally({ -> Profile() })
 endfunction
 
 function! fern#internal#node#reveal(key, nodes, provider, comparator, token) abort
   if a:key == a:nodes[0].__key
     return s:Promise.resolve(a:nodes)
   endif
+  let Profile = fern#profile#start("fern#internal#node#reveal")
   let n = len(a:nodes[0].__key) - 1
   let k = copy(a:key)
   let ks = []
@@ -218,6 +236,7 @@ function! fern#internal#node#reveal(key, nodes, provider, comparator, token) abo
     call remove(k, -1)
   endwhile
   return s:expand_recursively(ks, a:nodes, a:provider, a:comparator, a:token)
+        \.finally({ -> Profile() })
 endfunction
 
 function! s:new(node, ...) abort
