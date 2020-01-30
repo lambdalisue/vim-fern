@@ -200,14 +200,7 @@ function! fern#internal#node#reveal(key, nodes, provider, comparator, token) abo
     return s:Promise.resolve(a:nodes)
   endif
   let Profile = fern#profile#start("fern#internal#node#reveal")
-  let n = len(a:nodes[0].__key) - 1
-  let k = copy(a:key)
-  let ks = []
-  while len(k) - 1 > n
-    call add(ks, copy(k))
-    call remove(k, -1)
-  endwhile
-  return s:expand_recursively(ks, a:nodes, a:provider, a:comparator, a:token)
+  return s:expand_recursively(0, a:key, a:nodes, a:provider, a:comparator, a:token)
         \.finally({ -> Profile() })
 endfunction
 
@@ -238,17 +231,16 @@ function! s:extend(key, nodes, new_nodes) abort
   return index is# -1 ? a:nodes : extend(a:nodes, a:new_nodes, index + 1)
 endfunction
 
-function! s:expand_recursively(keys, nodes, provider, comparator, token) abort
-  let node = fern#internal#node#find(a:keys[-1], a:nodes)
-  if node is# v:null
+function! s:expand_recursively(index, key, nodes, provider, comparator, token) abort
+  let node = fern#internal#node#find(a:key[:a:index], a:nodes)
+  if node is# v:null || node.status is# s:STATUS_NONE
     return s:Promise.resolve(a:nodes)
   endif
   return fern#internal#node#expand(node, a:nodes, a:provider, a:comparator, a:token)
-        \.then({ v -> s:Lambda.pass(v, remove(a:keys, -1)) })
-        \.then({ v -> s:Lambda.if(
-        \   len(a:keys) > 1,
-        \   { -> s:expand_recursively(a:keys, v, a:provider, a:comparator, a:token) },
-        \   { -> v },
+        \.then({ ns -> s:Lambda.if(
+        \   a:index < len(a:key) - 1,
+        \   { -> s:expand_recursively(a:index + 1, a:key, ns, a:provider, a:comparator, a:token) },
+        \   { -> ns },
         \ )})
 endfunction
 
