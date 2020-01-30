@@ -1,11 +1,18 @@
 # 🌿 fern.vim
 
-![Version 0.5.0](https://img.shields.io/badge/version-0.5.0-yellow.svg)
+![Version 0.5.0](https://img.shields.io/badge/version-0.2.0-yellow.svg)
 ![Support Vim 8.1 or above](https://img.shields.io/badge/support-Vim%208.1%20or%20above-yellowgreen.svg)
 ![Support Neovim 0.4 or above](https://img.shields.io/badge/support-Neovim%200.4%20or%20above-yellowgreen.svg)
 [![Powered by vital.vim](https://img.shields.io/badge/powered%20by-vital.vim-80273f.svg)](https://github.com/vim-jp/vital.vim)
 [![Powered by vital-Whisky](https://img.shields.io/badge/powered%20by-vital--Whisky-80273f.svg)](https://github.com/lambdalisue/vital-Whisky)
 [![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+
+[![Actions Status](https://github.com/lambdalisue/fern.vim/workflows/reviewdog/badge.svg)](https://github.com/lambdalisue/fern.vim/actions)
+[![Actions Status](https://github.com/lambdalisue/fern.vim/workflows/linux_vim/badge.svg)](https://github.com/lambdalisue/fern.vim/actions)
+[![Actions Status](https://github.com/lambdalisue/fern.vim/workflows/linux_neovim/badge.svg)](https://github.com/lambdalisue/fern.vim/actions)
+[![Actions Status](https://github.com/lambdalisue/fern.vim/workflows/windows_vim/badge.svg)](https://github.com/lambdalisue/fern.vim/actions)
+[![Actions Status](https://github.com/lambdalisue/fern.vim/workflows/windows_neovim/badge.svg)](https://github.com/lambdalisue/fern.vim/actions)
+[![Actions Status](https://github.com/lambdalisue/fern.vim/workflows/mac_neovim/badge.svg)](https://github.com/lambdalisue/fern.vim/actions)
 
 General purpose asynchronous tree viewer written in Pure Vim script.
 
