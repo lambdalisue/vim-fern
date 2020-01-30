@@ -3,8 +3,6 @@ let s:Promise = vital#fern#import('Async.Promise')
 
 function! fern#internal#viewer#open(fri, options) abort
   let bufname = fern#fri#format(a:fri)
-  call fern#message#debug("fri", a:fri)
-  call fern#message#debug("bufname", bufname)
   return s:Promise.new(funcref('s:open', [bufname, a:options]))
 endfunction
 
@@ -65,8 +63,6 @@ function! s:init() abort
   if empty(fri.authority)
     let fri.authority = sha256(localtime())[:7]
     let bufname = fern#fri#format(fri)
-    call fern#message#debug("fri", fri)
-    call fern#message#debug("bufname", bufname)
     execute printf("silent keepalt file %s$", fnameescape(bufname))
   endif
 
