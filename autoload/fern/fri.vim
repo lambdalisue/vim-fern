@@ -101,7 +101,7 @@ endfunction
 function! s:encode(str, pattern) abort
   let chars = map(
         \ split(a:str, '\zs'),
-        \ { _, v -> v =~# a:pattern ? printf('%%%x', char2nr(v)) : v },
+        \ { _, v -> v =~# a:pattern ? printf('%%%X', char2nr(v)) : v },
         \)
   return join(chars, '')
 endfunction
