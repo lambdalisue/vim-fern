@@ -4,12 +4,12 @@ function! fern#profile#start(name) abort
   if !get(g:, 'fern_profile')
     return { -> 0 }
   endif
-  call fern#message#info(s:format(a:name), "enter")
   let now = reltime()
   let ns = {
         \ 'start': now,
         \ 'previous': now,
         \}
+  call fern#message#info(s:format(a:name), "enter")
   let s:indent += 1
   return funcref('s:profile_leave', [ns, a:name])
 endfunction
