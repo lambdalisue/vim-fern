@@ -124,6 +124,12 @@ function! s:helper.expand_node(key) abort
   let node = fern#internal#node#find(a:key, self.fern.nodes)
   if empty(node)
     return s:Promise.reject(printf('failed to find a node %s', a:key))
+  elseif node.status is# self.STATUS_NONE
+    " To improve UX, reload owner instead
+    return self.reload_node(node.__owner.__key)
+  elseif node.status is# self.STATUS_EXPANDED
+    " To improve UX, reload instead
+    return self.reload_node(node.__key)
   endif
   let Profile = fern#profile#start("fern#helper:helper.expand_node")
   return s:Promise.resolve()
@@ -143,6 +149,12 @@ function! s:helper.collapse_node(key) abort
   let node = fern#internal#node#find(a:key, self.fern.nodes)
   if empty(node)
     return s:Promise.reject(printf('failed to find a node %s', a:key))
+  elseif node.__owner is# v:null
+    " To improve UX, root node should NOT be collapsed and reload instead.
+    return self.reload_node(node.__key)
+  elseif node.status isnot# self.STATUS_EXPANDED
+    " To improve UX, collapse a owner node instead
+    return self.collapse_node(node.__owner.__key)
   endif
   let Profile = fern#profile#start("fern#helper:helper.collapse_node")
   return s:Promise.resolve()
