@@ -27,7 +27,7 @@ function! s:update(timer, spinner, bufnr) abort
   let frame = a:spinner.next()
   call execute(printf('sign unplace * group=fern buffer=%d', a:bufnr))
   let info = getwininfo(winid)[0]
-  let rng = sort([info.topline, info.botline])
+  let rng = sort([info.topline, info.botline], 'n')
   for lnum in range(rng[0], rng[1])
     let node = get(fern.visible_nodes, lnum - 1, v:null)
     if node is# v:null
