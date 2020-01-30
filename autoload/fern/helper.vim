@@ -95,6 +95,7 @@ function! s:helper.sleep(ms) abort
 endfunction
 
 function! s:helper.redraw() abort
+  let Profile = fern#profile#start("fern#helper:helper.redraw")
   return s:Promise.resolve()
         \.then({ -> fern#internal#renderer#render(
         \   self.fern.visible_nodes,
@@ -102,16 +103,21 @@ function! s:helper.redraw() abort
         \ )
         \})
         \.then({ v -> fern#lib#buffer#replace(self.bufnr, v) })
+        \.finally({ -> Profile() })
 endfunction
 
 function! s:helper.update_nodes(nodes) abort
+  let Profile = fern#profile#start("fern#helper:helper.update_nodes")
   return self.save_cursor()
         \.then({ -> fern#internal#core#update_nodes(self.fern, a:nodes) })
         \.then({ -> self.restore_cursor() })
+        \.finally({ -> Profile() })
 endfunction
 
 function! s:helper.update_marks(marks) abort
+  let Profile = fern#profile#start("fern#helper:helper.update_marks")
   return fern#internal#core#update_marks(self.fern, a:marks)
+        \.finally({ -> Profile() })
 endfunction
 
 function! s:helper.expand_node(key) abort
@@ -119,6 +125,7 @@ function! s:helper.expand_node(key) abort
   if empty(node)
     return s:Promise.reject(printf('failed to find a node %s', a:key))
   endif
+  let Profile = fern#profile#start("fern#helper:helper.expand_node")
   return s:Promise.resolve()
         \.then({ -> fern#internal#node#expand(
         \   node,
@@ -129,6 +136,7 @@ function! s:helper.expand_node(key) abort
         \ )
         \})
         \.then({ ns -> self.update_nodes(ns) })
+        \.finally({ -> Profile() })
 endfunction
 
 function! s:helper.collapse_node(key) abort
@@ -136,6 +144,7 @@ function! s:helper.collapse_node(key) abort
   if empty(node)
     return s:Promise.reject(printf('failed to find a node %s', a:key))
   endif
+  let Profile = fern#profile#start("fern#helper:helper.collapse_node")
   return s:Promise.resolve()
         \.then({ -> fern#internal#node#collapse(
         \   node,
@@ -146,6 +155,7 @@ function! s:helper.collapse_node(key) abort
         \ )
         \})
         \.then({ ns -> self.update_nodes(ns) })
+        \.finally({ -> Profile() })
 endfunction
 
 function! s:helper.reload_node(key) abort
@@ -153,6 +163,7 @@ function! s:helper.reload_node(key) abort
   if empty(node)
     return s:Promise.reject(printf('failed to find a node %s', a:key))
   endif
+  let Profile = fern#profile#start("fern#helper:helper.reload_node")
   return s:Promise.resolve()
         \.then({ -> fern#internal#node#reload(
         \   node,
@@ -163,9 +174,11 @@ function! s:helper.reload_node(key) abort
         \ )
         \})
         \.then({ ns -> self.update_nodes(ns) })
+        \.finally({ -> Profile() })
 endfunction
 
 function! s:helper.reveal_node(key) abort
+  let Profile = fern#profile#start("fern#helper:helper.reveal_node")
   return s:Promise.resolve()
         \.then({ -> fern#internal#node#reveal(
         \   a:key,
@@ -176,6 +189,7 @@ function! s:helper.reveal_node(key) abort
         \ )
         \})
         \.then({ ns -> self.update_nodes(ns) })
+        \.finally({ -> Profile() })
 endfunction
 
 function! s:helper.focus_node(key, ...) abort
@@ -190,11 +204,13 @@ function! s:helper.focus_node(key, ...) abort
     endif
     return s:Promise.reject(printf('failed to find a node %s', a:key))
   endif
+  let Profile = fern#profile#start("fern#helper:helper.focus_node")
   let current = self.get_cursor_node()
   if options.previous is# v:null || options.previous == current
     call self.set_cursor([index + 1 + options.offset, 1])
   endif
   return s:Promise.resolve()
+        \.finally({ -> Profile() })
 endfunction
 
 function! s:helper.set_mark(key, value) abort

@@ -3,8 +3,6 @@ let s:Promise = vital#fern#import('Async.Promise')
 
 function! fern#internal#viewer#open(fri, options) abort
   let bufname = fern#fri#format(a:fri)
-  call fern#message#debug("fri", a:fri)
-  call fern#message#debug("bufname", bufname)
   return s:Promise.new(funcref('s:open', [bufname, a:options]))
 endfunction
 
@@ -65,8 +63,6 @@ function! s:init() abort
   if empty(fri.authority)
     let fri.authority = sha256(localtime())[:7]
     let bufname = fern#fri#format(fri)
-    call fern#message#debug("fri", fri)
-    call fern#message#debug("bufname", bufname)
     execute printf("silent keepalt file %s$", fnameescape(bufname))
   endif
 
@@ -96,11 +92,16 @@ function! s:init() abort
     call fern#internal#action#init()
 
     let reveal = split(fri.fragment, '/')
+    let Profile = fern#profile#start("fern#internal#viewer:init")
     return s:Promise.resolve()
           \.then({ -> helper.expand_node(root.__key) })
+          \.finally({ -> Profile("expand") })
           \.then({ -> helper.reveal_node(reveal) })
+          \.finally({ -> Profile("reveal") })
           \.then({ -> helper.redraw() })
+          \.finally({ -> Profile("redraw") })
           \.then({ -> helper.focus_node(reveal) })
+          \.finally({ -> Profile() })
   catch
     return s:Promise.reject(v:exception)
   endtry

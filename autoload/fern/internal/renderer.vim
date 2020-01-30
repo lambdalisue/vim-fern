@@ -15,7 +15,9 @@ function! fern#internal#renderer#render(nodes, marks) abort
         \ 'unmarked_symbol': g:fern#internal#renderer#unmarked_symbol,
         \}
   let base = len(a:nodes[0].__key)
+  let Profile = fern#profile#start("fern#internal#renderer#render")
   return s:AsyncLambda.map(copy(a:nodes), { v, -> s:render_node(v, a:marks, base, options) })
+        \.finally({ -> Profile() })
 endfunction
 
 function! fern#internal#renderer#syntax() abort

@@ -38,9 +38,11 @@ function! s:provider_get_children(node, ...) abort
   if a:node.status is# 0
     return s:Promise.reject("no children exists for %s", a:node._path)
   endif
+  let Profile = fern#profile#start('fern#scheme#file#provider:provider_get_children')
   return s:children(a:node._path, token)
         \.then(s:AsyncLambda.map_f({ v -> s:safe(funcref('s:node', [v])) }))
         \.then(s:AsyncLambda.filter_f({ v -> !empty(v) }))
+        \.finally({ -> Profile() })
 endfunction
 
 function! s:node(path) abort
@@ -79,28 +81,34 @@ endfunction
 
 if executable('find') && !has("win32")
   function! s:children_find(path, token) abort
+    let Profile = fern#profile#start('fern#scheme#file#provider:children_find')
     return s:Process.start(['find', a:path, '-maxdepth', '1'], { 'token': a:token })
-         \.then({ v -> v.stdout })
-         \.then(s:AsyncLambda.filter_f({ v -> !empty(v) && v !=# a:path }))
+          \.then({ v -> v.stdout })
+          \.then(s:AsyncLambda.filter_f({ v -> !empty(v) && v !=# a:path }))
+          \.finally({ -> Profile() })
   endfunction
 endif
 
 if executable('ls')
   function! s:children_ls(path, token) abort
+    let Profile = fern#profile#start('fern#scheme#file#provider:children_ls')
     return s:Process.start(['ls', '-1A', a:path], { 'token': a:token })
-         \.then({ v -> v.stdout })
-         \.then(s:AsyncLambda.filter_f({ v -> !empty(v) }))
-         \.then(s:AsyncLambda.map_f({ v -> a:path . '/' . v }))
+          \.then({ v -> v.stdout })
+          \.then(s:AsyncLambda.filter_f({ v -> !empty(v) }))
+          \.then(s:AsyncLambda.map_f({ v -> a:path . '/' . v }))
+          \.finally({ -> Profile() })
   endfunction
 endif
 
 function! s:children_vim(path, ...) abort
+  let Profile = fern#profile#start('fern#scheme#file#provider:children_vim')
   let s = s:Path.separator()
   let a = s:Promise.resolve(glob(a:path . s . '*', 1, 1, 1))
   let b = s:Promise.resolve(glob(a:path . s . '.*', 1, 1, 1))
         \.then(s:AsyncLambda.filter_f({ v -> v[-2:] !=# s . '.' && v[-3:] !=# s . '..' }))
   return s:Promise.all([a, b])
         \.then(s:AsyncLambda.reduce_f({ a, v -> a + v }, []))
+        \.finally({ -> Profile() })
 endfunction
 
 function! s:children(path, token) abort

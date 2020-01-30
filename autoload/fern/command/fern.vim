@@ -85,11 +85,8 @@ function! s:norm_fragment(fri) abort
   let root = fern#internal#path#simplify(root)
   let reveal = split(a:fri.fragment, '/')
   let reveal = fern#internal#path#simplify(reveal)
-  call fern#message#debug(a:fri.path, root)
-  call fern#message#debug(a:fri.fragment, reveal)
   let reveal = fern#internal#path#relative(reveal, root)
   let a:fri.fragment = join(reveal, '/')
-  call fern#message#debug(a:fri.fragment, reveal)
 endfunction
 
 
