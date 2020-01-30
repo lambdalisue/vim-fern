@@ -242,10 +242,9 @@ function! s:map_trash(helper) abort
   let token = a:helper.fern.source.token
   let ps = []
   for node in nodes
-    echo printf("Delete %s", node._path)
-    let p = a:helper.collapse_node(node.__key)
-          \.then({ -> fern#scheme#file#shutil#trash(path, token) })
-    call add(ps, p)
+    echo printf("Trash %s", node._path)
+    call add(ps, fern#scheme#file#shutil#trash(node._path, token))
+    let node.status = a:helper.STATUS_COLLAPSED
   endfor
   let root = a:helper.get_root_node()
   return s:Promise.all(ps)
@@ -270,11 +269,10 @@ function! s:map_remove(helper) abort
   endif
   let token = a:helper.fern.source.token
   let ps = []
-  for path in paths
-    echo printf("Delete %s", path)
-    let p = a:helper.collapse_node(node.__key)
-          \.then({ -> fern#scheme#file#shutil#remove(path, token) })
-    call add(ps, p)
+  for node in nodes
+    echo printf("Remove %s", node._path)
+    call add(ps, fern#scheme#file#shutil#remove(node._path, token))
+    let node.status = a:helper.STATUS_COLLAPSED
   endfor
   let root = a:helper.get_root_node()
   return s:Promise.all(ps)
