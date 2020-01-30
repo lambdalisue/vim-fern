@@ -104,8 +104,9 @@ if exists('*readdir')
   function! s:children_vim_readdir(path, ...) abort
     let Profile = fern#profile#start('fern#scheme#file#provider:children_vim_readdir')
     let s = s:Path.separator()
-	return s:Promise.resolve(map(readdir(a:path), {k,v-> a:path . s . v}))
-        \.finally({ -> Profile() })
+    return s:Promise.resolve(readdir(a:path))
+          \.then(s:AsyncLambda.map_f({ v -> a:path . s . v }))
+          \.finally({ -> Promise() })
   endfunction
 endif
 
