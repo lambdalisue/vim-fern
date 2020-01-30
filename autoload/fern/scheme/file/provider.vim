@@ -100,8 +100,18 @@ if !s:is_windows && executable('ls')
   endfunction
 endif
 
-function! s:children_vim(path, ...) abort
-  let Profile = fern#profile#start('fern#scheme#file#provider:children_vim')
+if exists('*readdir')
+  function! s:children_vim_readdir(path, ...) abort
+    let Profile = fern#profile#start('fern#scheme#file#provider:children_vim_readdir')
+    let s = s:Path.separator()
+    return s:Promise.resolve(readdir(a:path))
+          \.then(s:AsyncLambda.map_f({ v -> a:path . s . v }))
+          \.finally({ -> Promise() })
+  endfunction
+endif
+
+function! s:children_vim_glob(path, ...) abort
+  let Profile = fern#profile#start('fern#scheme#file#provider:children_vim_glob')
   let s = s:Path.separator()
   let a = s:Promise.resolve(glob(a:path . s . '*', 1, 1, 1))
   let b = s:Promise.resolve(glob(a:path . s . '.*', 1, 1, 1))
@@ -121,5 +131,7 @@ call s:Config.config(expand('<sfile>:p'), {
       \   ? 'find'
       \   : exists('*s:children_ls')
       \     ? 'ls'
-      \     : 'vim',
+      \     : exists('*s:children_vim_readdir')
+      \     ? 'vim_readdir'
+      \     : 'vim_glob',
       \})
