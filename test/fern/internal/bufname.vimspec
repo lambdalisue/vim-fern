@@ -282,7 +282,7 @@ Describe fern#internal#bufname
         let want = {
               \ 'scheme': 'fern',
               \ 'authority': '',
-              \ 'path': 'file:///C:/',
+              \ 'path': 'file:///C:',
               \ 'query': {},
               \ 'fragment': '',
               \}
