@@ -1,3 +1,5 @@
+let s:PATTERN = '^$~.*[]\'
+
 function! fern#internal#bufname#parse(bufname) abort
   let bufname = a:bufname[-1:] ==# '$'
         \ ? a:bufname[:-2]
@@ -5,30 +7,26 @@ function! fern#internal#bufname#parse(bufname) abort
   if bufname[:6] ==# 'fern://'
     return fern#fri#parse(bufname)
   endif
-  let expr = bufname =~# '[^\w]\+://'
-        \ ? s:from_uri(bufname)
-        \ : s:from_local(bufname)
-  let fri = fern#fri#parse(expr)
+  let expr = bufname =~# '^[^\w]\+://'
+        \ ? bufname
+        \ : fern#scheme#file#fri#to_fri(bufname)
   let out = {
         \ 'scheme': 'fern',
         \ 'authority': '',
-        \ 'path': '',
-        \ 'query': fri.query,
+        \ 'path': s:escape_uri(expr),
+        \ 'query': {},
         \ 'fragment': '',
         \}
-  let fri.query = {}
-  let fri.fragment = {}
-  let out.path = fern#fri#format(fri)
   return out
 endfunction
 
-function! s:from_uri(uri) abort
+function! s:escape_uri(uri) abort
+  let uri = a:uri
   " escape characters which cannot be used in Windows
-  let uri = substitute(a:uri, '?', '%3F', 'g')
-  let uri = substitute(uri, '*', '%2A', 'g')
+  let uri = substitute(uri, escape('?', s:PATTERN), '%3F', 'g')
+  let uri = substitute(uri, escape('*', s:PATTERN), '%2A', 'g')
+  " escape characters which used in FRI
+  let uri = substitute(uri, escape(';', s:PATTERN), '%3B', 'g')
+  let uri = substitute(uri, escape('#', s:PATTERN), '%23', 'g')
   return uri
-endfunction
-
-function! s:from_local(path) abort
-  return fern#scheme#file#fri#to_fri(a:path)
 endfunction
