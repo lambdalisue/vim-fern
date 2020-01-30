@@ -107,23 +107,9 @@ endfunction
 
 function! fern#internal#node#expand(node, nodes, provider, comparator, token) abort
   if a:node.status is# s:STATUS_NONE
-    " To improve UX, reload owner instead
-    return fern#internal#node#reload(
-          \ a:node.__owner,
-          \ a:nodes,
-          \ a:provider,
-          \ a:comparator,
-          \ a:token,
-          \)
+    return s:Promise.reject('cannot expand leaf node')
   elseif a:node.status is# s:STATUS_EXPANDED
-    " To improve UX, reload instead
-    return fern#internal#node#reload(
-          \ a:node,
-          \ a:nodes,
-          \ a:provider,
-          \ a:comparator,
-          \ a:token,
-          \)
+    return s:Promise.resolve(a:nodes)
   elseif has_key(a:node.concealed, '__promise_expand')
     return a:node.concealed.__promise_expand
   elseif has_key(a:node, 'concealed.__promise_collapse')
@@ -146,24 +132,10 @@ function! fern#internal#node#expand(node, nodes, provider, comparator, token) ab
 endfunction
 
 function! fern#internal#node#collapse(node, nodes, provider, comparator, token) abort
-  if a:node.__owner is# v:null
-    " To improve UX, root node should NOT be collapsed and reload instead.
-    return fern#internal#node#reload(
-          \ a:node,
-          \ a:nodes,
-          \ a:provider,
-          \ a:comparator,
-          \ a:token,
-          \)
-  elseif a:node.status isnot# s:STATUS_EXPANDED
-    " To improve UX, collapse a owner node instead
-    return fern#internal#node#collapse(
-          \ a:node.__owner,
-          \ a:nodes,
-          \ a:provider,
-          \ a:comparator,
-          \ a:token,
-          \)
+  if a:node.status is# s:STATUS_NONE
+    return s:Promise.reject('cannot collapse leaf node')
+  elseif a:node.status is# s:STATUS_COLLAPSED
+    return s:Promise.resolve(a:nodes)
   elseif has_key(a:node.concealed, '__promise_expand')
     return a:node.concealed.__promise_expand
   elseif has_key(a:node, 'concealed.__promise_collapse')
