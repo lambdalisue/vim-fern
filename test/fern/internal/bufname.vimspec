@@ -1,0 +1,365 @@
+Describe fern#internal#bufname
+  Describe #parse()
+    Context FRI bufname
+      It returns FRI of fern://... from fern:///file:///foo/bar
+        let expr = 'fern:///file:///foo/bar'
+        let want = {
+              \ 'scheme': 'fern',
+              \ 'authority': '',
+              \ 'path': 'file:///foo/bar',
+              \ 'query': {},
+              \ 'fragment': '',
+              \}
+        Assert Equals(fern#internal#bufname#parse(expr), want)
+      End
+
+      It returns FRI of fern://... from fern://drawer:1/file:///foo/bar
+        let expr = 'fern://drawer:1/file:///foo/bar'
+        let want = {
+              \ 'scheme': 'fern',
+              \ 'authority': 'drawer:1',
+              \ 'path': 'file:///foo/bar',
+              \ 'query': {},
+              \ 'fragment': '',
+              \}
+        Assert Equals(fern#internal#bufname#parse(expr), want)
+      End
+
+      It returns FRI of fern://... from fern://drawer:1/file:///foo/bar;keep&width=50
+        let expr = 'fern://drawer:1/file:///foo/bar;keep&width=50'
+        let want = {
+              \ 'scheme': 'fern',
+              \ 'authority': 'drawer:1',
+              \ 'path': 'file:///foo/bar',
+              \ 'query': {
+              \   'keep': v:true,
+              \   'width': '50',
+              \ },
+              \ 'fragment': '',
+              \}
+        Assert Equals(fern#internal#bufname#parse(expr), want)
+      End
+
+      It returns FRI of fern://... from fern://drawer:1/file:///foo/bar#foo/bar/hoge
+        let expr = 'fern://drawer:1/file:///foo/bar#foo/bar/hoge'
+        let want = {
+              \ 'scheme': 'fern',
+              \ 'authority': 'drawer:1',
+              \ 'path': 'file:///foo/bar',
+              \ 'query': {},
+              \ 'fragment': 'foo/bar/hoge',
+              \}
+        Assert Equals(fern#internal#bufname#parse(expr), want)
+      End
+
+      It returns FRI of fern://... from fern://drawer:1/file:///foo/bar;keep&width=50#foo/bar/hoge
+        let expr = 'fern://drawer:1/file:///foo/bar;keep&width=50#foo/bar/hoge'
+        let want = {
+              \ 'scheme': 'fern',
+              \ 'authority': 'drawer:1',
+              \ 'path': 'file:///foo/bar',
+              \ 'query': {
+              \   'keep': v:true,
+              \   'width': '50',
+              \ },
+              \ 'fragment': 'foo/bar/hoge',
+              \}
+        Assert Equals(fern#internal#bufname#parse(expr), want)
+      End
+
+      It returns FRI of fern://... from fern:///file:///foo/bar$
+        let expr = 'fern:///file:///foo/bar$'
+        let want = {
+              \ 'scheme': 'fern',
+              \ 'authority': '',
+              \ 'path': 'file:///foo/bar',
+              \ 'query': {},
+              \ 'fragment': '',
+              \}
+        Assert Equals(fern#internal#bufname#parse(expr), want)
+      End
+    End
+
+    Context URI bufname
+      It returns FRI of fern://... from file:///foo/bar
+        let expr = 'file:///foo/bar'
+        let want = {
+              \ 'scheme': 'fern',
+              \ 'authority': '',
+              \ 'path': 'file:///foo/bar',
+              \ 'query': {},
+              \ 'fragment': '',
+              \}
+        Assert Equals(fern#internal#bufname#parse(expr), want)
+      End
+
+      It returns FRI of fern://... from file:///foo/bar?a&b=c
+        let expr = 'file:///foo/bar?a&b=c'
+        let want = {
+              \ 'scheme': 'fern',
+              \ 'authority': '',
+              \ 'path': 'file:///foo/bar%3Fa&b=c',
+              \ 'query': {},
+              \ 'fragment': '',
+              \}
+        Assert Equals(fern#internal#bufname#parse(expr), want)
+      End
+
+      It returns FRI of fern://... from file:///foo/bar#foo/bar/hoge
+        let expr = 'file:///foo/bar#foo/bar/hoge'
+        let want = {
+              \ 'scheme': 'fern',
+              \ 'authority': '',
+              \ 'path': 'file:///foo/bar%23foo/bar/hoge',
+              \ 'query': {},
+              \ 'fragment': '',
+              \}
+        Assert Equals(fern#internal#bufname#parse(expr), want)
+      End
+
+      It returns FRI of fern://... from file:///foo/bar;a&b=c
+        let expr = 'file:///foo/bar;a&b=c'
+        let want = {
+              \ 'scheme': 'fern',
+              \ 'authority': '',
+              \ 'path': 'file:///foo/bar%3Ba&b=c',
+              \ 'query': {},
+              \ 'fragment': '',
+              \}
+        Assert Equals(fern#internal#bufname#parse(expr), want)
+      End
+
+      It returns FRI of fern://... from file:///foo/bar?a&b=c#foo/bar/hoge
+        let expr = 'file:///foo/bar?a&b=c#foo/bar/hoge'
+        let want = {
+              \ 'scheme': 'fern',
+              \ 'authority': '',
+              \ 'path': 'file:///foo/bar%3Fa&b=c%23foo/bar/hoge',
+              \ 'query': {},
+              \ 'fragment': '',
+              \}
+        Assert Equals(fern#internal#bufname#parse(expr), want)
+      End
+
+      It returns FRI of fern://... from file:///foo/bar;a&b=c#foo/bar/hoge
+        let expr = 'file:///foo/bar;a&b=c#foo/bar/hoge'
+        let want = {
+              \ 'scheme': 'fern',
+              \ 'authority': '',
+              \ 'path': 'file:///foo/bar%3Ba&b=c%23foo/bar/hoge',
+              \ 'query': {},
+              \ 'fragment': '',
+              \}
+        Assert Equals(fern#internal#bufname#parse(expr), want)
+      End
+
+      It returns FRI of fern://... from ssh://user:pass@example.com/foo/bar
+        let expr = 'ssh://user:pass@example.com/foo/bar'
+        let want = {
+              \ 'scheme': 'fern',
+              \ 'authority': '',
+              \ 'path': 'ssh://user:pass@example.com/foo/bar',
+              \ 'query': {},
+              \ 'fragment': '',
+              \}
+        Assert Equals(fern#internal#bufname#parse(expr), want)
+      End
+
+      It returns FRI of fern://... from file:///foo/bar$
+        let expr = 'file:///foo/bar$'
+        let want = {
+              \ 'scheme': 'fern',
+              \ 'authority': '',
+              \ 'path': 'file:///foo/bar',
+              \ 'query': {},
+              \ 'fragment': '',
+              \}
+        Assert Equals(fern#internal#bufname#parse(expr), want)
+      End
+    End
+
+    Context FILE bufname (Unix)
+      Before
+        if has('win32')
+          Skip This test must be run under Unix
+        endif
+      End
+
+      It returns FRI of fern://... from /
+        let expr = '/'
+        let want = {
+              \ 'scheme': 'fern',
+              \ 'authority': '',
+              \ 'path': 'file:///',
+              \ 'query': {},
+              \ 'fragment': '',
+              \}
+        Assert Equals(fern#internal#bufname#parse(expr), want)
+      End
+
+      It returns FRI of fern://... from /foo/bar
+        let expr = '/foo/bar'
+        let want = {
+              \ 'scheme': 'fern',
+              \ 'authority': '',
+              \ 'path': 'file:///foo/bar',
+              \ 'query': {},
+              \ 'fragment': '',
+              \}
+        Assert Equals(fern#internal#bufname#parse(expr), want)
+      End
+
+      It returns FRI of fern://... from /foo/bar?a&b=c
+        let expr = '/foo/bar?a&b=c'
+        let want = {
+              \ 'scheme': 'fern',
+              \ 'authority': '',
+              \ 'path': 'file:///foo/bar%3Fa&b=c',
+              \ 'query': {},
+              \ 'fragment': '',
+              \}
+        Assert Equals(fern#internal#bufname#parse(expr), want)
+      End
+
+      It returns FRI of fern://... from /foo/bar;a&b=c
+        let expr = '/foo/bar;a&b=c'
+        let want = {
+              \ 'scheme': 'fern',
+              \ 'authority': '',
+              \ 'path': 'file:///foo/bar%3Ba&b=c',
+              \ 'query': {},
+              \ 'fragment': '',
+              \}
+        Assert Equals(fern#internal#bufname#parse(expr), want)
+      End
+
+      It returns FRI of fern://... from /foo/bar#foo/bar/hoge
+        let expr = '/foo/bar#foo/bar/hoge'
+        let want = {
+              \ 'scheme': 'fern',
+              \ 'authority': '',
+              \ 'path': 'file:///foo/bar%23foo/bar/hoge',
+              \ 'query': {},
+              \ 'fragment': '',
+              \}
+        Assert Equals(fern#internal#bufname#parse(expr), want)
+      End
+
+      It returns FRI of fern://... from /foo/bar?a&b=c#foo/bar/hoge
+        let expr = '/foo/bar?a&b=c#foo/bar/hoge'
+        let want = {
+              \ 'scheme': 'fern',
+              \ 'authority': '',
+              \ 'path': 'file:///foo/bar%3Fa&b=c%23foo/bar/hoge',
+              \ 'query': {},
+              \ 'fragment': '',
+              \}
+        Assert Equals(fern#internal#bufname#parse(expr), want)
+      End
+
+      It returns FRI of fern://... from /foo/bar;a&b=c#foo/bar/hoge
+        let expr = '/foo/bar;a&b=c#foo/bar/hoge'
+        let want = {
+              \ 'scheme': 'fern',
+              \ 'authority': '',
+              \ 'path': 'file:///foo/bar%3Ba&b=c%23foo/bar/hoge',
+              \ 'query': {},
+              \ 'fragment': '',
+              \}
+        Assert Equals(fern#internal#bufname#parse(expr), want)
+      End
+    End
+
+    Context FILE bufname (Windows)
+      Before
+        if !has('win32')
+          Skip This test must be run under Windows
+        endif
+      End
+
+      It returns FRI of fern://... from C:\
+        let expr = 'C:\'
+        let want = {
+              \ 'scheme': 'fern',
+              \ 'authority': '',
+              \ 'path': 'file:///C:/',
+              \ 'query': {},
+              \ 'fragment': '',
+              \}
+        Assert Equals(fern#internal#bufname#parse(expr), want)
+      End
+
+      It returns FRI of fern://... from C:\foo\bar
+        let expr = 'C:\foo\bar'
+        let want = {
+              \ 'scheme': 'fern',
+              \ 'authority': '',
+              \ 'path': 'file:///C:/foo/bar',
+              \ 'query': {},
+              \ 'fragment': '',
+              \}
+        Assert Equals(fern#internal#bufname#parse(expr), want)
+      End
+
+      It returns FRI of fern://... from C:\foo\bar?a&b=c
+        let expr = 'C:\foo\bar?a&b=c'
+        let want = {
+              \ 'scheme': 'fern',
+              \ 'authority': '',
+              \ 'path': 'file:///C:/foo/bar%3Fa&b=c',
+              \ 'query': {},
+              \ 'fragment': '',
+              \}
+        Assert Equals(fern#internal#bufname#parse(expr), want)
+      End
+
+      It returns FRI of fern://... from C:\foo\bar;a&b=c
+        let expr = 'C:\foo\bar;a&b=c'
+        let want = {
+              \ 'scheme': 'fern',
+              \ 'authority': '',
+              \ 'path': 'file:///C:/foo/bar%3Ba&b=c',
+              \ 'query': {},
+              \ 'fragment': '',
+              \}
+        Assert Equals(fern#internal#bufname#parse(expr), want)
+      End
+
+      It returns FRI of fern://... from C:\foo\bar#foo\bar\hoge
+        let expr = 'C:\foo\bar#foo\bar\hoge'
+        let want = {
+              \ 'scheme': 'fern',
+              \ 'authority': '',
+              \ 'path': 'file:///C:/foo/bar%23foo/bar/hoge',
+              \ 'query': {},
+              \ 'fragment': '',
+              \}
+        Assert Equals(fern#internal#bufname#parse(expr), want)
+      End
+
+      It returns FRI of fern://... from C:\foo\bar?a&b=c#foo\bar\hoge
+        let expr = 'C:\foo\bar?a&b=c#foo\bar\hoge'
+        let want = {
+              \ 'scheme': 'fern',
+              \ 'authority': '',
+              \ 'path': 'file:///C:/foo/bar%3Fa&b=c%23foo/bar/hoge',
+              \ 'query': {},
+              \ 'fragment': '',
+              \}
+        Assert Equals(fern#internal#bufname#parse(expr), want)
+      End
+
+      It returns FRI of fern://... from C:\foo\bar;a&b=c#foo\bar\hoge
+        let expr = 'C:\foo\bar;a&b=c#foo\bar\hoge'
+        let want = {
+              \ 'scheme': 'fern',
+              \ 'authority': '',
+              \ 'path': 'file:///C:/foo/bar%3Ba&b=c%23foo/bar/hoge',
+              \ 'query': {},
+              \ 'fragment': '',
+              \}
+        Assert Equals(fern#internal#bufname#parse(expr), want)
+      End
+    End
+  End
+End
