@@ -253,9 +253,174 @@ Describe fern#internal#node
       Assert True(Promise.is_promise(p))
     End
 
-    It resolves to a list of nodes
+    It recursively expand nodes to focus specified nodes (1 step)
       let [r, e] = Promise.wait(
             \ fern#internal#node#reveal(['deep', 'alpha', 'beta', 'gamma'], nodes, provider, Comparator, token),
+            \ { 'timeout': TIMEOUT },
+            \)
+      Assert Equals(e, v:null)
+      Assert Equals(len(r), 8)
+      Assert Equals(r[0]._uri, '/')
+      Assert Equals(r[1]._uri, '/deep')
+      Assert Equals(r[2]._uri, '/deep/alpha')
+      Assert Equals(r[3]._uri, '/deep/alpha/beta')
+      Assert Equals(r[4]._uri, '/deep/alpha/beta/gamma')
+      Assert Equals(r[5]._uri, '/heavy')
+      Assert Equals(r[6]._uri, '/shallow')
+      Assert Equals(r[7]._uri, '/leaf')
+    End
+
+    It recursively expand nodes to focus specified nodes (step by step)
+      let [r, e] = Promise.wait(
+            \ fern#internal#node#reveal(['deep'], nodes, provider, Comparator, token),
+            \ { 'timeout': TIMEOUT },
+            \)
+      Assert Equals(e, v:null)
+      Assert Equals(len(r), 6)
+      Assert Equals(r[0]._uri, '/')
+      Assert Equals(r[1]._uri, '/deep')
+      Assert Equals(r[2]._uri, '/deep/alpha')
+      Assert Equals(r[3]._uri, '/heavy')
+      Assert Equals(r[4]._uri, '/shallow')
+      Assert Equals(r[5]._uri, '/leaf')
+
+      let [r, e] = Promise.wait(
+            \ fern#internal#node#reveal(['deep', 'alpha'], nodes, provider, Comparator, token),
+            \ { 'timeout': TIMEOUT },
+            \)
+      Assert Equals(e, v:null)
+      Assert Equals(len(r), 7)
+      Assert Equals(r[0]._uri, '/')
+      Assert Equals(r[1]._uri, '/deep')
+      Assert Equals(r[2]._uri, '/deep/alpha')
+      Assert Equals(r[3]._uri, '/deep/alpha/beta')
+      Assert Equals(r[4]._uri, '/heavy')
+      Assert Equals(r[5]._uri, '/shallow')
+      Assert Equals(r[6]._uri, '/leaf')
+
+      let [r, e] = Promise.wait(
+            \ fern#internal#node#reveal(['deep', 'alpha', 'beta'], nodes, provider, Comparator, token),
+            \ { 'timeout': TIMEOUT },
+            \)
+      Assert Equals(e, v:null)
+      Assert Equals(len(r), 8)
+      Assert Equals(r[0]._uri, '/')
+      Assert Equals(r[1]._uri, '/deep')
+      Assert Equals(r[2]._uri, '/deep/alpha')
+      Assert Equals(r[3]._uri, '/deep/alpha/beta')
+      Assert Equals(r[4]._uri, '/deep/alpha/beta/gamma')
+      Assert Equals(r[5]._uri, '/heavy')
+      Assert Equals(r[6]._uri, '/shallow')
+      Assert Equals(r[7]._uri, '/leaf')
+
+      let [r, e] = Promise.wait(
+            \ fern#internal#node#reveal(['deep', 'alpha', 'beta', 'gamma'], nodes, provider, Comparator, token),
+            \ { 'timeout': TIMEOUT },
+            \)
+      Assert Equals(e, v:null)
+      Assert Equals(len(r), 8)
+      Assert Equals(r[0]._uri, '/')
+      Assert Equals(r[1]._uri, '/deep')
+      Assert Equals(r[2]._uri, '/deep/alpha')
+      Assert Equals(r[3]._uri, '/deep/alpha/beta')
+      Assert Equals(r[4]._uri, '/deep/alpha/beta/gamma')
+      Assert Equals(r[5]._uri, '/heavy')
+      Assert Equals(r[6]._uri, '/shallow')
+      Assert Equals(r[7]._uri, '/leaf')
+
+      let [r, e] = Promise.wait(
+            \ fern#internal#node#reveal(['deep', 'alpha', 'beta', 'gamma', 'UNKNOWN'], nodes, provider, Comparator, token),
+            \ { 'timeout': TIMEOUT },
+            \)
+      Assert Equals(e, v:null)
+      Assert Equals(len(r), 8)
+      Assert Equals(r[0]._uri, '/')
+      Assert Equals(r[1]._uri, '/deep')
+      Assert Equals(r[2]._uri, '/deep/alpha')
+      Assert Equals(r[3]._uri, '/deep/alpha/beta')
+      Assert Equals(r[4]._uri, '/deep/alpha/beta/gamma')
+      Assert Equals(r[5]._uri, '/heavy')
+      Assert Equals(r[6]._uri, '/shallow')
+      Assert Equals(r[7]._uri, '/leaf')
+    End
+
+    It recursively expand nodes to focus specified nodes (1 step to UNKNOWN)
+      let [r, e] = Promise.wait(
+            \ fern#internal#node#reveal(['deep', 'alpha', 'beta', 'gamma', 'UNKNOWN'], nodes, provider, Comparator, token),
+            \ { 'timeout': TIMEOUT },
+            \)
+      Assert Equals(e, v:null)
+      Assert Equals(len(r), 8)
+      Assert Equals(r[0]._uri, '/')
+      Assert Equals(r[1]._uri, '/deep')
+      Assert Equals(r[2]._uri, '/deep/alpha')
+      Assert Equals(r[3]._uri, '/deep/alpha/beta')
+      Assert Equals(r[4]._uri, '/deep/alpha/beta/gamma')
+      Assert Equals(r[5]._uri, '/heavy')
+      Assert Equals(r[6]._uri, '/shallow')
+      Assert Equals(r[7]._uri, '/leaf')
+    End
+
+    It recursively expand nodes to focus specified nodes (step by step to UNKNOWN)
+      let [r, e] = Promise.wait(
+            \ fern#internal#node#reveal(['deep'], nodes, provider, Comparator, token),
+            \ { 'timeout': TIMEOUT },
+            \)
+      Assert Equals(e, v:null)
+      Assert Equals(len(r), 6)
+      Assert Equals(r[0]._uri, '/')
+      Assert Equals(r[1]._uri, '/deep')
+      Assert Equals(r[2]._uri, '/deep/alpha')
+      Assert Equals(r[3]._uri, '/heavy')
+      Assert Equals(r[4]._uri, '/shallow')
+      Assert Equals(r[5]._uri, '/leaf')
+
+      let [r, e] = Promise.wait(
+            \ fern#internal#node#reveal(['deep', 'alpha'], nodes, provider, Comparator, token),
+            \ { 'timeout': TIMEOUT },
+            \)
+      Assert Equals(e, v:null)
+      Assert Equals(len(r), 7)
+      Assert Equals(r[0]._uri, '/')
+      Assert Equals(r[1]._uri, '/deep')
+      Assert Equals(r[2]._uri, '/deep/alpha')
+      Assert Equals(r[3]._uri, '/deep/alpha/beta')
+      Assert Equals(r[4]._uri, '/heavy')
+      Assert Equals(r[5]._uri, '/shallow')
+      Assert Equals(r[6]._uri, '/leaf')
+
+      let [r, e] = Promise.wait(
+            \ fern#internal#node#reveal(['deep', 'alpha', 'beta'], nodes, provider, Comparator, token),
+            \ { 'timeout': TIMEOUT },
+            \)
+      Assert Equals(e, v:null)
+      Assert Equals(len(r), 8)
+      Assert Equals(r[0]._uri, '/')
+      Assert Equals(r[1]._uri, '/deep')
+      Assert Equals(r[2]._uri, '/deep/alpha')
+      Assert Equals(r[3]._uri, '/deep/alpha/beta')
+      Assert Equals(r[4]._uri, '/deep/alpha/beta/gamma')
+      Assert Equals(r[5]._uri, '/heavy')
+      Assert Equals(r[6]._uri, '/shallow')
+      Assert Equals(r[7]._uri, '/leaf')
+
+      let [r, e] = Promise.wait(
+            \ fern#internal#node#reveal(['deep', 'alpha', 'beta', 'gamma'], nodes, provider, Comparator, token),
+            \ { 'timeout': TIMEOUT },
+            \)
+      Assert Equals(e, v:null)
+      Assert Equals(len(r), 8)
+      Assert Equals(r[0]._uri, '/')
+      Assert Equals(r[1]._uri, '/deep')
+      Assert Equals(r[2]._uri, '/deep/alpha')
+      Assert Equals(r[3]._uri, '/deep/alpha/beta')
+      Assert Equals(r[4]._uri, '/deep/alpha/beta/gamma')
+      Assert Equals(r[5]._uri, '/heavy')
+      Assert Equals(r[6]._uri, '/shallow')
+      Assert Equals(r[7]._uri, '/leaf')
+
+      let [r, e] = Promise.wait(
+            \ fern#internal#node#reveal(['deep', 'alpha', 'beta', 'gamma', 'UNKNOWN'], nodes, provider, Comparator, token),
             \ { 'timeout': TIMEOUT },
             \)
       Assert Equals(e, v:null)
