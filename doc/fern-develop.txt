@@ -512,6 +512,38 @@ pass a helper instance to the first argument of functions by calling the
 function with |fern#helper#call()| or create a new helper instance of the
 current buffer by calling |fern#helper#new()|.
 
+			*fern-develop-helper.fern*
+.fern
+	A fern instance which has the following attributes:
+
+	"source"	A cancellation token source to cancel requests
+	"provider"	A provider instance for the fren tree
+	"comparator"	A comparator instance to sort nodes
+	"root"		A root node instance
+	"nodes"		A |List| of nodes which is handled in the tree
+	"visible_nodes"	A |List| of nodes which is displayed in the tree
+	"marks"		A |List| of marks
+	"hide"		0/1 to indicate if hide is on
+	"include"	A |List| of |String| to include nodes
+	"exclude"	A |List| of |String| to exclude nodes
+
+	Develoeprs can refer each attributes but Do NOT modify.
+
+			*fern-develop-helper.bufnr*
+			*fern-develop-helper.winid*
+.bufnr
+.winid
+	A buffer number and window number of the fern which this helper
+	instance refer.
+
+			*fern-develop-helper.STATUS_NONE*
+			*fern-develop-helper.STATUS_COLLAPSED*
+			*fern-develop-helper.STATUS_EXPANDED*
+.STATUS_NONE
+.STATUS_COLLAPSED
+.STATUS_EXPANDED
+	Constant variable for "status" of node instance.
+
 			*fern-develop-helper.get_root_node()*
 .get_root_node()
 	Return a root node instance.
