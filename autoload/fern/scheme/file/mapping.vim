@@ -8,8 +8,6 @@ let s:clipboard = {
       \ 'candidates': [],
       \}
 
-let s:STATUS_EXPANDED = g:fern#internal#node#STATUS_EXPANDED
-
 function! fern#scheme#file#mapping#init(disable_default_mappings) abort
   nnoremap <buffer><silent> <Plug>(fern-action-cd)              :<C-u>call <SID>call('cd', 'cd')<CR>
   nnoremap <buffer><silent> <Plug>(fern-action-lcd)             :<C-u>call <SID>call('cd', 'lcd')<CR>
@@ -77,7 +75,7 @@ function! s:map_new_file(helper) abort
     return s:Promise.reject('Cancelled')
   endif
   let node = a:helper.get_cursor_node()
-  let node = node.status isnot# s:STATUS_EXPANDED ? node.__owner : node
+  let node = node.status isnot# a:helper.STATUS_EXPANDED ? node.__owner : node
   let path = s:Path.join(node._path, name)
   let key = node.__key + [name]
   let token = a:helper.fern.source.token
@@ -95,7 +93,7 @@ function! s:map_new_dir(helper) abort
     return s:Promise.reject('Cancelled')
   endif
   let node = a:helper.get_cursor_node()
-  let node = node.status isnot# s:STATUS_EXPANDED ? node.__owner : node
+  let node = node.status isnot# a:helper.STATUS_EXPANDED ? node.__owner : node
   let path = s:Path.join(node._path, name)
   let key = node.__key + [name]
   let token = a:helper.fern.source.token
@@ -198,7 +196,7 @@ function! s:map_clipboard_paste(helper) abort
   endif
 
   let node = a:helper.get_cursor_node()
-  let node = node.status isnot# s:STATUS_EXPANDED ? node.__owner : node
+  let node = node.status isnot# a:helper.STATUS_EXPANDED ? node.__owner : node
   let token = a:helper.fern.source.token
   let ps = []
   for src in s:clipboard.candidates

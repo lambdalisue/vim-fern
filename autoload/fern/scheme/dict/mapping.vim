@@ -1,8 +1,6 @@
 let s:Prompt = vital#fern#import('Prompt')
 let s:Promise = vital#fern#import('Async.Promise')
 
-let s:STATUS_EXPANDED = g:fern#internal#node#STATUS_EXPANDED
-
 let s:clipboard = {
       \ 'mode': 'copy',
       \ 'candidates': [],
@@ -186,7 +184,7 @@ function! s:map_clipboard_paste(helper) abort
   let tree = provider._tree
 
   let node = a:helper.get_cursor_node()
-  let node = node.status isnot# s:STATUS_EXPANDED ? node.__owner : node
+  let node = node.status isnot# a:helper.STATUS_EXPANDED ? node.__owner : node
   let processed = 0
   for src in s:clipboard.candidates
     let dst = '/' . join(split(node._path . '/' . matchstr(src, '[^/]\+$'), '/'), '/')
