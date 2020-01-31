@@ -37,11 +37,11 @@ function! fern#internal#viewer#do_next(command, ...) abort
 endfunction
 
 function! s:open(bufname, options, resolve, reject) abort
-  let r = fern#lib#buffer#open(a:bufname . '$', a:options)
-  call setbufvar(r.bufnr, 'fern_notifier', {
+  call fern#lib#buffer#open(a:bufname . '$', a:options)
+  let b:fern_notifier = {
         \ 'resolve': a:resolve,
         \ 'reject': a:reject,
-        \})
+        \}
 endfunction
 
 function! s:init() abort
