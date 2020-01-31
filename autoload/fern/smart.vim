@@ -19,3 +19,12 @@ function! fern#smart#drawer(drawer, viewer) abort
         \ ? a:drawer
         \ : a:viewer
 endfunction
+
+function! fern#smart#scheme(default, schemes) abort
+  let helper = fern#helper#new()
+  let scheme = helper.get_scheme()
+  if has_key(a:schemes, scheme)
+    return a:schemes[scheme]
+  endif
+  return a:default
+endfunction

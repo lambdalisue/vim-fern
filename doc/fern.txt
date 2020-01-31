@@ -127,6 +127,24 @@ fern#smart#drawer({drawer}, {explorer})
 	      \   "\<Plug>(fern-action-enter)",
 	      \ )
 <
+						*fern#smart#scheme()*
+fern#smart#scheme({default}, {schemes})
+	Return one of a given mapping expression determined by the scheme of
+	a current buffer. The {schemes} is a |Dict| which key is a name of
+	scheme and the value is mapping expression. If no corresponding
+	key-value found in {schemes}, the value of {default} is returned.
+>
+	" Execute 'Fern bookmark:///' or back to a previous file if the
+	" scheme is already 'bookmark'
+	nmap <buffer><expr><silent>
+	      \ <C-^>
+	      \ fern#smart#scheme(
+	      \   ":\<C-u>Fern bookmark:///\<CR>",
+	      \   {
+	      \     'bookmark': "\<C-^>",
+	      \   },
+	      \ )
+<
 
 =============================================================================
 vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl
