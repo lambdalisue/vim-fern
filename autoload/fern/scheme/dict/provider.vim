@@ -59,7 +59,7 @@ endfunction
 function! s:node(provider, path, name, value, parent) abort
   let path = '/' . join(a:path, '/')
   let status = type(a:value) is# v:t_dict
-  let bufname = status ? printf('dict:%s', path) : v:null
+  let bufname = status ? printf('dict://%s', path) : v:null
   let label = status
         \ ? a:name
         \ : printf('%s [%s]', a:name, a:value)
