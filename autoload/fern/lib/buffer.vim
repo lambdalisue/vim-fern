@@ -1,4 +1,3 @@
-let s:Opener = vital#fern#import('Vim.Buffer.Opener')
 let s:edit_or_opener_pattern = '\<edit/\zs\%(split\|vsplit\|tabedit\)\>'
 
 function! fern#lib#buffer#replace(bufnr, content) abort
@@ -36,9 +35,13 @@ function! fern#lib#buffer#open(bufname, ...) abort
     let opener2 = matchstr(options.opener, s:edit_or_opener_pattern)
     let options.opener = &modified ? opener2 : options.opener
   endif
-  return s:Opener.open(a:bufname, {
-        \ 'opener': options.opener,
-        \ 'mods': options.mods,
-        \ 'cmdarg': options.cmdarg,
-        \})
+  let args = [
+        \ options.mods,
+        \ options.cmdarg,
+        \ options.opener,
+        \ fnameescape(a:bufname),
+        \]
+  let cmdline = join(filter(args, { -> !empty(v:val) }), ' ')
+  call fern#message#debug("fern#lib#buffer#open", "cmdline", cmdline)
+  execute cmdline
 endfunction

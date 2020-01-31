@@ -22,6 +22,7 @@ call s:Config.config(expand('<sfile>:p'), {
       \ 'enabled_mapping_presets': [
       \   'tree',
       \   'node',
+      \   'open',
       \   'mark',
       \   'filter',
       \   'drawer',
