@@ -1,22 +1,15 @@
 let s:Prompt = vital#fern#import('Prompt')
 let s:Promise = vital#fern#import('Async.Promise')
 
-let s:clipboard = {
-      \ 'mode': 'copy',
-      \ 'candidates': [],
-      \}
-
 function! fern#scheme#dict#mapping#init(disable_default_mappings) abort
+  call fern#scheme#dict#mapping#clipboard#init(a:disable_default_mappings)
+  call fern#scheme#dict#mapping#rename#init(a:disable_default_mappings)
+
   nnoremap <buffer><silent> <Plug>(fern-action-new-leaf)        :<C-u>call <SID>call('new_leaf')<CR>
   nnoremap <buffer><silent> <Plug>(fern-action-new-branch)      :<C-u>call <SID>call('new_branch')<CR>
   nnoremap <buffer><silent> <Plug>(fern-action-copy)            :<C-u>call <SID>call('copy')<CR>
   nnoremap <buffer><silent> <Plug>(fern-action-move)            :<C-u>call <SID>call('move')<CR>
-  nnoremap <buffer><silent> <Plug>(fern-action-clipboard-copy)  :<C-u>call <SID>call('clipboard_copy')<CR>
-  nnoremap <buffer><silent> <Plug>(fern-action-clipboard-move)  :<C-u>call <SID>call('clipboard_move')<CR>
-  nnoremap <buffer><silent> <Plug>(fern-action-clipboard-paste) :<C-u>call <SID>call('clipboard_paste')<CR>
-  nnoremap <buffer><silent> <Plug>(fern-action-clipboard-clear) :<C-u>call <SID>call('clipboard_clear')<CR>
   nnoremap <buffer><silent> <Plug>(fern-action-remove)          :<C-u>call <SID>call('remove')<CR>
-  nnoremap <buffer><silent> <Plug>(fern-action-rename)          :<C-u>call <SID>call('rename')<CR>
   nnoremap <buffer><silent> <Plug>(fern-action-edit-leaf)       :<C-u>call <SID>call('edit_leaf')<CR>
 
   if !a:disable_default_mappings
@@ -24,11 +17,7 @@ function! fern#scheme#dict#mapping#init(disable_default_mappings) abort
     nmap <buffer><nowait> K <Plug>(fern-action-new-branch)
     nmap <buffer><nowait> c <Plug>(fern-action-copy)
     nmap <buffer><nowait> m <Plug>(fern-action-move)
-    nmap <buffer><nowait> C <Plug>(fern-action-clipboard-copy)
-    nmap <buffer><nowait> M <Plug>(fern-action-clipboard-move)
-    nmap <buffer><nowait> P <Plug>(fern-action-clipboard-paste)
     nmap <buffer><nowait> D <Plug>(fern-action-remove)
-    nmap <buffer><nowait> R <Plug>(fern-action-rename)
     nmap <buffer><nowait> e <Plug>(fern-action-edit-leaf)
   endif
 endfunction
@@ -152,67 +141,6 @@ function! s:map_move(helper) abort
         \.then({ -> fern#message#info(printf('%d items are moved', processed)) })
 endfunction
 
-function! s:map_clipboard_move(helper) abort
-  let nodes = a:helper.get_selected_nodes()
-  let s:clipboard = {
-        \ 'mode': 'move',
-        \ 'candidates': map(copy(nodes), { _, v -> v._path }),
-        \}
-  return s:Promise.resolve()
-        \.then({ -> a:helper.update_marks([]) })
-        \.then({ -> a:helper.redraw() })
-        \.then({ -> fern#message#info(printf('%d items are saved in clipboard to move', len(nodes))) })
-endfunction
-
-function! s:map_clipboard_copy(helper) abort
-  let nodes = a:helper.get_selected_nodes()
-  let s:clipboard = {
-        \ 'mode': 'copy',
-        \ 'candidates': map(copy(nodes), { _, v -> v._path }),
-        \}
-  return s:Promise.resolve()
-        \.then({ -> a:helper.update_marks([]) })
-        \.then({ -> a:helper.redraw() })
-        \.then({ -> fern#message#info(printf('%d items are saved in clipboard to copy', len(nodes))) })
-endfunction
-
-function! s:map_clipboard_paste(helper) abort
-  if empty(s:clipboard)
-    return s:Promise.reject("Nothing to paste")
-  endif
-  let provider = a:helper.fern.provider
-  let tree = provider._tree
-
-  let node = a:helper.get_cursor_node()
-  let node = node.status isnot# a:helper.STATUS_EXPANDED ? node.__owner : node
-  let processed = 0
-  for src in s:clipboard.candidates
-    let dst = '/' . join(split(node._path . '/' . matchstr(src, '[^/]\+$'), '/'), '/')
-    if s:clipboard.mode ==# 'move'
-      echo printf("Move %s -> %s", src, dst)
-      call fern#scheme#dict#tree#move(tree, src, dst)
-    else
-      echo printf("Copy %s -> %s", src, dst)
-      call fern#scheme#dict#tree#copy(tree, src, dst)
-    endif
-    let processed += 1
-  endfor
-  call provider._update_tree(tree)
-
-  let root = a:helper.get_root_node()
-  return s:Promise.resolve()
-        \.then({ -> a:helper.reload_node(root.__key) })
-        \.then({ -> a:helper.redraw() })
-        \.then({ -> fern#message#info(printf('%d items are proceeded', processed)) })
-endfunction
-
-function! s:map_clipboard_clear(helper) abort
-  let s:clipboard = {
-        \ 'mode': 'copy',
-        \ 'candidates': [],
-        \}
-endfunction
-
 function! s:map_remove(helper) abort
   let provider = a:helper.fern.provider
 
@@ -244,37 +172,6 @@ function! s:map_remove(helper) abort
         \.then({ -> a:helper.reload_node(root.__key) })
         \.then({ -> a:helper.redraw() })
         \.then({ -> fern#message#info(printf('%d items are removed', len(nodes))) })
-endfunction
-
-function! s:map_rename(helper) abort
-  let root = a:helper.get_root_node()
-  let Factory = { -> map(copy(a:helper.get_selected_nodes()), { _, n -> n._path }) }
-  let ns = {}
-  return fern#internal#renamer#rename(Factory)
-        \.then({ r -> s:_map_rename(a:helper, r) })
-        \.then({ n -> s:Lambda.let(ns, 'n', n) })
-        \.then({ -> a:helper.reload_node(root.__key) })
-        \.then({ -> a:helper.redraw() })
-        \.then({ -> fern#message#info(printf('%d items are renamed', ns.n)) })
-endfunction
-
-function! s:_map_rename(helper, result) abort
-  let provider = a:helper.fern.provider
-  let tree = provider._tree
-  let proceeded = 0
-  for pair in a:result
-    let [src, dst] = pair
-    if fern#scheme#dict#tree#exists(tree, src)
-      echohl WarningMsg
-      echo printf("%s does not exist", src)
-      echohl None
-      continue
-    endif
-    call fern#scheme#dict#tree#move(tree, src, dst)
-    let proceeded += 1
-  endfor
-  call provider._update_tree(provider._tree)
-  return s:Promise.resolve(proceeded)
 endfunction
 
 function! s:map_edit_leaf(helper) abort
