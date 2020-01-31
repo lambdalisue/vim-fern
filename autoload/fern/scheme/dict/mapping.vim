@@ -5,12 +5,12 @@ function! fern#scheme#dict#mapping#init(disable_default_mappings) abort
   call fern#scheme#dict#mapping#clipboard#init(a:disable_default_mappings)
   call fern#scheme#dict#mapping#rename#init(a:disable_default_mappings)
 
-  nnoremap <buffer><silent> <Plug>(fern-action-new-leaf)        :<C-u>call <SID>call('new_leaf')<CR>
-  nnoremap <buffer><silent> <Plug>(fern-action-new-branch)      :<C-u>call <SID>call('new_branch')<CR>
-  nnoremap <buffer><silent> <Plug>(fern-action-copy)            :<C-u>call <SID>call('copy')<CR>
-  nnoremap <buffer><silent> <Plug>(fern-action-move)            :<C-u>call <SID>call('move')<CR>
-  nnoremap <buffer><silent> <Plug>(fern-action-remove)          :<C-u>call <SID>call('remove')<CR>
-  nnoremap <buffer><silent> <Plug>(fern-action-edit-leaf)       :<C-u>call <SID>call('edit_leaf')<CR>
+  nnoremap <buffer><silent> <Plug>(fern-action-new-leaf)   :<C-u>call <SID>call('new_leaf')<CR>
+  nnoremap <buffer><silent> <Plug>(fern-action-new-branch) :<C-u>call <SID>call('new_branch')<CR>
+  nnoremap <buffer><silent> <Plug>(fern-action-copy)       :<C-u>call <SID>call('copy')<CR>
+  nnoremap <buffer><silent> <Plug>(fern-action-move)       :<C-u>call <SID>call('move')<CR>
+  nnoremap <buffer><silent> <Plug>(fern-action-remove)     :<C-u>call <SID>call('remove')<CR>
+  nnoremap <buffer><silent> <Plug>(fern-action-edit-leaf)  :<C-u>call <SID>call('edit_leaf')<CR>
 
   if !a:disable_default_mappings
     nmap <buffer><nowait> N <Plug>(fern-action-new-leaf)
