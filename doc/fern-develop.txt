@@ -574,6 +574,10 @@ current buffer by calling |fern#helper#new()|.
 	Returns 1 if the fern buffer is shwon in a project drawer. Otherwise
 	it returns 0.
 
+			*fern-develop-helper.get_scheme()*
+.get_scheme()
+	Return |String| which represent the scheme name of the fern buffer.
+
 			*fern-develop-helper.sleep()*
 .sleep({ms})
 	Return a promise which will resolves to 0 after {ms} milliseconds.

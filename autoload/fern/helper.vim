@@ -88,6 +88,12 @@ function! s:helper.is_drawer() abort
   return fern#internal#drawer#is_drawer(bufname(self.bufnr))
 endfunction
 
+function! s:helper.get_scheme() abort
+  let fri = fern#fri#parse(bufname(self.bufnr))
+  let fri = fern#fri#parse(fri.path)
+  return fri.scheme
+endfunction
+
 
 " Async
 function! s:helper.sleep(ms) abort

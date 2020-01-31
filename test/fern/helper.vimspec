@@ -171,11 +171,25 @@ Describe fern#helper
 
       Describe .get_scheme()
         It does not raise exception
-          call helper.is_drawer()
+          call helper.get_scheme()
         End
 
-        It returns a boolean
-          Assert IsNumber(helper.is_drawer())
+        It returns a string
+          Assert IsString(helper.get_scheme())
+        End
+
+        It returns a scheme name of a fern buffer
+          Fern debug:///
+          let helper = fern#helper#new()
+          Assert Equals(helper.get_scheme(), 'debug')
+
+          Fern dict:///
+          let helper = fern#helper#new()
+          Assert Equals(helper.get_scheme(), 'dict')
+
+          Fern file:///
+          let helper = fern#helper#new()
+          Assert Equals(helper.get_scheme(), 'file')
         End
       End
     End
