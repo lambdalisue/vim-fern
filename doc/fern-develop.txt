@@ -569,6 +569,11 @@ current buffer by calling |fern#helper#new()|.
 	  return s:slow_operation(node).finally({ -> Done() })
 	endfunction
 <
+			*fern-develop-helper.is_drawer()*
+.is_drawer()
+	Returns 1 if the fern buffer is shwon in a project drawer. Otherwise
+	it returns 0.
+
 			*fern-develop-helper.sleep()*
 .sleep({ms})
 	Return a promise which will resolves to 0 after {ms} milliseconds.

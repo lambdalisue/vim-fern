@@ -146,6 +146,38 @@ Describe fern#helper
           Assert IsFunction(helper.process_node(root))
         End
       End
+
+      Describe .is_drawer()
+        It does not raise exception
+          call helper.is_drawer()
+        End
+
+        It returns a boolean
+          Assert IsNumber(helper.is_drawer())
+        End
+
+        It returns 1 if the fern is shown in a project drawer
+          Fern debug:/// -drawer
+          let helper = fern#helper#new()
+          Assert True(helper.is_drawer())
+        End
+
+        It returns 0 if the fern is NOT shown in a project drawer
+          Fern debug:///
+          let helper = fern#helper#new()
+          Assert False(helper.is_drawer())
+        End
+      End
+
+      Describe .get_scheme()
+        It does not raise exception
+          call helper.is_drawer()
+        End
+
+        It returns a boolean
+          Assert IsNumber(helper.is_drawer())
+        End
+      End
     End
 
     Describe Asynchronous methods
