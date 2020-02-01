@@ -122,9 +122,10 @@ The following mappings/actions are available among any fern buffer
 | `?`                 | `help`                 | Output mappings/actions to a pseudo buffer as help                                    |
 | `<C-c>`             | `cancel`               | Cancel any operation under processing                                                 |
 | `<C-l>`             | `redraw`               | Redraw content of the buffer                                                          |
-|                     | `debug`                | Show a debug informatin of a node under the cursor                                    |
+|                     | `debug`                | Show a debug information of a node under the cursor                                    |
 | `<F5>`              | `reload`               | Reload node itself and descendent nodes of a node under the cursor                    |
-|                     | `expand`               | Expand (open) a node under the cursor                                                 |
+| `-`                 | `mark-toggle`          | (Un)select the node |
+| `l`                 | `expand`               | Expand (open) a node under the cursor                                                 |
 | `h`                 | `collapse`             | Collapse (close) a node under the cursor                                              |
 | `i`                 | `reveal`               | Reveal (recursively focus and expand) a node which input by user                      |
 |                     | `enter`                | Enter a new tree which root node is a node under the cursor                           |
