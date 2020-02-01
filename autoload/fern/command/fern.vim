@@ -28,6 +28,7 @@ function! fern#command#fern#command(mods, qargs) abort
       let opener = options.pop('opener', g:fern#opener)
       let width = v:null
       let keep = v:null
+      let toggle = v:null
     endif
 
     " Force project drawer style when
