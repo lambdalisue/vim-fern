@@ -8,7 +8,7 @@ let s:STATUS_EXPANDED = g:fern#internal#node#STATUS_EXPANDED
 
 function! fern#internal#core#new(url, provider, ...) abort
   let options = extend({
-        \ 'comparator': 'default',
+        \ 'comparator': g:fern#internal#core#comparator,
         \}, a:0 ? a:1 : {},
         \)
   let root = fern#internal#node#root(a:url, a:provider)
@@ -20,9 +20,9 @@ function! fern#internal#core#new(url, provider, ...) abort
         \ 'nodes': [root],
         \ 'visible_nodes': [root],
         \ 'marks': [],
-        \ 'hide': g:fern#internal#core#hide,
-        \ 'include': g:fern#internal#core#include,
-        \ 'exclude': g:fern#internal#core#exclude,
+        \ 'hide': g:fern_default_hide,
+        \ 'include': g:fern_default_include,
+        \ 'exclude': g:fern_default_exclude,
         \}
   return fern
 endfunction
@@ -72,9 +72,6 @@ function! fern#internal#core#update_marks(fern, marks) abort
 endfunction
 
 call s:Config.config(expand('<sfile>:p'), {
-      \ 'hide': 1,
-      \ 'include': '',
-      \ 'exclude': '',
       \ 'comparator': 'default',
       \ 'comparators': {
       \   'default': function('fern#comparator#default#compare'),

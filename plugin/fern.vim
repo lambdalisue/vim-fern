@@ -37,3 +37,8 @@ let g:fern_opener = get(g:, 'fern_opener', 'edit')
 
 " fern#internal#mapping
 let g:fern_disable_default_mappings = get(g:, 'fern_disable_default_mappings', 0)
+
+" fern#internal#core
+let g:fern_default_hide = get(g:, 'fern_default_hide', 0)
+let g:fern_default_include = get(g:, 'fern_default_include', '')
+let g:fern_default_exclude = get(g:, 'fern_default_exclude', '')

@@ -213,6 +213,18 @@ VARIABLE						*fern-variable*
 	Set 1 to disable default mappings
 	Default: 0
 
+*g:fern_default_hide*
+	Set 1 to enter hide mode (show hidden files) in default.
+	Default: 0
+
+*g:fern_default_include*
+	A default |String| pattern used to filter nodes (include).
+	Default: ''
+
+*g:fern_default_exclude*
+	A default |String| pattern used to filter nodes (exclude).
+	Default: ''
+
 -----------------------------------------------------------------------------
 COMMAND							*fern-command*
 
