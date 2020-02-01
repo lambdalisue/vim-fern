@@ -41,17 +41,24 @@ endfunction
 function! s:map_terminal(helper, opener) abort
   let node = a:helper.get_cursor_node()
   let node = node.status is# a:helper.STATUS_NONE ? node.__owner : node
-  if exists('*termopen')
-    let Term = function("termopen", [&shell, { 'cwd': node._path }])
-  elseif exists('*term_start')
-    let Term = function("term_start", [&shell, { 'cwd': node._path, 'curwin': 1 }])
-  else
-    return s:Promise.reject("neither termopen nor term_start exist")
-  endif
-  call fern#internal#buffer#open("", {
+  call fern#lib#buffer#open("", {
         \ 'opener': a:opener,
         \ 'locator': a:helper.is_drawer(),
         \})
-  call Term()
+  call s:term(node._path)
   return s:Promise.resolve()
 endfunction
+
+if exists('*termopen')
+  function! s:term(cwd) abort
+    call termopen(&shell, { 'cwd': a:cwd })
+  endfunction
+elseif exists('*term_start')
+  function! s:term(cwd) abort
+    call term_start(&shell, { 'cwd': a:cwd, 'curwin': 1 })
+  endfunction
+else
+  function! s:term(cwd) abort
+    throw 'neither termopen nor term_start exist'
+  endfunction
+endif
