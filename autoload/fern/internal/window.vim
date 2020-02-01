@@ -1,5 +1,5 @@
 let s:Config = vital#fern#import('Config')
-let s:WindowSelector = vital#fern#import('Vim.Window.Selector')
+let s:Prompt = vital#fern#import('Prompt')
 
 function! fern#internal#window#find(predicator, ...) abort
   let n = winnr('$')
@@ -40,9 +40,49 @@ function! fern#internal#window#select() abort
   if empty(ws)
     let ws = range(1, winnr('$'))
   endif
-  return s:WindowSelector.select(ws, {
+  return s:select(ws, {
         \ 'auto_select': g:fern#internal#window#auto_select,
         \})
+endfunction
+
+function! s:select(winnrs, ...) abort
+  let options = extend({
+        \ 'auto_select': 0,
+        \}, a:0 ? a:1 : {})
+  if options.auto_select && len(a:winnrs) <= 1
+    call win_gotoid(len(a:winnrs) ? win_getid(a:winnrs[0]) : win_getid())
+    return 0
+  endif
+  let length = len(a:winnrs)
+  let store = {}
+  for winnr in a:winnrs
+    let store[winnr] = getwinvar(winnr, '&statusline')
+  endfor
+  try
+    call map(keys(store), { k, v -> setwinvar(v, '&statusline', s:_statusline(v, k + 1)) })
+    redrawstatus
+    let n = s:Prompt.select(
+          \ printf('choose number [1-%d]: ', length),
+          \ len(length . ''),
+          \)
+    redraw | echo
+    if n is# v:null
+      return 1
+    endif
+    call win_gotoid(win_getid(a:winnrs[n - 1]))
+  finally
+    call map(keys(store), { _, v -> setwinvar(v, '&statusline', store[v]) })
+    redrawstatus
+  endtry
+endfunction
+
+function! s:_statusline(winnr, n) abort
+  let width = winwidth(a:winnr) - len(a:winnr . '') - 6
+  let leading = repeat(' ', width / 2)
+  return printf(
+        \ '%%#NonText#%s%%#DiffText#   %d   %%#NonText#',
+        \ leading, a:n,
+        \)
 endfunction
 
 call s:Config.config(expand('<sfile>:p'), {

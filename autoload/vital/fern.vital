@@ -12,5 +12,5 @@ Config
 Lambda
 System.Filepath
 Vim.Window.Cursor
-Vim.Window.Selector
 App.Flag
+Prompt
