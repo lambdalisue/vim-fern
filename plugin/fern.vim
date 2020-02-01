@@ -42,3 +42,5 @@ let g:fern_disable_default_mappings = get(g:, 'fern_disable_default_mappings', 0
 let g:fern_default_hidden = get(g:, 'fern_default_hidden', 0)
 let g:fern_default_include = get(g:, 'fern_default_include', '')
 let g:fern_default_exclude = get(g:, 'fern_default_exclude', '')
+let g:fern_renderer = get(g:, 'fern_renderer', 'default')
+let g:fern_comparator = get(g:, 'fern_comparator', 'default')

@@ -5,19 +5,21 @@ let s:Promise = vital#fern#import('Async.Promise')
 let s:CancellationTokenSource = vital#fern#import('Async.CancellationTokenSource')
 
 let s:STATUS_EXPANDED = g:fern#internal#node#STATUS_EXPANDED
+let s:default_renderer = function('fern#renderer#default#new')
+let s:default_comparator = function('fern#comparator#default#new')
 
 function! fern#internal#core#new(url, provider, ...) abort
   let options = extend({
-        \ 'renderer': g:fern#internal#core#renderer,
-        \ 'comparator': g:fern#internal#core#comparator,
+        \ 'renderer': g:fern_renderer,
+        \ 'comparator': g:fern_comparator,
         \}, a:0 ? a:1 : {},
         \)
   let root = fern#internal#node#root(a:url, a:provider)
   let fern = {
         \ 'source': s:CancellationTokenSource.new(),
         \ 'provider': a:provider,
-        \ 'renderer': g:fern#internal#core#renderers[options.renderer],
-        \ 'comparator': g:fern#internal#core#comparators[options.comparator],
+        \ 'renderer': s:get_renderer(options.renderer),
+        \ 'comparator': s:get_comparator(options.comparator),
         \ 'root': root,
         \ 'nodes': [root],
         \ 'visible_nodes': [root],
@@ -73,14 +75,29 @@ function! fern#internal#core#update_marks(fern, marks) abort
         \.finally({ -> Profile() })
 endfunction
 
+function! s:get_renderer(name) abort
+  try
+    let Renderer = get(g:fern#internal#core#renderers, a:name, s:default_renderer)
+    return Renderer()
+  catch
+    call fern#logger#error("fern#internal#core:get_renderer", v:exception)
+    call fern#logger#debug(v:throwpoint)
+    return s:default_renderer()
+  endtry
+endfunction
+
+function! s:get_comparator(name) abort
+  try
+    let Comparator = get(g:fern#internal#core#comparators, a:name, s:default_comparator)
+    return Comparator()
+  catch
+    call fern#logger#error("fern#internal#core:get_comparator", v:exception)
+    call fern#logger#debug(v:throwpoint)
+    return s:default_renderer()
+  endtry
+endfunction
+
 call s:Config.config(expand('<sfile>:p'), {
-      \ 'renderer': 'default',
-      \ 'renderers': {
-      \   'default': fern#renderer#default#new(),
-      \ },
-      \ 'comparator': 'default',
-      \ 'comparators': {
-      \   'default': fern#comparator#default#new(),
-      \   'lexical': fern#comparator#lexical#new(),
-      \ },
+      \ 'renderers': {},
+      \ 'comparators': {},
       \})
