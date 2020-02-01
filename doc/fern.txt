@@ -29,57 +29,61 @@ explorer.
 FEATURES						*fern-features*
 
 No external dependencies~
-Fern is written in pure Vim script without any external libraries (note that
-vim-jp/vital.vim is bundled, not external dependencies) so users do NOT need
-to install anything rather than fern.vim itself.
-Exception: "trash" feature in Linux.
-https://github.com/lambdalisue/vital-Whisky/issues/31
+	Fern is written in pure Vim script without any external libraries
+	(note that vim-jp/vital.vim is bundled, not external dependencies) so
+	users do NOT need to install anything rather than fern.vim itself.
+	Exception: "trash" feature in Linux.
+	https://github.com/lambdalisue/vital-Whisky/issues/31
 
 Asynchronous~
-Fern uses asynchronous technique to perform most of operations so Vim would
-not freeze during operations. It is probably obvious in Windows while file
-operations in Windows are relatively slow.
+	Fern uses asynchronous technique to perform most of operations so Vim 
+	would not freeze during operations. It is probably obvious in Windows 
+	while file operations in Windows are relatively slow.
 
 Split windows or project drawer~
-Fern supports both styles; split windows (e.g. netrw) and project drawer (e.g.
-NERDTree); officially.
+	Fern supports both styles; split windows (e.g. netrw) and project
+	drawer (e.g.  NERDTree); officially.
 
 Buffer name base~
-Fern is developed based on |BufReadCmd| technique like netrw. Thus any buffer
-starts from "fern://" are handled by fern and required arguments and options
-are read from the buffer name. That's why fern integrate well with |session|.
+	Fern is developed based on |BufReadCmd| technique like netrw. Thus any 
+	buffer starts from "fern://" are handled by fern and required 
+	arguments and options are read from the buffer name. That's why fern 
+	integrate well with |session|.
 
 Action~
-Fern provides operation as action. When user hit "?", all actions and
-corresponding mapping (if exist) are shown. When user hit "a", an action
-prompt will popped up and user can input an action to execute. So users don't
-have to remember complex mappings to execute operation which is not often
-required.
+	Fern provides operation as action. When user hit "?", all actions and
+	corresponding mapping (if exist) are shown. When user hit "a", an 
+	action prompt will popped up and user can input an action to execute.
+	So users don't have to remember complex mappings to execute operation 
+	which is not often required.
 
 Window selector~
-Fern has an internal window selector which works like t9md/vim-choosewin.
-Users can quickly select which window to open a selected node.
-https://github.com/t9md/vim-choosewin
+	Fern has an internal window selector which works like 
+	t9md/vim-choosewin.  Users can quickly select which window to open a 
+	selected node.
+	https://github.com/t9md/vim-choosewin
 
 Renamer (A.k.a exrename)~
-Fern has an internal renamer which works like "exrename" in Shougo/vimfiler.
-Users can edit multiple path of nodes in Vim's buffer and ":w" to apply
-changes to actual nodes (file, directory, bookmark, etc.)
-https://github.com/Shougo/vimfiler
+	Fern has an internal renamer which works like "exrename" in
+	Shougo/vimfiler.  Users can edit multiple path of nodes in Vim's 
+	buffer and ":w" to apply changes to actual nodes (file, directory,
+	bookmark, etc.)
+	https://github.com/Shougo/vimfiler
 
 System CRUD operations ("file" scheme)~
-Fern supports file system CRUD operations. Users can create, delete, rename
-files/directories through fern.
+	Fern supports file system CRUD operations. Users can create, delete,
+	rename files/directories through fern.
 
 System program support ("file" scheme)~
-Fern supports to open a file/directory through a system default program. So
-it's quite easy to open a directory with Explorer (Windows), Finder (macOS),
-or whatever.
+	Fern supports to open a file/directory through a system default
+	program. So it's quite easy to open a directory with Explorer 
+	(Windows), Finder (macOS), or whatever.
 
 System trash-bin support ("file" scheme)~
-Fern supports system trash-bin by PowerShell (Windows), osascript (macOS), and
-3rd party applications (Linux). Any files/directories deleted by "trash"
-action are sent to system trash-bin rather than actual delete.
+	Fern supports system trash-bin by PowerShell (Windows), osascript 
+	(macOS), and 3rd party applications (Linux). Any files/directories 
+	deleted by "trash" action are sent to system trash-bin rather than 
+	actual delete.
 
 
 =============================================================================
@@ -108,10 +112,10 @@ Action is a special mapping which is defined on a fern buffer and looks like:
 where {name} is a name of the action.
 
 Note that any mappings defined in user custom code (|fern-custom|) are
-registered as action as well.
+registered as action as well if the name of the mapping followed above rule.
 
 							*fern-action-capture*
-Use "capture" to reidrects an action output to a separate buffer like:
+Use "capture" to redirects an action output to a separate buffer like:
 >
 	action: capture help
 <
@@ -172,7 +176,7 @@ For example, following execute "open" on leaf but "expand" on branch.
 	      \   "\<Plug>(fern-action-expand)",
 	      \ )
 <
-See https://github.com/lambdalisue/fern.vim/wiki/Tips for custom tips.
+See https://github.com/lambdalisue/fern.vim/wiki/ for custom tips.
 
 =============================================================================
 INTERFACE						*fern-interface*
@@ -235,7 +239,6 @@ VARIABLE						*fern-variable*
 	is a key of |g:fern#internal#core#comparators|.
 	Default: "default"
 
-
 -----------------------------------------------------------------------------
 COMMAND							*fern-command*
 
@@ -285,7 +288,6 @@ COMMAND							*fern-command*
 :FernFocus [-drawer]
 	Focus a next fern viewer. If "-drawer" option is specified, it focus
 	only a project drawer style fern.
-
 
 -----------------------------------------------------------------------------
 FUNCTION						*fern-function*
