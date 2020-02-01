@@ -403,20 +403,6 @@ fern#scheme#{scheme}#mapping#init({disable_default_mappings})
 	Function called on a fern buffer to define scheme specific mappings.
 	See |fern#internal#mapping#{name}#init()| for detail.
 
-				*fern#message#info()*
-				*fern#message#title()*
-				*fern#message#error()*
-				*fern#message#debug()*
-fern#message#info({object}...)
-fern#message#title({object}...)
-fern#message#error({object}...)
-fern#message#debug({object}...)
-	Show |String| representation of each {object} when Vim is idle.
-	The info shows without higlight.
-	The title shows with |hl-Title|.
-	The error shows with |hl-Error|.
-	The debug shows with |hl-Comment| when |g:fern_debug| is TRUE.
-
 				*fern#scheme#{scheme}#provider#new()*
 fern#scheme#{scheme}#provider#new()
 	Return a provider instance (|fern-develop-provider|) of the {scheme}.
