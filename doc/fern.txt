@@ -7,19 +7,172 @@ License: MIT license
 CONTENTS						*fern-contents*
 
 INTRODUCTION				|fern-introduction|
+  FEATURES				|fern-features|
 USAGE					|fern-usage|
+  ACTION				|fern-action|
+  CUSTOM				|fern-custom|
 INTERFACE				|fern-interface|
   VARIABLE				|fern-variable|
   COMMAND				|fern-command|
   FUNCTION				|fern-function|
+CHANGELOG				|fern-changelog|
 
 
 =============================================================================
 INTRODUCTION						*fern-introduction*
 
 *fern.vim* (fern) is a general purpose asynchronous tree explorer written in
-pure Vim script.
+pure Vim script. It provides "file" scheme in default to use it as a file
+explorer.
 
+-----------------------------------------------------------------------------
+FEATURES						*fern-features*
+
+No external dependencies~
+Fern is written in pure Vim script without any external libraries (note that
+vim-jp/vital.vim is bundled, not external dependencies) so users do NOT need
+to install anything rather than fern.vim itself.
+Exception: "trash" feature in Linux.
+https://github.com/lambdalisue/vital-Whisky/issues/31
+
+Asynchronous~
+Fern uses asynchronous technique to perform most of operations so Vim would
+not freeze during operations. It is probably obvious in Windows while file
+operations in Windows are relatively slow.
+
+Split windows or project drawer~
+Fern supports both styles; split windows (e.g. netrw) and project drawer (e.g.
+NERDTree); officially.
+
+Buffer name base~
+Fern is developed based on |BufReadCmd| technique like netrw. Thus any buffer
+starts from "fern://" are handled by fern and required arguments and options
+are read from the buffer name. That's why fern integrate well with |session|.
+
+Action~
+Fern provides operation as action. When user hit "?", all actions and
+corresponding mapping (if exist) are shown. When user hit "a", an action
+prompt will popped up and user can input an action to execute. So users don't
+have to remember complex mappings to execute operation which is not often
+required.
+
+Window selector~
+Fern has an internal window selector which works like t9md/vim-choosewin.
+Users can quickly select which window to open a selected node.
+https://github.com/t9md/vim-choosewin
+
+Renamer (A.k.a exrename)~
+Fern has an internal renamer which works like "exrename" in Shougo/vimfiler.
+Users can edit multiple path of nodes in Vim's buffer and ":w" to apply
+changes to actual nodes (file, directory, bookmark, etc.)
+https://github.com/Shougo/vimfiler
+
+System CRUD operations ("file" scheme)~
+Fern supports file system CRUD operations. Users can create, delete, rename
+files/directories through fern.
+
+System program support ("file" scheme)~
+Fern supports to open a file/directory through a system default program. So
+it's quite easy to open a directory with Explorer (Windows), Finder (macOS),
+or whatever.
+
+System trash-bin support ("file" scheme)~
+Fern supports system trash-bin by PowerShell (Windows), osascript (macOS), and
+3rd party applications (Linux). Any files/directories deleted by "trash"
+action are sent to system trash-bin rather than actual delete.
+
+
+=============================================================================
+USAGE							*fern-usage*
+
+Open fern at the current working directory by
+>
+	:Fern .
+<
+Or a parent directory of the current buffer by
+>
+	:Fern %:h
+<
+On a fern buffer, hit
+
+	"?"	List mappings/actions available
+	"a"	Open a prompt to input action to execute
+
+-----------------------------------------------------------------------------
+ACTION							*fern-action*
+
+Action is a special mapping which is defined on a fern buffer and looks like:
+
+	<Plug>(fern-action-{name})
+
+where {name} is a name of the action.
+
+Note that any mappings defined in user custom code (|fern-custom|) are
+registered as action as well.
+
+							*fern-action-capture*
+Use "capture" to reidrects an action output to a separate buffer like:
+>
+	action: capture help
+<
+							*fern-action-verbose*
+Use "verbose" to execute an action in |verbose| mode like:
+>
+	action: verbose expand
+<
+
+-----------------------------------------------------------------------------
+CUSTOM							*fern-custom*
+
+Use |FileType| |autocmd| with "fern" like:
+>
+	function! s:init_fern() abort
+	  " Write custom code here
+	endfunction
+
+	augroup my-fern
+	  autocmd! *
+	  autocmd FileType fern call s:init_fern()
+	augroup END
+<
+The autocmd will be called AFTER fern buffer has initialized but BEFORE any
+content had loaded.
+							*fern-custom-alias*
+Fern provides some features as mapping alias. For example, you may found
+entries like below by "?":
+>
+	e                         open       <Plug>(fern-action-open)
+	<Plug>(fern-action-open)  open:edit  <Plug>(fern-action-open:edit)
+<
+Above mean that when you hit "e", the "open" action is executed and the "open"
+action execute "open:edit" action.
+So if you want to use "open:split" action instead of "open:edit" when you
+hit "e", add the following code:
+>
+	" Use 'open:split' instead of 'open:edit' for 'open' action
+	nmap <buffer> <Plug>(fern-action-open) <Plug>(fern-action-open:split)
+<
+							*fern-custom-smart*
+Fern provide following mapping helper functions:
+
+	|fern#smart#leaf()|	Return a mapping expression determined by a
+				status of a current cursor node
+
+	|fern#smart#drawer()|	Return a mapping expression determined by a
+				style of a current fern window
+
+	|fern#smart#scheme()|	Return a mapping expression determined by a
+				scheme of a current fern tree
+
+For example, following execute "open" on leaf but "expand" on branch.
+>
+	nmap <buffer><expr> <Plug>(fern-my-open-or-expand)
+	      \ fern#smart#leaf(
+	      \   "\<Plug>(fern-action-open)",
+	      \   "\<Plug>(fern-action-expand)",
+	      \ )
+<
+See https://github.com/lambdalisue/fern.vim/wiki/Tips for custom tips.
 
 =============================================================================
 INTERFACE						*fern-interface*
@@ -27,14 +180,15 @@ INTERFACE						*fern-interface*
 -----------------------------------------------------------------------------
 VARIABLE						*fern-variable*
 
-
-							*g:fern_debug*
-g:fern_debug
+*g:fern_debug*
 	Set 1 to enable fern debug mode.
 	Default: 0
 
-					*g:fern_disable_default_mappings*
-g:fern_disable_default_mappings
+*g:fern_profile*
+	Set 1 to enable fern profiling mode.
+	Default: 0
+
+*g:fern_disable_default_mappings*
 	Set 1 to disable default mappings
 	Default: 0
 
@@ -42,7 +196,7 @@ g:fern_disable_default_mappings
 COMMAND							*fern-command*
 
 							*:Fern*
-:Fern {url} [-reveal={reveal}] [-opener={opener}]
+:Fern {url} [-opener={opener}] [-reveal={reveal}]
 	Open a fern buffer in split windows style with the {opener}.
 
 	If {reveal} is specified, parent nodes of the node which is identified
@@ -51,19 +205,24 @@ COMMAND							*fern-command*
 	specfied {url}.
 	Note that if the {url} is for "file" scheme, an absolute path can be
 	specified to the {reveal}.
-								*fern-opener*
-	The following value are available for the {opener}:
+							*fern-opener*
+	One of the following value is available for the {opener}:
 
-	"select"	Open a prompt to select window to open a fern buffer
-			(like t9md/vim-choosewin)
-	"edit"		Open a fern buffer on the current buffer by |edit|
-	"split"		Open a fern buffer on a side of the current buffer by
-			|split|
-	"vsplit"	Open a fern buffer on a vertical side of the current
-			buffer by |vsplit|
-	"tabedit"	Open a fern buffer on a new tabpage by |tabedit|
+	"select"	Select which window to open a buffer
+	"split"		Open a buffer by |split|
+	"vsplit"	Open a buffer by |vsplit|
+	"tabedit"	Open a buffer by |tabedit|
+	"edit"		Open a buffer by |edit| or fail when the buffer is
+			|modified|
+	"edit/split"	Open a buffer by |edit| or |split| when the buffer is
+			|modified|
+	"edit/vsplit"	Open a buffer by |edit| or |vsplit| when the buffer is
+			|modified|
+	"edit/tabedit"	Open a buffer by |edit| or |tabedit| when the buffer
+			is |modified|
 
-	Additionally, any modifiers (|mods|) are allowd to be prepend.
+	Additionally, any modifiers (|mods|) are allowd to be prepend (e.g.
+	"topleft split".)
 
 							*:Fern-drawer*
 :Fern {url} -drawer [-reveal={path}] [-width={width}] [-keep] [-toggle]
@@ -87,10 +246,10 @@ COMMAND							*fern-command*
 -----------------------------------------------------------------------------
 FUNCTION						*fern-function*
 
-						*fern#smart#leaf()*
+							*fern#smart#leaf()*
 fern#smart#leaf({leaf}, {collapsed}[, {expanded}])
-	Return one of a given mapping expression determined by a status of a
-	node under the cursor. If the node is leaf, the {leaf} is returned.
+	Return one of a given mapping expression determined by a "status" of a
+	current cursor node. If the node is leaf, the {leaf} is returned.
 	If the node is branch and collapsed, the {collapsed} is returned. If
 	the node is branch and expanded, the {expanded} or {collapsed} is
 	returned.
@@ -113,7 +272,7 @@ fern#smart#leaf({leaf}, {collapsed}[, {expanded}])
 	      \   "\<Plug>(fern-action-collapse)",
 	      \ )
 <
-						*fern#smart#drawer()*
+							*fern#smart#style()*
 fern#smart#drawer({drawer}, {explorer})
 	Return one of a given mapping expression determined by the style of
 	a current buffer. If the current buffer is drawer, the {drawer} is
@@ -127,7 +286,7 @@ fern#smart#drawer({drawer}, {explorer})
 	      \   "\<Plug>(fern-action-enter)",
 	      \ )
 <
-						*fern#smart#scheme()*
+							*fern#smart#scheme()*
 fern#smart#scheme({default}, {schemes})
 	Return one of a given mapping expression determined by the scheme of
 	a current buffer. The {schemes} is a |Dict| which key is a name of
@@ -145,6 +304,13 @@ fern#smart#scheme({default}, {schemes})
 	      \   },
 	      \ )
 <
+
+
+=============================================================================
+CHANGELOG						*fern-changelog*
+
+20XX-XX-XX~
+	Release v1.0.0
 
 =============================================================================
 vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl
