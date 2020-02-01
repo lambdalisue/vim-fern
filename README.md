@@ -6,6 +6,8 @@
 [![Powered by vital.vim](https://img.shields.io/badge/powered%20by-vital.vim-80273f.svg)](https://github.com/vim-jp/vital.vim)
 [![Powered by vital-Whisky](https://img.shields.io/badge/powered%20by-vital--Whisky-80273f.svg)](https://github.com/lambdalisue/vital-Whisky)
 [![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![Doc](https://img.shields.io/badge/doc-%3Ah%20fern-orange.svg?style=flat-square)](doc/fern.txt)
+[![Doc (dev)](https://img.shields.io/badge/doc-%3Ah%20fern--develop-orange.svg?style=flat-square)](doc/fern-develop.txt)
 
 [![Actions Status](https://github.com/lambdalisue/fern.vim/workflows/reviewdog/badge.svg)](https://github.com/lambdalisue/fern.vim/actions)
 [![Actions Status](https://github.com/lambdalisue/fern.vim/workflows/linux_vim/badge.svg)](https://github.com/lambdalisue/fern.vim/actions)
