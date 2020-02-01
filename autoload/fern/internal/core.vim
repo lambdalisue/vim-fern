@@ -8,6 +8,7 @@ let s:STATUS_EXPANDED = g:fern#internal#node#STATUS_EXPANDED
 
 function! fern#internal#core#new(url, provider, ...) abort
   let options = extend({
+        \ 'renderer': g:fern#internal#core#renderer,
         \ 'comparator': g:fern#internal#core#comparator,
         \}, a:0 ? a:1 : {},
         \)
@@ -15,6 +16,7 @@ function! fern#internal#core#new(url, provider, ...) abort
   let fern = {
         \ 'source': s:CancellationTokenSource.new(),
         \ 'provider': a:provider,
+        \ 'renderer': g:fern#internal#core#renderers[options.renderer],
         \ 'comparator': g:fern#internal#core#comparators[options.comparator],
         \ 'root': root,
         \ 'nodes': [root],
@@ -72,6 +74,10 @@ function! fern#internal#core#update_marks(fern, marks) abort
 endfunction
 
 call s:Config.config(expand('<sfile>:p'), {
+      \ 'renderer': 'default',
+      \ 'renderers': {
+      \   'default': fern#renderer#default#new(),
+      \ },
       \ 'comparator': 'default',
       \ 'comparators': {
       \   'default': function('fern#comparator#default#compare'),

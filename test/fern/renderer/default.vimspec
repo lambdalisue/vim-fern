@@ -6,71 +6,77 @@ Describe fern#renderer#default
     let provider = fern#scheme#debug#provider#new()
   End
 
-  Describe #render()
+  Describe renderer instance
     Before
-      let nodes = [
-            \ fern#internal#node#root('debug:///', provider),
-            \ fern#internal#node#root('debug:///shallow', provider),
-            \ fern#internal#node#root('debug:///shallow/alpha', provider),
-            \ fern#internal#node#root('debug:///shallow/beta', provider),
-            \ fern#internal#node#root('debug:///shallow/gamma', provider),
-            \]
-      let nodes[1].__key = ['shallow']
-      let nodes[1].status = STATUS_EXPANDED
-      let nodes[2].__key = ['shallow', 'alpha']
-      let nodes[3].__key = ['shallow', 'beta']
-      let nodes[4].__key = ['shallow', 'gamma']
+      let renderer = fern#renderer#default#new()
     End
 
-    It returns a promise
-      let p = fern#renderer#default#render(nodes, [])
-      Assert True(Promise.is_promise(p))
+    Describe #render()
+      Before
+        let nodes = [
+              \ fern#internal#node#root('debug:///', provider),
+              \ fern#internal#node#root('debug:///shallow', provider),
+              \ fern#internal#node#root('debug:///shallow/alpha', provider),
+              \ fern#internal#node#root('debug:///shallow/beta', provider),
+              \ fern#internal#node#root('debug:///shallow/gamma', provider),
+              \]
+        let nodes[1].__key = ['shallow']
+        let nodes[1].status = STATUS_EXPANDED
+        let nodes[2].__key = ['shallow', 'alpha']
+        let nodes[3].__key = ['shallow', 'beta']
+        let nodes[4].__key = ['shallow', 'gamma']
+      End
+
+      It returns a promise
+        let p = renderer.render(nodes, [])
+        Assert True(Promise.is_promise(p))
+      End
+
+      It resolves to a string list for a buffer content
+        let [r, e] = Promise.wait(
+              \ renderer.render(nodes, []),
+              \ { 'timeout': TIMEOUT },
+              \)
+        Assert Equals(e, v:null)
+        Assert Equals(r, [
+              \ '  root',
+              \ '  |- shallow',
+              \ '   |+ alpha',
+              \ '   |+ beta',
+              \ '   |  gamma',
+              \])
+      End
+
+      It prepend marked symbol for marked nodes
+        let marks = [
+              \ ['shallow', 'alpha'],
+              \ ['shallow', 'gamma'],
+              \]
+        let [r, e] = Promise.wait(
+              \ renderer.render(nodes, marks),
+              \ { 'timeout': TIMEOUT },
+              \)
+        Assert Equals(e, v:null)
+        Assert Equals(r, [
+              \ '  root',
+              \ '  |- shallow',
+              \ '*  |+ alpha',
+              \ '   |+ beta',
+              \ '*  |  gamma',
+              \])
+      End
     End
 
-    It resolves to a string list for a buffer content
-      let [r, e] = Promise.wait(
-            \ fern#renderer#default#render(nodes, []),
-            \ { 'timeout': TIMEOUT },
-            \)
-      Assert Equals(e, v:null)
-      Assert Equals(r, [
-            \ '  root',
-            \ '  |- shallow',
-            \ '   |+ alpha',
-            \ '   |+ beta',
-            \ '   |  gamma',
-            \])
+    Describe #syntax()
+      It does not raise exception
+        call renderer.syntax()
+      End
     End
 
-    It prepend marked symbol for marked nodes
-      let marks = [
-            \ ['shallow', 'alpha'],
-            \ ['shallow', 'gamma'],
-            \]
-      let [r, e] = Promise.wait(
-            \ fern#renderer#default#render(nodes, marks),
-            \ { 'timeout': TIMEOUT },
-            \)
-      Assert Equals(e, v:null)
-      Assert Equals(r, [
-            \ '  root',
-            \ '  |- shallow',
-            \ '*  |+ alpha',
-            \ '   |+ beta',
-            \ '*  |  gamma',
-            \])
-    End
-  End
-
-  Describe #syntax()
-    It does not raise exception
-      call fern#renderer#default#syntax()
-    End
-  End
-
-  Describe #highlight()
-    It does not raise exception
-      call fern#renderer#default#highlight()
+    Describe #highlight()
+      It does not raise exception
+        call renderer.highlight()
+      End
     End
   End
 End

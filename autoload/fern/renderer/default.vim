@@ -4,7 +4,17 @@ let s:AsyncLambda = vital#fern#import('Async.Lambda')
 let s:STATUS_NONE = g:fern#internal#node#STATUS_NONE
 let s:STATUS_COLLAPSED = g:fern#internal#node#STATUS_COLLAPSED
 
-function! fern#renderer#default#render(nodes, marks) abort
+function! fern#renderer#default#new() abort
+  return {
+        \ 'render': funcref('s:render'),
+        \ 'index': funcref('s:index'),
+        \ 'lnum': funcref('s:lnum'),
+        \ 'syntax': funcref('s:syntax'),
+        \ 'highlight': funcref('s:highlight'),
+        \}
+endfunction
+
+function! s:render(nodes, marks) abort
   let options = {
         \ 'leading': g:fern#renderer#default#leading,
         \ 'root_symbol': g:fern#renderer#default#root_symbol,
@@ -15,20 +25,20 @@ function! fern#renderer#default#render(nodes, marks) abort
         \ 'unmarked_symbol': g:fern#renderer#default#unmarked_symbol,
         \}
   let base = len(a:nodes[0].__key)
-  let Profile = fern#profile#start("fern#renderer#default#render")
+  let Profile = fern#profile#start("fern#renderer#default#s:render")
   return s:AsyncLambda.map(copy(a:nodes), { v, -> s:render_node(v, a:marks, base, options) })
         \.finally({ -> Profile() })
 endfunction
 
-function! fern#renderer#default#index(lnum) abort
+function! s:index(lnum) abort
   return a:lnum - 1
 endfunction
 
-function! fern#renderer#default#lnum(index) abort
+function! s:lnum(index) abort
   return a:index + 1
 endfunction
 
-function! fern#renderer#default#syntax() abort
+function! s:syntax() abort
   syntax clear
   syntax match FernRoot   /\%1l.*/
   syntax match FernLeaf   /^\s*|  /
@@ -36,7 +46,7 @@ function! fern#renderer#default#syntax() abort
   syntax match FernMarked /^* .*/
 endfunction
 
-function! fern#renderer#default#highlight() abort
+function! s:highlight() abort
   highlight default link FernRoot   Directory
   highlight default link FernLeaf   Directory
   highlight default link FernBranch Directory
