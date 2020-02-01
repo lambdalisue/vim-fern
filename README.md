@@ -1,6 +1,6 @@
 # 🌿 fern.vim
 
-![Version 0.8.0](https://img.shields.io/badge/version-0.8.0-yellow.svg)
+![Version 0.9.0](https://img.shields.io/badge/version-0.9.0-yellow.svg)
 ![Support Vim 8.1 or above](https://img.shields.io/badge/support-Vim%208.1%20or%20above-yellowgreen.svg)
 ![Support Neovim 0.4 or above](https://img.shields.io/badge/support-Neovim%200.4%20or%20above-yellowgreen.svg)
 [![Powered by vital.vim](https://img.shields.io/badge/powered%20by-vital.vim-80273f.svg)](https://github.com/vim-jp/vital.vim)
@@ -122,10 +122,10 @@ The following mappings/actions are available among any fern buffer
 | `?`                 | `help`                 | Output mappings/actions to a pseudo buffer as help                                    |
 | `<C-c>`             | `cancel`               | Cancel any operation under processing                                                 |
 | `<C-l>`             | `redraw`               | Redraw content of the buffer                                                          |
-|                     | `debug`                | Show a debug information of a node under the cursor                                    |
+|                     | `debug`                | Show a debug information of a node under the cursor                                   |
 | `<F5>`              | `reload`               | Reload node itself and descendent nodes of a node under the cursor                    |
 |                     | `expand`               | Expand (open) a node under the cursor                                                 |
-| `-`                 | `mark-toggle`          | (Un)select a node |
+| `-`                 | `mark-toggle`          | (Un)select a node                                                                     |
 | `h`                 | `collapse`             | Collapse (close) a node under the cursor                                              |
 | `i`                 | `reveal`               | Reveal (recursively focus and expand) a node which input by user                      |
 |                     | `enter`                | Enter a new tree which root node is a node under the cursor                           |
@@ -149,8 +149,8 @@ The following mappings/actions are available among any fern buffer
 |                     | `open:edit-or-split`   | Open a node under the cursor with `edit` or `split` when the buffer is `modified`     |
 |                     | `open:edit-or-vsplit`  | Open a node under the cursor with `edit` or `vsplit` when the buffer is `modified`    |
 |                     | `open:edit-or-tabedit` | Open a node under the cursor with `edit` or `tabedit` when the buffer is `modified`   |
-| `<Return>`, `<C-m>` |                        | Invoke `open` when a node under the cursor is leaf. Otherwise invoke `enter`           |
-| `l`                 |                        | Invoke `open` when a node under the cursor is leaf. Otherwise invoke `expand`          |
+| `<Return>`, `<C-m>` |                        | Invoke `open` when a node under the cursor is leaf. Otherwise invoke `enter`          |
+| `l`                 |                        | Invoke `open` when a node under the cursor is leaf. Otherwise invoke `expand`         |
 | `z`                 | `zoom`                 | An alias of `zoom:half` action                                                        |
 |                     | `zoom:half`            | Temporary increase the width of a project drawer. It does nothing on split windows    |
 |                     | `zoom:full`            | Temporary increase the width of a project drawer. It does nothing on split windows    |
