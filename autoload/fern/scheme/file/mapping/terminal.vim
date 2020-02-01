@@ -18,6 +18,14 @@ function! fern#scheme#file#mapping#terminal#init(disable_default_mappings) abort
   nnoremap <buffer><silent> <Plug>(fern-action-terminal:edit-or-vsplit)  :<C-u>call <SID>call('terminal', 'edit/vsplit')<CR>
   nnoremap <buffer><silent> <Plug>(fern-action-terminal:edit-or-tabedit) :<C-u>call <SID>call('terminal', 'edit/tabedit')<CR>
 
+  " Smart map
+  nmap <buffer><silent><expr>
+        \ <Plug>(fern-action-terminal:side)
+        \ fern#smart#drawer(
+        \   "\<Plug>(fern-action-terminal:left)",
+        \   "\<Plug>(fern-action-terminal:right)",
+        \ )
+
   " Alias map
   nmap <buffer><silent> <Plug>(fern-action-terminal:edit) <Plug>(fern-action-terminal:edit-or-error)
   nmap <buffer><silent> <Plug>(fern-action-terminal) <Plug>(fern-action-terminal:edit)
@@ -31,19 +39,36 @@ function! s:call(name, ...) abort
 endfunction
 
 function! s:map_terminal(helper, opener) abort
-  let node = a:helper.get_cursor_node()
-  let node = node.status is# a:helper.STATUS_NONE ? node.__owner : node
-  if exists('*termopen')
-    let Term = function("termopen", [&shell, { 'cwd': node._path }])
-  elseif exists('*term_start')
-    let Term = function("term_start", [&shell, { 'cwd': node._path, 'curwin': 1 }])
-  else
-    return s:Promise.reject("neither termopen nor term_start exist")
-  endif
-  call fern#internal#buffer#open("", {
-        \ 'opener': a:opener,
-        \ 'locator': a:helper.is_drawer(),
-        \})
-  call Term()
-  return s:Promise.resolve()
+  let STATUS_NONE = a:helper.STATUS_NONE
+  let nodes = a:helper.get_selected_nodes()
+  let nodes = map(copy(nodes), { _, n -> n.status is# STATUS_NONE ? n.__owner : n })
+  let winid = win_getid()
+  try
+    for node in nodes
+      call win_gotoid(winid)
+      call fern#internal#buffer#open("", {
+            \ 'opener': a:opener,
+            \ 'locator': a:helper.is_drawer(),
+            \})
+      enew | call s:term(node._path)
+    endfor
+    return a:helper.update_marks([])
+        \.then({ -> a:helper.redraw() })
+  catch
+    return s:Promise.reject(v:exception)
+  endtry
 endfunction
+
+if exists('*termopen')
+  function! s:term(cwd) abort
+    call termopen(&shell, { 'cwd': a:cwd })
+  endfunction
+elseif exists('*term_start')
+  function! s:term(cwd) abort
+    call term_start(&shell, { 'cwd': a:cwd, 'curwin': 1 })
+  endfunction
+else
+  function! s:term(cwd) abort
+    throw 'neither termopen nor term_start exist'
+  endfunction
+endif
