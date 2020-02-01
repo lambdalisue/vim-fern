@@ -4,9 +4,9 @@ let s:Promise = vital#fern#import('Async.Promise')
 function! fern#internal#mapping#call(fn, ...) abort
   try
     call s:Promise.resolve(call('fern#helper#call', [a:fn] + a:000))
-          \.catch({ e -> fern#message#error(e) })
+          \.catch({ e -> fern#logger#error(e) })
   catch
-    call fern#message#error(v:exception)
+    call fern#logger#error(v:exception)
   endtry
 endfunction
 

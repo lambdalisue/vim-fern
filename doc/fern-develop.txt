@@ -422,6 +422,30 @@ fern#scheme#{scheme}#provider#new()
 	Return a provider instance (|fern-develop-provider|) of the {scheme}.
 
 =============================================================================
+LOGGER						*fern-develop-logger*
+
+Use following functions to log events.
+
+The log will be saved in |g:fern_logfile| or displayed with |echomsg| if
+|v:null| has specified to the variable.
+
+						*fern#logger#debug()*
+fern#logger#debug({object}...)
+	Log |String| representation of {object}s when |g:fern_loglevel|
+	beyonds |g:fern#logger#DEBUG|.
+
+						*fern#logger#info()*
+fern#logger#info({object}...)
+	Log |String| representation of {object}s when |g:fern_loglevel|
+	beyonds |g:fern#logger#INFO|.
+
+						*fern#logger#error()*
+fern#logger#error({object}...)
+	Log |String| representation of {object}s when |g:fern_loglevel|
+	beyonds |g:fern#logger#ERROR|.
+
+
+=============================================================================
 PROVIDER					*fern-develop-provider*
 
 A provider instance must have the following methods.

@@ -15,7 +15,7 @@ command! -nargs=*
 
 function! s:BufReadCmd() abort
   call fern#internal#viewer#init()
-        \.catch({ e -> fern#message#error(e) })
+        \.catch({ e -> fern#logger#error(e) })
 endfunction
 
 augroup fern_internal

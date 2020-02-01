@@ -129,7 +129,7 @@ function! s:BufReadCmd() abort
         \.then({ -> helper.set_cursor(cursor[1:2]) })
         \.then({ -> helper.reload_node(root.__key) })
         \.then({ -> helper.redraw() })
-        \.catch({ e -> fern#message#error(e) })
+        \.catch({ e -> fern#logger#error(e) })
 endfunction
 
 function! s:ColorScheme() abort

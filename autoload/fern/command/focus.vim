@@ -14,8 +14,8 @@ function! fern#command#focus#command(mods, qargs) abort
       call fern#internal#viewer#focus_next()
     endif
   catch
-    call fern#message#error(v:exception)
-    call fern#message#debug(v:throwpoint)
+    call fern#logger#error(v:exception)
+    call fern#logger#debug(v:throwpoint)
   endtry
 endfunction
 

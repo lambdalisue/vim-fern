@@ -192,6 +192,22 @@ VARIABLE						*fern-variable*
 	Set 1 to disable default mappings
 	Default: 0
 
+*g:fern_logfile*
+	A path |String| to log messages or |v:null| to log messages via
+	|echomsg|.
+>
+	let g:fern_logfile = "~/fern.tsv"
+<
+	Default: |v:null|
+
+*g:fern_loglevel*
+	A |Number| to indicate a current loglevel. Use the following constant
+	variable to set loglevel.
+	*g:fern#logger#DEBUG*		Debug level
+	*g:fern#logger#INFO*		Info level
+	*g:fern#logger#ERROR*		Error level
+	Default: |g:fern#logger#ERROR|
+
 -----------------------------------------------------------------------------
 COMMAND							*fern-command*
 

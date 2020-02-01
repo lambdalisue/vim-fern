@@ -1,0 +1,66 @@
+let s:Later = vital#fern#import('Async.Later')
+
+function! fern#logger#debug(...) abort
+  if g:fern_loglevel > g:fern#logger#DEBUG
+    return
+  endif
+  call call('s:log', ['DEBUG'] + a:000)
+endfunction
+
+function! fern#logger#info(...) abort
+  if g:fern_loglevel > g:fern#logger#INFO
+    return
+  endif
+  call call('s:log', ['INFO'] + a:000)
+endfunction
+
+function! fern#logger#error(...) abort
+  if g:fern_loglevel > g:fern#logger#ERROR
+    return
+  endif
+  call call('s:log', ['ERROR'] + a:000)
+endfunction
+
+function! s:log(level, ...) abort
+  let content = s:format(a:level, a:000)
+  if g:fern#logger#logfile is# v:null
+    call s:echomsg(content)
+  else
+    call s:Later.call({ -> s:writefile(content) })
+  endif
+endfunction
+
+function! s:echomsg(content) abort
+  for line in a:content
+    echomsg '[fern] ' . line
+  endfor
+endfunction
+
+function! s:writefile(content) abort
+  try
+    let time = strftime("%H:%M:%S")
+    let path = fnamemodify(expand(g:fern_logfile), ':p')
+    call mkdir(fnamemodify(path, ':h'), 'p')
+    call writefile(map(copy(a:content), { -> join([time, v:val], "\t") }), path, 'a')
+  catch
+    echohl ErrorMsg
+    echo v:exception
+    echo v:throwpoint
+    echohl None
+  endtry
+endfunction
+
+function! s:format(level, args) abort
+  let m = join(map(copy(a:args), { _, v -> type(v) is# v:t_string ? v : string(v) }))
+  return map(split(m, '\n'), { -> printf("%-5S:\t%s", a:level, v:val) })
+endfunction
+
+let g:fern#logger#DEBUG = 0
+let g:fern#logger#INFO = 1
+let g:fern#logger#ERROR = 2
+lockvar g:fern#logger#DEBUG
+lockvar g:fern#logger#INFO
+lockvar g:fern#logger#ERROR
+
+let g:fern_logfile = get(g:, 'fern_logfile', v:null)
+let g:fern_loglevel = get(g:, 'fern_loglevel', g:fern#logger#ERROR)

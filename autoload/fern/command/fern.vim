@@ -65,8 +65,8 @@ function! fern#command#fern#command(mods, qargs) abort
             \})
     endif
   catch
-    call fern#message#error(v:exception)
-    call fern#message#debug(v:throwpoint)
+    call fern#logger#error(v:exception)
+    call fern#logger#debug(v:throwpoint)
   endtry
 endfunction
 
