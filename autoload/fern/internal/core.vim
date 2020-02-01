@@ -20,7 +20,7 @@ function! fern#internal#core#new(url, provider, ...) abort
         \ 'nodes': [root],
         \ 'visible_nodes': [root],
         \ 'marks': [],
-        \ 'hide': g:fern_default_hide,
+        \ 'hidden': g:fern_default_hidden,
         \ 'include': g:fern_default_include,
         \ 'exclude': g:fern_default_exclude,
         \}
@@ -36,7 +36,7 @@ function! fern#internal#core#update_nodes(fern, nodes) abort
   let a:fern.nodes = a:nodes
   let include = a:fern.include
   let exclude = a:fern.exclude
-  let Hidden = !a:fern.hide
+  let Hidden = a:fern.hidden
        \ ? { -> 1 }
        \ : { n -> n.status is# s:STATUS_EXPANDED || !n.hidden }
   let Include = empty(include)

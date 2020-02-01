@@ -16,7 +16,7 @@ Describe fern#internal#core
       Assert KeyExists(fern, 'nodes')
       Assert KeyExists(fern, 'visible_nodes')
       Assert KeyExists(fern, 'marks')
-      Assert KeyExists(fern, 'hide')
+      Assert KeyExists(fern, 'hidden')
       Assert KeyExists(fern, 'include')
       Assert KeyExists(fern, 'exclude')
     End
@@ -131,10 +131,10 @@ Describe fern#internal#core
             \])
     End
 
-    It does NOT remove HIDDEN nodes from 'visible_nodes' when fern.hide is FALSE
+    It does NOT remove HIDDEN nodes from 'visible_nodes' when fern.hidden is TRUE
       let children[1].hidden = 1
       let children[3].hidden = 1
-      let fern.hide = 0
+      let fern.hidden = 1
       let [r, e] = Promise.wait(
             \ fern#internal#core#update_nodes(fern, [fern.root] + children),
             \ { 'timeout': TIMEOUT },

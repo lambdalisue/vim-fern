@@ -264,11 +264,11 @@ function! s:helper.set_mark(key, value) abort
   return self.update_marks(self.fern.marks)
 endfunction
 
-function! s:helper.set_hide(value) abort
-  if !xor(self.fern.hide, a:value)
+function! s:helper.set_hidden(value) abort
+  if !xor(self.fern.hidden, a:value)
     return s:Promise.resolve()
   endif
-  let self.fern.hide = a:value
+  let self.fern.hidden = a:value
   return self.update_nodes(self.fern.nodes)
 endfunction
 

@@ -1,14 +1,14 @@
 let s:Prompt = vital#fern#import('Prompt')
 
 function! fern#mapping#filter#init(disable_default_mappings) abort
-  nnoremap <buffer><silent> <Plug>(fern-action-hide-set)    :<C-u>call <SID>call('hide_set')<CR>
-  nnoremap <buffer><silent> <Plug>(fern-action-hide-unset)  :<C-u>call <SID>call('hide_unset')<CR>
-  nnoremap <buffer><silent> <Plug>(fern-action-hide-toggle) :<C-u>call <SID>call('hide_toggle')<CR>
+  nnoremap <buffer><silent> <Plug>(fern-action-hidden-set)    :<C-u>call <SID>call('hidden_set')<CR>
+  nnoremap <buffer><silent> <Plug>(fern-action-hidden-unset)  :<C-u>call <SID>call('hidden_unset')<CR>
+  nnoremap <buffer><silent> <Plug>(fern-action-hidden-toggle) :<C-u>call <SID>call('hidden_toggle')<CR>
   nnoremap <buffer><silent> <Plug>(fern-action-include)     :<C-u>call <SID>call('include')<CR>
   nnoremap <buffer><silent> <Plug>(fern-action-exclude)     :<C-u>call <SID>call('exclude')<CR>
 
   if !a:disable_default_mappings
-    nmap <buffer><nowait> !  <Plug>(fern-action-hide-toggle)
+    nmap <buffer><nowait> !  <Plug>(fern-action-hidden-toggle)
     nmap <buffer><nowait> fi <Plug>(fern-action-include)
     nmap <buffer><nowait> fe <Plug>(fern-action-exclude)
   endif
@@ -21,21 +21,21 @@ function! s:call(name, ...) abort
         \)
 endfunction
 
-function! s:map_hide_set(helper) abort
-  return a:helper.set_hide(1)
+function! s:map_hidden_set(helper) abort
+  return a:helper.set_hidden(1)
         \.then({ -> a:helper.redraw() })
 endfunction
 
-function! s:map_hide_unset(helper) abort
-  return a:helper.set_hide(0)
+function! s:map_hidden_unset(helper) abort
+  return a:helper.set_hidden(0)
         \.then({ -> a:helper.redraw() })
 endfunction
 
-function! s:map_hide_toggle(helper) abort
-  if a:helper.fern.hide
-    return s:map_hide_unset(a:helper)
+function! s:map_hidden_toggle(helper) abort
+  if a:helper.fern.hidden
+    return s:map_hidden_unset(a:helper)
   else
-    return s:map_hide_set(a:helper)
+    return s:map_hidden_set(a:helper)
   endif
 endfunction
 

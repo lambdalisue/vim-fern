@@ -473,8 +473,8 @@ Name		Description~
 
 "label"		A |String| used to display the node in a tree view.
 
-"hide"		A 1/0 to indicate if the node should be hide. All hide nodes
-		become visible once fern enter hide mode.
+"hidden"	A 1/0 to indicate if the node should be hidden. All hidden
+		nodes become visible once fern enter hidden mode.
 
 "bufname"	A |String| buffer name used to open the node or |v:null|.
 		This value is used when users want to enter a branch node so
@@ -522,7 +522,7 @@ current buffer by calling |fern#helper#new()|.
 	"nodes"		A |List| of nodes which is handled in the tree
 	"visible_nodes"	A |List| of nodes which is displayed in the tree
 	"marks"		A |List| of marks
-	"hide"		0/1 to indicate if hide is on
+	"hidden"	1/0 to indicate if hidden mode is on
 	"include"	A |List| of |String| to include nodes
 	"exclude"	A |List| of |String| to exclude nodes
 
@@ -666,9 +666,9 @@ current buffer by calling |fern#helper#new()|.
 .set_mark({key}, {value})
 	Return a promise to set mark to a node identified by the {key}.
 
-			*fern-develop-helper.set_hide()*
-.set_hide({value})
-	Return a promise to set hide.
+			*fern-develop-helper.set_hidden()*
+.set_hidden({value})
+	Return a promise to set hidden.
 
 			*fern-develop-helper.set_include()*
 			*fern-develop-helper.set_exclude()*

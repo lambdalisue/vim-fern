@@ -34,7 +34,7 @@ Describe fern#helper
           \ 'reveal_node',
           \ 'focus_node',
           \ 'set_mark',
-          \ 'set_hide',
+          \ 'set_hidden',
           \ 'set_include',
           \ 'set_exclude',
           \ 'enter_tree',

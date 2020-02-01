@@ -213,8 +213,8 @@ VARIABLE						*fern-variable*
 	Set 1 to disable default mappings
 	Default: 0
 
-*g:fern_default_hide*
-	Set 1 to enter hide mode (show hidden files) in default.
+*g:fern_default_hidden*
+	Set 1 to enter hidden mode (show hidden files) in default.
 	Default: 0
 
 *g:fern_default_include*
