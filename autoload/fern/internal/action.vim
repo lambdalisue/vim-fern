@@ -4,7 +4,7 @@ function! fern#internal#action#init() abort
   nnoremap <buffer><silent> <Plug>(fern-action-help) :<C-u>call <SID>map_help(0)<CR>
   nnoremap <buffer><silent> <Plug>(fern-action-help:all) :<C-u>call <SID>map_help(1)<CR>
 
-  if !g:fern_disable_default_mappings
+  if !g:fern#disable_default_mappings
     nmap <buffer> a <Plug>(fern-choice)
     nmap <buffer> . <Plug>(fern-repeat)
     nmap <buffer> ? <Plug>(fern-action-help)

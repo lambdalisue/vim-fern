@@ -180,23 +180,23 @@ INTERFACE						*fern-interface*
 -----------------------------------------------------------------------------
 VARIABLE						*fern-variable*
 
-*g:fern_debug*
+*g:fern#debug*
 	Set 1 to enable fern debug mode.
 	Default: 0
 
-*g:fern_profile*
+*g:fern#profile*
 	Set 1 to enable fern profiling mode.
 	Default: 0
 
-*g:fern_logfile*
+*g:fern#logfile*
 	A path |String| to log messages or |v:null| to log messages via
 	|echomsg|.
 >
-	let g:fern_logfile = "~/fern.tsv"
+	let g:fern#logfile = "~/fern.tsv"
 <
 	Default: |v:null|
 
-*g:fern_loglevel*
+*g:fern#loglevel*
 	A |Number| to indicate a current loglevel. Use the following constant
 	variable to set loglevel.
 	*g:fern#logger#DEBUG*		Debug level
@@ -204,33 +204,33 @@ VARIABLE						*fern-variable*
 	*g:fern#logger#ERROR*		Error level
 	Default: |g:fern#logger#ERROR|
 
-*g:fern_opener*
+*g:fern#opener*
 	A default |fern-opener| used to open a fern buffer itself in split
 	windows style.
 	Default: 'edit'
 
-*g:fern_disable_default_mappings*
+*g:fern#disable_default_mappings*
 	Set 1 to disable default mappings
 	Default: 0
 
-*g:fern_default_hidden*
+*g:fern#default_hidden*
 	Set 1 to enter hidden mode (show hidden files) in default.
 	Default: 0
 
-*g:fern_default_include*
+*g:fern#default_include*
 	A default |String| pattern used to filter nodes (include).
 	Default: ''
 
-*g:fern_default_exclude*
+*g:fern#default_exclude*
 	A default |String| pattern used to filter nodes (exclude).
 	Default: ''
 
-*g:fern_renderer*
+*g:fern#renderer*
 	A |String| name of comparator used to sort tree items. Allowed value
 	is a key of |g:fern#internal#core#renderers|.
 	Default: "default"
 
-*g:fern_comparator*
+*g:fern#comparator*
 	A |String| name of comparator used to sort tree items. Allowed value
 	is a key of |g:fern#internal#core#comparators|.
 	Default: "default"

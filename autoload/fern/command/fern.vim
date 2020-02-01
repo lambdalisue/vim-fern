@@ -25,7 +25,7 @@ function! fern#command#fern#command(mods, qargs) abort
       let keep = options.pop('keep', v:null)
       let toggle = options.pop('toggle', v:null)
     else
-      let opener = options.pop('opener', g:fern_opener)
+      let opener = options.pop('opener', g:fern#opener)
       let width = v:null
       let keep = v:null
     endif

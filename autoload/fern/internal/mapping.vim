@@ -11,7 +11,7 @@ function! fern#internal#mapping#call(fn, ...) abort
 endfunction
 
 function! fern#internal#mapping#init(scheme) abort
-  let disable_default_mappings = g:fern_disable_default_mappings
+  let disable_default_mappings = g:fern#disable_default_mappings
   for name in g:fern#internal#mapping#enabled_mapping_presets
     call fern#mapping#{name}#init(disable_default_mappings)
   endfor

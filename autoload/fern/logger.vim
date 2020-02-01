@@ -1,21 +1,21 @@
 let s:Later = vital#fern#import('Async.Later')
 
 function! fern#logger#debug(...) abort
-  if g:fern_loglevel > g:fern#logger#DEBUG
+  if g:fern#loglevel > g:fern#logger#DEBUG
     return
   endif
   call call('s:log', ['DEBUG'] + a:000)
 endfunction
 
 function! fern#logger#info(...) abort
-  if g:fern_loglevel > g:fern#logger#INFO
+  if g:fern#loglevel > g:fern#logger#INFO
     return
   endif
   call call('s:log', ['INFO'] + a:000)
 endfunction
 
 function! fern#logger#error(...) abort
-  if g:fern_loglevel > g:fern#logger#ERROR
+  if g:fern#loglevel > g:fern#logger#ERROR
     return
   endif
   call call('s:log', ['ERROR'] + a:000)
@@ -23,7 +23,7 @@ endfunction
 
 function! s:log(level, ...) abort
   let content = s:format(a:level, a:000)
-  if g:fern_logfile is# v:null
+  if g:fern#logfile is# v:null
     call s:echomsg(content)
   else
     call s:Later.call({ -> s:writefile(content) })
@@ -39,7 +39,7 @@ endfunction
 function! s:writefile(content) abort
   try
     let time = strftime("%H:%M:%S")
-    let path = fnamemodify(expand(g:fern_logfile), ':p')
+    let path = fnamemodify(expand(g:fern#logfile), ':p')
     call mkdir(fnamemodify(path, ':h'), 'p')
     call writefile(map(copy(a:content), { -> join([time, v:val], "\t") }), path, 'a')
   catch

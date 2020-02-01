@@ -10,8 +10,8 @@ let s:default_comparator = function('fern#comparator#default#new')
 
 function! fern#internal#core#new(url, provider, ...) abort
   let options = extend({
-        \ 'renderer': g:fern_renderer,
-        \ 'comparator': g:fern_comparator,
+        \ 'renderer': g:fern#renderer,
+        \ 'comparator': g:fern#comparator,
         \}, a:0 ? a:1 : {},
         \)
   let root = fern#internal#node#root(a:url, a:provider)
@@ -24,9 +24,9 @@ function! fern#internal#core#new(url, provider, ...) abort
         \ 'nodes': [root],
         \ 'visible_nodes': [root],
         \ 'marks': [],
-        \ 'hidden': g:fern_default_hidden,
-        \ 'include': g:fern_default_include,
-        \ 'exclude': g:fern_default_exclude,
+        \ 'hidden': g:fern#default_hidden,
+        \ 'include': g:fern#default_include,
+        \ 'exclude': g:fern#default_exclude,
         \}
   return fern
 endfunction
