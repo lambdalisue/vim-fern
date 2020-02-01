@@ -1,6 +1,7 @@
 let s:Config = vital#fern#import('Config')
 let s:AsyncLambda = vital#fern#import('Async.Lambda')
 
+let s:PATTERN = '^$~.*[]\'
 let s:STATUS_NONE = g:fern#internal#node#STATUS_NONE
 let s:STATUS_COLLAPSED = g:fern#internal#node#STATUS_COLLAPSED
 
@@ -40,10 +41,20 @@ endfunction
 
 function! s:syntax() abort
   syntax clear
-  syntax match FernRoot   /\%1l.*/
-  syntax match FernLeaf   /^\s*|  /
-  syntax match FernBranch /^\s*|[+-] .*/
-  syntax match FernMarked /^* .*/
+  execute printf(
+        \ 'syntax match FernLeaf /^\s*%s/',
+        \ escape(g:fern#renderer#default#leaf_symbol, s:PATTERN),
+        \)
+  execute printf(
+        \ 'syntax match FernBranch /^\s*\%%(%s\|%s\).*/',
+        \ escape(g:fern#renderer#default#collapsed_symbol, s:PATTERN),
+        \ escape(g:fern#renderer#default#expanded_symbol, s:PATTERN),
+        \)
+  syntax match FernRoot /\%1l.*/
+  execute printf(
+        \ 'syntax match FernMarked /^%s.*/',
+        \ escape(g:fern#renderer#default#marked_symbol, s:PATTERN),
+        \)
 endfunction
 
 function! s:highlight() abort
