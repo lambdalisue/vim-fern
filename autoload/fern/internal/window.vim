@@ -1,5 +1,4 @@
 let s:Config = vital#fern#import('Config')
-let s:WindowLocator = vital#fern#import('Vim.Window.Locator')
 let s:WindowSelector = vital#fern#import('Vim.Window.Selector')
 
 function! fern#internal#window#find(predicator, ...) abort
@@ -22,14 +21,22 @@ endfunction
 
 function! fern#internal#window#locate(...) abort
   let winnr = a:0 ? a:1 : winnr('#')
-  call s:WindowLocator.focus(winnr('#'))
+  call fern#internal#locator#focus(winnr('#'))
 endfunction
 
 function! fern#internal#window#select() abort
-  let ws = filter(
-        \ range(1, winnr('$')),
-        \ { -> s:WindowLocator.is_suitable(v:val) },
-        \)
+  let threshold = g:fern#internal#locator#threshold
+  while threshold > 0
+    let ws = filter(
+          \ range(1, winnr('$')),
+          \ { -> fern#internal#locator#score(v:val) >= threshold },
+          \)
+    if empty(ws)
+      let threshold -= 1
+    else
+      break
+    endif
+  endwhile
   if empty(ws)
     let ws = range(1, winnr('$'))
   endif
@@ -39,16 +46,5 @@ function! fern#internal#window#select() abort
 endfunction
 
 call s:Config.config(expand('<sfile>:p'), {
-      \ 'locator_threshold': {
-      \   'winwidth': 0,
-      \   'winheight': 0,
-      \ },
       \ 'auto_select': 1,
       \})
-call s:WindowLocator.set_thresholds(g:fern#internal#window#locator_threshold)
-
-" NOTE:
-" g:fern#internal#window#locator_threshold is effective only BEFORE initialization
-" so lock this variable to tell users that this variable is not effective
-" anymore.
-lockvar 2 g:fern#internal#window#locator_threshold

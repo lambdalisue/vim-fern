@@ -12,6 +12,5 @@ Config
 Lambda
 System.Filepath
 Vim.Window.Cursor
-Vim.Window.Locator
 Vim.Window.Selector
 App.Flag
