@@ -59,18 +59,21 @@ function! s:select(winnrs, ...) abort
     let store[winnr] = getwinvar(winnr, '&statusline')
   endfor
   try
+    for num in range(length + 1)
+      execute printf('cnoremap <buffer><silent> %s %s<CR>', num, num)
+    endfor
     call map(keys(store), { k, v -> setwinvar(v, '&statusline', s:_statusline(v, k + 1)) })
     redrawstatus
-    let n = s:Prompt.select(
-          \ printf('choose number [1-%d]: ', length),
-          \ len(length . ''),
-          \)
+    let n = input(printf('choose number [1-%d]: ', length))
     redraw | echo
     if n is# v:null
       return 1
     endif
     call win_gotoid(win_getid(a:winnrs[n - 1]))
   finally
+    for num in range(length + 1)
+      execute printf('silent! cunmap <buffer> %s', num)
+    endfor
     call map(keys(store), { _, v -> setwinvar(v, '&statusline', store[v]) })
     redrawstatus
   endtry
