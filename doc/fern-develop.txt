@@ -3,6 +3,12 @@
 Author:  Alisue <lambdalisue@hashnote.net>
 License: MIT license
 
+WARNING
+
+This documentation is UNSTABLE. Anything will be changed without announcement.
+
+WARNING
+
 =============================================================================
 SPEC						*fern-develop-spec*
 
