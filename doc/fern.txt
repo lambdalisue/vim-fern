@@ -288,7 +288,7 @@ fern#smart#leaf({leaf}, {collapsed}[, {expanded}])
 	      \   "\<Plug>(fern-action-collapse)",
 	      \ )
 <
-							*fern#smart#style()*
+							*fern#smart#drawer()*
 fern#smart#drawer({drawer}, {explorer})
 	Return one of a given mapping expression determined by the style of
 	a current buffer. If the current buffer is drawer, the {drawer} is
