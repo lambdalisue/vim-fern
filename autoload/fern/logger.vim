@@ -61,6 +61,3 @@ let g:fern#logger#ERROR = 2
 lockvar g:fern#logger#DEBUG
 lockvar g:fern#logger#INFO
 lockvar g:fern#logger#ERROR
-
-let g:fern_logfile = get(g:, 'fern_logfile', v:null)
-let g:fern_loglevel = get(g:, 'fern_loglevel', g:fern#logger#ERROR)

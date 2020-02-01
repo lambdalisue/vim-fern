@@ -188,10 +188,6 @@ VARIABLE						*fern-variable*
 	Set 1 to enable fern profiling mode.
 	Default: 0
 
-*g:fern_disable_default_mappings*
-	Set 1 to disable default mappings
-	Default: 0
-
 *g:fern_logfile*
 	A path |String| to log messages or |v:null| to log messages via
 	|echomsg|.
@@ -207,6 +203,10 @@ VARIABLE						*fern-variable*
 	*g:fern#logger#INFO*		Info level
 	*g:fern#logger#ERROR*		Error level
 	Default: |g:fern#logger#ERROR|
+
+*g:fern_disable_default_mappings*
+	Set 1 to disable default mappings
+	Default: 0
 
 -----------------------------------------------------------------------------
 COMMAND							*fern-command*
@@ -241,7 +241,7 @@ COMMAND							*fern-command*
 	"topleft split".)
 
 							*:Fern-drawer*
-:Fern {url} -drawer [-reveal={path}] [-width={width}] [-keep] [-toggle]
+:Fern {url} -drawer [-width={width}] [-keep] [-toggle] [-reveal={path}]
 	Open a fern buffer in project drawer style with the {width}.
 
 	If the {width} is specified, the width of the window is regulated to
