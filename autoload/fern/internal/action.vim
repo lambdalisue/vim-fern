@@ -1,7 +1,8 @@
 function! fern#internal#action#init() abort
   nnoremap <buffer><silent> <Plug>(fern-choice) :<C-u>call <SID>map_choice()<CR>
   nnoremap <buffer><silent> <Plug>(fern-repeat) :<C-u>call <SID>map_repeat()<CR>
-  nnoremap <buffer><silent> <Plug>(fern-action-help) :<C-u>call <SID>map_help()<CR>
+  nnoremap <buffer><silent> <Plug>(fern-action-help) :<C-u>call <SID>map_help(0)<CR>
+  nnoremap <buffer><silent> <Plug>(fern-action-help:all) :<C-u>call <SID>map_help(1)<CR>
 
   if !g:fern_disable_default_mappings
     nmap <buffer> a <Plug>(fern-choice)
@@ -72,7 +73,7 @@ function! s:map_repeat() abort
   call fern#internal#action#call(b:fern_action.previous)
 endfunction
 
-function! s:map_help() abort
+function! s:map_help(all) abort
   let Sort = { a, b -> s:compare(a[1], b[1]) }
   let rs = split(execute('nmap'), '\n')
   call map(rs, { _, v -> v[3:] })
@@ -80,7 +81,6 @@ function! s:map_help() abort
 
   let rs1 = map(copy(rs), { _, v -> v + [matchstr(v[1], '^<Plug>(fern-action-\zs.*\ze)$')] })
   call filter(rs1, { _, v -> !empty(v[2]) })
-  call filter(rs1, { _, v -> v[0] !~# '^<Plug>' })
   call map(rs1, { _, v -> [v[0], v[2], v[1]] })
 
   let rs2 = map(copy(rs), { _, v -> v + [matchstr(v[0], '^<Plug>(fern-action-\zs.*\ze)$')] })
@@ -88,6 +88,9 @@ function! s:map_help() abort
   call map(rs2, { _, v -> ['', v[2], v[0]] })
 
   let rs = uniq(sort(rs1 + rs2, Sort), Sort)
+  if !a:all
+    call filter(rs, { -> v:val[1] !~# ':' || !empty(v:val[0]) })
+  endif
   let len0 = max(map(copy(rs), { -> len(v:val[0]) }))
   let len1 = max(map(copy(rs), { -> len(v:val[1]) }))
   let len2 = max(map(copy(rs), { -> len(v:val[2]) }))
@@ -97,7 +100,13 @@ function! s:map_help() abort
        \   printf(printf("%%-%dS", len2), v[2]),
        \ ]
        \})
+
   call map(rs, { -> join(v:val, "  ") })
+  if !a:all
+    echohl Title
+    echo "NOTE: Some actions are concealed. Use 'help:all' action to see all actions."
+    echohl None
+  endif
   echo join(rs, "\n")
 endfunction
 
