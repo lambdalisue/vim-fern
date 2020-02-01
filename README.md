@@ -124,8 +124,7 @@ The following mappings/actions are available among any fern buffer
 | `<C-l>`             | `redraw`               | Redraw content of the buffer                                                          |
 |                     | `debug`                | Show a debug information of a node under the cursor                                    |
 | `<F5>`              | `reload`               | Reload node itself and descendent nodes of a node under the cursor                    |
-| `-`                 | `mark-toggle`          | (Un)select the node |
-| `l`                 | `expand`               | Expand (open) a node under the cursor                                                 |
+| `-`                 | `mark-toggle`          | (Un)select a node |
 | `h`                 | `collapse`             | Collapse (close) a node under the cursor                                              |
 | `i`                 | `reveal`               | Reveal (recursively focus and expand) a node which input by user                      |
 |                     | `enter`                | Enter a new tree which root node is a node under the cursor                           |
@@ -149,8 +148,8 @@ The following mappings/actions are available among any fern buffer
 |                     | `open:edit-or-split`   | Open a node under the cursor with `edit` or `split` when the buffer is `modified`     |
 |                     | `open:edit-or-vsplit`  | Open a node under the cursor with `edit` or `vsplit` when the buffer is `modified`    |
 |                     | `open:edit-or-tabedit` | Open a node under the cursor with `edit` or `tabedit` when the buffer is `modified`   |
-| `<Return>`, `<C-m>` |                        | Invoke `open` whe a node under the cursor is leaf. Otherwise invoke `enter`           |
-| `l`                 |                        | Invoke `open` whe a node under the cursor is leaf. Otherwise invoke `expand`          |
+| `<Return>`, `<C-m>` |                        | Invoke `open` when a node under the cursor is leaf. Otherwise invoke `enter`           |
+| `l`                 |                        | Invoke `open` when a node under the cursor is leaf. Otherwise invoke `expand`          |
 | `z`                 | `zoom`                 | An alias of `zoom:half` action                                                        |
 |                     | `zoom:half`            | Temporary increase the width of a project drawer. It does nothing on split windows    |
 |                     | `zoom:full`            | Temporary increase the width of a project drawer. It does nothing on split windows    |
