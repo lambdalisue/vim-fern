@@ -1,4 +1,4 @@
-Describe fern#internal#renderer
+Describe fern#renderer#default
   Before
     let TIMEOUT = 5000
     let STATUS_EXPANDED = g:fern#internal#node#STATUS_EXPANDED
@@ -23,13 +23,13 @@ Describe fern#internal#renderer
     End
 
     It returns a promise
-      let p = fern#internal#renderer#render(nodes, [])
+      let p = fern#renderer#default#render(nodes, [])
       Assert True(Promise.is_promise(p))
     End
 
     It resolves to a string list for a buffer content
       let [r, e] = Promise.wait(
-            \ fern#internal#renderer#render(nodes, []),
+            \ fern#renderer#default#render(nodes, []),
             \ { 'timeout': TIMEOUT },
             \)
       Assert Equals(e, v:null)
@@ -48,7 +48,7 @@ Describe fern#internal#renderer
             \ ['shallow', 'gamma'],
             \]
       let [r, e] = Promise.wait(
-            \ fern#internal#renderer#render(nodes, marks),
+            \ fern#renderer#default#render(nodes, marks),
             \ { 'timeout': TIMEOUT },
             \)
       Assert Equals(e, v:null)
@@ -64,13 +64,13 @@ Describe fern#internal#renderer
 
   Describe #syntax()
     It does not raise exception
-      call fern#internal#renderer#syntax()
+      call fern#renderer#default#syntax()
     End
   End
 
   Describe #highlight()
     It does not raise exception
-      call fern#internal#renderer#highlight()
+      call fern#renderer#default#highlight()
     End
   End
 End

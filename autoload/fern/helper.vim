@@ -38,7 +38,8 @@ endfunction
 
 function! s:helper.get_cursor_node() abort
   let cursor = self.get_cursor()
-  return get(self.fern.visible_nodes, cursor[0] - 1, v:null)
+  let index = fern#renderer#default#index(cursor[0])
+  return get(self.fern.visible_nodes, index, v:null)
 endfunction
 
 function! s:helper.get_marked_nodes() abort
@@ -123,7 +124,7 @@ endfunction
 function! s:helper.redraw() abort
   let Profile = fern#profile#start("fern#helper:helper.redraw")
   return s:Promise.resolve()
-        \.then({ -> fern#internal#renderer#render(
+        \.then({ -> fern#renderer#default#render(
         \   self.fern.visible_nodes,
         \   self.fern.marks,
         \ )
@@ -245,7 +246,8 @@ function! s:helper.focus_node(key, ...) abort
   let Profile = fern#profile#start("fern#helper:helper.focus_node")
   let current = self.get_cursor_node()
   if options.previous is# v:null || options.previous == current
-    call self.set_cursor([index + 1 + options.offset, 1])
+    let lnum = fern#renderer#default#lnum(index + options.offset)
+    call self.set_cursor([lnum, 1])
   endif
   return s:Promise.resolve()
         \.finally({ -> Profile() })

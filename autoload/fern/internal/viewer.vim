@@ -84,11 +84,11 @@ function! s:init() abort
     call fern#internal#mapping#init(scheme)
     call fern#internal#drawer#init()
     call fern#internal#spinner#start()
-    call fern#internal#renderer#highlight()
+    call fern#renderer#default#highlight()
 
     " now the buffer is ready so set filetype to emit FileType
     setlocal filetype=fern
-    call fern#internal#renderer#syntax()
+    call fern#renderer#default#syntax()
     call fern#internal#action#init()
 
     let reveal = split(fri.fragment, '/')
@@ -120,7 +120,7 @@ function! s:notify(bufnr, error) abort
 endfunction
 
 function! s:BufReadCmd() abort
-  call fern#internal#renderer#syntax()
+  call fern#renderer#default#syntax()
   let helper = fern#helper#new()
   let root = helper.get_root_node()
   let cursor = get(b:, 'fern_cursor', getcurpos())
@@ -133,5 +133,5 @@ function! s:BufReadCmd() abort
 endfunction
 
 function! s:ColorScheme() abort
-  call fern#internal#renderer#highlight()
+  call fern#renderer#default#highlight()
 endfunction
