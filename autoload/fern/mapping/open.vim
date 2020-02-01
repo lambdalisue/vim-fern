@@ -69,7 +69,7 @@ function! s:map_open(helper, opener) abort
     let winid = win_getid()
     for node in nodes
       call win_gotoid(winid)
-      call fern#lib#buffer#open(expand(node.bufname), {
+      call fern#internal#buffer#open(expand(node.bufname), {
             \ 'opener': a:opener,
             \ 'locator': a:helper.is_drawer(),
             \})

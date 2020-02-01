@@ -46,7 +46,7 @@ function! s:map_terminal(helper, opener) abort
   try
     for node in nodes
       call win_gotoid(winid)
-      call fern#lib#buffer#open("", {
+      call fern#internal#buffer#open("", {
             \ 'opener': a:opener,
             \ 'locator': a:helper.is_drawer(),
             \})
