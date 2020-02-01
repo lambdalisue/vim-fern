@@ -124,6 +124,7 @@ The following mappings/actions are available among any fern buffer
 | `<C-l>`             | `redraw`               | Redraw content of the buffer                                                          |
 |                     | `debug`                | Show a debug information of a node under the cursor                                    |
 | `<F5>`              | `reload`               | Reload node itself and descendent nodes of a node under the cursor                    |
+|                     | `expand`               | Expand (open) a node under the cursor                                                 |
 | `-`                 | `mark-toggle`          | (Un)select a node |
 | `h`                 | `collapse`             | Collapse (close) a node under the cursor                                              |
 | `i`                 | `reveal`               | Reveal (recursively focus and expand) a node which input by user                      |
