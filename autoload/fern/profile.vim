@@ -9,13 +9,19 @@ function! fern#profile#start(name) abort
         \ 'start': now,
         \ 'previous': now,
         \}
-  call fern#message#info(s:format(a:name), "enter")
+  echomsg s:format(a:name, "enter")
   let s:indent += 1
   return funcref('s:profile_leave', [ns, a:name])
 endfunction
 
-function! s:format(name) abort
-  return repeat("| ", s:indent) . a:name
+function! s:format(name, label, ...) abort
+  return printf(
+        \ "%s%s [%s] %s",
+        \ repeat("| ", s:indent),
+        \ a:name,
+        \ a:label,
+        \ join(a:000),
+        \)
 endfunction
 
 function! s:profile_leave(ns, name, ...) abort
@@ -32,5 +38,5 @@ function! s:profile_leave(ns, name, ...) abort
   if a:0 is# 0
     let s:indent -= 1
   endif
-  call fern#message#info(s:format(a:name), label, profile)
+  echomsg s:format(a:name, label, profile)
 endfunction
