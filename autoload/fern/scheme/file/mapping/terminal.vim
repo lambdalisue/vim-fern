@@ -39,14 +39,24 @@ function! s:call(name, ...) abort
 endfunction
 
 function! s:map_terminal(helper, opener) abort
-  let node = a:helper.get_cursor_node()
-  let node = node.status is# a:helper.STATUS_NONE ? node.__owner : node
-  call fern#lib#buffer#open("", {
-        \ 'opener': a:opener,
-        \ 'locator': a:helper.is_drawer(),
-        \})
-  call s:term(node._path)
-  return s:Promise.resolve()
+  let STATUS_NONE = a:helper.STATUS_NONE
+  let nodes = a:helper.get_selected_nodes()
+  let nodes = map(copy(nodes), { _, n -> n.status is# STATUS_NONE ? n.__owner : n })
+  let winid = win_getid()
+  try
+    for node in nodes
+      call win_gotoid(winid)
+      call fern#lib#buffer#open("", {
+            \ 'opener': a:opener,
+            \ 'locator': a:helper.is_drawer(),
+            \})
+      enew | call s:term(node._path)
+    endfor
+    return a:helper.update_marks([])
+        \.then({ -> a:helper.redraw() })
+  catch
+    return s:Promise.reject(v:exception)
+  endtry
 endfunction
 
 if exists('*termopen')

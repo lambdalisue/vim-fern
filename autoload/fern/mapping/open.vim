@@ -60,18 +60,22 @@ function! s:call(name, ...) abort
 endfunction
 
 function! s:map_open(helper, opener) abort
-  let node = a:helper.get_cursor_node()
-  if node is# v:null
-    return s:Promise.reject("no node found on a cursor line")
-  elseif node.bufname is# v:null
-    return s:Promise.reject("the node does not have bufname")
+  let nodes = a:helper.get_selected_nodes()
+  let nodes = filter(copy(nodes), { -> v:val.bufname isnot# v:null })
+  if empty(nodes)
+    return s:Promise.reject("no node found which has bufname")
   endif
   try
-    call fern#internal#buffer#open(expand(node.bufname), {
-          \ 'opener': a:opener,
-          \ 'locator': a:helper.is_drawer(),
-          \})
-    return s:Promise.resolve()
+    let winid = win_getid()
+    for node in nodes
+      call win_gotoid(winid)
+      call fern#lib#buffer#open(expand(node.bufname), {
+            \ 'opener': a:opener,
+            \ 'locator': a:helper.is_drawer(),
+            \})
+    endfor
+    return a:helper.update_marks([])
+        \.then({ -> a:helper.redraw() })
   catch
     return s:Promise.reject(v:exception)
   endtry
