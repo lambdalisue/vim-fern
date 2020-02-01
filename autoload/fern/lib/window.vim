@@ -40,8 +40,8 @@ endfunction
 
 call s:Config.config(expand('<sfile>:p'), {
       \ 'locator_threshold': {
-      \   'winwidth': &columns / 4,
-      \   'winheight': &lines / 3,
+      \   'winwidth': 0,
+      \   'winheight': 0,
       \ },
       \ 'auto_select': 1,
       \})
