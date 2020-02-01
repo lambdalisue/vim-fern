@@ -23,7 +23,7 @@ function! fern#internal#viewer#focus_next(...) abort
         \}, a:0 ? a:1 : {},
         \)
   let P = { n -> bufname(winbufnr(n)) =~# '^fern:' && options.predicator(n) }
-  let winnr = fern#lib#window#find(P, options.origin)
+  let winnr = fern#internal#window#find(P, options.origin)
   if winnr
     execute printf('%dwincmd w', winnr)
     return 1
@@ -37,7 +37,7 @@ function! fern#internal#viewer#do_next(command, ...) abort
 endfunction
 
 function! s:open(bufname, options, resolve, reject) abort
-  call fern#lib#buffer#open(a:bufname . '$', a:options)
+  call fern#internal#buffer#open(a:bufname . '$', a:options)
   let b:fern_notifier = {
         \ 'resolve': a:resolve,
         \ 'reject': a:reject,

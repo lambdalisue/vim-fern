@@ -1,4 +1,4 @@
-Describe fern#lib#buffer
+Describe fern#internal#buffer
   After all
     %bwipeout!
   End
@@ -18,7 +18,7 @@ Describe fern#lib#buffer
             \ "Friend",
             \])
       new
-      call fern#lib#buffer#replace(bufnr, [
+      call fern#internal#buffer#replace(bufnr, [
             \ "Hello",
             \ "World",
             \])
@@ -36,7 +36,7 @@ Describe fern#lib#buffer
             \ "Friend",
             \])
       new
-      call fern#lib#buffer#replace(bufnr, [
+      call fern#internal#buffer#replace(bufnr, [
             \ "hello",
             \ "darkness",
             \ "my",
@@ -63,7 +63,7 @@ Describe fern#lib#buffer
             \])
       setlocal nomodifiable
       new
-      call fern#lib#buffer#replace(bufnr, [
+      call fern#internal#buffer#replace(bufnr, [
             \ "Hello",
             \ "World",
             \])
@@ -85,7 +85,7 @@ Describe fern#lib#buffer
             \])
       setlocal nomodified
       new
-      call fern#lib#buffer#replace(bufnr, [
+      call fern#internal#buffer#replace(bufnr, [
             \ "Hello",
             \ "World",
             \])
@@ -105,7 +105,7 @@ Describe fern#lib#buffer
             \])
       setlocal modified
       new
-      call fern#lib#buffer#replace(bufnr, [
+      call fern#internal#buffer#replace(bufnr, [
             \ "Hello",
             \ "World",
             \])
@@ -119,19 +119,19 @@ Describe fern#lib#buffer
 
   Describe #open()
     It opens a new buffer with opener
-      call fern#lib#buffer#open('hello', {
+      call fern#internal#buffer#open('hello', {
             \ 'opener': 'edit',
             \})
       Assert Equals(winnr('$'), 1)
       %bwipeout!
 
-      call fern#lib#buffer#open('hello', {
+      call fern#internal#buffer#open('hello', {
             \ 'opener': 'split',
             \})
       Assert Equals(winnr('$'), 2)
       %bwipeout!
 
-      call fern#lib#buffer#open('hello', {
+      call fern#internal#buffer#open('hello', {
             \ 'opener': 'vsplit',
             \})
       Assert Equals(winnr('$'), 2)

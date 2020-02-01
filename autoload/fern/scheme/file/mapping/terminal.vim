@@ -40,7 +40,7 @@ function! s:map_terminal(helper, opener) abort
   else
     return s:Promise.reject("neither termopen nor term_start exist")
   endif
-  call fern#lib#buffer#open("", {
+  call fern#internal#buffer#open("", {
         \ 'opener': a:opener,
         \ 'locator': a:helper.is_drawer(),
         \})

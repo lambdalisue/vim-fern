@@ -67,7 +67,7 @@ function! s:map_open(helper, opener) abort
     return s:Promise.reject("the node does not have bufname")
   endif
   try
-    call fern#lib#buffer#open(expand(node.bufname), {
+    call fern#internal#buffer#open(expand(node.bufname), {
           \ 'opener': a:opener,
           \ 'locator': a:helper.is_drawer(),
           \})

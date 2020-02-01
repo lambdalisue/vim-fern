@@ -1,4 +1,4 @@
-Describe fern#lib#window
+Describe fern#internal#window
   After all
     %bwipeout!
   End
@@ -15,7 +15,7 @@ Describe fern#lib#window
       new foo4
       new foo5
       let Predicator = { n -> bufname(winbufnr(n)) ==# 'foo3' }
-      let winnr = fern#lib#window#find(Predicator)
+      let winnr = fern#internal#window#find(Predicator)
       Assert Equals(bufname(winbufnr(winnr)), 'foo3')
     End
   End

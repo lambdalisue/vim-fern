@@ -129,7 +129,7 @@ function! s:helper.redraw() abort
         \   self.fern.marks,
         \ )
         \})
-        \.then({ v -> fern#lib#buffer#replace(self.bufnr, v) })
+        \.then({ v -> fern#internal#buffer#replace(self.bufnr, v) })
         \.finally({ -> Profile() })
 endfunction
 

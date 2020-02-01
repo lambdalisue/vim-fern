@@ -10,7 +10,7 @@ function! fern#internal#renamer#rename(factory, ...) abort
 endfunction
 
 function! s:executor(factory, options, resolve, reject) abort
-  call fern#lib#buffer#open(a:options.bufname, {
+  call fern#internal#buffer#open(a:options.bufname, {
         \ 'opener': a:options.opener,
         \ 'mods': 'noautocmd',
         \})

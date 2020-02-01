@@ -1,6 +1,6 @@
 let s:edit_or_opener_pattern = '\<edit/\zs\%(split\|vsplit\|tabedit\)\>'
 
-function! fern#lib#buffer#replace(bufnr, content) abort
+function! fern#internal#buffer#replace(bufnr, content) abort
   let modified_saved = getbufvar(a:bufnr, '&modified')
   let modifiable_saved = getbufvar(a:bufnr, '&modifiable')
   try
@@ -13,7 +13,7 @@ function! fern#lib#buffer#replace(bufnr, content) abort
   endtry
 endfunction
 
-function! fern#lib#buffer#open(bufname, ...) abort
+function! fern#internal#buffer#open(bufname, ...) abort
   let options = extend({
         \ 'opener': 'edit',
         \ 'mods': '',
@@ -23,12 +23,12 @@ function! fern#lib#buffer#open(bufname, ...) abort
         \)
   if options.opener ==# 'select'
     let options.opener = 'edit'
-    if fern#lib#window#select()
+    if fern#internal#window#select()
       return
     endif
   else
     if options.locator
-      call fern#lib#window#locate()
+      call fern#internal#window#locate()
     endif
   endif
   if options.opener =~# s:edit_or_opener_pattern
@@ -42,6 +42,6 @@ function! fern#lib#buffer#open(bufname, ...) abort
         \ fnameescape(a:bufname),
         \]
   let cmdline = join(filter(args, { -> !empty(v:val) }), ' ')
-  call fern#logger#debug("fern#lib#buffer#open", "cmdline", cmdline)
+  call fern#logger#debug("fern#internal#buffer#open", "cmdline", cmdline)
   execute cmdline
 endfunction
