@@ -18,6 +18,14 @@ function! fern#scheme#file#mapping#terminal#init(disable_default_mappings) abort
   nnoremap <buffer><silent> <Plug>(fern-action-terminal:edit-or-vsplit)  :<C-u>call <SID>call('terminal', 'edit/vsplit')<CR>
   nnoremap <buffer><silent> <Plug>(fern-action-terminal:edit-or-tabedit) :<C-u>call <SID>call('terminal', 'edit/tabedit')<CR>
 
+  " Smart map
+  nmap <buffer><silent><expr>
+        \ <Plug>(fern-action-terminal:side)
+        \ fern#smart#drawer(
+        \   "\<Plug>(fern-action-terminal:left)",
+        \   "\<Plug>(fern-action-terminal:right)",
+        \ )
+
   " Alias map
   nmap <buffer><silent> <Plug>(fern-action-terminal:edit) <Plug>(fern-action-terminal:edit-or-error)
   nmap <buffer><silent> <Plug>(fern-action-terminal) <Plug>(fern-action-terminal:edit)
