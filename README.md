@@ -205,12 +205,12 @@ augroup END
 The `FileType` autocmd will be invoked AFTER a fern buffer has initialized but BEFORE contents of a buffer become ready.
 So avoid accessing actual contents in the above function.
 
-See [Tips](https://github.com/lambdalisue/fern.vim/wiki/Tips) pages to find tips, or write pages to share your tips ;-)
+See [Wiki](https://github.com/lambdalisue/fern.vim/wiki) pages to find tips, or write pages to share your tips ;-)
 
 # Plugins
 
 The fern.vim supports 3rd party plugin system for scheme and mappings.
-See [Plugins](https://github.com/lambdalisue/fern.vim/wiki/Plugins) pages to find 3rd party plugins of fern.vim.
+See [Wiki](https://github.com/lambdalisue/fern.vim/wiki) pages to find 3rd party plugins of fern.vim.
 
 # Contribution
 
