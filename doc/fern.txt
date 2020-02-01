@@ -204,6 +204,11 @@ VARIABLE						*fern-variable*
 	*g:fern#logger#ERROR*		Error level
 	Default: |g:fern#logger#ERROR|
 
+*g:fern_opener*
+	A default |fern-opener| used to open a fern buffer itself in split
+	windows style.
+	Default: 'edit'
+
 *g:fern_disable_default_mappings*
 	Set 1 to disable default mappings
 	Default: 0

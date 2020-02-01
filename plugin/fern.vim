@@ -32,5 +32,8 @@ let g:fern_profile = get(g:, 'fern_profile', 0)
 let g:fern_logfile = get(g:, 'fern_logfile', v:null)
 let g:fern_loglevel = get(g:, 'fern_loglevel', g:fern#logger#ERROR)
 
+" fern#command#fern
+let g:fern_opener = get(g:, 'fern_opener', 'edit')
+
 " fern#internal#mapping
 let g:fern_disable_default_mappings = get(g:, 'fern_disable_default_mappings', 0)

@@ -1,6 +1,6 @@
-let s:Config = vital#fern#import('Config')
 let s:Path = vital#fern#import('System.Filepath')
 
+let s:drawer_opener = 'topleft vsplit'
 let s:options = [
       \ '-drawer',
       \ '-width=',
@@ -18,31 +18,35 @@ function! fern#command#fern#command(mods, qargs) abort
       throw 'at least one argument is required'
     endif
 
-    let toggle = options.pop('toggle', 0)
-    let opener = options.pop('opener', v:null)
-    let viewer_opener = opener is# v:null
-          \ ? g:fern#command#fern#viewer_opener
-          \ : opener
-    let drawer_opener = opener is# v:null
-          \ ? g:fern#command#fern#drawer_opener
-          \ : opener
+    let drawer = options.pop('drawer', v:false)
+    if drawer
+      let opener = s:drawer_opener
+      let width = options.pop('width', v:null)
+      let keep = options.pop('keep', v:nul)
+      let toggle = options.pop('toggle', v:null)
+    else
+      let opener = options.pop('opener', g:fern_opener)
+      let width = v:null
+      let keep = v:null
+    endif
 
     " Force project drawer style when
     " - The current buffer is project drawer style fern
     " - The 'opener' is 'edit'
-    if viewer_opener ==# 'edit' && fern#internal#drawer#is_drawer()
-      call options.set('drawer', v:true)
+    if opener ==# 'edit' && fern#internal#drawer#is_drawer()
+      let drawer = v:true
+      let opener = s:drawer_opener
     endif
 
-    " Build FRI for fern buffer from argument
     let expr = expand(args[0])
+    " Build FRI for fern buffer from argument
     let fri = fern#internal#bufname#parse(expr)
-    let fri.authority = options.pop('drawer', v:false)
+    let fri.authority = drawer
           \ ? printf('drawer:%d', tabpagenr())
           \ : ''
     let fri.query = extend(fri.query, {
-          \ 'width': options.pop('width', v:null),
-          \ 'keep': options.pop('keep', v:null),
+          \ 'width': width,
+          \ 'keep': keep,
           \})
     let fri.fragment = expand(options.pop('reveal', ''))
 
@@ -56,12 +60,12 @@ function! fern#command#fern#command(mods, qargs) abort
       call fern#internal#drawer#open(fri, {
             \ 'mods': a:mods,
             \ 'toggle': toggle,
-            \ 'opener': drawer_opener,
+            \ 'opener': opener,
             \})
     else
       call fern#internal#viewer#open(fri, {
             \ 'mods': a:mods,
-            \ 'opener': viewer_opener,
+            \ 'opener': opener,
             \})
     endif
   catch
@@ -89,9 +93,3 @@ function! s:norm_fragment(fri) abort
   let reveal = fern#internal#path#relative(reveal, root)
   let a:fri.fragment = join(reveal, '/')
 endfunction
-
-
-call s:Config.config(expand('<sfile>:p'), {
-      \ 'viewer_opener': 'edit',
-      \ 'drawer_opener': 'topleft vsplit',
-      \})
