@@ -12,14 +12,14 @@ endfunction
 
 function! fern#internal#mapping#init(scheme) abort
   let disable_default_mappings = g:fern#disable_default_mappings
-  for name in g:fern#internal#mapping#enabled_mapping_presets
+  for name in g:fern#internal#mapping#mappings
     call fern#mapping#{name}#init(disable_default_mappings)
   endfor
   call fern#internal#scheme#call(a:scheme, 'mapping#init', disable_default_mappings)
 endfunction
 
 call s:Config.config(expand('<sfile>:p'), {
-      \ 'enabled_mapping_presets': [
+      \ 'mappings': [
       \   'tree',
       \   'node',
       \   'open',
@@ -28,3 +28,7 @@ call s:Config.config(expand('<sfile>:p'), {
       \   'drawer',
       \ ],
       \})
+
+" Deprecated
+let g:fern#internal#mapping#enabled_mapping_presets = g:fern#internal#mapping#mappings
+
