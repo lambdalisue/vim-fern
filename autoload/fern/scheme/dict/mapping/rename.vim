@@ -44,7 +44,7 @@ function! s:map_rename(helper, opener) abort
         \.then({ n -> s:Lambda.let(ns, 'n', n) })
         \.then({ -> a:helper.reload_node(root.__key) })
         \.then({ -> a:helper.redraw() })
-        \.then({ -> fern#message#info(printf('%d items are renamed', ns.n)) })
+        \.then({ -> a:helper.echo(printf('%d items are renamed', ns.n)) })
 endfunction
 
 function! s:_map_rename(helper, result) abort

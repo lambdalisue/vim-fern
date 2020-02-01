@@ -36,7 +36,7 @@ function! s:map_clipboard_move(helper) abort
   return s:Promise.resolve()
         \.then({ -> a:helper.update_marks([]) })
         \.then({ -> a:helper.redraw() })
-        \.then({ -> fern#message#info(printf('%d items are saved in clipboard to move', len(nodes))) })
+        \.then({ -> a:helper.echo(printf('%d items are saved in clipboard to move', len(nodes))) })
 endfunction
 
 function! s:map_clipboard_copy(helper) abort
@@ -48,7 +48,7 @@ function! s:map_clipboard_copy(helper) abort
   return s:Promise.resolve()
         \.then({ -> a:helper.update_marks([]) })
         \.then({ -> a:helper.redraw() })
-        \.then({ -> fern#message#info(printf('%d items are saved in clipboard to copy', len(nodes))) })
+        \.then({ -> a:helper.echo(printf('%d items are saved in clipboard to copy', len(nodes))) })
 endfunction
 
 function! s:map_clipboard_paste(helper) abort
@@ -89,7 +89,7 @@ function! s:map_clipboard_paste(helper) abort
   return s:Promise.all(ps)
         \.then({ -> a:helper.reload_node(root.__key) })
         \.then({ -> a:helper.redraw() })
-        \.then({ -> fern#message#info(printf('%d items are proceeded', len(ps))) })
+        \.then({ -> a:helper.echo(printf('%d items are proceeded', len(ps))) })
 endfunction
 
 function! s:map_clipboard_clear(helper) abort

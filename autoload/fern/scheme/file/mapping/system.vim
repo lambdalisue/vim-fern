@@ -19,6 +19,6 @@ function! s:map_open_system(helper) abort
   let node = a:helper.get_cursor_node()
   let Done = a:helper.process_node(node)
   return fern#scheme#file#shutil#open(node._path, a:helper.fern.source.token)
-        \.then({ -> fern#message#info(printf('%s has opened', node._path)) })
+        \.then({ -> a:helper.echo(printf('%s has opened', node._path)) })
         \.finally({ -> Done() })
 endfunction

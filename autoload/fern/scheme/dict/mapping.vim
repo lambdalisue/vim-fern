@@ -110,7 +110,7 @@ function! s:map_copy(helper) abort
   return s:Promise.resolve()
         \.then({ -> a:helper.reload_node(root.__key) })
         \.then({ -> a:helper.redraw() })
-        \.then({ -> fern#message#info(printf('%d items are copied', processed)) })
+        \.then({ -> a:helper.echo(printf('%d items are copied', processed)) })
 endfunction
 
 function! s:map_move(helper) abort
@@ -138,7 +138,7 @@ function! s:map_move(helper) abort
   return s:Promise.resolve()
         \.then({ -> a:helper.reload_node(root.__key) })
         \.then({ -> a:helper.redraw() })
-        \.then({ -> fern#message#info(printf('%d items are moved', processed)) })
+        \.then({ -> a:helper.echo(printf('%d items are moved', processed)) })
 endfunction
 
 function! s:map_remove(helper) abort
@@ -171,7 +171,7 @@ function! s:map_remove(helper) abort
   return s:Promise.resolve()
         \.then({ -> a:helper.reload_node(root.__key) })
         \.then({ -> a:helper.redraw() })
-        \.then({ -> fern#message#info(printf('%d items are removed', len(nodes))) })
+        \.then({ -> a:helper.echo(printf('%d items are removed', len(nodes))) })
 endfunction
 
 function! s:map_edit_leaf(helper) abort

@@ -51,7 +51,7 @@ function! s:map_open_system(helper) abort
   let node = a:helper.get_cursor_node()
   let Done = a:helper.process_node(node)
   return fern#scheme#file#shutil#open(node._path, a:helper.fern.source.token)
-        \.then({ -> fern#message#info(printf('%s has opened', node._path)) })
+        \.then({ -> a:helper.echo(printf('%s has opened', node._path)) })
         \.finally({ -> Done() })
 endfunction
 
@@ -111,7 +111,7 @@ function! s:map_copy(helper) abort
   return s:Promise.all(ps)
         \.then({ -> a:helper.reload_node(root.__key) })
         \.then({ -> a:helper.redraw() })
-        \.then({ -> fern#message#info(printf('%d items are copied', len(ps))) })
+        \.then({ -> a:helper.echo(printf('%d items are copied', len(ps))) })
 endfunction
 
 function! s:map_move(helper) abort
@@ -134,7 +134,7 @@ function! s:map_move(helper) abort
   return s:Promise.all(ps)
         \.then({ -> a:helper.reload_node(root.__key) })
         \.then({ -> a:helper.redraw() })
-        \.then({ -> fern#message#info(printf('%d items are moved', len(ps))) })
+        \.then({ -> a:helper.echo(printf('%d items are moved', len(ps))) })
 endfunction
 
 function! s:map_trash(helper) abort
@@ -162,7 +162,7 @@ function! s:map_trash(helper) abort
   return s:Promise.all(ps)
         \.then({ -> a:helper.reload_node(root.__key) })
         \.then({ -> a:helper.redraw() })
-        \.then({ -> fern#message#info(printf('%d items are trashed', len(ps))) })
+        \.then({ -> a:helper.echo(printf('%d items are trashed', len(ps))) })
 endfunction
 
 function! s:map_remove(helper) abort
@@ -190,5 +190,5 @@ function! s:map_remove(helper) abort
   return s:Promise.all(ps)
         \.then({ -> a:helper.reload_node(root.__key) })
         \.then({ -> a:helper.redraw() })
-        \.then({ -> fern#message#info(printf('%d items are removed', len(ps))) })
+        \.then({ -> a:helper.echo(printf('%d items are removed', len(ps))) })
 endfunction

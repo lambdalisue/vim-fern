@@ -616,6 +616,14 @@ current buffer by calling |fern#helper#new()|.
 .get_scheme()
 	Return |String| which represent the scheme name of the fern buffer.
 
+			*fern-develop-helper.echo()*
+.echo({message})
+	Display a temporary |String| {message}.
+
+			*fern-develop-helper.echomsg()*
+.echomsg({message})
+	Display a permanent |String| {message}.
+
 			*fern-develop-helper.sleep()*
 .sleep({ms})
 	Return a promise which will resolves to 0 after {ms} milliseconds.

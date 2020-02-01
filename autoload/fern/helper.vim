@@ -94,6 +94,26 @@ function! s:helper.get_scheme() abort
   return fri.scheme
 endfunction
 
+function! s:helper.echo(message, ...) abort
+  let hl = a:0 ? a:1 : 'None'
+  try
+    execute printf('echohl %s', hl)
+    echo a:message
+  finally
+    echohl None
+  endtry
+endfunction
+
+function! s:helper.echomsg(message) abort
+  let hl = a:0 ? a:1 : 'None'
+  try
+    execute printf('echohl %s', hl)
+    echomsg a:message
+  finally
+    echohl None
+  endtry
+endfunction
+
 
 " Async
 function! s:helper.sleep(ms) abort
