@@ -23,7 +23,7 @@ endfunction
 
 function! s:log(level, ...) abort
   let content = s:format(a:level, a:000)
-  if g:fern#logger#logfile is# v:null
+  if g:fern_logfile is# v:null
     call s:echomsg(content)
   else
     call s:Later.call({ -> s:writefile(content) })
