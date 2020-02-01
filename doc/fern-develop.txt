@@ -1,31 +1,41 @@
-*fern-develop.txt*		Developer guide for fern development
 
 Author:  Alisue <lambdalisue@hashnote.net>
 License: MIT license
 
-WARNING
+=============================================================================
+CONTENTS					*fern-develop-contents*
 
-This documentation is UNSTABLE. Anything will be changed without announcement.
+INTRODUCTION				|fern-develop-introduction|
+FRI					|fern-develop-fri|
+NODE					|fern-develop-node|
+COMPARATOR				|fern-develop-comparator|
+MAPPING					|fern-develop-mapping|
+RENDERER				|fern-develop-renderer|
+SCHEME					|fern-develop-scheme|
+  PROVIDER				|fern-develop-scheme-provider|
+  MAPPING				|fern-develop-scheme-provider|
+HELPER					|fern-develop-helper|
+LOGGER					|fern-develop-logger|
 
-WARNING
 
 =============================================================================
-SPEC						*fern-develop-spec*
+INTRODUCTION					*fern-develop-introduction*
 
------------------------------------------------------------------------------
-FRI						*fern-develop-spec-fri*
+This is documentation for |fern.vim| developer.
 
-Fern Resource Identifier (FRI) is designed to use in Vim's buffer name and
+WARNING:
+fern.vim is in beta stage and anything will be changed without annoucement.
+
+
+=============================================================================
+FRI						*fern-develop-fri*
+
+Fern Resource Identifier (FRI) is designed to be used in Vim's buffer name and
 explained as the following:
 
   FRI = scheme "://" [ auth ] "/" path [ ";" query ][ "#" fragment ]
 
-It was desigend to remove the following characters which could not be used
-in buffer names in Windows from URI definition:
-
-  unusable   = "<" | ">" | "|" | "?" | "*"
-
-The definition of each components in FRI are the followings:
+Where:
 
   scheme   = ALPHA { ALPHA | DIGIT | "_" }
   auth     = { pchar }
@@ -33,7 +43,7 @@ The definition of each components in FRI are the followings:
   query    = { pchar | "/" | ";" }
   fragment = { pchar | "/" | ";" }
 
-And the definition of each sub-components are the followings:
+And the definition of each sub-components are:
 
   pct-encoded = "%" HEXDIG HEXDIG
   reserved = gen-delims | sub-delims
@@ -43,225 +53,14 @@ And the definition of each sub-components are the followings:
   segment   = pchar { pchar }
   pchar     = { unreserved | pct-encoded | sub-delims | ":" | "@" }
 
+FRI was desigend to remove the following characters which could not be used
+in buffer names in Windows from URI definition:
+
+  unusable   = "<" | ">" | "|" | "?" | "*"
+
 Developers can use the following function to parse/format FRIs.
 
-|fern#fri#parse({expr})|
-|fern#fri#format({fri})|
-
-=============================================================================
-API						*fern-develop-api*
-
------------------------------------------------------------------------------
-VARIABLE				*fern-develop-api-variable*
-
-					*g:fern#internal#core#renderers*
-g:fern#internal#core#renderers
-	A |Dict| to define external renderers. The key is a name of renderer
-	and the value is a function reference which return a renderer instance
-	when called.
-	Default: {}
-					*g:fern#internal#core#comparators*
-g:fern#internal#core#comparators
-	A |Dict| to define external comparators. The key is a name of
-	comparator and the value is a function reference which return a
-	comparator instance when called.
-	Default: {}
-
-				*g:fern#internal#node#STATUS_NONE*
-				*g:fern#internal#node#STATUS_COLLAPSED*
-				*g:fern#internal#node#STATUS_EXPANDED*
-g:fern#internal#node#STATUS_NONE
-g:fern#internal#node#STATUS_COLLAPSED
-g:fern#internal#node#STATUS_EXPANDED
-	Constant |Number| which indicates a node status.
-	STATUS_NONE means that the node is leaf and does not have any status.
-	STATUS_COLLAPSED means that the node is branch and collapsed (closed).
-	STATUS_EXPANDED means that the node is branch and expanded (opened).
-
-				*g:fern#internal#renderer#leading*
-g:fern#internal#renderer#leading
-	A |String| which is prepended to each node to indicates the nested
-	level of the node.
-
-	For example, when the value is " ", the renderer output become:
->
-	  root
-	  |- deep
-	   |- alpha
-	    |- beta
-	     |  gamma
-<
-	And when the value is "~~":
->
-	  root
-	  |- deep
-	  ~~|- alpha
-	  ~~~~|- beta
-	  ~~~~~~|  gamma
-<
-	Default: " "
-
-				*g:fern#internal#renderer#root_symbol*
-g:fern#internal#renderer#root_symbol
-	A |String| which is prepended to a  root node.
-
-	For example, when the value is "", the renderer output become:
->
-	  root
-	  |- shallow
-	   |+ alpha
-	   |- beta
-	   |  gamma
-<
-	And when the value is "--> ":
->
-	  --> root
-	  |- shallow
-	   |+ alpha
-	   |- beta
-	   |  gamma
-<
-	Default: ""
-
-				*g:fern#internal#renderer#leaf_symbol*
-g:fern#internal#renderer#leaf_symbol
-	A |String| which is prepended to leaf nodes.
-
-	For example, when the value is "|  ", the renderer output become:
->
-	  root
-	  |- shallow
-	   |+ alpha
-	   |- beta
-	   |  gamma
-<
-	And when the value is "--> ":
->
-	  root
-	  |- shallow
-	   |+ alpha
-	   |- beta
-	   --> gamma
-<
-	Default: "|  "
-
-				*g:fern#internal#renderer#collapsed_symbol*
-g:fern#internal#renderer#collapsed_symbol
-	A |String| which is prepended to collapsed nodes (closed branch node).
-
-	For example, when the value is "|+ ", the renderer output become:
->
-	  root
-	  |- shallow
-	   |+ alpha
-	   |- beta
-	   |  gamma
-<
-	And when the value is "--> ":
->
-	  root
-	  |- shallow
-	   --> alpha
-	   |- beta
-	   |  gamma
-<
-	Default: "|+ "
-
-				*g:fern#internal#renderer#expanded_symbol*
-g:fern#internal#renderer#expanded_symbol
-	A |String| which is prepended to expanded nodes (opened branch node).
-
-	For example, when the value is "|- ", the renderer output become:
->
-	  root
-	  |- shallow
-	   |+ alpha
-	   |- beta
-	   |  gamma
-<
-	And when the value is "--> ":
->
-	  root
-	  --> shallow
-	   |+ alpha
-	   --> beta
-	   |  gamma
-<
-	Default: "|- "
-
-				*g:fern#internal#renderer#marked_symbol*
-g:fern#internal#renderer#marked_symbol
-	A |String| which is prepended to marked nodes.
-
-	For example, when the value is "* ", the renderer output become:
->
-	* root
-	  |- shallow
-	*  |+ alpha
-	   |- beta
-	*  |  gamma
-<
-	And when the value is "--> ":
->
-	--> root
-	  |- shallow
-	--> |+ alpha
-	   |- beta
-	--> |  gamma
-<
-	Default: "* "
-
-				*g:fern#internal#renderer#unmarked_symbol*
-g:fern#internal#renderer#unmarked_symbol
-	A |String| which is prepended to nodes which is not marked.
-
-	For example, when the value is "  ", the renderer output become:
->
-	* root
-	  |- shallow
-	*  |+ alpha
-	   |- beta
-	*  |  gamma
-<
-	And when the value is "--> ":
->
-	* root
-	--> |- shallow
-	* |+ alpha
-	--> |- beta
-	* |  gamma
-<
-	Default: "  "
-
-				*g:fern#lib#window#locator_threshold*
-g:fern#lib#window#locator_threshold
-	A |Dict| which has "winwidth" and/or "winheight" to customize the size
-	of suitable window in |fern-develop-window-locator|.
-
-	Note that the value is used ONLY when initialized. Any changes
-	after initialization will not applied.
-	Note that's why the variable is |locked| after initialization.
-
-	Default: {
-	  "winwidth": &columns / 4,
-	  "winheight": &lines / 3,
-	}
-
-				*g:fern#lib#window#auto_select*
-g:fern#lib#window#auto_select
-	Set 1 to automatically select window when there is only one suitable
-	window exists in |fern-develop-window-selector|.
-	Default: 1
-
-			*g:fern#internal#mapping#enabled_mapping_presets*
-g:fern#internal#mapping#enabled_mapping_presets
-	A |List| of |String| which is a name under fern#internal#mapping namespace.
-	Default: ['tree', 'node', 'mark', 'filter']
-
------------------------------------------------------------------------------
-FUNCTION				*fern-develop-api-function*
-
-				*fern#fri#parse({expr})*
+							*fern#fri#parse()*
 fern#fri#parse({expr})
 	Parse the {expr} (|String|) and return a FRI instance.
 	The instance has the following attributes:
@@ -272,194 +71,25 @@ fern#fri#parse({expr})
 	"query"		A |Dict| query part
 	"fragment"	A |String| fragment part
 
-	See |fern-develop-spec-fri| for detail about FRI.
-
-				*fern#fri#format({fri})*
+							*fern#fri#format()*
 fern#fri#format({fri})
 	Format a |String| representation of the {fri} instance.
-
-	See |fern-develop-spec-fri| for detail about FRI.
-
-				*fern#lib#buffer#replace()*
-fern#lib#buffer#replace({bufnr}, {content})
-	Replace a content of the buffer {bufnr} (|Number|) to the {content}
-	(|List| of |String|).
-	Note that 'modifiable' of the target buffer does not affect.
-	Note that 'modified' of the target buffer will not changed.
-
-				*fern#lib#buffer#open()*
-fern#lib#buffer#open({bufname}[, {options}])
-	Open a new buffer with the {bufname} (|String|).
-	The following are avaialble in the {options}.
-
-	"opener"	An opener |String| used to open the buffer.
-			"|edit|", "|split|", "|vsplit|", "|tabedit|", or
-			"select" (|fern-develop-window-selector|).
-
-	"mods"		A |String| |mods| which is used to open command.
-			
-	"cmdarg"	A |String| |cmdarg| which is used to open command.
-
-	"locator"	1/0 to indicate whether |fern-develop-window-locator|
-			should be used prior to open a buffer.
-
-				*fern#lib#window#find()*
-fern#lib#window#find({predicator}[, {origin}])
-	Find a first |winnr| which {predicator} (|Function|) returns True.
-	The search starts from the {origin} (|Number|) window.
-
-				*fern#lib#window#locate()*
-				*fern-develop-window-locator*
-fern#lib#window#locate([{origin}])
-	Find a first |winnr| which is suitable; a window which is not
-	'previewwindow' and has enough space; from the {origin} (|Number|).
-	If {origin} is omitted, a previous window is used.
-	See |g:fern#lib#window#locator_threshold| to custom the size of the
-	suitable window.
-
-				*fern#lib#window#select()*
-				*fern-develop-window-selector*
-fern#lib#window#select()
-	Open a prompt to select a window visually to focus. 
-	This feature has strongly inspired by t9md/vim-choosewin.
-	Note that non suitable window is not listed unless there is suitable
-	window.
-	See |g:fern#lib#window#auto_select| to disable auto select feature.
-
-				*fern#internal#mapping#call()*
-fern#internal#mapping#call({fn}[, {args}])
-	A utility wrapper function to call mapping function.
-
-	The {fn} (|Function|) will be called with
-
-	1. A |fern-develop-helper| instance as a first argument
-	2. Exception occured is properly printed
-	3. Rejectec promise is properly printed
-
-	Create a script local function which use this function to define
-	mappings like:
 >
-	function! s:init() abort
-	  nnoremap <buffer><silent>
-	        \ <Plug>(fern-action-echo)
-	        \ :<C-u>call <SID>call('echo')<CR>
-	endfunction
-
-	function! s:call(name) abort
-	  let Fn = funcref(printf('s:map_%s', a:name))
-	  call fern#internal#mapping#call(Fn)
-	endfunction
-
-	function! s:map_echo(helper) abort
-	  echo a:helper.get_cursor_node().name
-	endfunction
+	echo fern#fri#format({
+	      \ 'scheme': 'http',
+	      \ 'authority': 'www.example.com',
+	      \ 'path': 'foo/bar',
+	      \ 'query': {},
+	      \ 'fragment': '',
+	      \})
+	" -> https://www.example.com/foo/bar
 <
-				*fern#internal#mapping#init()*
-fern#internal#mapping#init({scheme})
-	Define mappings by calling |fern#internal#mapping#{preset}#init()| sequentially.
-	Called mappings are defined by |g:fern#internal#mapping#enabled_mapping_presets|.
-	Note that it also call |fern#scheme#{scheme}#mapping#init()| for
-	scheme specific mappings.
-
-				*fern#internal#mapping#{preset}#init()*
-fern#internal#mapping#{preset}#init({disable_default_mappings})
-	Function called on a fern buffer to define {preset} mappings.
-	Note that mappings name starts from "fern-action-" will be registered
-	in actions.
->
-	function! fern#internal#mapping#test#init(disable_default_mappings) abort
-	  nnoremap <buffer><silent>
-	        \ <Plug>(fern-action-echo)
-	        \ :<C-u>call <SID>call('echo')<CR>
-
-	  if a:disable_default_mappings
-	    nmap <buffer><silent> E <Plug>(fern-action-echo)
-	  endif
-	endfunction
-<
-	To custom mappings, modify |g:fern#internal#mapping#enabled_mapping_presets|.
-
-				*fern#scheme#{scheme}#mapping#init()*
-fern#scheme#{scheme}#mapping#init({disable_default_mappings})
-	Function called on a fern buffer to define scheme specific mappings.
-	See |fern#internal#mapping#{name}#init()| for detail.
-
-				*fern#scheme#{scheme}#provider#new()*
-fern#scheme#{scheme}#provider#new()
-	Return a provider instance (|fern-develop-provider|) of the {scheme}.
-
-=============================================================================
-LOGGER						*fern-develop-logger*
-
-Use following functions to log events.
-
-The log will be saved in |g:fern#logfile| or displayed with |echomsg| if
-|v:null| has specified to the variable.
-
-						*fern#logger#debug()*
-fern#logger#debug({object}...)
-	Log |String| representation of {object}s when |g:fern#loglevel|
-	beyonds |g:fern#logger#DEBUG|.
-
-						*fern#logger#info()*
-fern#logger#info({object}...)
-	Log |String| representation of {object}s when |g:fern#loglevel|
-	beyonds |g:fern#logger#INFO|.
-
-						*fern#logger#error()*
-fern#logger#error({object}...)
-	Log |String| representation of {object}s when |g:fern#loglevel|
-	beyonds |g:fern#logger#ERROR|.
-
-
-=============================================================================
-PROVIDER					*fern-develop-provider*
-
-A provider instance must have the following methods.
-
-				*fern-develop-provider.get_root()*
-.get_root({url})		
-	Return a (partial) node instance of the {url} (|String|).
-	The node instance will be used as a root node of a tree.
-	It throws error when no node is found for the {url}.
-
-	The node instance MUST have the following attributes.
-
-	"name"		The name of the node (required)
-	"status"	1/0 to indicate if the node is branch (required)
-
-	And may have the following attributes.
-
-	"label"		Label to display the node in a tree view
-	"hidden"	1/0 to indicate if the node should be hidden
-	"bufname"	Buffer name used to open the node or |v:null|
-	"concealed"	Namespace for storing complex object
-	"_{ANY}"	Scheme specific variables (e.g. "_path" in file)
-
-	The partial node will be filled by fern to become |fern-develop-node|.
-
-				*fern-develop-provider.get_parent()*
-.get_parent({node}, {token})
-	Return a promise which is resolved to a parent node of the {node}.
-	It resolves the {node} itself when the {node} does not have parent.
-
-	The {token} is CancellationToken which can be used to cancel the
-	internal process. Use ... to ignore that argument.
-
-				*fern-develop-provider.get_children()*
-.get_children({node}, {token})
-	Return a promise which is resolved to a list of child nodes of the
-	{node}. It rejects when the {node} is leaf node.
-
-	The {token} is CancellationToken which can be used to cancel the
-	internal process. Use ... to ignore that argument.
 
 =============================================================================
 NODE						*fern-develop-node*
 
 A node instance is a tree item which has the following attributes:
 
-Name		Description~
 "name"		A |String| name of the node. This value is used in "__key"
 		thus must be unique among nodes which has same "__owner".
 
@@ -500,6 +130,155 @@ Name		Description~
 "_{XXX}"	Any attribute starts from a single underscore (_) is opened
 		for each scheme. Note that any complex value should be stored
 		in "concealed" instead to avoid display error.
+
+*g:fern#internal#node#STATUS_NONE*
+*g:fern#internal#node#STATUS_COLLAPSED*
+*g:fern#internal#node#STATUS_EXPANDED*
+	Constant |Number| which indicates a node status.
+	STATUS_NONE means that the node is leaf and does not have any status.
+	STATUS_COLLAPSED means that the node is branch and collapsed (closed).
+	STATUS_EXPANDED means that the node is branch and expanded (opened).
+
+
+=============================================================================
+COMPARATOR					*fern-develop-comparator*
+
+Comparator is an instance which has the following methods to sort nodes in an
+entire tree.
+
+					*fern-develop-comparator.compare()*
+.compare({lhs}, {rhs})
+	Compare {lhs} and {rhs} nodes and return -1, 0, or 1.
+
+*g:fern#internal#core#comparators*
+	comparator and the value is a function reference which return a
+	comparator instance when called.
+	Default: {}
+
+A 3rd-party plugin MUST extend |g:fern#internal#core#comparators| in plugin
+directory to register a comparator itself like:
+>
+	if exists('g:loaded_fern_comparator_foo')
+	  finish
+	endif
+	let g:loaded_fern_comparator_foo = 1
+
+	call extend(g:fern#internal#core#comparators, {
+	      \ 'foo': function('fern#comparator#foo#new'),
+	      \})
+<
+See https://github.com/lambdalisue/fern-comparator-lexical.vim as example.
+
+
+=============================================================================
+MAPPING						*fern-develop-mapping*
+
+TBW
+
+
+=============================================================================
+RENDERER					*fern-develop-renderer*
+
+Renderer is an instance which has the following methods to render a list of
+nodes as a tree.
+
+					*fern-develop-renderer.render()*
+.render({nodes}, {marks})
+	Return a promise which is resolved to a list of |String|.
+
+					*fern-develop-renderer.index()*
+.index({lnum})
+	Return a corresponding index (|Number|) of {lnum}. It is used to find
+	a node under a cursor.
+
+					*fern-develop-renderer.lnum()*
+.lnum({index})
+	Return a corresponding lnum (|Number|) of {index}. It is used to find
+	a line number where a node has displayed.
+
+					*fern-develop-renderer.syntax()*
+.syntax()
+	Define syntax on a current buffer. The function is called posterior to
+	'filetype' specification and every after |BufReadCmd| has fired.
+
+					*fern-develop-renderer.highlight()*
+.highlight()
+	Define highlight on a current buffer. The function is called prior to
+	'filetype' specification and every after |ColorScheme| has fired.
+
+*g:fern#internal#core#renderers*
+	A |Dict| to define external renderers. The key is a name of renderer
+	and the value is a function reference which return a renderer instance
+	when called.
+	Default: {}
+
+A 3rd-party plugin MUST extend |g:fern#internal#core#renderers| to register a
+renderer itself like:
+>
+	" plugin/fern_renderer_foo.vim
+	if exists('g:loaded_fern_renderer_foo')
+	  finish
+	endif
+	let g:loaded_fern_renderer_foo = 1
+
+	call extend(g:fern#internal#core#renderers, {
+	      \ 'foo': function('fern#renderer#foo#new'),
+	      \})
+<
+See https://github.com/lambdalisue/fern-renderer-devicons.vim as example.
+
+
+=============================================================================
+SCHEME						*fern-develop-scheme*
+
+-----------------------------------------------------------------------------
+PROVIDER				*fern-develop-scheme-provider*
+
+Provider is a core instance to produce scheme plugin. The instance must has
+the following methods.
+
+				*fern-develop-scheme-provider.get_root()*
+.get_root({url})		
+	Return a (partial) node instance of the {url} (|String|).
+	The node instance will be used as a root node of a tree.
+	It throws error when no node is found for the {url}.
+
+	The node instance MUST have the following attributes.
+
+	"name"		The name of the node (required)
+	"status"	1/0 to indicate if the node is branch (required)
+
+	And may have the following attributes.
+
+	"label"		Label to display the node in a tree view
+	"hidden"	1/0 to indicate if the node should be hidden
+	"bufname"	Buffer name used to open the node or |v:null|
+	"concealed"	Namespace for storing complex object
+	"_{ANY}"	Scheme specific variables (e.g. "_path" in file)
+
+	The partial node will be filled by fern to become |fern-develop-node|.
+
+				*fern-develop-scheme-provider.get_parent()*
+.get_parent({node}, {token})
+	Return a promise which is resolved to a parent node of the {node}.
+	It resolves the {node} itself when the {node} does not have parent.
+
+	The {token} is CancellationToken which can be used to cancel the
+	internal process. Use ... to ignore that argument.
+
+				*fern-develop-scheme-provider.get_children()*
+.get_children({node}, {token})
+	Return a promise which is resolved to a list of child nodes of the
+	{node}. It rejects when the {node} is leaf node.
+
+	The {token} is CancellationToken which can be used to cancel the
+	internal process. Use ... to ignore that argument.
+
+-----------------------------------------------------------------------------
+MAPPING					*fern-develop-scheme-mapping*
+
+TBW
+
 
 =============================================================================
 HELPER						*fern-develop-helper*
@@ -686,6 +465,31 @@ current buffer by calling |fern#helper#new()|.
 	of the current root node.
 	Note that "bufname" of the parent node must be properly configured to
 	use this feature.
+
+
+=============================================================================
+LOGGER						*fern-develop-logger*
+
+Use following functions to log events.
+
+The log will be saved in |g:fern#logfile| or displayed with |echomsg| if
+|v:null| has specified to the variable.
+
+						*fern#logger#debug()*
+fern#logger#debug({object}...)
+	Log |String| representation of {object}s when |g:fern#loglevel|
+	beyonds |g:fern#logger#DEBUG|.
+
+						*fern#logger#info()*
+fern#logger#info({object}...)
+	Log |String| representation of {object}s when |g:fern#loglevel|
+	beyonds |g:fern#logger#INFO|.
+
+						*fern#logger#error()*
+fern#logger#error({object}...)
+	Log |String| representation of {object}s when |g:fern#loglevel|
+	beyonds |g:fern#logger#ERROR|.
+
 
 =============================================================================
 vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl
