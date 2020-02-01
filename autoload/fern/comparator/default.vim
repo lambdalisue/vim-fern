@@ -1,4 +1,10 @@
-function! fern#comparator#default#compare(n1, n2) abort
+function! fern#comparator#default#new() abort
+  return {
+        \ 'compare': funcref('s:compare'),
+        \}
+endfunction
+
+function! s:compare(n1, n2) abort
   let k1 = a:n1.__key
   let k2 = a:n2.__key
   let t1 = a:n1.status > 0
@@ -20,10 +26,10 @@ function! fern#comparator#default#compare(n1, n2) abort
     endif
   endfor
   " Shorter first
-  let r = s:compare(l1, l2)
-  return r is# 0 ? s:compare(!a:n1.status, !a:n2.status) : r
+  let r = s:comp(l1, l2)
+  return r is# 0 ? s:comp(!a:n1.status, !a:n2.status) : r
 endfunction
 
-function! s:compare(i1, i2) abort
+function! s:comp(i1, i2) abort
   return a:i1 == a:i2 ? 0 : a:i1 > a:i2 ? 1 : -1
 endfunction

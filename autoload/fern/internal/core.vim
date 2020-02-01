@@ -80,7 +80,7 @@ call s:Config.config(expand('<sfile>:p'), {
       \ },
       \ 'comparator': 'default',
       \ 'comparators': {
-      \   'default': function('fern#comparator#default#compare'),
-      \   'lexical': function('fern#comparator#lexical#compare'),
+      \   'default': fern#comparator#default#new(),
+      \   'lexical': fern#comparator#lexical#new(),
       \ },
       \})
