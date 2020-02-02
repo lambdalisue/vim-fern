@@ -1,3 +1,4 @@
+*fern-develop.txt*		Developer documentations for fern.vim
 
 Author:  Alisue <lambdalisue@hashnote.net>
 License: MIT license
