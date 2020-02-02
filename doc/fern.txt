@@ -114,6 +114,19 @@ where {name} is a name of the action.
 Note that any mappings defined in user custom code (|fern-custom|) are
 registered as action as well if the name of the mapping followed above rule.
 
+							*fern-action-mapping*
+Fern defines the following mappings for actions:
+
+	"?"	List mappings/actions available
+	"a"	Open a prompt to input action to execute
+	"."	Repeat previous action which has executed from a prompt
+
+Note that |g:fern#disable_default_mappings| does not affect mappings above.
+Users have to define alternative mappings to disable default mappings like:
+>
+	" Use g? to show help instead of ?
+	nmap <buffer> g? <Plug>(fern-action-help)
+<
 							*fern-action-capture*
 Use "capture" to redirects an action output to a separate buffer like:
 >
@@ -216,6 +229,8 @@ VARIABLE						*fern-variable*
 
 *g:fern#disable_default_mappings*
 	Set 1 to disable default mappings
+	Note that this variable does not affect mappings for actions.
+	See |fern-action-mappings| for more detail.
 	Default: 0
 
 *g:fern#default_hidden*
