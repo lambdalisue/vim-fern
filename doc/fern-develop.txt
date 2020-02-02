@@ -504,6 +504,11 @@ fern#logger#info({object}...)
 	Log |String| representation of {object}s when |g:fern#loglevel|
 	beyonds |g:fern#logger#INFO|.
 
+						*fern#logger#warn()*
+fern#logger#warn({object}...)
+	Log |String| representation of {object}s when |g:fern#loglevel|
+	beyonds |g:fern#logger#WARN|.
+
 						*fern#logger#error()*
 fern#logger#error({object}...)
 	Log |String| representation of {object}s when |g:fern#loglevel|

@@ -205,6 +205,7 @@ VARIABLE						*fern-variable*
 	variable to set loglevel.
 	*g:fern#logger#DEBUG*		Debug level
 	*g:fern#logger#INFO*		Info level
+	*g:fern#logger#WARN*		Warn level
 	*g:fern#logger#ERROR*		Error level
 	Default: |g:fern#logger#ERROR|
 
