@@ -153,8 +153,25 @@ See [Wiki](https://github.com/lambdalisue/fern.vim/wiki) pages to find tips, or 
 
 # Plugins
 
-The fern.vim supports 3rd party plugin system for scheme and mappings.
-See [Wiki](https://github.com/lambdalisue/fern.vim/wiki) pages to find 3rd party plugins of fern.vim.
+Fern supports the following types of plugins:
+
+| Type            | Description                                                                                                                                                                                                   |
+| --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Renderer        | Renderer is used to display a tree in a fern buffer. Changing it affect the visual looks of fern.<br>e.g. [lambdalisue/fern-renderer-devicons.vim](https://github.com/lambdalisue/fern-renderer-devicons.vim) |
+| Comparator      | Comparator is used to compare nodes. Changing it affect the order of nodes in a tree.<br>e.g. [lambdalisue/fern-comparator-lexical.vim](https://github.com/lambdalisue/fern-comparator-lexical.vim)           |
+| Mapping         | Mapping is used to provide extra mappings. Adding it to provide extra mappings.<br>e.g. [lambdalisue/fern-mapping-project-top.vim](https://github.com/lambdalisue/fern-mapping-project-top.vim)               |
+| Scheme provider | Scheme provider is used to generate a tree from URI. Adding it to support extra scheme.<br>e.g. [lambdalisue/fern-bookmark.vim](https://github.com/lambdalisue/fern-bookmark.vim)                             |
+| Scheme mapping  | Scheme mapping is used to provide scheme sepcific mappings. Adding it to provide extra scheme mappings.<br>e.g. [lambdalisue/fern-bookmark.vim](https://github.com/lambdalisue/fern-bookmark.vim)             |
+
+Please add a following badge to indicate that your plugin is for fern.
+
+[![fern plugin](https://img.shields.io/badge/🌿%20fern-plugin-yellowgreen)](https://github.com/lambdalisue/fern.vim)
+
+```
+[![fern plugin](https://img.shields.io/badge/🌿%20fern-plugin-yellowgreen)](https://github.com/lambdalisue/fern.vim)
+```
+
+See [Wiki](https://github.com/lambdalisue/fern.vim/wiki) pages to find more 3rd-party plugins or share yours ;-)
 
 # Contribution
 
