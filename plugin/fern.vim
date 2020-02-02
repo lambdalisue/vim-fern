@@ -3,12 +3,12 @@ if exists('g:fern#loaded')
 endif
 let g:fern#loaded = 1
 
-command! -nargs=*
+command! -bar -nargs=*
       \ -complete=customlist,fern#command#fern#complete
       \ Fern
       \ call fern#command#fern#command(<q-mods>, <q-args>)
 
-command! -nargs=?
+command! -bar -nargs=?
       \ -complete=customlist,fern#command#focus#complete
       \ FernFocus
       \ call fern#command#focus#command(<q-mods>, <q-args>)

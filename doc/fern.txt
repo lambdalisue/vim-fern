@@ -287,6 +287,8 @@ COMMAND							*fern-command*
 	Additionally, any modifiers (|mods|) are allowd to be prepend (e.g.
 	"topleft split".)
 
+	Note that the command can be followed by a '|' and another command.
+
 							*:Fern-drawer*
 :Fern {url} -drawer [-width={width}] [-keep] [-toggle] [-reveal={path}]
 	Open a fern buffer in project drawer style with the {width}.
@@ -304,6 +306,7 @@ COMMAND							*fern-command*
 :FernFocus [-drawer]
 	Focus a next fern viewer. If "-drawer" option is specified, it focus
 	only a project drawer style fern.
+	Note that the command can be followed by a '|' and another command.
 
 -----------------------------------------------------------------------------
 FUNCTION						*fern-function*
