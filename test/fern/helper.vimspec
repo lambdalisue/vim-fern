@@ -72,46 +72,46 @@ Describe fern#helper
     Describe Synchronous methods
       Describe .get_root_node()
         It returns a root node
-          Assert Equals(helper.get_root_node(), helper.fern.root)
+          Assert Equals(helper.sync.get_root_node(), helper.fern.root)
         End
       End
 
       Describe .get_cursor_node()
         It returns a cursor node
-          Assert Equals(helper.get_cursor_node(), helper.fern.root)
+          Assert Equals(helper.sync.get_cursor_node(), helper.fern.root)
         End
       End
 
       Describe .get_marked_nodes()
         It returns marked nodes
-          Assert Equals(helper.get_marked_nodes(), [])
+          Assert Equals(helper.sync.get_marked_nodes(), [])
 
-          let helper.set_mark([], 1)
-          Assert Equals(helper.get_marked_nodes(), [helper.fern.root])
+          let helper.async.set_mark([], 1)
+          Assert Equals(helper.sync.get_marked_nodes(), [helper.fern.root])
         End
       End
 
       Describe .get_selected_nodes()
         It returns marked nodes if at least one node has marked
-          let helper.set_mark([], 1)
-          Assert Equals(helper.get_selected_nodes(), helper.get_marked_nodes())
+          let helper.async.set_mark([], 1)
+          Assert Equals(helper.sync.get_selected_nodes(), helper.sync.get_marked_nodes())
         End
 
         It returns a cursor node in list if no node has marked
-          Assert Equals(helper.get_selected_nodes(), [helper.get_cursor_node()])
+          Assert Equals(helper.sync.get_selected_nodes(), [helper.sync.get_cursor_node()])
         End
       End
 
       Describe .get_cursor()
         It returns a [line, col - 1] list
-          Assert Equals(helper.get_cursor(), [line('.'), col('.') - 1])
+          Assert Equals(helper.async.get_cursor(), [line('.'), col('.') - 1])
         End
       End
 
       Describe .set_cursor()
         It move cursor position
           call setline(1, ["Hello", "World"])
-          call helper.set_cursor([2, 4])
+          call helper.async.set_cursor([2, 4])
           Assert Equals(line('.'), 2)
           Assert Equals(col('.'), 5)
         End
@@ -119,77 +119,77 @@ Describe fern#helper
 
       Describe .save_cursor()
         It does not raise exception
-          call helper.save_cursor()
+          call helper.sync.save_cursor()
         End
       End
 
       Describe .restore_cursor()
         It does not raise exception
-          call helper.restore_cursor()
+          call helper.sync.restore_cursor()
         End
       End
 
       Describe .cancel()
         It does not raise exception
-          call helper.cancel()
+          call helper.sync.cancel()
         End
       End
 
       Describe .process_node()
         It does not raise exception
-          let root = helper.get_root_node()
-          call helper.process_node(root)
+          let root = helper.sync.get_root_node()
+          call helper.sync.process_node(root)
         End
 
         It returns a function
-          let root = helper.get_root_node()
-          Assert IsFunction(helper.process_node(root))
+          let root = helper.sync.get_root_node()
+          Assert IsFunction(helper.sync.process_node(root))
         End
       End
 
       Describe .is_drawer()
         It does not raise exception
-          call helper.is_drawer()
+          call helper.sync.is_drawer()
         End
 
         It returns a boolean
-          Assert IsNumber(helper.is_drawer())
+          Assert IsNumber(helper.sync.is_drawer())
         End
 
         It returns 1 if the fern is shown in a project drawer
           Fern debug:/// -drawer
           let helper = fern#helper#new()
-          Assert True(helper.is_drawer())
+          Assert True(helper.sync.is_drawer())
         End
 
         It returns 0 if the fern is NOT shown in a project drawer
           Fern debug:///
           let helper = fern#helper#new()
-          Assert False(helper.is_drawer())
+          Assert False(helper.sync.is_drawer())
         End
       End
 
       Describe .get_scheme()
         It does not raise exception
-          call helper.get_scheme()
+          call helper.sync.get_scheme()
         End
 
         It returns a string
-          Assert IsString(helper.get_scheme())
+          Assert IsString(helper.sync.get_scheme())
         End
 
         It returns a scheme name of a fern buffer
           Fern debug:///
           let helper = fern#helper#new()
-          Assert Equals(helper.get_scheme(), 'debug')
+          Assert Equals(helper.sync.get_scheme(), 'debug')
 
           Fern dict:///
           let helper = fern#helper#new()
-          Assert Equals(helper.get_scheme(), 'dict')
+          Assert Equals(helper.sync.get_scheme(), 'dict')
 
           Fern file:///
           let helper = fern#helper#new()
-          Assert Equals(helper.get_scheme(), 'file')
+          Assert Equals(helper.sync.get_scheme(), 'file')
         End
       End
     End
@@ -197,13 +197,13 @@ Describe fern#helper
     Describe Asynchronous methods
       Describe .sleep()
         It returns a promise
-          let p = helper.sleep(1)
+          let p = helper.async.sleep(1)
           Assert True(Promise.is_promise(p))
         End
 
         It does not reject the promise
           let [r, e] = Promise.wait(
-                \ helper.sleep(1),
+                \ helper.async.sleep(1),
                 \ { 'timoeut': TIMEOUT },
                 \)
           Assert Equals(e, v:null)
@@ -212,13 +212,13 @@ Describe fern#helper
 
       Describe .redraw()
         It returns a promise
-          let p = helper.redraw()
+          let p = helper.async.redraw()
           Assert True(Promise.is_promise(p))
         End
 
         It does not reject the promise
           let [r, e] = Promise.wait(
-                \ helper.redraw(),
+                \ helper.async.redraw(),
                 \ { 'timoeut': TIMEOUT },
                 \)
           Assert Equals(e, v:null)

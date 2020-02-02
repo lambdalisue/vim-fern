@@ -289,12 +289,16 @@ pass a helper instance to the first argument of functions by calling the
 function with |fern#helper#call()| or create a new helper instance of the
 current buffer by calling |fern#helper#new()|.
 
+-----------------------------------------------------------------------------
+VARIABLE				*fern-develop-helper-variable*
+
 			*fern-develop-helper.fern*
 .fern
 	A fern instance which has the following attributes:
 
 	"source"	A cancellation token source to cancel requests
 	"provider"	A provider instance for the fren tree
+	"renderer"	A renderer instance to sort nodes
 	"comparator"	A comparator instance to sort nodes
 	"root"		A root node instance
 	"nodes"		A |List| of nodes which is handled in the tree
@@ -307,11 +311,12 @@ current buffer by calling |fern#helper#new()|.
 	Develoeprs can refer each attributes but Do NOT modify.
 
 			*fern-develop-helper.bufnr*
-			*fern-develop-helper.winid*
 .bufnr
+	A buffer number where the target fern instance binded.
+
+			*fern-develop-helper.winid*
 .winid
-	A buffer number and window number of the fern which this helper
-	instance refer.
+	A window number where a target fern instance binded.
 
 			*fern-develop-helper.STATUS_NONE*
 			*fern-develop-helper.STATUS_COLLAPSED*
@@ -321,118 +326,89 @@ current buffer by calling |fern#helper#new()|.
 .STATUS_EXPANDED
 	Constant variable for "status" of node instance.
 
-			*fern-develop-helper.get_root_node()*
-.get_root_node()
+-----------------------------------------------------------------------------
+SYNC METHODS				*fern-develop-helper.sync*
+
+Following methods are executed synchronously.
+
+			*fern-develop-helper.sync.echo()*
+.sync.echo({message})
+	Display a temporary |String| {message}.
+
+			*fern-develop-helper.sync.echomsg()*
+.sync.echomsg({message})
+	Display a permanent |String| {message}.
+
+			*fern-develop-helper.sync.get_root_node()*
+.sync.get_root_node()
 	Return a root node instance.
 
-			*fern-develop-helper.get_cursor_node()*
-.get_cursor_node()
+			*fern-develop-helper.sync.get_cursor_node()*
+.sync.get_cursor_node()
 	Return a node under the cursor.
 
-			*fern-develop-helper.get_marked_nodes()*
-.get_marked_nodes()
+			*fern-develop-helper.sync.get_marked_nodes()*
+.sync.get_marked_nodes()
 	Return a list of nodes which has marked.
 
-			*fern-develop-helper.get_selected_nodes()*
-.get_selected_nodes()
+			*fern-develop-helper.sync.get_selected_nodes()*
+.sync.get_selected_nodes()
 	Return a list of nodes 1) which has marked when at least one marked
 	node exists 2) a node under the cursor.
 	This is equivalent to the following code
 >
 	function! s:get_selected_nodes(helper) abort
-	  let nodes = a:helper.get_selected_nodes()
-	  return empty(nodes) ? [a:helper.get_cursor_node()] : nodes
+	  let nodes = a:helper.sync.get_selected_nodes()
+	  return empty(nodes) ? [a:helper.sync.get_cursor_node()] : nodes
 	endfunction
 <
-			*fern-develop-helper.get_cursor()*
-.get_cursor()
-	Return a list which indicates the cursor position. Note that the value
-	is slightly different from the value from |getcurpos()| or whatever.
+			*fern-develop-helper.sync.get_cursor()*
+.sync.get_cursor()
+	Return a list which indicates the cursor position of a binded window.
+	Note that the value is slightly different from the value from
+	|getcurpos()| or whatever.
 
-			*fern-develop-helper.set_cursor()*
-.set_cursor({cursor})
-	Move cursor to the {cursor}.
+			*fern-develop-helper.sync.set_cursor()*
+.sync.set_cursor({cursor})
+	Move cursor of a binded window to the {cursor}.
 
-			*fern-develop-helper.save_cursor()*
-.save_cursor()
-	Save cursor position to restore later. It saves the node under cursor
-	to restore cursor even after the content changes.
+			*fern-develop-helper.sync.save_cursor()*
+.sync.save_cursor()
+	Save cursor position to restore. It saves the node under cursor to
+	restore cursor even after the content changes.
 
-			*fern-develop-helper.restore_cursor()*
-.restore_cursor()
+			*fern-develop-helper.sync.restore_cursor()*
+.sync.restore_cursor()
 	Restore saved cursor position by searching a corresponding node.
 
-			*fern-develop-helper.cancel()*
-.cancel()
+			*fern-develop-helper.sync.cancel()*
+.sync.cancel()
 	Emit cancel request through cancellation token and assign a new
 	cancellation token to the tree for later processes.
 
-			*fern-develop-helper.process_node()*
-.process_node({node})
-	Mark the {node} PROCESSING and return a function to restore the {node}.
-	The PROCESSING nodes are displayed with a spinner |sign|.
->
-	function! s:map_slow_operation(helper) abort
-	  let node = a:helper.get_cursor_node()
-	  let Done = a:helper.process_node(node)
-	  return s:slow_operation(node).finally({ -> Done() })
-	endfunction
-<
-			*fern-develop-helper.is_drawer()*
-.is_drawer()
+			*fern-develop-helper.sync.is_drawer()*
+.sync.is_drawer()
 	Returns 1 if the fern buffer is shwon in a project drawer. Otherwise
 	it returns 0.
 
-			*fern-develop-helper.get_scheme()*
-.get_scheme()
+			*fern-develop-helper.sync.get_scheme()*
+.sync.get_scheme()
 	Return |String| which represent the scheme name of the fern buffer.
 
-			*fern-develop-helper.echo()*
-.echo({message})
-	Display a temporary |String| {message}.
-
-			*fern-develop-helper.echomsg()*
-.echomsg({message})
-	Display a permanent |String| {message}.
-
-			*fern-develop-helper.sleep()*
-.sleep({ms})
-	Return a promise which will resolves to 0 after {ms} milliseconds.
-
-			*fern-develop-helper.redraw()*
-.redraw()
-	Return a promise to redraw the content.
-
-			*fern-develop-helper.update_nodes()*
-			*fern-develop-helper.update_marks()*
-.update_nodes({nodes})
-.update_marks({marks})
-	Return a promise to update nodes/marks to the {nodes}/{marks}.
-
-			*fern-develop-helper.expand_node()*
-.expand_node({key})
-	Return a promise to expand a node identified by the {key}.
-	It reloads the node instead when the node has expanded or leaf.
-
-			*fern-develop-helper.collapse_node()*
-.collapse_node({key})
-	Return a promise to collapse a node identified by the {key}.
-	It reloads the node instead when the node has collapsed or leaf.
-
-			*fern-develop-helper.reload_node()*
-.reload_node({key})
-	Return a promise to reload a node identified by the {key} and it's
-	descended.
-
-			*fern-develop-helper.reveal_node()*
-.reveal_node({key})
-	Return a promise to reveal a node identified by the {key}.
-	The term "reveal" here means "recursively expand nested nodes until
-	reached to the target node."
-
-			*fern-develop-helper.focus_node()*
-.focus_node({key}[, {options}])
-	Return a promise to focus a node identified by the {key}.
+			*fern-develop-helper.sync.process_node()*
+.sync.process_node({node})
+	Mark the {node} PROCESSING and return a function to restore.
+	The PROCESSING nodes are displayed with a spinner |sign|.
+>
+	function! s:map_slow_operation(helper) abort
+	  let node = a:helper.sync.get_cursor_node()
+	  let Done = a:helper.sync.process_node(node)
+	  return s:slow_operation(node).finally({ -> Done() })
+	endfunction
+<
+			*fern-develop-helper.sync.focus_node()*
+.sync.focus_node({key}[, {options}])
+	Focus (move cursor on) a node identified by the {key}.
 	The following options are available in the {options}.
 
 	"offset"	A |Number| for line offset.
@@ -440,28 +416,70 @@ current buffer by calling |fern#helper#new()|.
 			specified, it focus node only when the current node
 			has not changed from the specified previous one.
 
-			*fern-develop-helper.set_mark()*
-.set_mark({key}, {value})
+-----------------------------------------------------------------------------
+ASYNC METHODS				*fern-develop-helper.async*
+
+Following methods are executed asynchronously and return a promise.
+
+			*fern-develop-helper.async.sleep()*
+.async.sleep({ms})
+	Return a promise which will resolves to 0 after {ms} milliseconds.
+
+			*fern-develop-helper.async.redraw()*
+.async.redraw()
+	Return a promise to redraw the content.
+
+			*fern-develop-helper.async.set_mark()*
+.async.set_mark({key}, {value})
 	Return a promise to set mark to a node identified by the {key}.
 
-			*fern-develop-helper.set_hidden()*
-.set_hidden({value})
+			*fern-develop-helper.async.set_hidden()*
+.async.set_hidden({value})
 	Return a promise to set hidden.
 
-			*fern-develop-helper.set_include()*
-			*fern-develop-helper.set_exclude()*
-.set_include({pattern})
-.set_exclude({pattern})
+			*fern-develop-helper.async.set_include()*
+			*fern-develop-helper.async.set_exclude()*
+.async.set_include({pattern})
+.async.set_exclude({pattern})
 	Return a promise to set include/exclude.
 
-			*fern-develop-helper.enter_tree()*
-.enter_tree({node})
+			*fern-develop-helper.async.update_nodes()*
+.async.update_nodes({nodes})
+	Return a promise to update nodes to the {nodes}.
+
+			*fern-develop-helper.async.update_marks()*
+.async.update_marks({marks})
+	Return a promise to update marks to the {marks}.
+
+			*fern-develop-helper.async.expand_node()*
+.async.expand_node({key})
+	Return a promise to expand a node identified by the {key}.
+	It reloads the node instead when the node has expanded or leaf.
+
+			*fern-develop-helper.async.collapse_node()*
+.async.collapse_node({key})
+	Return a promise to collapse a node identified by the {key}.
+	It reloads the node instead when the node has collapsed or leaf.
+
+			*fern-develop-helper.async.reload_node()*
+.async.reload_node({key})
+	Return a promise to reload a node identified by the {key} and it's
+	descended.
+
+			*fern-develop-helper.async.reveal_node()*
+.async.reveal_node({key})
+	Return a promise to reveal a node identified by the {key}.
+	The term "reveal" here means "recursively expand nested nodes until
+	reached to the target node."
+
+			*fern-develop-helper.async.enter_tree()*
+.async.enter_tree({node})
 	Return a promise to enter a tree which root node become the {node}.
 	Note that "bufname" of the {node} must be properly configured to use
 	this feature.
 
-			*fern-develop-helper.leave_tree()*
-.leave_tree()
+			*fern-develop-helper.async.leave_tree()*
+.async.leave_tree()
 	Return a promise to enter a tree which root node become a parent node
 	of the current root node.
 	Note that "bufname" of the parent node must be properly configured to
