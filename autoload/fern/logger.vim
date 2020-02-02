@@ -38,9 +38,15 @@ function! s:log(level, ...) abort
 endfunction
 
 function! s:echomsg(content) abort
-  for line in a:content
-    echomsg '[fern] ' . line
-  endfor
+  let more = &more
+  try
+    set nomore
+    for line in a:content
+      echomsg '[fern] ' . line | redraw | echo
+    endfor
+  finally
+    let &more = more
+  endtry
 endfunction
 
 function! s:writefile(content) abort
