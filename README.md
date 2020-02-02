@@ -20,11 +20,14 @@ General purpose asynchronous tree viewer written in Pure Vim script.
 
 **WARNING: This project is in beta stage. Any changes are applied without announcements.**
 
-![Split windows](https://user-images.githubusercontent.com/546312/73183241-d89aa980-415d-11ea-876f-30bd4d80f0cd.png)
-_Split windows_
-
-![Project drawer](https://user-images.githubusercontent.com/546312/73183310-f10ac400-415d-11ea-80c8-af1609294889.png)
-_Project drawer_
+<p align="center">
+<img src="https://user-images.githubusercontent.com/546312/73183241-d89aa980-415d-11ea-876f-30bd4d80f0cd.png">
+<small><strong>Split windows</strong></small>
+</p>
+<p align="center">
+<img src="https://user-images.githubusercontent.com/546312/73183310-f10ac400-415d-11ea-80c8-af1609294889.png">
+<small><strong>Project drawer</strong></small>
+</p>
 
 ## Concept
 
