@@ -74,6 +74,10 @@ function! s:map_open(helper, opener) abort
             \ 'locator': a:helper.sync.is_drawer(),
             \})
     endfor
+    " Fix <C-w><C-p> (#47)
+    let winid_fern = win_getid()
+    call win_gotoid(winid)
+    call win_gotoid(winid_fern)
     return a:helper.async.update_marks([])
         \.then({ -> a:helper.async.redraw() })
   catch
