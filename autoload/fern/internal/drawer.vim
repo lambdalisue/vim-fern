@@ -29,25 +29,6 @@ function! fern#internal#drawer#init() abort
   augroup END
 endfunction
 
-function! fern#internal#drawer#focus_next(...) abort
-  let options = extend({
-        \ 'predicator': { -> 1 },
-        \}, a:0 ? a:1 : {},
-        \)
-  let P = options.predicator
-  return fern#internal#viewer#focus_next(extend(options, {
-        \ 'predicator': { n ->
-        \   fern#internal#drawer#is_drawer(bufname(winbufnr(n))) && P(n)
-        \ }
-        \}))
-endfunction
-
-function! fern#internal#drawer#do_next(command, ...) abort
-  if fern#internal#drawer#focus_next(a:0 ? a:1 : {})
-    execute a:command
-  endif
-endfunction
-
 function! fern#internal#drawer#is_drawer(...) abort
   let bufname = a:0 ? a:1 : bufname('%')
   let fri = fern#internal#bufname#parse(bufname)
