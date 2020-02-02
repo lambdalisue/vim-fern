@@ -155,8 +155,6 @@ The following mappings/actions are available among any fern buffer
 |                     | `zoom:half`            | Temporary increase the width of a project drawer. It does nothing on split windows    |
 |                     | `zoom:full`            | Temporary increase the width of a project drawer. It does nothing on split windows    |
 
-[t9md/vim-choosewin]: https://github.com/t9md/vim-choosewin
-
 And the following mappings/actions are available in builtin `file` scheme
 
 | Mapping | Action            | Description                                                                                                       |
@@ -177,6 +175,14 @@ And the following mappings/actions are available in builtin `file` scheme
 |         | `remove`          | Remove files/directries of selected nodes                                                                         |
 | `R`     | `rename`          | Start renamer to rename multiple files/directories by using Vim buffer (like exrename in [Shougo/vimfiler.vim][]) |
 
+### Window selector
+
+The `open:select` action open a prompt to visually select window to open a node.
+This feature is strongly inspired by [t9md/vim-choosewin][].
+
+![Window selector](https://user-images.githubusercontent.com/546312/73605707-090e9780-45e5-11ea-864a-457dd785f1c4.gif)
+
+[t9md/vim-choosewin]: https://github.com/t9md/vim-choosewin
 
 ### Renamer action (A.k.a exrename)
 
