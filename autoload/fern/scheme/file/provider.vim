@@ -135,3 +135,50 @@ call s:Config.config(expand('<sfile>:p'), {
       \     ? 'vim_readdir'
       \     : 'vim_glob',
       \})
+
+
+function! fern#scheme#file#provider#_benchmark() abort
+  let Path = vital#fern#import('System.Filepath')
+  redraw
+  echo "Creating benchmark environment ..."
+  let t = tempname()
+  try
+    call mkdir(t, 'p')
+    call map(
+          \ range(100000),
+          \ { _, v -> writefile([], Path.join(t, v)) },
+          \)
+
+    let token = s:CancellationToken.none
+
+    if exists('*s:children_ls')
+      echo "Benchmarking 'ls' ..."
+      let s = reltime()
+      call s:children_ls(t, token)
+      echo reltimestr(reltime(s))
+    endif
+
+    if exists('*s:children_find')
+      echo "Benchmarking 'find' ..."
+      let s = reltime()
+      call s:children_find(t, token)
+      echo reltimestr(reltime(s))
+    endif
+
+    if exists('*s:children_vim_readdir')
+      echo "Benchmarking 'vim_readdir' ..."
+      let s = reltime()
+      call s:children_vim_readdir(t, token)
+      echo reltimestr(reltime(s))
+    endif
+
+    if exists('*s:children_vim_glob')
+      echo "Benchmarking 'vim_glob' ..."
+      let s = reltime()
+      call s:children_vim_glob(t, token)
+      echo reltimestr(reltime(s))
+    endif
+  finally
+    call delete(t, 'rf')
+  endtry
+endfunction
