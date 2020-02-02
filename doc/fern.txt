@@ -246,7 +246,7 @@ VARIABLE						*fern-variable*
 	Default: ''
 
 *g:fern#renderer*
-	A |String| name of renderer used to sort tree items. Allowed value
+	A |String| name of renderer used to render tree items. Allowed value
 	is a key of |g:fern#internal#core#renderers|.
 	Default: "default"
 
