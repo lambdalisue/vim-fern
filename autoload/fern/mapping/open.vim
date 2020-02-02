@@ -68,7 +68,7 @@ function! s:map_open(helper, opener) abort
   try
     let winid = win_getid()
     for node in nodes
-      call win_gotoid(winid)
+      noautocmd call win_gotoid(winid)
       call fern#internal#buffer#open(expand(node.bufname), {
             \ 'opener': a:opener,
             \ 'locator': a:helper.sync.is_drawer(),
@@ -76,8 +76,8 @@ function! s:map_open(helper, opener) abort
     endfor
     " Fix <C-w><C-p> (#47)
     let winid_fern = win_getid()
-    call win_gotoid(winid)
-    call win_gotoid(winid_fern)
+    noautocmd call win_gotoid(winid)
+    noautocmd call win_gotoid(winid_fern)
     return a:helper.async.update_marks([])
         \.then({ -> a:helper.async.redraw() })
   catch
