@@ -91,10 +91,9 @@ if !s:is_windows && executable('ls')
 endif
 
 if !s:is_windows && executable('find')
-  " XXX: it seems 'find' does not find children in a symlinked directory
   function! s:children_find(path, token) abort
     let Profile = fern#profile#start('fern#scheme#file#provider:children_find')
-    return s:Process.start(['find', a:path, '-maxdepth', '1'], { 'token': a:token })
+    return s:Process.start(['find', a:path, '-follow', '-maxdepth', '1'], { 'token': a:token })
           \.then({ v -> v.stdout })
           \.then(s:AsyncLambda.filter_f({ v -> !empty(v) && v !=# a:path }))
           \.finally({ -> Profile() })
