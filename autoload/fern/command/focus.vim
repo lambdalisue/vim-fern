@@ -8,20 +8,11 @@ function! fern#command#focus#command(mods, qargs) abort
 
     call options.throw_if_dirty()
 
-    let origin = winnr()
-    let n = winnr('$')
-    let s = origin % n
-    let e = (s - 1) % n
-    let former = range(s < 0 ? s + n : s, n - 1)
-    let latter = range(0, e < 0 ? e + n : e)
-    for winnr in (former + latter)
-      let bufname = bufname(winbufnr(winnr))
-      let fri = fern#fri#parse(bufname)
-      if fri.scheme ==# 'fern'
-            \ && (!drawer || fri.authority =~# '\<drawer\>')
-        call win_gotoid(win_getid(winnr))
-      endif
-    endfor
+    if drawer
+      call fern#internal#drawer#focus_next()
+    else
+      call fern#internal#viewer#focus_next()
+    endif
   catch
     call fern#logger#error(v:exception)
     call fern#logger#debug(v:throwpoint)

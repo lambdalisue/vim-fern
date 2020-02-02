@@ -16,6 +16,26 @@ function! fern#internal#viewer#init() abort
         \.catch({ e -> s:Lambda.pass(e, s:notify(bufnr, e)) })
 endfunction
 
+function! fern#internal#viewer#focus_next(...) abort
+  let options = extend({
+        \ 'origin': winnr() + 1,
+        \ 'predicator': { -> 1 },
+        \}, a:0 ? a:1 : {},
+        \)
+  let P = { n -> bufname(winbufnr(n)) =~# '^fern:' && options.predicator(n) }
+  let winnr = fern#internal#window#find(P, options.origin)
+  if winnr
+    execute printf('%dwincmd w', winnr)
+    return 1
+  endif
+endfunction
+
+function! fern#internal#viewer#do_next(command, ...) abort
+  if fern#internal#viewer#focus_next(a:0 ? a:1 : {})
+    execute a:command
+  endif
+endfunction
+
 function! s:open(bufname, options, resolve, reject) abort
   call fern#internal#buffer#open(a:bufname . '$', a:options)
   let b:fern_notifier = {
