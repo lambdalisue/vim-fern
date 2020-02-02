@@ -1,10 +1,10 @@
 Describe fern#helper
   After all
-    %bwipeout!
+    noautocmd %bwipeout!
   End
 
   Before
-    %bwipeout!
+    noautocmd %bwipeout!
     let TIMEOUT = 5000
     let STATUS_EXPANDED = g:fern#internal#node#STATUS_EXPANDED
     let Promise = vital#fern#import('Async.Promise')
@@ -12,6 +12,8 @@ Describe fern#helper
     let b:fern = fern#internal#core#new('debug:///', provider)
 
     let sync_methods = [
+          \ 'echo',
+          \ 'echomsg',
           \ 'get_root_node',
           \ 'get_cursor_node',
           \ 'get_marked_nodes',
@@ -21,22 +23,24 @@ Describe fern#helper
           \ 'save_cursor',
           \ 'restore_cursor',
           \ 'cancel',
+          \ 'is_drawer',
+          \ 'get_scheme',
           \ 'process_node',
+          \ 'focus_node',
           \]
     let async_methods = [
           \ 'sleep',
           \ 'redraw',
+          \ 'set_mark',
+          \ 'set_hidden',
+          \ 'set_include',
+          \ 'set_exclude',
           \ 'update_nodes',
           \ 'update_marks',
           \ 'expand_node',
           \ 'collapse_node',
           \ 'reload_node',
           \ 'reveal_node',
-          \ 'focus_node',
-          \ 'set_mark',
-          \ 'set_hidden',
-          \ 'set_include',
-          \ 'set_exclude',
           \ 'enter_tree',
           \ 'leave_tree',
           \]
@@ -51,15 +55,17 @@ Describe fern#helper
       Assert KeyExists(helper, 'STATUS_NONE')
       Assert KeyExists(helper, 'STATUS_COLLAPSED')
       Assert KeyExists(helper, 'STATUS_EXPANDED')
+      Assert KeyExists(helper, 'sync')
+      Assert KeyExists(helper, 'async')
 
       for sync_method in sync_methods
-        Assert KeyExists(helper, sync_method)
-        Assert IsFunction(helper[sync_method])
+        Assert KeyExists(helper.sync, sync_method)
+        Assert IsFunction(helper.sync[sync_method])
       endfor
 
       for async_method in async_methods
-        Assert KeyExists(helper, async_method)
-        Assert IsFunction(helper[async_method])
+        Assert KeyExists(helper.async, async_method)
+        Assert IsFunction(helper.async[async_method])
       endfor
     End
   End
@@ -157,6 +163,7 @@ Describe fern#helper
         End
 
         It returns 1 if the fern is shown in a project drawer
+          vsplit
           Fern debug:/// -drawer
           let helper = fern#helper#new()
           Assert True(helper.sync.is_drawer())
@@ -203,9 +210,9 @@ Describe fern#helper
 
         It does not reject the promise
           let [r, e] = Promise.wait(
-                \ helper.async.sleep(1),
-                \ { 'timoeut': TIMEOUT },
-                \)
+               \ helper.async.sleep(1),
+               \ { 'timoeut': TIMEOUT },
+               \)
           Assert Equals(e, v:null)
         End
       End
@@ -218,9 +225,9 @@ Describe fern#helper
 
         It does not reject the promise
           let [r, e] = Promise.wait(
-                \ helper.async.redraw(),
-                \ { 'timoeut': TIMEOUT },
-                \)
+               \ helper.async.redraw(),
+               \ { 'timoeut': TIMEOUT },
+               \)
           Assert Equals(e, v:null)
         End
       End
