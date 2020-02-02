@@ -8,10 +8,12 @@ function! fern#command#focus#command(mods, qargs) abort
 
     call options.throw_if_dirty()
 
-    if drawer
-      call fern#internal#drawer#focus_next()
-    else
-      call fern#internal#viewer#focus_next()
+    let found = fern#internal#window#find(
+          \ funcref('s:predicator', [drawer]),
+          \ winnr() + 1,
+          \)
+    if found
+      call win_gotoid(win_getid(found))
     endif
   catch
     call fern#logger#error(v:exception)
@@ -21,4 +23,11 @@ endfunction
 
 function! fern#command#focus#complete(arglead, cmdline, cursorpos) abort
   return filter(copy(s:options), { -> v:val =~# '^' . a:arglead })
+endfunction
+
+function! s:predicator(drawer, winnr) abort
+  let bufname = bufname(winbufnr(a:winnr))
+  let fri = fern#fri#parse(bufname)
+  return fri.scheme ==# 'fern'
+        \ && (!a:drawer || fri.authority =~# '\<drawer\>')
 endfunction

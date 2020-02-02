@@ -3,7 +3,7 @@ function! fern#internal#drawer#open(fri, ...) abort
         \ 'toggle': 0,
         \}, a:0 ? a:1 : {},
         \)
-  if fern#internal#drawer#focus_next()
+  if s:focus_next()
     if winnr('$') > 1
       if options.toggle
         close
@@ -29,29 +29,21 @@ function! fern#internal#drawer#init() abort
   augroup END
 endfunction
 
-function! fern#internal#drawer#focus_next(...) abort
-  let options = extend({
-        \ 'predicator': { -> 1 },
-        \}, a:0 ? a:1 : {},
-        \)
-  let P = options.predicator
-  return fern#internal#viewer#focus_next(extend(options, {
-        \ 'predicator': { n ->
-        \   fern#internal#drawer#is_drawer(bufname(winbufnr(n))) && P(n)
-        \ }
-        \}))
-endfunction
-
-function! fern#internal#drawer#do_next(command, ...) abort
-  if fern#internal#drawer#focus_next(a:0 ? a:1 : {})
-    execute a:command
-  endif
-endfunction
-
 function! fern#internal#drawer#is_drawer(...) abort
   let bufname = a:0 ? a:1 : bufname('%')
-  let fri = fern#internal#bufname#parse(bufname)
+  let fri = fern#fri#parse(bufname)
   return fri.scheme ==# 'fern' && fri.authority =~# '\<drawer\>'
+endfunction
+
+function! s:focus_next() abort
+  let winnr = fern#internal#window#find(
+        \ { w -> fern#internal#drawer#is_drawer(bufname(winbufnr(w))) },
+        \)
+  if winnr is# 0
+    return
+  endif
+  noautocmd call win_gotoid(win_getid(winnr))
+  return 1
 endfunction
 
 function! s:keep_width() abort

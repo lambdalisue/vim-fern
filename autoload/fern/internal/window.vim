@@ -4,24 +4,20 @@ let s:Prompt = vital#fern#import('Prompt')
 function! fern#internal#window#find(predicator, ...) abort
   let n = winnr('$')
   if n is# 1
-    return 1
+    return a:predicator(winnr())
   endif
   let origin = (a:0 ? a:1 : winnr()) - 1
   let s = origin % n
   let e = (s - 1) % n
   let former = range(s < 0 ? s + n : s, n - 1)
   let latter = range(0, e < 0 ? e + n : e)
-  for winnr in (former + latter)
-    if a:predicator(winnr + 1)
-      return winnr + 1
+  for index in (former + latter)
+    let winnr = index + 1
+    if a:predicator(winnr)
+      return winnr
     endif
   endfor
   return 0
-endfunction
-
-function! fern#internal#window#locate(...) abort
-  let winnr = a:0 ? a:1 : winnr('#')
-  call fern#internal#locator#focus(winnr('#'))
 endfunction
 
 function! fern#internal#window#select() abort
