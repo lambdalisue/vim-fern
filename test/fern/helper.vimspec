@@ -8,8 +8,13 @@ Describe fern#helper
     let TIMEOUT = 5000
     let STATUS_EXPANDED = g:fern#internal#node#STATUS_EXPANDED
     let Promise = vital#fern#import('Async.Promise')
-    let provider = fern#scheme#debug#provider#new()
-    let b:fern = fern#internal#core#new('debug:///', provider)
+
+    noautocmd edit fern:///debug:///
+    let [_, e] = Promise.wait(
+         \ fern#internal#viewer#init(),
+         \ { 'timeout': TIMEOUT },
+         \)
+    Assert Equals(e, v:null)
 
     let sync_methods = [
           \ 'echo',
@@ -28,6 +33,7 @@ Describe fern#helper
           \ 'process_node',
           \ 'focus_node',
           \]
+
     let async_methods = [
           \ 'sleep',
           \ 'redraw',
@@ -75,7 +81,21 @@ Describe fern#helper
       let helper = fern#helper#new()
     End
 
-    Describe Synchronous methods
+    Describe .sync
+      Describe .echo
+        It echos message
+          let output = execute("call helper.sync.echo('Hello')")
+          Assert Equals(output, "\nHello")
+        End
+      End
+
+      Describe .echomsg
+        It echos message
+          let output = execute("call helper.sync.echomsg('Hello')")
+          Assert Equals(output, "\nHello")
+        End
+      End
+
       Describe .get_root_node()
         It returns a root node
           Assert Equals(helper.sync.get_root_node(), helper.fern.root)
@@ -84,7 +104,10 @@ Describe fern#helper
 
       Describe .get_cursor_node()
         It returns a cursor node
-          Assert Equals(helper.sync.get_cursor_node(), helper.fern.root)
+          call setpos('.', [0, 1, 1, 0, 1])
+          Assert Equals(helper.sync.get_cursor_node(), helper.fern.nodes[0])
+          call setpos('.', [0, 3, 1, 0, 1])
+          Assert Equals(helper.sync.get_cursor_node(), helper.fern.nodes[2])
         End
       End
 
@@ -92,8 +115,12 @@ Describe fern#helper
         It returns marked nodes
           Assert Equals(helper.sync.get_marked_nodes(), [])
 
-          let helper.async.set_mark([], 1)
-          Assert Equals(helper.sync.get_marked_nodes(), [helper.fern.root])
+          let helper.async.set_mark(['deep'], 1)
+          let helper.async.set_mark(['shallow'], 1)
+          Assert Equals(helper.sync.get_marked_nodes(), [
+                \ helper.fern.nodes[1],
+                \ helper.fern.nodes[3],
+                \])
         End
       End
 
@@ -116,7 +143,6 @@ Describe fern#helper
 
       Describe .set_cursor()
         It move cursor position
-          call setline(1, ["Hello", "World"])
           call helper.sync.set_cursor([2, 4])
           Assert Equals(line('.'), 2)
           Assert Equals(col('.'), 5)
@@ -138,18 +164,6 @@ Describe fern#helper
       Describe .cancel()
         It does not raise exception
           call helper.sync.cancel()
-        End
-      End
-
-      Describe .process_node()
-        It does not raise exception
-          let root = helper.sync.get_root_node()
-          call helper.sync.process_node(root)
-        End
-
-        It returns a function
-          let root = helper.sync.get_root_node()
-          Assert IsFunction(helper.sync.process_node(root))
         End
       End
 
@@ -199,9 +213,28 @@ Describe fern#helper
           Assert Equals(helper.sync.get_scheme(), 'file')
         End
       End
+
+      Describe .process_node()
+        It does not raise exception
+          let root = helper.sync.get_root_node()
+          call helper.sync.process_node(root)
+        End
+
+        It returns a function
+          let root = helper.sync.get_root_node()
+          Assert IsFunction(helper.sync.process_node(root))
+        End
+      End
+
+      Describe .focus_node()
+        It does not raise exception
+          let root = helper.sync.get_root_node()
+          call helper.sync.focus_node(root.__key)
+        End
+      End
     End
 
-    Describe Asynchronous methods
+    Describe .async
       Describe .sleep()
         It returns a promise
           let p = helper.async.sleep(1)
