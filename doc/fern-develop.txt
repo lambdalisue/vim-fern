@@ -16,6 +16,7 @@ SCHEME					|fern-develop-scheme|
   MAPPING				|fern-develop-scheme-provider|
 HELPER					|fern-develop-helper|
 LOGGER					|fern-develop-logger|
+UTILITY					|fern-develop-utility|
 
 
 =============================================================================
@@ -489,6 +490,24 @@ fern#logger#info({object}...)
 fern#logger#error({object}...)
 	Log |String| representation of {object}s when |g:fern#loglevel|
 	beyonds |g:fern#logger#ERROR|.
+
+
+=============================================================================
+UTILITY						*fern-develop-utility*
+
+						*fern#util#sleep()*
+fern#util#sleep({ms})
+	Return a promise which will be resolved after {ms} milliseconds.
+
+						*fern#util#deprecated()*
+fern#util#deprecated({name}[, {alternative}])
+	Log warning that {name} has deprecated. It tells users that they
+	should use {alternative} if specified.
+
+						*fern#util#obsolete()*
+fern#util#obsolete({name}[, {alternative}])
+	Throw error that {name} has obsolete. It tells users that they
+	must use {alternative} if specified.
 
 
 =============================================================================
