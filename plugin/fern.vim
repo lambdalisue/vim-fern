@@ -8,7 +8,7 @@ command! -nargs=*
       \ Fern
       \ call fern#command#fern#command(<q-mods>, <q-args>)
 
-command! -nargs=*
+command! -nargs=?
       \ -complete=customlist,fern#command#focus#complete
       \ FernFocus
       \ call fern#command#focus#command(<q-mods>, <q-args>)
