@@ -177,14 +177,16 @@ And the following mappings/actions are available in builtin `file` scheme
 |         | `remove`          | Remove files/directries of selected nodes                                                                         |
 | `R`     | `rename`          | Start renamer to rename multiple files/directories by using Vim buffer (like exrename in [Shougo/vimfiler.vim][]) |
 
-[shougo/vimfiler.vim]: https://github.com/Shougo/vimfiler.vim
 
 ### Renamer action (A.k.a exrename)
 
 The `rename` action open a new buffer with path of selected nodes.
 Users can edit that buffer and `:w` applies the changes.
+This feature is strongly inspired by [shougo/vimfiler.vim][].
 
 ![Renamer](https://user-images.githubusercontent.com/546312/73184814-5d86c280-4160-11ea-9ed1-d5a8d66d1774.gif)
+
+[shougo/vimfiler.vim]: https://github.com/Shougo/vimfiler.vim
 
 ## Customize
 
