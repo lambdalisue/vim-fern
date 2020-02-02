@@ -1,7 +1,7 @@
 let s:indent = 0
 
 function! fern#profile#start(name) abort
-  if !get(g:, 'fern_profile')
+  if !get(g:, 'fern#profile')
     return { -> 0 }
   endif
   let now = reltime()

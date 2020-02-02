@@ -55,13 +55,12 @@ function! s:node(path) abort
   endif
   let name = fnamemodify(path, ':t')
   let status = isdirectory(path)
-  let bufname = status ? fern#scheme#file#fri#to_fri(path) : path
   return {
         \ 'name': name,
         \ 'label': name ==# '' ? '/' : name,
         \ 'status': status,
         \ 'hidden': name[:0] ==# '.',
-        \ 'bufname': bufname,
+        \ 'bufname': path,
         \ '_path': path,
         \}
 endfunction
@@ -80,23 +79,29 @@ function! s:safe(fn) abort
   endtry
 endfunction
 
-if !s:is_windows && executable('find')
-  function! s:children_find(path, token) abort
-    let Profile = fern#profile#start('fern#scheme#file#provider:children_find')
-    return s:Process.start(['find', a:path, '-maxdepth', '1'], { 'token': a:token })
+if !s:is_windows && executable('ls')
+  " NOTE:
+  " The -U option means different between Linux and FreeBSD.
+  " Linux   - do not sort; list entries in directory order
+  " FreeBSD - Use time when file was created for sorting or printing.
+  " But it improve performance in Linux and just noise in FreeBSD so
+  " the option is applied.
+  function! s:children_ls(path, token) abort
+    let Profile = fern#profile#start('fern#scheme#file#provider:children_ls')
+    return s:Process.start(['ls', '-1AU', a:path], { 'token': a:token })
           \.then({ v -> v.stdout })
-          \.then(s:AsyncLambda.filter_f({ v -> !empty(v) && v !=# a:path }))
+          \.then(s:AsyncLambda.filter_f({ v -> !empty(v) }))
+          \.then(s:AsyncLambda.map_f({ v -> a:path . '/' . v }))
           \.finally({ -> Profile() })
   endfunction
 endif
 
-if !s:is_windows && executable('ls')
-  function! s:children_ls(path, token) abort
-    let Profile = fern#profile#start('fern#scheme#file#provider:children_ls')
-    return s:Process.start(['ls', '-1A', a:path], { 'token': a:token })
+if !s:is_windows && executable('find')
+  function! s:children_find(path, token) abort
+    let Profile = fern#profile#start('fern#scheme#file#provider:children_find')
+    return s:Process.start(['find', a:path, '-follow', '-maxdepth', '1'], { 'token': a:token })
           \.then({ v -> v.stdout })
-          \.then(s:AsyncLambda.filter_f({ v -> !empty(v) }))
-          \.then(s:AsyncLambda.map_f({ v -> a:path . '/' . v }))
+          \.then(s:AsyncLambda.filter_f({ v -> !empty(v) && v !=# a:path }))
           \.finally({ -> Profile() })
   endfunction
 endif
@@ -127,6 +132,8 @@ function! s:children(path, token) abort
 endfunction
 
 
+" NOTE:
+" Performance 'find' > 'ls' >> 'vim_reddir' > 'vim_glob'
 call s:Config.config(expand('<sfile>:p'), {
       \ 'impl': exists('*s:children_find')
       \   ? 'find'
@@ -136,3 +143,50 @@ call s:Config.config(expand('<sfile>:p'), {
       \     ? 'vim_readdir'
       \     : 'vim_glob',
       \})
+
+
+function! fern#scheme#file#provider#_benchmark() abort
+  let Path = vital#fern#import('System.Filepath')
+  redraw
+  echo "Creating benchmark environment ..."
+  let t = tempname()
+  try
+    call mkdir(t, 'p')
+    call map(
+          \ range(100000),
+          \ { _, v -> writefile([], Path.join(t, v)) },
+          \)
+
+    let token = s:CancellationToken.none
+
+    if exists('*s:children_ls')
+      echo "Benchmarking 'ls' ..."
+      let s = reltime()
+      call s:children_ls(t, token)
+      echo reltimestr(reltime(s))
+    endif
+
+    if exists('*s:children_find')
+      echo "Benchmarking 'find' ..."
+      let s = reltime()
+      call s:children_find(t, token)
+      echo reltimestr(reltime(s))
+    endif
+
+    if exists('*s:children_vim_readdir')
+      echo "Benchmarking 'vim_readdir' ..."
+      let s = reltime()
+      call s:children_vim_readdir(t, token)
+      echo reltimestr(reltime(s))
+    endif
+
+    if exists('*s:children_vim_glob')
+      echo "Benchmarking 'vim_glob' ..."
+      let s = reltime()
+      call s:children_vim_glob(t, token)
+      echo reltimestr(reltime(s))
+    endif
+  finally
+    call delete(t, 'rf')
+  endtry
+endfunction

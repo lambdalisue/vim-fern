@@ -28,7 +28,7 @@ function! fern#internal#buffer#open(bufname, ...) abort
     endif
   else
     if options.locator
-      call fern#internal#window#locate()
+      call fern#internal#locator#focus(winnr('#'))
     endif
   endif
   if options.opener =~# s:edit_or_opener_pattern
