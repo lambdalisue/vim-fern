@@ -79,16 +79,6 @@ function! s:safe(fn) abort
   endtry
 endfunction
 
-if !s:is_windows && executable('find')
-  function! s:children_find(path, token) abort
-    let Profile = fern#profile#start('fern#scheme#file#provider:children_find')
-    return s:Process.start(['find', a:path, '-maxdepth', '1'], { 'token': a:token })
-          \.then({ v -> v.stdout })
-          \.then(s:AsyncLambda.filter_f({ v -> !empty(v) && v !=# a:path }))
-          \.finally({ -> Profile() })
-  endfunction
-endif
-
 if !s:is_windows && executable('ls')
   function! s:children_ls(path, token) abort
     let Profile = fern#profile#start('fern#scheme#file#provider:children_ls')
@@ -96,6 +86,17 @@ if !s:is_windows && executable('ls')
           \.then({ v -> v.stdout })
           \.then(s:AsyncLambda.filter_f({ v -> !empty(v) }))
           \.then(s:AsyncLambda.map_f({ v -> a:path . '/' . v }))
+          \.finally({ -> Profile() })
+  endfunction
+endif
+
+if !s:is_windows && executable('find')
+  " XXX: it seems 'find' does not find children in a symlinked directory
+  function! s:children_find(path, token) abort
+    let Profile = fern#profile#start('fern#scheme#file#provider:children_find')
+    return s:Process.start(['find', a:path, '-maxdepth', '1'], { 'token': a:token })
+          \.then({ v -> v.stdout })
+          \.then(s:AsyncLambda.filter_f({ v -> !empty(v) && v !=# a:path }))
           \.finally({ -> Profile() })
   endfunction
 endif
@@ -127,10 +128,10 @@ endfunction
 
 
 call s:Config.config(expand('<sfile>:p'), {
-      \ 'impl': exists('*s:children_find')
-      \   ? 'find'
-      \   : exists('*s:children_ls')
-      \     ? 'ls'
+      \ 'impl': exists('*s:children_ls')
+      \   ? 'ls'
+      \   : exists('*s:children_find')
+      \     ? 'find'
       \     : exists('*s:children_vim_readdir')
       \     ? 'vim_readdir'
       \     : 'vim_glob',
