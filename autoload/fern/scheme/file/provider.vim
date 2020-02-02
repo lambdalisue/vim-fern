@@ -80,9 +80,15 @@ function! s:safe(fn) abort
 endfunction
 
 if !s:is_windows && executable('ls')
+  " NOTE:
+  " The -U option means different between Linux and FreeBSD.
+  " Linux   - do not sort; list entries in directory order
+  " FreeBSD - Use time when file was created for sorting or printing.
+  " But it improve performance in Linux and just noise in FreeBSD so
+  " the option is applied.
   function! s:children_ls(path, token) abort
     let Profile = fern#profile#start('fern#scheme#file#provider:children_ls')
-    return s:Process.start(['ls', '-1A', a:path], { 'token': a:token })
+    return s:Process.start(['ls', '-1AU', a:path], { 'token': a:token })
           \.then({ v -> v.stdout })
           \.then(s:AsyncLambda.filter_f({ v -> !empty(v) }))
           \.then(s:AsyncLambda.map_f({ v -> a:path . '/' . v }))
