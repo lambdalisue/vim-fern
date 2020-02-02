@@ -55,13 +55,12 @@ function! s:node(path) abort
   endif
   let name = fnamemodify(path, ':t')
   let status = isdirectory(path)
-  let bufname = status ? fern#scheme#file#fri#to_fri(path) : path
   return {
         \ 'name': name,
         \ 'label': name ==# '' ? '/' : name,
         \ 'status': status,
         \ 'hidden': name[:0] ==# '.',
-        \ 'bufname': bufname,
+        \ 'bufname': path,
         \ '_path': path,
         \}
 endfunction
