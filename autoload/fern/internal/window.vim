@@ -25,7 +25,7 @@ function! fern#internal#window#locate(...) abort
 endfunction
 
 function! fern#internal#window#select() abort
-  let threshold = g:fern#internal#locator#threshold
+  let threshold = g:fern#internal#locator#THRESHOLD
   while threshold > 0
     let ws = filter(
           \ range(1, winnr('$')),

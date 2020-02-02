@@ -28,7 +28,7 @@ function! fern#internal#locator#find(origin) abort
   let origin = a:origin == 0 ? winnr() : a:origin
   let former = range(origin, winnr('$'))
   let latter = reverse(range(1, origin - 1))
-  let threshold = g:fern#internal#locator#threshold
+  let threshold = g:fern#internal#locator#THRESHOLD
   while threshold > 0
     for winnr in (former + latter)
       if fern#internal#locator#score(winnr) >= threshold
@@ -48,5 +48,5 @@ function! fern#internal#locator#focus(origin) abort
   call win_gotoid(win_getid(winnr))
 endfunction
 
-let g:fern#internal#locator#threshold = len(s:conditions) + 1
-lockvar g:fern#internal#locator#threshold
+let g:fern#internal#locator#THRESHOLD = len(s:conditions) + 1
+lockvar g:fern#internal#locator#THRESHOLD
