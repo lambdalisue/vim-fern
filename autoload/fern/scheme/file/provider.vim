@@ -126,11 +126,13 @@ function! s:children(path, token) abort
 endfunction
 
 
+" NOTE:
+" Performance 'find' > 'ls' >> 'vim_reddir' > 'vim_glob'
 call s:Config.config(expand('<sfile>:p'), {
-      \ 'impl': exists('*s:children_ls')
-      \   ? 'ls'
-      \   : exists('*s:children_find')
-      \     ? 'find'
+      \ 'impl': exists('*s:children_find')
+      \   ? 'find'
+      \   : exists('*s:children_ls')
+      \     ? 'ls'
       \     : exists('*s:children_vim_readdir')
       \     ? 'vim_readdir'
       \     : 'vim_glob',
