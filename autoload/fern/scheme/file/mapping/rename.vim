@@ -36,15 +36,15 @@ function! s:call(name, ...) abort
 endfunction
 
 function! s:map_rename(helper, opener) abort
-  let root = a:helper.get_root_node()
-  let Factory = { -> map(copy(a:helper.get_selected_nodes()), { _, n -> n._path }) }
+  let root = a:helper.sync.get_root_node()
+  let Factory = { -> map(copy(a:helper.sync.get_selected_nodes()), { _, n -> n._path }) }
   let ns = {}
   return fern#internal#renamer#rename(Factory, { 'opener': a:opener })
         \.then({ r -> s:_map_rename(a:helper, r) })
         \.then({ n -> s:Lambda.let(ns, 'n', n) })
-        \.then({ -> a:helper.reload_node(root.__key) })
-        \.then({ -> a:helper.redraw() })
-        \.then({ -> a:helper.echo(printf('%d items are renamed', ns.n)) })
+        \.then({ -> a:helper.async.reload_node(root.__key) })
+        \.then({ -> a:helper.async.redraw() })
+        \.then({ -> a:helper.sync.echo(printf('%d items are renamed', ns.n)) })
 endfunction
 
 function! s:_map_rename(helper, result) abort

@@ -104,14 +104,14 @@ Describe fern#helper
 
       Describe .get_cursor()
         It returns a [line, col - 1] list
-          Assert Equals(helper.async.get_cursor(), [line('.'), col('.') - 1])
+          Assert Equals(helper.sync.get_cursor(), [line('.'), col('.') - 1])
         End
       End
 
       Describe .set_cursor()
         It move cursor position
           call setline(1, ["Hello", "World"])
-          call helper.async.set_cursor([2, 4])
+          call helper.sync.set_cursor([2, 4])
           Assert Equals(line('.'), 2)
           Assert Equals(col('.'), 5)
         End

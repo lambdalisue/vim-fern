@@ -14,7 +14,7 @@ function! s:call(name, ...) abort
 endfunction
 
 function! s:map_cd(helper, command) abort
-  let node = a:helper.get_cursor_node()
+  let node = a:helper.sync.get_cursor_node()
   if a:command ==# 'tcd' && !exists(':tcd')
     let winid = win_getid()
     silent execute printf(

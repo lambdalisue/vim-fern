@@ -31,28 +31,28 @@ function! s:call(name, ...) abort
 endfunction
 
 function! s:map_debug(helper) abort
-  let node = a:helper.get_cursor_node()
+  let node = a:helper.sync.get_cursor_node()
   redraw | echo fern#internal#node#debug(node)
 endfunction
 
 function! s:map_reload(helper) abort
-  let node = a:helper.get_cursor_node()
+  let node = a:helper.sync.get_cursor_node()
   if node is# v:null
     return s:Promise.reject("no node found on a cursor line")
   endif
-  return a:helper.reload_node(node.__key)
-        \.then({ -> a:helper.redraw() })
+  return a:helper.async.reload_node(node.__key)
+        \.then({ -> a:helper.async.redraw() })
 endfunction
 
 function! s:map_expand(helper) abort
-  let node = a:helper.get_cursor_node()
+  let node = a:helper.sync.get_cursor_node()
   if node is# v:null
     return s:Promise.reject("no node found on a cursor line")
   endif
-  let previous = a:helper.get_cursor_node()
-  return a:helper.expand_node(node.__key)
-        \.then({ -> a:helper.redraw() })
-        \.then({ -> a:helper.focus_node(
+  let previous = a:helper.sync.get_cursor_node()
+  return a:helper.async.expand_node(node.__key)
+        \.then({ -> a:helper.async.redraw() })
+        \.then({ -> a:helper.sync.focus_node(
         \   node.__key,
         \   { 'previous': previous, 'offset': 1 },
         \ )
@@ -60,14 +60,14 @@ function! s:map_expand(helper) abort
 endfunction
 
 function! s:map_collapse(helper) abort
-  let node = a:helper.get_cursor_node()
+  let node = a:helper.sync.get_cursor_node()
   if node is# v:null
     return s:Promise.reject("no node found on a cursor line")
   endif
-  let previous = a:helper.get_cursor_node()
-  return a:helper.collapse_node(node.__key)
-        \.then({ -> a:helper.redraw() })
-        \.then({ -> a:helper.focus_node(
+  let previous = a:helper.sync.get_cursor_node()
+  return a:helper.async.collapse_node(node.__key)
+        \.then({ -> a:helper.async.redraw() })
+        \.then({ -> a:helper.sync.focus_node(
         \   node.__key,
         \   { 'previous': previous },
         \ )
@@ -75,7 +75,7 @@ function! s:map_collapse(helper) abort
 endfunction
 
 function! s:map_reveal(helper) abort
-  let node = a:helper.get_cursor_node()
+  let node = a:helper.sync.get_cursor_node()
   let path = node is# v:null
         \ ? ''
         \ : join(node.__key, '/') . '/'
@@ -84,11 +84,11 @@ function! s:map_reveal(helper) abort
     return s:Promise.reject("Cancelled")
   endif
   let key = split(path, '/')
-  let root = a:helper.get_root_node()
-  let previous = a:helper.get_cursor_node()
-  return a:helper.reveal_node(key)
-        \.then({ -> a:helper.redraw() })
-        \.then({ -> a:helper.focus_node(
+  let root = a:helper.sync.get_root_node()
+  let previous = a:helper.sync.get_cursor_node()
+  return a:helper.async.reveal_node(key)
+        \.then({ -> a:helper.async.redraw() })
+        \.then({ -> a:helper.sync.focus_node(
         \   key,
         \   { 'previous': previous },
         \ )
@@ -96,13 +96,13 @@ function! s:map_reveal(helper) abort
 endfunction
 
 function! s:map_enter(helper) abort
-  let node = a:helper.get_cursor_node()
+  let node = a:helper.sync.get_cursor_node()
   if node is# v:null
     return s:Promise.reject("no node found on a cursor line")
   endif
-  return a:helper.enter_tree(node)
+  return a:helper.async.enter_tree(node)
 endfunction
 
 function! s:map_leave(helper) abort
-  return a:helper.leave_tree()
+  return a:helper.async.leave_tree()
 endfunction

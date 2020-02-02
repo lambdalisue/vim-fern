@@ -60,7 +60,7 @@ function! s:call(name, ...) abort
 endfunction
 
 function! s:map_open(helper, opener) abort
-  let nodes = a:helper.get_selected_nodes()
+  let nodes = a:helper.sync.get_selected_nodes()
   let nodes = filter(copy(nodes), { -> v:val.bufname isnot# v:null })
   if empty(nodes)
     return s:Promise.reject("no node found which has bufname")
@@ -71,11 +71,11 @@ function! s:map_open(helper, opener) abort
       call win_gotoid(winid)
       call fern#internal#buffer#open(expand(node.bufname), {
             \ 'opener': a:opener,
-            \ 'locator': a:helper.is_drawer(),
+            \ 'locator': a:helper.sync.is_drawer(),
             \})
     endfor
-    return a:helper.update_marks([])
-        \.then({ -> a:helper.redraw() })
+    return a:helper.async.update_marks([])
+        \.then({ -> a:helper.async.redraw() })
   catch
     return s:Promise.reject(v:exception)
   endtry

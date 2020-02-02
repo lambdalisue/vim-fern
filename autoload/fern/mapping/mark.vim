@@ -25,25 +25,25 @@ function! s:call(name, ...) abort
 endfunction
 
 function! s:map_mark_set(helper) abort
-  let node = a:helper.get_cursor_node()
+  let node = a:helper.sync.get_cursor_node()
   if node is# v:null
     return s:Promise.reject("no node found on a cursor line")
   endif
-  return a:helper.set_mark(node.__key, 1)
-        \.then({ -> a:helper.redraw() })
+  return a:helper.async.set_mark(node.__key, 1)
+        \.then({ -> a:helper.async.redraw() })
 endfunction
 
 function! s:map_mark_unset(helper) abort
-  let node = a:helper.get_cursor_node()
+  let node = a:helper.sync.get_cursor_node()
   if node is# v:null
     return s:Promise.reject("no node found on a cursor line")
   endif
-  return a:helper.set_mark(node.__key, 0)
-        \.then({ -> a:helper.redraw() })
+  return a:helper.async.set_mark(node.__key, 0)
+        \.then({ -> a:helper.async.redraw() })
 endfunction
 
 function! s:map_mark_toggle(helper) abort
-  let node = a:helper.get_cursor_node()
+  let node = a:helper.sync.get_cursor_node()
   if node is# v:null
     return s:Promise.reject("no node found on a cursor line")
   endif

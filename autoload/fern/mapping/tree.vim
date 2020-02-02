@@ -20,10 +20,10 @@ function! s:call(name, ...) abort
 endfunction
 
 function! s:map_cancel(helper) abort
-  call a:helper.cancel()
-  return a:helper.redraw()
+  call a:helper.sync.cancel()
+  return a:helper.async.redraw()
 endfunction
 
 function! s:map_redraw(helper) abort
-  return a:helper.redraw()
+  return a:helper.async.redraw()
 endfunction

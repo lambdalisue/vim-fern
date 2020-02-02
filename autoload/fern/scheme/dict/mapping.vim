@@ -36,7 +36,7 @@ function! s:map_new_leaf(helper) abort
   let path = provider._prompt_leaf(a:helper)
 
   " Get parent node of a new leaf
-  let node = a:helper.get_cursor_node()
+  let node = a:helper.sync.get_cursor_node()
   let node = node.status isnot# a:helper.STATUS_EXPANDED ? node.__owner : node
 
   " Update tree
@@ -49,12 +49,12 @@ function! s:map_new_leaf(helper) abort
 
   " Update UI
   let key = node.__key + split(path, '/')
-  let previous = a:helper.get_cursor_node()
+  let previous = a:helper.sync.get_cursor_node()
   return s:Promise.resolve()
-        \.then({ -> a:helper.reload_node(node.__key) })
-        \.then({ -> a:helper.reveal_node(key) })
-        \.then({ -> a:helper.redraw() })
-        \.then({ -> a:helper.focus_node(key, { 'previous': previous }) })
+        \.then({ -> a:helper.async.reload_node(node.__key) })
+        \.then({ -> a:helper.async.reveal_node(key) })
+        \.then({ -> a:helper.async.redraw() })
+        \.then({ -> a:helper.sync.focus_node(key, { 'previous': previous }) })
 endfunction
 
 function! s:map_new_branch(helper) abort
@@ -64,7 +64,7 @@ function! s:map_new_branch(helper) abort
   let path = provider._prompt_branch(a:helper)
 
   " Get parent node of a new branch
-  let node = a:helper.get_cursor_node()
+  let node = a:helper.sync.get_cursor_node()
   let node = node.status isnot# a:helper.STATUS_EXPANDED ? node.__owner : node
 
   " Update tree
@@ -77,19 +77,19 @@ function! s:map_new_branch(helper) abort
 
   " Update UI
   let key = node.__key + split(path, '/')
-  let previous = a:helper.get_cursor_node()
+  let previous = a:helper.sync.get_cursor_node()
   return s:Promise.resolve()
-        \.then({ -> a:helper.reload_node(node.__key) })
-        \.then({ -> a:helper.reveal_node(key) })
-        \.then({ -> a:helper.redraw() })
-        \.then({ -> a:helper.focus_node(key, { 'previous': previous }) })
+        \.then({ -> a:helper.async.reload_node(node.__key) })
+        \.then({ -> a:helper.async.reveal_node(key) })
+        \.then({ -> a:helper.async.redraw() })
+        \.then({ -> a:helper.sync.focus_node(key, { 'previous': previous }) })
 endfunction
 
 function! s:map_copy(helper) abort
   let provider = a:helper.fern.provider
   let tree = provider._tree
 
-  let nodes = a:helper.get_selected_nodes()
+  let nodes = a:helper.sync.get_selected_nodes()
   let processed = 0
   for node in nodes
     let src = node._path
@@ -106,18 +106,18 @@ function! s:map_copy(helper) abort
   endfor
   call provider._update_tree(tree)
 
-  let root = a:helper.get_root_node()
+  let root = a:helper.sync.get_root_node()
   return s:Promise.resolve()
-        \.then({ -> a:helper.reload_node(root.__key) })
-        \.then({ -> a:helper.redraw() })
-        \.then({ -> a:helper.echo(printf('%d items are copied', processed)) })
+        \.then({ -> a:helper.async.reload_node(root.__key) })
+        \.then({ -> a:helper.async.redraw() })
+        \.then({ -> a:helper.sync.echo(printf('%d items are copied', processed)) })
 endfunction
 
 function! s:map_move(helper) abort
   let provider = a:helper.fern.provider
   let tree = provider._tree
 
-  let nodes = a:helper.get_selected_nodes()
+  let nodes = a:helper.sync.get_selected_nodes()
   let processed = 0
   for node in nodes
     let src = node._path
@@ -134,17 +134,17 @@ function! s:map_move(helper) abort
   endfor
   call provider._update_tree(tree)
 
-  let root = a:helper.get_root_node()
+  let root = a:helper.sync.get_root_node()
   return s:Promise.resolve()
-        \.then({ -> a:helper.reload_node(root.__key) })
-        \.then({ -> a:helper.redraw() })
-        \.then({ -> a:helper.echo(printf('%d items are moved', processed)) })
+        \.then({ -> a:helper.async.reload_node(root.__key) })
+        \.then({ -> a:helper.async.redraw() })
+        \.then({ -> a:helper.sync.echo(printf('%d items are moved', processed)) })
 endfunction
 
 function! s:map_remove(helper) abort
   let provider = a:helper.fern.provider
 
-  let nodes = a:helper.get_selected_nodes()
+  let nodes = a:helper.sync.get_selected_nodes()
   let paths = map(copy(nodes), { _, v -> v._path })
   let prompt = printf("The follwoing %d entries will be removed", len(paths))
   for path in paths[:5]
@@ -167,17 +167,17 @@ function! s:map_remove(helper) abort
     let node.status = a:helper.STATUS_COLLAPSED
   endfor
   call provider._update_tree(tree)
-  let root = a:helper.get_root_node()
+  let root = a:helper.sync.get_root_node()
   return s:Promise.resolve()
-        \.then({ -> a:helper.reload_node(root.__key) })
-        \.then({ -> a:helper.redraw() })
-        \.then({ -> a:helper.echo(printf('%d items are removed', len(nodes))) })
+        \.then({ -> a:helper.async.reload_node(root.__key) })
+        \.then({ -> a:helper.async.redraw() })
+        \.then({ -> a:helper.sync.echo(printf('%d items are removed', len(nodes))) })
 endfunction
 
 function! s:map_edit_leaf(helper) abort
   let provider = a:helper.fern.provider
 
-  let node = a:helper.get_cursor_node()
+  let node = a:helper.sync.get_cursor_node()
   if node.status isnot# a:helper.STATUS_NONE
     return s:Promise.reject(printf("%s is not leaf", node.name))
   endif
@@ -196,9 +196,9 @@ function! s:map_edit_leaf(helper) abort
         \)
   call provider._update_tree(provider._tree)
 
-  let root = a:helper.get_root_node()
-  let previous = a:helper.get_cursor_node()
+  let root = a:helper.sync.get_root_node()
+  let previous = a:helper.sync.get_cursor_node()
   return s:Promise.resolve()
-        \.then({ -> a:helper.reload_node(root.__key) })
-        \.then({ -> a:helper.redraw() })
+        \.then({ -> a:helper.async.reload_node(root.__key) })
+        \.then({ -> a:helper.async.redraw() })
 endfunction

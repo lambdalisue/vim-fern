@@ -79,7 +79,7 @@ function! s:init() abort
           \ fern#internal#scheme#provider(scheme),
           \)
     let helper = fern#helper#new()
-    let root = helper.get_root_node()
+    let root = helper.sync.get_root_node()
 
     call fern#internal#mapping#init(scheme)
     call fern#internal#drawer#init()
@@ -94,13 +94,13 @@ function! s:init() abort
     let reveal = split(fri.fragment, '/')
     let Profile = fern#profile#start("fern#internal#viewer:init")
     return s:Promise.resolve()
-          \.then({ -> helper.expand_node(root.__key) })
+          \.then({ -> helper.async.expand_node(root.__key) })
           \.finally({ -> Profile("expand") })
-          \.then({ -> helper.reveal_node(reveal) })
+          \.then({ -> helper.async.reveal_node(reveal) })
           \.finally({ -> Profile("reveal") })
-          \.then({ -> helper.redraw() })
+          \.then({ -> helper.async.redraw() })
           \.finally({ -> Profile("redraw") })
-          \.then({ -> helper.focus_node(reveal) })
+          \.then({ -> helper.sync.focus_node(reveal) })
           \.finally({ -> Profile() })
   catch
     return s:Promise.reject(v:exception)
@@ -122,13 +122,13 @@ endfunction
 function! s:BufReadCmd() abort
   let helper = fern#helper#new()
   call helper.fern.renderer.syntax()
-  let root = helper.get_root_node()
+  let root = helper.sync.get_root_node()
   let cursor = get(b:, 'fern_cursor', getcurpos())
   call s:Promise.resolve()
-        \.then({ -> helper.redraw() })
-        \.then({ -> helper.set_cursor(cursor[1:2]) })
-        \.then({ -> helper.reload_node(root.__key) })
-        \.then({ -> helper.redraw() })
+        \.then({ -> helper.async.redraw() })
+        \.then({ -> helper.sync.set_cursor(cursor[1:2]) })
+        \.then({ -> helper.async.reload_node(root.__key) })
+        \.then({ -> helper.async.redraw() })
         \.catch({ e -> fern#logger#error(e) })
 endfunction
 

@@ -1,6 +1,6 @@
 function! fern#smart#leaf(leaf, branch, ...) abort
   let helper = fern#helper#new()
-  let node = helper.get_cursor_node()
+  let node = helper.sync.get_cursor_node()
   if node is# v:null
     return "\<Nop>"
   endif
@@ -15,14 +15,14 @@ endfunction
 
 function! fern#smart#drawer(drawer, viewer) abort
   let helper = fern#helper#new()
-  return helper.is_drawer()
+  return helper.sync.is_drawer()
         \ ? a:drawer
         \ : a:viewer
 endfunction
 
 function! fern#smart#scheme(default, schemes) abort
   let helper = fern#helper#new()
-  let scheme = helper.get_scheme()
+  let scheme = helper.sync.get_scheme()
   if has_key(a:schemes, scheme)
     return a:schemes[scheme]
   endif

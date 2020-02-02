@@ -40,7 +40,7 @@ endfunction
 
 function! s:map_terminal(helper, opener) abort
   let STATUS_NONE = a:helper.STATUS_NONE
-  let nodes = a:helper.get_selected_nodes()
+  let nodes = a:helper.sync.get_selected_nodes()
   let nodes = map(copy(nodes), { _, n -> n.status is# STATUS_NONE ? n.__owner : n })
   let winid = win_getid()
   try
@@ -48,12 +48,12 @@ function! s:map_terminal(helper, opener) abort
       call win_gotoid(winid)
       call fern#internal#buffer#open("", {
             \ 'opener': a:opener,
-            \ 'locator': a:helper.is_drawer(),
+            \ 'locator': a:helper.sync.is_drawer(),
             \})
       enew | call s:term(node._path)
     endfor
-    return a:helper.update_marks([])
-        \.then({ -> a:helper.redraw() })
+    return a:helper.async.update_marks([])
+        \.then({ -> a:helper.async.redraw() })
   catch
     return s:Promise.reject(v:exception)
   endtry

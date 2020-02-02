@@ -22,13 +22,13 @@ function! s:call(name, ...) abort
 endfunction
 
 function! s:map_hidden_set(helper) abort
-  return a:helper.set_hidden(1)
-        \.then({ -> a:helper.redraw() })
+  return a:helper.async.set_hidden(1)
+        \.then({ -> a:helper.async.redraw() })
 endfunction
 
 function! s:map_hidden_unset(helper) abort
-  return a:helper.set_hidden(0)
-        \.then({ -> a:helper.redraw() })
+  return a:helper.async.set_hidden(0)
+        \.then({ -> a:helper.async.redraw() })
 endfunction
 
 function! s:map_hidden_toggle(helper) abort
@@ -41,12 +41,12 @@ endfunction
 
 function! s:map_include(helper) abort
   let pattern = s:Prompt.ask("Pattern: ", a:helper.fern.include)
-  return a:helper.set_include(pattern)
-        \.then({ -> a:helper.redraw() })
+  return a:helper.async.set_include(pattern)
+        \.then({ -> a:helper.async.redraw() })
 endfunction
 
 function! s:map_exclude(helper) abort
   let pattern = s:Prompt.ask("Pattern: ", a:helper.fern.exclude)
-  return a:helper.set_exclude(pattern)
-        \.then({ -> a:helper.redraw() })
+  return a:helper.async.set_exclude(pattern)
+        \.then({ -> a:helper.async.redraw() })
 endfunction
