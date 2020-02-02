@@ -14,6 +14,13 @@ function! fern#logger#info(...) abort
   call call('s:log', ['INFO'] + a:000)
 endfunction
 
+function! fern#logger#warn(...) abort
+  if g:fern#loglevel > g:fern#logger#WARN
+    return
+  endif
+  call call('s:log', ['WARN'] + a:000)
+endfunction
+
 function! fern#logger#error(...) abort
   if g:fern#loglevel > g:fern#logger#ERROR
     return
@@ -57,7 +64,9 @@ endfunction
 
 let g:fern#logger#DEBUG = 0
 let g:fern#logger#INFO = 1
-let g:fern#logger#ERROR = 2
+let g:fern#logger#WARN = 2
+let g:fern#logger#ERROR = 3
 lockvar g:fern#logger#DEBUG
 lockvar g:fern#logger#INFO
+lockvar g:fern#logger#WARN
 lockvar g:fern#logger#ERROR
