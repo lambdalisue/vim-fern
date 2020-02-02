@@ -1,12 +1,12 @@
 function! fern#internal#action#init() abort
-  nnoremap <buffer><silent> <Plug>(fern-choice) :<C-u>call <SID>map_choice()<CR>
-  nnoremap <buffer><silent> <Plug>(fern-repeat) :<C-u>call <SID>map_repeat()<CR>
+  nnoremap <buffer><silent> <Plug>(fern-action-choice) :<C-u>call <SID>map_choice()<CR>
+  nnoremap <buffer><silent> <Plug>(fern-action-repeat) :<C-u>call <SID>map_repeat()<CR>
   nnoremap <buffer><silent> <Plug>(fern-action-help) :<C-u>call <SID>map_help(0)<CR>
   nnoremap <buffer><silent> <Plug>(fern-action-help:all) :<C-u>call <SID>map_help(1)<CR>
 
   if !g:fern#disable_default_mappings
-    nmap <buffer> a <Plug>(fern-choice)
-    nmap <buffer> . <Plug>(fern-repeat)
+    nmap <buffer> a <Plug>(fern-action-choice)
+    nmap <buffer> . <Plug>(fern-action-repeat)
     nmap <buffer> ? <Plug>(fern-action-help)
   endif
 
