@@ -1,4 +1,6 @@
 let s:Config = vital#fern#import('Config')
+let s:Lambda = vital#fern#import('Lambda')
+let s:Promise = vital#fern#import('Async.Promise')
 let s:AsyncLambda = vital#fern#import('Async.Lambda')
 
 let s:PATTERN = '^$~.*[]\'
@@ -27,7 +29,8 @@ function! s:render(nodes, marks) abort
         \}
   let base = len(a:nodes[0].__key)
   let Profile = fern#profile#start('fern#renderer#default#s:render')
-  return s:AsyncLambda.map(copy(a:nodes), { v, -> s:render_node(v, a:marks, base, options) })
+  return s:Promise.resolve()
+        \.then({ -> s:Lambda.map(copy(a:nodes), { v, -> s:render_node(v, a:marks, base, options) }) })
         \.finally({ -> Profile() })
 endfunction
 
