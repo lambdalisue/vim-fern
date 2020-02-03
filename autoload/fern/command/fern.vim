@@ -10,29 +10,34 @@ let s:options = [
       \ '-opener=',
       \]
 
-function! fern#command#fern#command(mods, qargs) abort
+function! fern#command#fern#command(mods, fargs) abort
   try
-    let [options, args] = fern#internal#command#parse(a:qargs)
-
-    if len(args) isnot# 1
-      echohl ErrorMsg
-      echo 'Usage: Fern {url} [-opener={opener}|-drawer][-toggle][-keep][-width={width}]'
-      echohl None
-      return
-    endif
-
-    let drawer = options.pop('drawer', v:false)
+    let reveal = fern#internal#args#pop(a:fargs, 'reveal', '')
+    let drawer = fern#internal#args#pop(a:fargs, 'drawer', v:false)
     if drawer
       let opener = s:drawer_opener
-      let width = options.pop('width', v:null)
-      let keep = options.pop('keep', v:null)
-      let toggle = options.pop('toggle', v:null)
+      let width = fern#internal#args#pop(a:fargs, 'width', '')
+      let keep = fern#internal#args#pop(a:fargs, 'keep', v:false)
+      let toggle = fern#internal#args#pop(a:fargs, 'toggle', v:false)
     else
-      let opener = options.pop('opener', g:fern#opener)
-      let width = v:null
-      let keep = v:null
-      let toggle = v:null
+      let opener = fern#internal#args#pop(a:fargs, 'opener', g:fern#opener)
+      let width = ''
+      let keep = v:false
+      let toggle = v:false
     endif
+
+    if len(a:fargs) isnot# 1
+          \ || type(reveal) isnot# v:t_string
+          \ || type(drawer) isnot# v:t_bool
+          \ || type(opener) isnot# v:t_string
+          \ || type(width) isnot# v:t_string
+          \ || type(keep) isnot# v:t_bool
+          \ || type(toggle) isnot# v:t_bool
+      throw 'Usage: Fern {url} [-opener={opener}|-drawer][-toggle][-keep][-width={width}]'
+    endif
+
+    " Does all options are handled?
+    call fern#internal#args#throw_if_dirty(a:fargs)
 
     " Force project drawer style when
     " - The current buffer is project drawer style fern
@@ -42,7 +47,7 @@ function! fern#command#fern#command(mods, qargs) abort
       let opener = s:drawer_opener
     endif
 
-    let expr = expand(args[0])
+    let expr = expand(a:fargs[0])
     " Build FRI for fern buffer from argument
     let fri = fern#internal#bufname#parse(expr)
     let fri.authority = drawer
@@ -52,10 +57,7 @@ function! fern#command#fern#command(mods, qargs) abort
           \ 'width': width,
           \ 'keep': keep,
           \})
-    let fri.fragment = expand(options.pop('reveal', ''))
-
-    " Does all options are handled?
-    call options.throw_if_dirty()
+    let fri.fragment = expand(reveal)
 
     " Normalize fragment
     call s:norm_fragment(fri)
@@ -73,7 +75,10 @@ function! fern#command#fern#command(mods, qargs) abort
             \})
     endif
   catch
-    call fern#logger#error(v:exception)
+    echohl ErrorMsg
+    echo v:exception
+    echohl None
+    call fern#logger#debug(v:exception)
     call fern#logger#debug(v:throwpoint)
   endtry
 endfunction

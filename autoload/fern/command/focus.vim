@@ -1,19 +1,16 @@
 let s:options = ['-drawer']
 
-function! fern#command#focus#command(mods, qargs) abort
+function! fern#command#focus#command(mods, fargs) abort
   try
-    let [options, args] = fern#internal#command#parse(a:qargs)
+    let drawer = fern#internal#args#pop(a:fargs, 'drawer', v:false)
 
-    if len(args) isnot# 0
-      echohl ErrorMsg
-      echo 'Usage: FernFocus [-drawer]'
-      echohl None
-      return
+    if len(a:fargs) isnot# 0
+          \ || type(drawer) isnot# v:t_bool
+      throw 'Usage: FernFocus [-drawer]'
     endif
 
-    let drawer = options.pop('drawer', v:null)
-
-    call options.throw_if_dirty()
+    " Does all options are handled?
+    call fern#internal#args#throw_if_dirty(a:fargs)
 
     let found = fern#internal#window#find(
           \ funcref('s:predicator', [drawer]),
@@ -23,7 +20,10 @@ function! fern#command#focus#command(mods, qargs) abort
       call win_gotoid(win_getid(found))
     endif
   catch
-    call fern#logger#error(v:exception)
+    echohl ErrorMsg
+    echo v:exception
+    echohl None
+    call fern#logger#debug(v:exception)
     call fern#logger#debug(v:throwpoint)
   endtry
 endfunction

@@ -12,5 +12,4 @@ Config
 Lambda
 System.Filepath
 Vim.Window.Cursor
-App.Flag
 Prompt

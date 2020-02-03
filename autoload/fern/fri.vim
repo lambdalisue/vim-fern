@@ -63,7 +63,7 @@ function! s:format_query(query) abort
   let pattern = '[/;#\[\]=]'
   let terms = []
   for [k, v] in items(a:query)
-    if v is# v:false || v is# v:null
+    if empty(v)
       continue
     elseif v is# v:true
       call add(terms, s:encode_query(k))
