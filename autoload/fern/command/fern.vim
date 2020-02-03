@@ -7,7 +7,7 @@ let s:options = [
       \ '-keep',
       \ '-reveal=',
       \ '-toggle',
-      \ '-opener',
+      \ '-opener=',
       \]
 
 function! fern#command#fern#command(mods, qargs) abort
@@ -79,7 +79,9 @@ function! fern#command#fern#command(mods, qargs) abort
 endfunction
 
 function! fern#command#fern#complete(arglead, cmdline, cursorpos) abort
-  if a:arglead =~# '^-'
+  if a:arglead =~# '^-opener='
+    return fern#complete#opener(a:arglead, a:cmdline, a:cursorpos)
+  elseif a:arglead =~# '^-'
     return filter(copy(s:options), { -> v:val =~# '^' . a:arglead })
   endif
   return getcompletion('', 'dir')
