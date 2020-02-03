@@ -4,7 +4,7 @@
 function! s:_SID() abort
   return matchstr(expand('<sfile>'), '<SNR>\zs\d\+\ze__SID$')
 endfunction
-execute join(['function! vital#_fern#Async#Promise#import() abort', printf("return map({'resolve': '', 'all': '', 'wait': '', '_vital_created': '', 'race': '', 'noop': '', 'is_promise': '', 'is_available': '', 'reject': '', 'new': ''}, \"vital#_fern#function('<SNR>%s_' . v:key)\")", s:_SID()), 'endfunction'], "\n")
+execute join(['function! vital#_fern#Async#Promise#import() abort', printf("return map({'resolve': '', '_vital_depends': '', 'wait': '', '_vital_created': '', 'all': '', 'noop': '', 'is_promise': '', 'race': '', 'is_available': '', 'reject': '', 'new': '', '_vital_loaded': ''}, \"vital#_fern#function('<SNR>%s_' . v:key)\")", s:_SID()), 'endfunction'], "\n")
 delfunction s:_SID
 " ___vital___
 " ECMAScript like Promise library for asynchronous operations.
@@ -27,13 +27,21 @@ function! s:_vital_created(module) abort
   lockvar a:module.TimeoutError
 endfunction
 
+function! s:_vital_loaded(V) abort
+  let s:Later = a:V.import('Async.Later')
+endfunction
+
+function! s:_vital_depends() abort
+  return ['Async.Later']
+endfunction
+
 " @vimlint(EVL103, 1, a:resolve)
 " @vimlint(EVL103, 1, a:reject)
 function! s:noop(resolve, reject) abort
 endfunction
 " @vimlint(EVL103, 0, a:resolve)
 " @vimlint(EVL103, 0, a:reject)
-let s:NOOP = function('s:noop')
+let s:NOOP = funcref('s:noop')
 
 " Internal APIs
 
@@ -51,7 +59,7 @@ function! s:_next_id() abort
   return s:id
 endfunction
 
-" ... is added to use this function as a callback of timer_start()
+" ... is added to use this function as a callback of s:Later.call()
 function! s:_invoke_callback(settled, promise, callback, result, ...) abort
   let has_callback = a:callback isnot v:null
   let success = 1
@@ -83,7 +91,7 @@ function! s:_invoke_callback(settled, promise, callback, result, ...) abort
   endif
 endfunction
 
-" ... is added to use this function as a callback of timer_start()
+" ... is added to use this function as a callback of s:Later.call()
 function! s:_publish(promise, ...) abort
   let settled = a:promise._state
   if settled == s:PENDING
@@ -129,8 +137,8 @@ function! s:_handle_thenable(promise, thenable) abort
     call s:_subscribe(
          \   a:thenable,
          \   v:null,
-         \   function('s:_resolve', [a:promise]),
-         \   function('s:_reject', [a:promise]),
+         \   funcref('s:_resolve', [a:promise]),
+         \   funcref('s:_reject', [a:promise]),
          \ )
   endif
 endfunction
@@ -151,7 +159,7 @@ function! s:_fulfill(promise, value) abort
   let a:promise._result = a:value
   let a:promise._state = s:FULFILLED
   if !empty(a:promise._children)
-    call timer_start(0, function('s:_publish', [a:promise]))
+    call s:Later.call(funcref('s:_publish', [a:promise]))
   endif
 endfunction
 
@@ -161,7 +169,7 @@ function! s:_reject(promise, ...) abort
   endif
   let a:promise._result = a:0 > 0 ? a:1 : v:null
   let a:promise._state = s:REJECTED
-  call timer_start(0, function('s:_publish', [a:promise]))
+  call s:Later.call(funcref('s:_publish', [a:promise]))
 endfunction
 
 function! s:_notify_done(wg, index, value) abort
@@ -207,8 +215,8 @@ function! s:new(resolver) abort
   try
     if a:resolver != s:NOOP
       call a:resolver(
-      \   function('s:_resolve', [promise]),
-      \   function('s:_reject', [promise]),
+      \   funcref('s:_resolve', [promise]),
+      \   funcref('s:_reject', [promise]),
       \ )
     endif
   catch
@@ -221,11 +229,11 @@ function! s:new(resolver) abort
 endfunction
 
 function! s:all(promises) abort
-  return s:new(function('s:_all', [a:promises]))
+  return s:new(funcref('s:_all', [a:promises]))
 endfunction
 
 function! s:race(promises) abort
-  return s:new(function('s:_race', [a:promises]))
+  return s:new(funcref('s:_race', [a:promises]))
 endfunction
 
 function! s:resolve(...) abort
@@ -278,21 +286,21 @@ function! s:_promise_then(...) dict abort
   let l:Res = a:0 > 0 ? a:1 : v:null
   let l:Rej = a:0 > 1 ? a:2 : v:null
   if state == s:FULFILLED
-    call timer_start(0, function('s:_invoke_callback', [state, child, Res, parent._result]))
+    call s:Later.call(funcref('s:_invoke_callback', [state, child, Res, parent._result]))
   elseif state == s:REJECTED
-    call timer_start(0, function('s:_invoke_callback', [state, child, Rej, parent._result]))
+    call s:Later.call(funcref('s:_invoke_callback', [state, child, Rej, parent._result]))
   else
     call s:_subscribe(parent, child, Res, Rej)
   endif
   return child
 endfunction
-let s:PROMISE.then = function('s:_promise_then')
+let s:PROMISE.then = funcref('s:_promise_then')
 
 " .catch() is just a syntax sugar of .then()
 function! s:_promise_catch(...) dict abort
   return self.then(v:null, a:0 > 0 ? a:1 : v:null)
 endfunction
-let s:PROMISE.catch = function('s:_promise_catch')
+let s:PROMISE.catch = funcref('s:_promise_catch')
 
 function! s:_on_finally(CB, parent, Result) abort
   call a:CB()
@@ -309,15 +317,15 @@ function! s:_promise_finally(...) dict abort
   if a:0 == 0
     let l:CB = v:null
   else
-    let l:CB = function('s:_on_finally', [a:1, parent])
+    let l:CB = funcref('s:_on_finally', [a:1, parent])
   endif
   if state != s:PENDING
-    call timer_start(0, function('s:_invoke_callback', [state, child, CB, parent._result]))
+    call s:Later.call(funcref('s:_invoke_callback', [state, child, CB, parent._result]))
   else
     call s:_subscribe(parent, child, CB, CB)
   endif
   return child
 endfunction
-let s:PROMISE.finally = function('s:_promise_finally')
+let s:PROMISE.finally = funcref('s:_promise_finally')
 
 " vim:set et ts=2 sts=2 sw=2 tw=0:
