@@ -2,7 +2,14 @@ let s:options = ['-drawer']
 
 function! fern#command#focus#command(mods, qargs) abort
   try
-    let [options, _] = fern#internal#command#parse(a:qargs)
+    let [options, args] = fern#internal#command#parse(a:qargs)
+
+    if len(args) isnot# 0
+      echohl ErrorMsg
+      echo 'Usage: FernFocus [-drawer]'
+      echohl None
+      return
+    endif
 
     let drawer = options.pop('drawer', v:null)
 

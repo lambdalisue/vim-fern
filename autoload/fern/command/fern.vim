@@ -14,8 +14,11 @@ function! fern#command#fern#command(mods, qargs) abort
   try
     let [options, args] = fern#internal#command#parse(a:qargs)
 
-    if len(args) is# 0
-      throw 'at least one argument is required'
+    if len(args) isnot# 1
+      echohl ErrorMsg
+      echo 'Usage: Fern {url} [-opener={opener}|-drawer][-toggle][-keep][-width={width}]'
+      echohl None
+      return
     endif
 
     let drawer = options.pop('drawer', v:false)
