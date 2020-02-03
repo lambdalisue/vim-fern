@@ -54,7 +54,7 @@ endfunction
 
 function! s:call(name, ...) abort
   return call(
-        \ "fern#internal#mapping#call",
+        \ 'fern#internal#mapping#call',
         \ [funcref(printf('s:map_%s', a:name))] + a:000,
         \)
 endfunction
@@ -63,7 +63,7 @@ function! s:map_open(helper, opener) abort
   let nodes = a:helper.sync.get_selected_nodes()
   let nodes = filter(copy(nodes), { -> v:val.bufname isnot# v:null })
   if empty(nodes)
-    return s:Promise.reject("no node found which has bufname")
+    return s:Promise.reject('no node found which has bufname')
   endif
   try
     let winid = win_getid()

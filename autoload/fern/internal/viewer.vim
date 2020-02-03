@@ -43,14 +43,14 @@ function! s:init() abort
   if empty(fri.authority)
     let fri.authority = sha256(localtime())[:7]
     let bufname = fern#fri#format(fri)
-    execute printf("silent keepalt file %s$", fnameescape(bufname))
+    execute printf('silent keepalt file %s$', fnameescape(bufname))
   endif
 
   let resource_uri = fri.path
   let scheme = fern#fri#parse(resource_uri).scheme
   let provider = fern#internal#scheme#provider(scheme)
   if provider is# v:null
-    return s:Promise.reject(printf("no such scheme %s exists", scheme))
+    return s:Promise.reject(printf('no such scheme %s exists', scheme))
   endif
 
   try
@@ -72,14 +72,14 @@ function! s:init() abort
     call fern#internal#action#init()
 
     let reveal = split(fri.fragment, '/')
-    let Profile = fern#profile#start("fern#internal#viewer:init")
+    let Profile = fern#profile#start('fern#internal#viewer:init')
     return s:Promise.resolve()
           \.then({ -> helper.async.expand_node(root.__key) })
-          \.finally({ -> Profile("expand") })
+          \.finally({ -> Profile('expand') })
           \.then({ -> helper.async.reveal_node(reveal) })
-          \.finally({ -> Profile("reveal") })
+          \.finally({ -> Profile('reveal') })
           \.then({ -> helper.async.redraw() })
-          \.finally({ -> Profile("redraw") })
+          \.finally({ -> Profile('redraw') })
           \.then({ -> helper.sync.focus_node(reveal) })
           \.finally({ -> Profile() })
   catch

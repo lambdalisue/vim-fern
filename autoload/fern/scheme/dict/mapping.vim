@@ -24,7 +24,7 @@ endfunction
 
 function! s:call(name, ...) abort
   return call(
-        \ "fern#internal#mapping#call",
+        \ 'fern#internal#mapping#call',
         \ [funcref(printf('s:map_%s', a:name))] + a:000,
         \)
 endfunction
@@ -146,7 +146,7 @@ function! s:map_remove(helper) abort
 
   let nodes = a:helper.sync.get_selected_nodes()
   let paths = map(copy(nodes), { _, v -> v._path })
-  let prompt = printf("The follwoing %d entries will be removed", len(paths))
+  let prompt = printf('The follwoing %d entries will be removed', len(paths))
   for path in paths[:5]
     let prompt .= "\n" . path
   endfor
@@ -155,14 +155,14 @@ function! s:map_remove(helper) abort
   endif
   let prompt .= "\nAre you sure to continue (Y[es]/no): "
   if !s:Prompt.confirm(prompt)
-    return s:Promise.reject("Cancelled")
+    return s:Promise.reject('Cancelled')
   endif
 
   " Update tree
   let tree = provider._tree
   let ps = []
   for node in nodes
-    echo printf("Delete %s", node._path)
+    echo printf('Delete %s', node._path)
     call fern#scheme#dict#tree#remove(tree, node._path)
     let node.status = a:helper.STATUS_COLLAPSED
   endfor
@@ -179,12 +179,12 @@ function! s:map_edit_leaf(helper) abort
 
   let node = a:helper.sync.get_cursor_node()
   if node.status isnot# a:helper.STATUS_NONE
-    return s:Promise.reject(printf("%s is not leaf", node.name))
+    return s:Promise.reject(printf('%s is not leaf', node.name))
   endif
 
-  let value = s:Prompt.ask("New value: ", node.concealed._value)
+  let value = s:Prompt.ask('New value: ', node.concealed._value)
   if value is# v:null
-    return s:Promise.reject("Cancelled")
+    return s:Promise.reject('Cancelled')
   endif
 
   " Update tree

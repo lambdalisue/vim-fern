@@ -1,6 +1,6 @@
 function! fern#internal#scheme#call(scheme, name, ...) abort
   try
-    return call(printf("fern#scheme#%s#%s", a:scheme, a:name), a:000)
+    return call(printf('fern#scheme#%s#%s', a:scheme, a:name), a:000)
   catch /^Vim\%((\a\+)\)\=:E117: [^:]\+: fern#scheme#[^#]\+#.*/
     return v:null
   endtry

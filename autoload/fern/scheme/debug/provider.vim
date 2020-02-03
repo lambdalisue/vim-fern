@@ -25,7 +25,7 @@ function! s:provider_get_root(tree, url) abort
   let url = matchstr(a:url, '^debug://\zs.*')
   let entry = s:get_entry(a:tree, url)
   if entry is# v:null
-    throw printf("no such entry: %s", a:url)
+    throw printf('no such entry: %s', a:url)
   endif
   let node = {
         \ 'name': get(split(entry.key, '/'), -1, 'root'),

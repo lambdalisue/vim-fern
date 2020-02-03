@@ -25,7 +25,7 @@ endfunction
 
 function! s:call(name, ...) abort
   return call(
-        \ "fern#internal#mapping#call",
+        \ 'fern#internal#mapping#call',
         \ [funcref(printf('s:map_%s', a:name))] + a:000,
         \)
 endfunction
@@ -38,7 +38,7 @@ endfunction
 function! s:map_reload(helper) abort
   let node = a:helper.sync.get_cursor_node()
   if node is# v:null
-    return s:Promise.reject("no node found on a cursor line")
+    return s:Promise.reject('no node found on a cursor line')
   endif
   return a:helper.async.reload_node(node.__key)
         \.then({ -> a:helper.async.redraw() })
@@ -47,7 +47,7 @@ endfunction
 function! s:map_expand(helper) abort
   let node = a:helper.sync.get_cursor_node()
   if node is# v:null
-    return s:Promise.reject("no node found on a cursor line")
+    return s:Promise.reject('no node found on a cursor line')
   endif
   let previous = a:helper.sync.get_cursor_node()
   return a:helper.async.expand_node(node.__key)
@@ -62,7 +62,7 @@ endfunction
 function! s:map_collapse(helper) abort
   let node = a:helper.sync.get_cursor_node()
   if node is# v:null
-    return s:Promise.reject("no node found on a cursor line")
+    return s:Promise.reject('no node found on a cursor line')
   endif
   let previous = a:helper.sync.get_cursor_node()
   return a:helper.async.collapse_node(node.__key)
@@ -79,9 +79,9 @@ function! s:map_reveal(helper) abort
   let path = node is# v:null
         \ ? ''
         \ : join(node.__key, '/') . '/'
-  let path = s:Prompt.ask("Reveal: ", path)
+  let path = s:Prompt.ask('Reveal: ', path)
   if empty(path)
-    return s:Promise.reject("Cancelled")
+    return s:Promise.reject('Cancelled')
   endif
   let key = split(path, '/')
   let root = a:helper.sync.get_root_node()
@@ -98,7 +98,7 @@ endfunction
 function! s:map_enter(helper) abort
   let node = a:helper.sync.get_cursor_node()
   if node is# v:null
-    return s:Promise.reject("no node found on a cursor line")
+    return s:Promise.reject('no node found on a cursor line')
   endif
   return a:helper.async.enter_tree(node)
 endfunction

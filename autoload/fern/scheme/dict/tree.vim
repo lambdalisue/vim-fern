@@ -56,7 +56,7 @@ function! fern#scheme#dict#tree#create(tree, path, value) abort
       return s:Promise.reject('Cancelled')
     elseif r ==# 'r'
       let new_path = s:Prompt.ask(
-            \ printf("New name: %s -> ", a:path),
+            \ printf('New name: %s -> ', a:path),
             \ a:path,
             \)
       if empty(new_path)
@@ -79,7 +79,7 @@ function! fern#scheme#dict#tree#copy(tree, src, dst) abort
       return s:Promise.reject('Cancelled')
     elseif r ==# 'r'
       let new_dst = s:Prompt.ask(
-            \ printf("New name: %s -> ", a:src),
+            \ printf('New name: %s -> ', a:src),
             \ a:dst,
             \)
       if empty(new_dst)

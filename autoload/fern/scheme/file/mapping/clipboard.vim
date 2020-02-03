@@ -22,7 +22,7 @@ endfunction
 
 function! s:call(name, ...) abort
   return call(
-        \ "fern#internal#mapping#call",
+        \ 'fern#internal#mapping#call',
         \ [funcref(printf('s:map_%s', a:name))] + a:000,
         \)
 endfunction
@@ -53,12 +53,12 @@ endfunction
 
 function! s:map_clipboard_paste(helper) abort
   if empty(s:clipboard)
-    return s:Promise.reject("Nothing to paste")
+    return s:Promise.reject('Nothing to paste')
   endif
 
   if s:clipboard.mode ==# 'move'
     let paths = copy(s:clipboard.candidates)
-    let prompt = printf("The following %d nodes will be moved", len(paths))
+    let prompt = printf('The following %d nodes will be moved', len(paths))
     for path in paths[:5]
       let prompt .= "\n" . path
     endfor
@@ -67,7 +67,7 @@ function! s:map_clipboard_paste(helper) abort
     endif
     let prompt .= "\nAre you sure to continue (Y[es]/no): "
     if !s:Prompt.confirm(prompt)
-      return s:Promise.reject("Cancelled")
+      return s:Promise.reject('Cancelled')
     endif
   endif
 
@@ -78,10 +78,10 @@ function! s:map_clipboard_paste(helper) abort
   for src in s:clipboard.candidates
     let dst = s:Path.join(node._path, fnamemodify(src, ':t'))
     if s:clipboard.mode ==# 'move'
-      echo printf("Move %s -> %s", src, dst)
+      echo printf('Move %s -> %s', src, dst)
       call add(ps, fern#scheme#file#shutil#move(src, dst, token))
     else
-      echo printf("Copy %s -> %s", src, dst)
+      echo printf('Copy %s -> %s', src, dst)
       call add(ps, fern#scheme#file#shutil#copy(src, dst, token))
     endif
   endfor

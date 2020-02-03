@@ -22,7 +22,7 @@ function! s:sync_echo(message, ...) abort dict
 endfunction
 let s:sync.echo = funcref('s:sync_echo')
 
-function! s:sync_echomsg(message) abort dict
+function! s:sync_echomsg(message, ...) abort dict
   let hl = a:0 ? a:1 : 'None'
   try
     execute printf('echohl %s', hl)

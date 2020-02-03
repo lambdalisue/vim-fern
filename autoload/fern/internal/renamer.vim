@@ -51,7 +51,7 @@ endfunction
 
 function! s:map_warn() abort
   echohl WarningMsg
-  echo "Newline is prohibited in the renamer buffer"
+  echo 'Newline is prohibited in the renamer buffer'
   echohl None
   return ''
 endfunction

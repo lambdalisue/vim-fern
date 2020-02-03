@@ -30,7 +30,7 @@ endfunction
 
 function! s:call(name, ...) abort
   return call(
-        \ "fern#internal#mapping#call",
+        \ 'fern#internal#mapping#call',
         \ [funcref(printf('s:map_%s', a:name))] + a:000,
         \)
 endfunction
@@ -55,7 +55,7 @@ function! s:_map_rename(helper, result) abort
     let [src, dst] = pair
     if fern#scheme#dict#tree#exists(tree, src)
       echohl WarningMsg
-      echo printf("%s does not exist", src)
+      echo printf('%s does not exist', src)
       echohl None
       continue
     endif

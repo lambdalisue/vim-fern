@@ -27,7 +27,7 @@ endfunction
 
 function! s:call(name, ...) abort
   return call(
-        \ "fern#internal#mapping#call",
+        \ 'fern#internal#mapping#call',
         \ [funcref(printf('s:map_%s', a:name))] + a:000,
         \)
 endfunction
@@ -140,7 +140,7 @@ endfunction
 function! s:map_trash(helper) abort
   let nodes = a:helper.sync.get_selected_nodes()
   let paths = map(copy(nodes), { _, v -> v._path })
-  let prompt = printf("The following %d files will be trashed", len(paths))
+  let prompt = printf('The following %d files will be trashed', len(paths))
   for path in paths[:5]
     let prompt .= "\n" . path
   endfor
@@ -149,12 +149,12 @@ function! s:map_trash(helper) abort
   endif
   let prompt .= "\nAre you sure to continue (Y[es]/no): "
   if !s:Prompt.confirm(prompt)
-    return s:Promise.reject("Cancelled")
+    return s:Promise.reject('Cancelled')
   endif
   let token = a:helper.fern.source.token
   let ps = []
   for node in nodes
-    echo printf("Trash %s", node._path)
+    echo printf('Trash %s', node._path)
     call add(ps, fern#scheme#file#shutil#trash(node._path, token))
     let node.status = a:helper.STATUS_COLLAPSED
   endfor
@@ -168,7 +168,7 @@ endfunction
 function! s:map_remove(helper) abort
   let nodes = a:helper.sync.get_selected_nodes()
   let paths = map(copy(nodes), { _, v -> v._path })
-  let prompt = printf("The following %d files will be removed", len(paths))
+  let prompt = printf('The following %d files will be removed', len(paths))
   for path in paths[:5]
     let prompt .= "\n" . path
   endfor
@@ -177,12 +177,12 @@ function! s:map_remove(helper) abort
   endif
   let prompt .= "\nAre you sure to continue (Y[es]/no): "
   if !s:Prompt.confirm(prompt)
-    return s:Promise.reject("Cancelled")
+    return s:Promise.reject('Cancelled')
   endif
   let token = a:helper.fern.source.token
   let ps = []
   for node in nodes
-    echo printf("Remove %s", node._path)
+    echo printf('Remove %s', node._path)
     call add(ps, fern#scheme#file#shutil#remove(node._path, token))
     let node.status = a:helper.STATUS_COLLAPSED
   endfor

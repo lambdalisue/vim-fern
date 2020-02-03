@@ -51,7 +51,7 @@ endfunction
 
 function! s:writefile(content) abort
   try
-    let time = strftime("%H:%M:%S")
+    let time = strftime('%H:%M:%S')
     let path = fnamemodify(expand(g:fern#logfile), ':p')
     call mkdir(fnamemodify(path, ':h'), 'p')
     call writefile(map(copy(a:content), { -> join([time, v:val], "\t") }), path, 'a')

@@ -9,15 +9,15 @@ function! fern#profile#start(name) abort
         \ 'start': now,
         \ 'previous': now,
         \}
-  echomsg s:format(a:name, "enter")
+  echomsg s:format(a:name, 'enter')
   let s:indent += 1
   return funcref('s:profile_leave', [ns, a:name])
 endfunction
 
 function! s:format(name, label, ...) abort
   return printf(
-        \ "%s%s [%s] %s",
-        \ repeat("| ", s:indent),
+        \ '%s%s [%s] %s',
+        \ repeat('| ', s:indent),
         \ a:name,
         \ a:label,
         \ join(a:000),
@@ -30,7 +30,7 @@ function! s:profile_leave(ns, name, ...) abort
   let start = a:ns.start
   let previous = a:ns.previous
   let profile = printf(
-        \ "%s [%s]",
+        \ '%s [%s]',
         \ split(reltimestr(reltime(previous, now)))[0],
         \ split(reltimestr(reltime(start, now)))[0],
         \)

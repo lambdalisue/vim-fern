@@ -42,6 +42,6 @@ function! fern#internal#buffer#open(bufname, ...) abort
         \ fnameescape(a:bufname),
         \]
   let cmdline = join(filter(args, { -> !empty(v:val) }), ' ')
-  call fern#logger#debug("fern#internal#buffer#open", "cmdline", cmdline)
+  call fern#logger#debug('fern#internal#buffer#open', 'cmdline', cmdline)
   execute cmdline
 endfunction

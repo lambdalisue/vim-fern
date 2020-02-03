@@ -23,7 +23,7 @@ endfunction
 
 function! s:provider_get_parent(node, ...) abort
   if s:Path.is_root_directory(a:node._path)
-    return s:Promise.reject("no parent node exists for the root")
+    return s:Promise.reject('no parent node exists for the root')
   endif
   try
     let parent = fnamemodify(a:node._path, ':h')
@@ -36,7 +36,7 @@ endfunction
 function! s:provider_get_children(node, ...) abort
   let token = a:0 ? a:1 : s:CancellationToken.none
   if a:node.status is# 0
-    return s:Promise.reject("no children exists for %s", a:node._path)
+    return s:Promise.reject('no children exists for %s', a:node._path)
   endif
   let Profile = fern#profile#start('fern#scheme#file#provider:provider_get_children')
   return s:children(a:node._path, token)
@@ -51,7 +51,7 @@ function! s:node(path) abort
   let path = simplify(path)
   let path = empty(path) ? '/' : path
   if empty(getftype(path))
-    throw printf("no such file or directory exists: %s", path)
+    throw printf('no such file or directory exists: %s', path)
   endif
   let name = fnamemodify(path, ':t')
   let status = isdirectory(path)
@@ -148,7 +148,7 @@ call s:Config.config(expand('<sfile>:p'), {
 function! fern#scheme#file#provider#_benchmark() abort
   let Path = vital#fern#import('System.Filepath')
   redraw
-  echo "Creating benchmark environment ..."
+  echo 'Creating benchmark environment ...'
   let t = tempname()
   try
     call mkdir(t, 'p')

@@ -53,7 +53,7 @@ function! s:map_choice() abort
   call inputsave()
   try
     let fn = get(function('s:complete_choice'), 'name')
-    let expr = input("action: ", '', printf('customlist,%s', fn))
+    let expr = input('action: ', '', printf('customlist,%s', fn))
   finally
     call inputrestore()
   endtry
@@ -101,13 +101,13 @@ function! s:map_help(all) abort
   let len1 = max(map(copy(rs), { -> len(v:val[1]) }))
   let len2 = max(map(copy(rs), { -> len(v:val[2]) }))
   call map(rs, { _, v -> [
-       \   printf(printf("%%-%dS", len0), v[0]),
-       \   printf(printf("%%-%dS", len1), v[1]),
-       \   printf(printf("%%-%dS", len2), v[2]),
+       \   printf(printf('%%-%dS', len0), v[0]),
+       \   printf(printf('%%-%dS', len1), v[1]),
+       \   printf(printf('%%-%dS', len2), v[2]),
        \ ]
        \})
 
-  call map(rs, { -> join(v:val, "  ") })
+  call map(rs, { -> join(v:val, '  ') })
   if !a:all
     echohl Title
     echo "NOTE: Some actions are concealed. Use 'help:all' action to see all actions."
@@ -136,7 +136,7 @@ function! s:build_actions(prefix) abort
   call map(ms, { _, v -> split(v)[1] })
   call map(ms, { _, v -> matchstr(v, '^<Plug>(\zs.*\ze)$') })
   call filter(ms, { _, v -> !empty(v) })
-  call map(ms, { _, expr -> expr[n:] })
+  call map(ms, { _, expr -> expr[n :] })
   return sort(ms)
 endfunction
 

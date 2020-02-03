@@ -49,28 +49,28 @@ function! fern#internal#core#update_nodes(fern, nodes) abort
   let Exclude  = empty(exclude)
        \ ? { -> 1 }
        \ : { n -> n.status is# s:STATUS_EXPANDED || n.label !~ exclude }
-  let Profile = fern#profile#start("fern#internal#core#update_nodes")
+  let Profile = fern#profile#start('fern#internal#core#update_nodes')
   return s:Promise.resolve(a:fern.nodes)
         \.then(s:AsyncLambda.filter_f(Hidden))
-        \.finally({ -> Profile("hidden") })
+        \.finally({ -> Profile('hidden') })
         \.then(s:AsyncLambda.filter_f(Include))
-        \.finally({ -> Profile("include") })
+        \.finally({ -> Profile('include') })
         \.then(s:AsyncLambda.filter_f(Exclude))
-        \.finally({ -> Profile("exclude") })
+        \.finally({ -> Profile('exclude') })
         \.then({ ns -> s:Lambda.let(a:fern, 'visible_nodes', ns) })
-        \.finally({ -> Profile("let") })
+        \.finally({ -> Profile('let') })
         \.then({ -> fern#internal#core#update_marks(a:fern, a:fern.marks) })
         \.finally({ -> Profile() })
 endfunction
 
 function! fern#internal#core#update_marks(fern, marks) abort
-  let Profile = fern#profile#start("fern#internal#core#update_marks")
+  let Profile = fern#profile#start('fern#internal#core#update_marks')
   return s:Promise.resolve(a:fern.visible_nodes)
-        \.finally({ -> Profile("resolve") })
+        \.finally({ -> Profile('resolve') })
         \.then(s:AsyncLambda.map_f({ n -> n.__key }))
-        \.finally({ -> Profile("key") })
+        \.finally({ -> Profile('key') })
         \.then({ ks -> s:AsyncLambda.filter(a:marks, { m -> index(ks, m) isnot# -1 }) })
-        \.finally({ -> Profile("filter") })
+        \.finally({ -> Profile('filter') })
         \.then({ ms -> s:Lambda.let(a:fern, 'marks', ms) })
         \.finally({ -> Profile() })
 endfunction
@@ -80,7 +80,7 @@ function! s:get_renderer(name) abort
     let Renderer = get(g:fern#internal#core#renderers, a:name, s:default_renderer)
     return Renderer()
   catch
-    call fern#logger#error("fern#internal#core:get_renderer", v:exception)
+    call fern#logger#error('fern#internal#core:get_renderer', v:exception)
     call fern#logger#debug(v:throwpoint)
     return s:default_renderer()
   endtry
@@ -91,7 +91,7 @@ function! s:get_comparator(name) abort
     let Comparator = get(g:fern#internal#core#comparators, a:name, s:default_comparator)
     return Comparator()
   catch
-    call fern#logger#error("fern#internal#core:get_comparator", v:exception)
+    call fern#logger#error('fern#internal#core:get_comparator', v:exception)
     call fern#logger#debug(v:throwpoint)
     return s:default_renderer()
   endtry

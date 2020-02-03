@@ -30,7 +30,7 @@ endfunction
 
 function! fern#fri#format(fri) abort
   let expr = printf(
-        \ "%s://%s/%s",
+        \ '%s://%s/%s',
         \ a:fri.scheme,
         \ s:encode_authority(a:fri.authority),
         \ s:encode_path(a:fri.path),
@@ -69,7 +69,7 @@ function! s:format_query(query) abort
       call add(terms, s:encode_query(k))
     else
       call add(terms, printf(
-            \ "%s=%s",
+            \ '%s=%s',
             \ s:encode_query(k),
             \ s:encode_query(v),
             \))
@@ -122,9 +122,9 @@ function! s:split1(str, pattern) abort
   if s is# -1
     return [a:str, '']
   elseif s is# 0
-    return ['', a:str[e:]]
+    return ['', a:str[e :]]
   endif
   let lhs = a:str[:s - 1]
-  let rhs = a:str[e:]
+  let rhs = a:str[e :]
   return [lhs, rhs]
 endfunction

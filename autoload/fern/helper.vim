@@ -2,7 +2,7 @@ function! fern#helper#new(...) abort
   let bufnr = a:0 ? a:1 : bufnr('%')
   let fern = getbufvar(bufnr, 'fern', v:null)
   if fern is# v:null
-    throw printf("the buffer %s is not properly initialized for fern", bufnr)
+    throw printf('the buffer %s is not properly initialized for fern', bufnr)
   endif
   let helper = extend({
         \ 'fern': fern,

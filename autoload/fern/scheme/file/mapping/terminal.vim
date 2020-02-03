@@ -33,7 +33,7 @@ endfunction
 
 function! s:call(name, ...) abort
   return call(
-        \ "fern#internal#mapping#call",
+        \ 'fern#internal#mapping#call',
         \ [funcref(printf('s:map_%s', a:name))] + a:000,
         \)
 endfunction
@@ -46,7 +46,7 @@ function! s:map_terminal(helper, opener) abort
   try
     for node in nodes
       call win_gotoid(winid)
-      call fern#internal#buffer#open("", {
+      call fern#internal#buffer#open('', {
             \ 'opener': a:opener,
             \ 'locator': a:helper.sync.is_drawer(),
             \})

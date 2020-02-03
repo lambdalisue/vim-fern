@@ -24,7 +24,7 @@ function! s:get_root(url) abort dict
   let node = s:node(self, path, 'root', cursor, v:null)
   for term in terms
     if !has_key(cursor, term)
-      throw printf("no %s exists: %s", term, a:url)
+      throw printf('no %s exists: %s', term, a:url)
     endif
     call add(path, term)
     let cursor = cursor[term]
@@ -42,7 +42,7 @@ endfunction
 function! s:get_children(node, ...) abort dict
   try
     if a:node.status is# 0
-      throw printf("%s node is leaf", a:node.name)
+      throw printf('%s node is leaf', a:node.name)
     endif
     let ref = a:node.concealed._value
     let base = split(a:node._path, '/')
