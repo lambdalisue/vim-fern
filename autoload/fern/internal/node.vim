@@ -81,7 +81,7 @@ function! fern#internal#node#children(node, provider, token, ...) abort
   if a:node.status is# s:STATUS_NONE
     return s:Promise.reject('leaf node does not have children')
   elseif has_key(a:node.concealed, '__cache_children') && options.cache
-    return s:AsyncLambda.map(
+    return s:Lambda.map(
           \ a:node.concealed.__cache_children,
           \ { v -> extend(v, { 'status': v.status > 0 }) },
           \)
@@ -91,7 +91,7 @@ function! fern#internal#node#children(node, provider, token, ...) abort
   let Profile = fern#profile#start('fern#internal#node#children')
   let Done = fern#internal#node#process(a:node)
   let p = a:provider.get_children(a:node, a:token)
-        \.then(s:AsyncLambda.map_f({ n ->
+        \.then(s:Lambda.map_f({ n ->
         \   s:new(n, {
         \     '__key': a:node.__key + [n.name],
         \     '__owner': a:node,
@@ -147,7 +147,7 @@ function! fern#internal#node#collapse(node, nodes, provider, comparator, token) 
   let K = n < 0 ? { v -> [] } : { v -> v.__key[:n] }
   let Done = fern#internal#node#process(a:node)
   let p = s:Promise.resolve(a:nodes)
-        \.then(s:AsyncLambda.filter_f({ v -> v.__key == k || K(v) != k  }))
+        \.then(s:Lambda.filter_f({ v -> v.__key == k || K(v) != k  }))
         \.finally({ -> Done() })
         \.finally({ -> Profile() })
   call p.then({ -> s:Lambda.let(a:node, 'status', s:STATUS_COLLAPSED) })
@@ -169,23 +169,23 @@ function! fern#internal#node#reload(node, nodes, provider, comparator, token) ab
   let n = len(k) - 1
   let K = n < 0 ? { v -> [] } : { v -> v.__key[:n] }
   let outer = s:Promise.resolve(copy(a:nodes))
-        \.then(s:AsyncLambda.filter_f({ v -> K(v) != k  }))
+        \.then(s:Lambda.filter_f({ v -> K(v) != k  }))
   let inner = s:Promise.resolve(copy(a:nodes))
-        \.then(s:AsyncLambda.filter_f({ v -> K(v) == k  }))
-        \.then(s:AsyncLambda.filter_f({ v -> v.status is# s:STATUS_EXPANDED }))
+        \.then(s:Lambda.filter_f({ v -> K(v) == k  }))
+        \.then(s:Lambda.filter_f({ v -> v.status is# s:STATUS_EXPANDED }))
   let descendants = inner
         \.then({v -> copy(v)})
-        \.then(s:AsyncLambda.map_f({ v ->
+        \.then(s:Lambda.map_f({ v ->
         \   fern#internal#node#children(v, a:provider, a:token, { 'cache': 0 }).then({ children ->
         \     s:Lambda.if(v.status is# s:STATUS_EXPANDED, { -> children }, { -> []})
         \   })
         \ }))
         \.then({ v -> s:Promise.all(v) })
-        \.then(s:AsyncLambda.reduce_f({ a, v -> a + v }, []))
+        \.then(s:Lambda.reduce_f({ a, v -> a + v }, []))
   let Done = fern#internal#node#process(a:node)
   return s:Promise.all([outer, inner, descendants])
         \.finally({ -> Profile('all') })
-        \.then(s:AsyncLambda.reduce_f({ a, v -> a + v }, []))
+        \.then(s:Lambda.reduce_f({ a, v -> a + v }, []))
         \.finally({ -> Profile('reduce') })
         \.then({ v -> s:sort(v, a:comparator.compare) })
         \.finally({ -> Profile('sort') })

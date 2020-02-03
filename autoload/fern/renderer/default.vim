@@ -27,7 +27,7 @@ function! s:render(nodes, marks) abort
         \}
   let base = len(a:nodes[0].__key)
   let Profile = fern#profile#start('fern#renderer#default#s:render')
-  return s:AsyncLambda.map(copy(a:nodes), { v, -> s:render_node(v, a:marks, base, options) })
+  return s:Lambda.map(copy(a:nodes), { v, -> s:render_node(v, a:marks, base, options) })
         \.finally({ -> Profile() })
 endfunction
 
