@@ -1,4 +1,5 @@
 let s:Config = vital#fern#import('Config')
+let s:Lambda = vital#fern#import('Lambda')
 let s:AsyncLambda = vital#fern#import('Async.Lambda')
 
 let s:PATTERN = '^$~.*[]\'
