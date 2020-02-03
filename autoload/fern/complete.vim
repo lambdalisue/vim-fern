@@ -7,14 +7,14 @@ let s:openers = [
       \ 'split',
       \ 'vsplit',
       \ 'tabedit',
-      \ 'leftabove split',
-      \ 'leftabove vsplit',
-      \ 'rightbelow split',
-      \ 'rightbelow vsplit',
-      \ 'topleft split',
-      \ 'topleft vsplit',
-      \ 'botright split',
-      \ 'botright vsplit',
+      \ 'leftabove\ split',
+      \ 'leftabove\ vsplit',
+      \ 'rightbelow\ split',
+      \ 'rightbelow\ vsplit',
+      \ 'topleft\ split',
+      \ 'topleft\ vsplit',
+      \ 'botright\ split',
+      \ 'botright\ vsplit',
       \]
 
 function! fern#complete#opener(arglead, cmdline, cursorpos) abort
