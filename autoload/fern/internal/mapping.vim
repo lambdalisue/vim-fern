@@ -18,7 +18,7 @@ function! fern#internal#mapping#init(scheme) abort
   for name in g:fern#internal#mapping#mappings
     call fern#mapping#{name}#init(disable_default_mappings)
   endfor
-  call fern#internal#scheme#call(a:scheme, 'mapping#init', disable_default_mappings)
+  call fern#internal#scheme#mapping_init(a:scheme, disable_default_mappings)
 endfunction
 
 call s:Config.config(expand('<sfile>:p'), {

@@ -48,7 +48,7 @@ function! s:init() abort
 
   let resource_uri = fri.path
   let scheme = fern#fri#parse(resource_uri).scheme
-  let provider = fern#internal#scheme#provider(scheme)
+  let provider = fern#internal#scheme#provider_new(scheme)
   if provider is# v:null
     return s:Promise.reject(printf('no such scheme %s exists', scheme))
   endif
@@ -56,7 +56,7 @@ function! s:init() abort
   try
     let b:fern = fern#internal#core#new(
           \ resource_uri,
-          \ fern#internal#scheme#provider(scheme),
+          \ provider,
           \)
     let helper = fern#helper#new()
     let root = helper.sync.get_root_node()
