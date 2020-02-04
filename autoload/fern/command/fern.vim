@@ -5,6 +5,7 @@ let s:options = [
       \ '-drawer',
       \ '-width=',
       \ '-keep',
+      \ '-stay',
       \ '-reveal=',
       \ '-toggle',
       \ '-opener=',
@@ -12,6 +13,7 @@ let s:options = [
 
 function! fern#command#fern#command(mods, fargs) abort
   try
+    let stay = fern#internal#args#pop(a:fargs, 'stay', v:false)
     let reveal = fern#internal#args#pop(a:fargs, 'reveal', '')
     let drawer = fern#internal#args#pop(a:fargs, 'drawer', v:false)
     if drawer
@@ -27,13 +29,18 @@ function! fern#command#fern#command(mods, fargs) abort
     endif
 
     if len(a:fargs) isnot# 1
+          \ || type(stay) isnot# v:t_bool
           \ || type(reveal) isnot# v:t_string
           \ || type(drawer) isnot# v:t_bool
           \ || type(opener) isnot# v:t_string
           \ || type(width) isnot# v:t_string
           \ || type(keep) isnot# v:t_bool
           \ || type(toggle) isnot# v:t_bool
-      throw 'Usage: Fern {url} [-opener={opener}|-drawer][-toggle][-keep][-width={width}]'
+      if empty(drawer)
+        throw 'Usage: Fern {url} [-opener={opener}] [-stay] [-reveal={reveal}]'
+      else
+        throw 'Usage: Fern {url} -drawer [-toggle] [-keep] [-width={width}] [-stay] [-reveal={reveal}]'
+      endif
     endif
 
     " Does all options are handled?
@@ -62,17 +69,23 @@ function! fern#command#fern#command(mods, fargs) abort
     " Normalize fragment
     call s:norm_fragment(fri)
 
+    let winid_saved = win_getid()
     if fri.authority =~# '\<drawer\>'
       call fern#internal#drawer#open(fri, {
             \ 'mods': a:mods,
             \ 'toggle': toggle,
             \ 'opener': opener,
+            \ 'stay': stay ? win_getid() : 0,
             \})
     else
       call fern#internal#viewer#open(fri, {
             \ 'mods': a:mods,
             \ 'opener': opener,
+            \ 'stay': stay ? win_getid() : 0,
             \})
+    endif
+    if stay
+      call win_gotoid(winid_saved)
     endif
   catch
     echohl ErrorMsg
