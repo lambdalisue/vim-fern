@@ -66,8 +66,10 @@ function! fern#command#fern#command(mods, fargs) abort
           \})
     let fri.fragment = expand(reveal)
 
-    " Normalize fragment
-    call s:norm_fragment(fri)
+    " Normalize fragment if expr does not start from {scheme}://
+    if expr !~# '^[^:]\+://'
+      call s:norm_fragment(fri)
+    endif
 
     let winid_saved = win_getid()
     if fri.authority =~# '\<drawer\>'
