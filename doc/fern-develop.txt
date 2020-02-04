@@ -86,6 +86,15 @@ fern#fri#format({fri})
 	      \})
 	" -> https://www.example.com/foo/bar
 <
+							*fern#fri#encode()*
+fern#fri#encode({str}[, {pattern}])
+	Apply percent-encoding to characters which matches the {pattern} in
+	the {str}. When the {pattern} is omitted, "[#\[\]= ]" is used.
+
+							*fern#fri#decode()*
+fern#fri#decode({str})
+	Decode percent-encoding from the {str}.
+
 
 =============================================================================
 NODE						*fern-develop-node*

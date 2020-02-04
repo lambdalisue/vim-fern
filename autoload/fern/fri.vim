@@ -44,6 +44,15 @@ function! fern#fri#format(fri) abort
   return expr
 endfunction
 
+function! fern#fri#encode(str, ...) abort
+  let pattern = a:0 ? a:1 : '[#\[\]= ]'
+  return s:encode(a:str, pattern)
+endfunction
+
+function! fern#fri#decode(str) abort
+  return s:decode(a:str)
+endfunction
+
 function! s:parse_query(query) abort
   let obj = {}
   let terms = split(a:query, '&\%(\w\+;\)\@!')
@@ -60,7 +69,7 @@ function! s:format_query(query) abort
   if empty(a:query)
     return ''
   endif
-  let pattern = '[/;#\[\]=]'
+  let pattern = '[/;#\[\]= ]'
   let terms = []
   for [k, v] in items(a:query)
     if empty(v)
@@ -79,22 +88,22 @@ function! s:format_query(query) abort
 endfunction
 
 function! s:encode_authority(path) abort
-  let pattern = '[/;#\[\]=]'
+  let pattern = '[/;#\[\]= ]'
   return s:encode(a:path, pattern)
 endfunction
 
 function! s:encode_path(path) abort
-  let pattern = '[;#\[\]=]'
+  let pattern = '[;#\[\]= ]'
   return s:encode(a:path, pattern)
 endfunction
 
 function! s:encode_query(pchar) abort
-  let pattern = '[#\[\]=]'
+  let pattern = '[#\[\]= ]'
   return s:encode(a:pchar, pattern)
 endfunction
 
 function! s:encode_fragment(pchar) abort
-  let pattern = '[#\[\]=]'
+  let pattern = '[#\[\]= ]'
   return s:encode(a:pchar, pattern)
 endfunction
 
