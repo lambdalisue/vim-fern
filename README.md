@@ -75,9 +75,10 @@ The following options are available for fern viewer.
 | --------- | ------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `-opener` | `edit`  | An opener to open the buffer. Available value is one of `select`, `edit`, `split`, `vsplit`, `tabedit`, or those values with modifiers (e.g. `topleft\ vsplit`) |
 | `-reveal` |         | Recursively expand branches and focus the node. It must be a relative path from the root node of the tree. Otherwise the value is ignored.                      |
+| `-stay`   |         | Stay focus on the window where the command has called.                                                                                                          |
 
 ```
-:Fern {url} [-opener={opener}] [-reveal={reveal}]
+:Fern {url} [-opener={opener}] [-reveal={reveal}] [-stay]
 ```
 
 ### Command (Project drawer)
@@ -101,7 +102,7 @@ Note that addtional to the all options available for _split windows_ style, _pro
 | `-toggle` |         | Close existing project drawer rather than focus                  |
 
 ```
-:Fern {url} -drawer [-opener={opener}] [-reveal={reveal}] [-width=30] [-keep] [-toggle]
+:Fern {url} -drawer [-opener={opener}] [-reveal={reveal}] [-stay] [-width=30] [-keep] [-toggle]
 ```
 
 [*split windows style*]: http://vimcasts.org/blog/2013/01/oil-and-vinegar-split-windows-and-project-drawer/
