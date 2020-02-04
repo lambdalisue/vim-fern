@@ -255,6 +255,15 @@ VARIABLE						*fern-variable*
 	is a key of |g:fern#internal#core#comparators|.
 	Default: "default"
 
+*g:fern#drawer_width*
+	A |Number| width of drawer in default.
+	Default: 30
+
+*g:fern#drawer_keep*
+	A |Boolean| which indicate wheter the last fern window should be keep
+	open or close.
+	Default: |v:false|
+
 -----------------------------------------------------------------------------
 COMMAND							*fern-command*
 
@@ -295,9 +304,9 @@ COMMAND							*fern-command*
 	Open a fern buffer in project drawer style with the {width}.
 
 	If the {width} is specified, the width of the window is regulated to
-	the specified value.
+	the specified value. (See |g:fern#drawer_width|)
 	If "-keep" options is specified, the buffer won't close even there is
-	only this window exist.
+	only this window exist. (See |g:fern#drawer_keep|)
 	If "-toggle" option is specified, existing fern buffer will be closed
 	rather than opening a new fern buffer when exist.
 

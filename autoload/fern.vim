@@ -13,4 +13,6 @@ call s:Config.config(expand('<sfile>:p'), {
       \ 'default_exclude': '',
       \ 'renderer': 'default',
       \ 'comparator': 'default',
+      \ 'drawer_width': 30,
+      \ 'drawer_keep': v:false,
       \})

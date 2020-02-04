@@ -48,8 +48,8 @@ endfunction
 
 function! s:keep_width() abort
   let fri = fern#internal#bufname#parse(bufname('%'))
-  let width = str2nr(get(fri.query, 'width', '50'))
-  let keep = str2nr(get(fri.query, 'keep', v:false))
+  let width = str2nr(get(fri.query, 'width', string(g:fern#drawer_width)))
+  let keep = str2nr(get(fri.query, 'keep', g:fern#drawer_keep))
   if winnr('$') isnot# 1
     execute 'vertical resize' width
     return
