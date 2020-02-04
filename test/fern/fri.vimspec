@@ -144,4 +144,48 @@ Describe fern#fri
       Assert Equals(fern#fri#format(want), expr)
     End
   End
+
+  Describe #encode()
+    It encodes "#"
+      Assert Equals(fern#fri#encode('#'), '%23')
+    End
+
+    It encodes "["
+      Assert Equals(fern#fri#encode('['), '%5B')
+    End
+
+    It encodes "]"
+      Assert Equals(fern#fri#encode(']'), '%5D')
+    End
+
+    It encodes "="
+      Assert Equals(fern#fri#encode('='), '%3D')
+    End
+
+    It encodes " "
+      Assert Equals(fern#fri#encode(' '), '%20')
+    End
+  End
+
+  Describe #decode()
+    It decodes "%23"
+      Assert Equals(fern#fri#decode("%23"), "#")
+    End
+
+    It decodes "%5B"
+      Assert Equals(fern#fri#decode("%5B"), "[")
+    End
+
+    It decodes "%5D"
+      Assert Equals(fern#fri#decode("%5D"), "]")
+    End
+
+    It decodes "%3D"
+      Assert Equals(fern#fri#decode("%3D"), "=")
+    End
+
+    It decodes "%20"
+      Assert Equals(fern#fri#decode("%20"), " ")
+    End
+  End
 End

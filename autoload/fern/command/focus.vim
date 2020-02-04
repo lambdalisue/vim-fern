@@ -1,5 +1,3 @@
-let s:options = ['-drawer']
-
 function! fern#command#focus#command(mods, fargs) abort
   try
     let drawer = fern#internal#args#pop(a:fargs, 'drawer', v:false)
@@ -29,7 +27,7 @@ function! fern#command#focus#command(mods, fargs) abort
 endfunction
 
 function! fern#command#focus#complete(arglead, cmdline, cursorpos) abort
-  return filter(copy(s:options), { -> v:val =~# '^' . a:arglead })
+  return fern#internal#complete#options(a:arglead, a:cmdline, a:cursorpos)
 endfunction
 
 function! s:predicator(drawer, winnr) abort
