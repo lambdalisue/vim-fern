@@ -259,9 +259,10 @@ VARIABLE						*fern-variable*
 COMMAND							*fern-command*
 
 							*:Fern*
-:Fern {url} [-opener={opener}] [-reveal={reveal}]
+:Fern {url} [-opener={opener}] [-stay] [-reveal={reveal}]
 	Open a fern buffer in split windows style with the {opener}.
-
+	If -stay options is specified, the focus stays on a window where the
+	command has executed.
 	If {reveal} is specified, parent nodes of the node which is identified
 	by the {reveal} are expanded and the node will be focused.
 	The {reveal} must be a relative path separated by "/" from the
@@ -290,7 +291,7 @@ COMMAND							*fern-command*
 	Note that the command can be followed by a '|' and another command.
 
 							*:Fern-drawer*
-:Fern {url} -drawer [-width={width}] [-keep] [-toggle] [-reveal={path}]
+:Fern {url} -drawer [-width={width}] [-keep] [-toggle] ...
 	Open a fern buffer in project drawer style with the {width}.
 
 	If the {width} is specified, the width of the window is regulated to
@@ -300,7 +301,8 @@ COMMAND							*fern-command*
 	If "-toggle" option is specified, existing fern buffer will be closed
 	rather than opening a new fern buffer when exist.
 
-	See |:Fern| for other arguments and options.
+	See |:Fern| for other arguments and options. Note that -opener options
+	is ignored for project drawer style.
 
 							*:FernFocus*
 :FernFocus [-drawer]
