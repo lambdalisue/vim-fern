@@ -78,7 +78,7 @@ function! s:node(provider, path, name, value, parent) abort
 endfunction
 
 function! s:_prompt(label, helper) abort
-  let path = s:Prompt.ask(printf('New %s: ', a:label), '')
+  let path = input(printf('New %s: ', a:label), '')
   if empty(path)
     throw 'Cancelled'
   endif

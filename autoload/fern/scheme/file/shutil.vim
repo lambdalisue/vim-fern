@@ -34,7 +34,7 @@ function! fern#scheme#file#shutil#copy(src, dst, ...) abort
     if empty(r)
       return s:Promise.reject('Cancelled')
     elseif r ==# 'r'
-      let new_dst = s:Prompt.ask(
+      let new_dst = input(
             \ printf('New name: %s -> ', a:src),
             \ a:dst,
             \ filereadable(a:src) ? 'file' : 'dir',
@@ -64,7 +64,7 @@ function! fern#scheme#file#shutil#move(src, dst, ...) abort
     if empty(r)
       return s:Promise.reject('Cancelled')
     elseif r ==# 'r'
-      let new_dst = s:Prompt.ask(
+      let new_dst = input(
             \ printf('New name: %s -> ', a:src),
             \ a:dst,
             \ filereadable(a:src) ? 'file' : 'dir',

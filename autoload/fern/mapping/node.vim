@@ -79,7 +79,7 @@ function! s:map_reveal(helper) abort
   let path = node is# v:null
         \ ? ''
         \ : join(node.__key, '/') . '/'
-  let path = s:Prompt.ask('Reveal: ', path)
+  let path = input('Reveal: ', path)
   if empty(path)
     return s:Promise.reject('Cancelled')
   endif

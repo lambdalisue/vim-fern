@@ -56,7 +56,7 @@ function! s:map_open_system(helper) abort
 endfunction
 
 function! s:map_new_file(helper) abort
-  let name = s:Prompt.ask('New file: ', '', 'file')
+  let name = input('New file: ', '', 'file')
   if empty(name)
     return s:Promise.reject('Cancelled')
   endif
@@ -74,7 +74,7 @@ function! s:map_new_file(helper) abort
 endfunction
 
 function! s:map_new_dir(helper) abort
-  let name = s:Prompt.ask('New directory: ', '', 'dir')
+  let name = input('New directory: ', '', 'dir')
   if empty(name)
     return s:Promise.reject('Cancelled')
   endif
@@ -97,7 +97,7 @@ function! s:map_copy(helper) abort
   let ps = []
   for node in nodes
     let src = node._path
-    let dst = s:Prompt.ask(
+    let dst = input(
           \ printf('Copy: %s -> ', src),
           \ src,
           \ isdirectory(src) ? 'dir' : 'file',
@@ -120,7 +120,7 @@ function! s:map_move(helper) abort
   let ps = []
   for node in nodes
     let src = node._path
-    let dst = s:Prompt.ask(
+    let dst = input(
           \ printf('Move: %s -> ', src),
           \ src,
           \ isdirectory(src) ? 'dir' : 'file',

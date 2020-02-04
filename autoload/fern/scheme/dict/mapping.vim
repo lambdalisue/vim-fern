@@ -93,7 +93,7 @@ function! s:map_copy(helper) abort
   let processed = 0
   for node in nodes
     let src = node._path
-    let dst = s:Prompt.ask(
+    let dst = input(
           \ printf('Copy: %s -> ', src),
           \ src,
           \ isdirectory(src) ? 'dir' : 'file',
@@ -121,7 +121,7 @@ function! s:map_move(helper) abort
   let processed = 0
   for node in nodes
     let src = node._path
-    let dst = s:Prompt.ask(
+    let dst = input(
           \ printf('Move: %s -> ', src),
           \ src,
           \ isdirectory(src) ? 'dir' : 'file',
@@ -182,7 +182,7 @@ function! s:map_edit_leaf(helper) abort
     return s:Promise.reject(printf('%s is not leaf', node.name))
   endif
 
-  let value = s:Prompt.ask('New value: ', node.concealed._value)
+  let value = input('New value: ', node.concealed._value)
   if value is# v:null
     return s:Promise.reject('Cancelled')
   endif
