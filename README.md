@@ -71,11 +71,11 @@ Or open fern on a current working directory with a current buffer focused by:
 
 The following options are available for fern viewer.
 
-| Option    | Default | Description                                                                                                                                                     |
-| --------- | ------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `-opener` | `edit`  | An opener to open the buffer. Available value is one of `select`, `edit`, `split`, `vsplit`, `tabedit`, or those values with modifiers (e.g. `topleft\ vsplit`) |
-| `-reveal` |         | Recursively expand branches and focus the node. It must be a relative path from the root node of the tree. Otherwise the value is ignored.                      |
-| `-stay`   |         | Stay focus on the window where the command has called.                                                                                                          |
+| Option    | Default | Description                                                                         |
+| --------- | ------- | ----------------------------------------------------------------------------------- |
+| `-opener` | `edit`  | An opener to open the buffer. See `:help fern-opener` for detail.                   |
+| `-reveal` |         | Recursively expand branches and focus the node. See `:help fern-reveal` for detail. |
+| `-stay`   |         | Stay focus on the window where the command has called.                              |
 
 ```
 :Fern {url} [-opener={opener}] [-reveal={reveal}] [-stay]

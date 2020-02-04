@@ -272,6 +272,7 @@ COMMAND							*fern-command*
 	Open a fern buffer in split windows style with the {opener}.
 	If -stay options is specified, the focus stays on a window where the
 	command has executed.
+							*fern-reveal*
 	If {reveal} is specified, parent nodes of the node which is identified
 	by the {reveal} are expanded and the node will be focused.
 	The {reveal} must be a relative path separated by "/" from the
