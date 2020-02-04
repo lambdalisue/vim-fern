@@ -40,13 +40,13 @@ function! s:map_hidden_toggle(helper) abort
 endfunction
 
 function! s:map_include(helper) abort
-  let pattern = s:Prompt.ask('Pattern: ', a:helper.fern.include)
+  let pattern = input('Pattern: ', a:helper.fern.include)
   return a:helper.async.set_include(pattern)
         \.then({ -> a:helper.async.redraw() })
 endfunction
 
 function! s:map_exclude(helper) abort
-  let pattern = s:Prompt.ask('Pattern: ', a:helper.fern.exclude)
+  let pattern = input('Pattern: ', a:helper.fern.exclude)
   return a:helper.async.set_exclude(pattern)
         \.then({ -> a:helper.async.redraw() })
 endfunction
