@@ -98,11 +98,13 @@ endfunction
 
 function! fern#command#fern#complete(arglead, cmdline, cursorpos) abort
   if a:arglead =~# '^-opener='
-    return fern#complete#opener(a:arglead, a:cmdline, a:cursorpos)
+    return fern#internal#complete#opener(a:arglead, a:cmdline, a:cursorpos)
+  elseif a:arglead =~# '^-reveal='
+    return fern#internal#complete#reveal(a:arglead, a:cmdline, a:cursorpos)
   elseif a:arglead =~# '^-'
-    return filter(copy(s:options), { -> v:val =~# '^' . a:arglead })
+    return fern#internal#complete#options(a:arglead, a:cmdline, a:cursorpos)
   endif
-  return getcompletion('', 'dir')
+  return fern#internal#complete#url(a:arglead, a:cmdline, a:cursorpos)
 endfunction
 
 function! s:norm_fragment(fri) abort
