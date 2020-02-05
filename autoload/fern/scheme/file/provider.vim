@@ -49,6 +49,9 @@ function! s:node(path) abort
   let path = s:Path.abspath(a:path)
   let path = s:Path.remove_last_separator(path)
   let path = simplify(path)
+  if s:is_windows && path =~# '^\w:$'
+    let path .= '\'
+  endif
   let path = empty(path) ? '/' : path
   if empty(getftype(path))
     throw printf('no such file or directory exists: %s', path)
