@@ -85,10 +85,10 @@ function! s:BufWriteCmd() abort
     endif
     call add(results, [src, dst])
   endfor
-  call b:fern_renamer_resolve(results)
-  set nomodifiable
+  let Resolve = b:fern_renamer_resolve
   set nomodified
   close
+  call Resolve(results)
 endfunction
 
 function! s:syntax() abort
