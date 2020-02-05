@@ -24,8 +24,9 @@ function! fern#internal#drawer#init() abort
 
   augroup fern_drawer_internal
     autocmd! * <buffer>
-    autocmd BufEnter <buffer> call s:keep_width()
-    autocmd BufLeave <buffer> call s:keep_width()
+    autocmd BufEnter <buffer> call s:auto_quit()
+    autocmd BufEnter <buffer> call s:auto_resize()
+    autocmd BufLeave <buffer> call s:auto_resize()
   augroup END
 endfunction
 
@@ -46,20 +47,26 @@ function! s:focus_next() abort
   return 1
 endfunction
 
-function! s:keep_width() abort
+function! s:auto_resize() abort
   let fri = fern#internal#bufname#parse(bufname('%'))
   let width = str2nr(get(fri.query, 'width', string(g:fern#drawer_width)))
-  let keep = str2nr(get(fri.query, 'keep', g:fern#drawer_keep))
+  execute 'vertical resize' width
+endfunction
+
+function! s:auto_quit() abort
+  let fri = fern#internal#bufname#parse(bufname('%'))
+  let keep = get(fri.query, 'keep', g:fern#drawer_keep)
+  let width = str2nr(get(fri.query, 'width', string(g:fern#drawer_width)))
   if winnr('$') isnot# 1
-    execute 'vertical resize' width
+    " Not a last window
     return
-  elseif tabpagenr('$') isnot# 1
-    close
-  elseif !keep
-    quit
-  else
+  elseif keep
+    " Add a new window to avoid being a last window
     vertical botright new
     keepjumps wincmd p
     execute 'vertical resize' width
+  else
+    " This window is a last window of a current tabpage
+    quit
   endif
 endfunction
