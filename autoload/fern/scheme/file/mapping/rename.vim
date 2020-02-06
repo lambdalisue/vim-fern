@@ -52,7 +52,7 @@ function! s:_map_rename(helper, result) abort
   let ps = []
   for pair in a:result
     let [src, dst] = pair
-    if !filereadable(src) && isdirectory(src)
+    if !filereadable(src) && !isdirectory(src)
       echohl WarningMsg
       echo printf('%s does not exist', src)
       echohl None
