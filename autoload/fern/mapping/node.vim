@@ -25,7 +25,7 @@ endfunction
 
 function! s:call(name, ...) abort
   return call(
-        \ 'fern#internal#mapping#call',
+        \ 'fern#mapping#call',
         \ [funcref(printf('s:map_%s', a:name))] + a:000,
         \)
 endfunction
