@@ -11,7 +11,7 @@ let s:options = [
       \ '-opener=',
       \]
 
-function! fern#command#fern#command(mods, fargs) abort
+function! fern#internal#command#fern#command(mods, fargs) abort
   try
     let stay = fern#internal#args#pop(a:fargs, 'stay', v:false)
     let reveal = fern#internal#args#pop(a:fargs, 'reveal', '')
@@ -100,7 +100,7 @@ function! fern#command#fern#command(mods, fargs) abort
   endtry
 endfunction
 
-function! fern#command#fern#complete(arglead, cmdline, cursorpos) abort
+function! fern#internal#command#fern#complete(arglead, cmdline, cursorpos) abort
   if a:arglead =~# '^-opener='
     return fern#internal#complete#opener(a:arglead, a:cmdline, a:cursorpos)
   elseif a:arglead =~# '^-reveal='

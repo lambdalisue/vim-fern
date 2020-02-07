@@ -1,4 +1,4 @@
-function! fern#command#focus#command(mods, fargs) abort
+function! fern#internal#command#focus#command(mods, fargs) abort
   try
     let drawer = fern#internal#args#pop(a:fargs, 'drawer', v:false)
 
@@ -26,7 +26,7 @@ function! fern#command#focus#command(mods, fargs) abort
   endtry
 endfunction
 
-function! fern#command#focus#complete(arglead, cmdline, cursorpos) abort
+function! fern#internal#command#focus#complete(arglead, cmdline, cursorpos) abort
   return fern#internal#complete#options(a:arglead, a:cmdline, a:cursorpos)
 endfunction
 
