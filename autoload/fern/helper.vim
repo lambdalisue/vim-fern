@@ -32,9 +32,9 @@ function! fern#helper#call(fn, ...) abort
 endfunction
 
 let s:helper = {
-      \ 'STATUS_NONE': g:fern#internal#node#STATUS_NONE,
-      \ 'STATUS_COLLAPSED': g:fern#internal#node#STATUS_COLLAPSED,
-      \ 'STATUS_EXPANDED': g:fern#internal#node#STATUS_EXPANDED,
+      \ 'STATUS_NONE': g:fern#STATUS_NONE,
+      \ 'STATUS_COLLAPSED': g:fern#STATUS_COLLAPSED,
+      \ 'STATUS_EXPANDED': g:fern#STATUS_EXPANDED,
       \}
 
 function! s:sync_method(name, ...) abort dict

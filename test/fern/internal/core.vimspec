@@ -1,7 +1,7 @@
 Describe fern#internal#core
   Before
     let TIMEOUT = 5000
-    let STATUS_EXPANDED = g:fern#internal#node#STATUS_EXPANDED
+    let STATUS_EXPANDED = g:fern#STATUS_EXPANDED
     let Promise = vital#fern#import('Async.Promise')
     let provider = fern#scheme#debug#provider#new()
   End

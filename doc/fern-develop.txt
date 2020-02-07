@@ -106,9 +106,9 @@ A node instance is a tree item which has the following attributes:
 
 "status"	A |Number| which indicates the node status. One of the
 		followings:
-		|g:fern#internal#node#STATUS_NONE|	Leaf node
-		|g:fern#internal#node#STATUS_COLLAPSED|	Branch node (close)
-		|g:fern#internal#node#STATUS_EXPANDED|	Branch node (open)
+		|g:fern#STATUS_NONE|	Leaf node
+		|g:fern#STATUS_COLLAPSED|	Branch node (close)
+		|g:fern#STATUS_EXPANDED|	Branch node (open)
 
 "label"		A |String| used to display the node in a tree view.
 
@@ -142,9 +142,9 @@ A node instance is a tree item which has the following attributes:
 		for each scheme. Note that any complex value should be stored
 		in "concealed" instead to avoid display error.
 
-*g:fern#internal#node#STATUS_NONE*
-*g:fern#internal#node#STATUS_COLLAPSED*
-*g:fern#internal#node#STATUS_EXPANDED*
+*g:fern#STATUS_NONE*
+*g:fern#STATUS_COLLAPSED*
+*g:fern#STATUS_EXPANDED*
 	Constant |Number| which indicates a node status.
 	STATUS_NONE means that the node is leaf and does not have any status.
 	STATUS_COLLAPSED means that the node is branch and collapsed (closed).
