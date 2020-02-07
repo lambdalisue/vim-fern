@@ -71,6 +71,8 @@ function! fern#command#fern#command(mods, fargs) abort
       call s:norm_fragment(fri)
     endif
 
+    call fern#logger#debug('fri:', fri)
+
     let winid_saved = win_getid()
     if fri.authority =~# '\<drawer\>'
       call fern#internal#drawer#open(fri, {
