@@ -4,7 +4,7 @@ let s:AsyncLambda = vital#fern#import('Async.Lambda')
 let s:Promise = vital#fern#import('Async.Promise')
 let s:CancellationTokenSource = vital#fern#import('Async.CancellationTokenSource')
 
-let s:STATUS_EXPANDED = g:fern#internal#node#STATUS_EXPANDED
+let s:STATUS_EXPANDED = g:fern#STATUS_EXPANDED
 let s:default_renderer = function('fern#renderer#default#new')
 let s:default_comparator = function('fern#comparator#default#new')
 
@@ -77,7 +77,7 @@ endfunction
 
 function! s:get_renderer(name) abort
   try
-    let Renderer = get(g:fern#internal#core#renderers, a:name, s:default_renderer)
+    let Renderer = get(g:fern#renderers, a:name, s:default_renderer)
     return Renderer()
   catch
     call fern#logger#error('fern#internal#core:get_renderer', v:exception)
@@ -88,7 +88,7 @@ endfunction
 
 function! s:get_comparator(name) abort
   try
-    let Comparator = get(g:fern#internal#core#comparators, a:name, s:default_comparator)
+    let Comparator = get(g:fern#comparators, a:name, s:default_comparator)
     return Comparator()
   catch
     call fern#logger#error('fern#internal#core:get_comparator', v:exception)
@@ -97,7 +97,5 @@ function! s:get_comparator(name) abort
   endtry
 endfunction
 
-call s:Config.config(expand('<sfile>:p'), {
-      \ 'renderers': {},
-      \ 'comparators': {},
-      \})
+let g:fern#internal#core#renderers = g:fern#renderers
+let g:fern#internal#core#comparators = g:fern#comparators

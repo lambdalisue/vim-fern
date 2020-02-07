@@ -161,12 +161,12 @@ entire tree.
 .compare({lhs}, {rhs})
 	Compare {lhs} and {rhs} nodes and return -1, 0, or 1.
 
-*g:fern#internal#core#comparators*
+*g:fern#comparators*
 	comparator and the value is a function reference which return a
 	comparator instance when called.
 	Default: {}
 
-A 3rd-party plugin MUST extend |g:fern#internal#core#comparators| in plugin
+A 3rd-party plugin MUST extend |g:fern#comparators| in plugin
 directory to register a comparator itself like:
 >
 	if exists('g:loaded_fern_comparator_foo')
@@ -174,7 +174,7 @@ directory to register a comparator itself like:
 	endif
 	let g:loaded_fern_comparator_foo = 1
 
-	call extend(g:fern#internal#core#comparators, {
+	call extend(g:fern#comparators, {
 	      \ 'foo': function('fern#comparator#foo#new'),
 	      \})
 <
@@ -217,13 +217,13 @@ nodes as a tree.
 	Define highlight on a current buffer. The function is called prior to
 	'filetype' specification and every after |ColorScheme| has fired.
 
-*g:fern#internal#core#renderers*
+*g:fern#renderers*
 	A |Dict| to define external renderers. The key is a name of renderer
 	and the value is a function reference which return a renderer instance
 	when called.
 	Default: {}
 
-A 3rd-party plugin MUST extend |g:fern#internal#core#renderers| to register a
+A 3rd-party plugin MUST extend |g:fern#renderers| to register a
 renderer itself like:
 >
 	" plugin/fern_renderer_foo.vim
@@ -232,7 +232,7 @@ renderer itself like:
 	endif
 	let g:loaded_fern_renderer_foo = 1
 
-	call extend(g:fern#internal#core#renderers, {
+	call extend(g:fern#renderers, {
 	      \ 'foo': function('fern#renderer#foo#new'),
 	      \})
 <

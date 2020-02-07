@@ -20,7 +20,9 @@ call s:Config.config(expand('<sfile>:p'), {
       \ 'default_include': '',
       \ 'default_exclude': '',
       \ 'renderer': 'default',
+      \ 'renderers': get(g:, 'fern#internal#core#renderers', {}),
       \ 'comparator': 'default',
+      \ 'comparators': get(g:, 'fern#internal#core#comparators', {}),
       \ 'drawer_width': 30,
       \ 'drawer_keep': v:false,
       \})
