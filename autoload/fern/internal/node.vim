@@ -2,9 +2,9 @@ let s:Promise = vital#fern#import('Async.Promise')
 let s:Lambda = vital#fern#import('Lambda')
 let s:AsyncLambda = vital#fern#import('Async.Lambda')
 
-let s:STATUS_NONE = 0
-let s:STATUS_COLLAPSED = 1
-let s:STATUS_EXPANDED = 2
+let s:STATUS_NONE = g:fern#STATUS_NONE
+let s:STATUS_COLLAPSED = g:fern#STATUS_COLLAPSED
+let s:STATUS_EXPANDED = g:fern#STATUS_EXPANDED
 
 function! fern#internal#node#debug(node) abort
   if a:node is# v:null
@@ -243,7 +243,3 @@ function! s:expand_recursively(index, key, nodes, provider, comparator, token) a
         \   { -> ns },
         \ )})
 endfunction
-
-let g:fern#internal#node#STATUS_NONE = s:STATUS_NONE
-let g:fern#internal#node#STATUS_COLLAPSED = s:STATUS_COLLAPSED
-let g:fern#internal#node#STATUS_EXPANDED = s:STATUS_EXPANDED

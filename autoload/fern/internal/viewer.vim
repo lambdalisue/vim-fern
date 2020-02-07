@@ -61,7 +61,7 @@ function! s:init() abort
     let helper = fern#helper#new()
     let root = helper.sync.get_root_node()
 
-    call fern#internal#mapping#init(scheme)
+    call fern#mapping#init(scheme)
     call fern#internal#drawer#init()
     call fern#internal#spinner#start()
     call helper.fern.renderer.highlight()
