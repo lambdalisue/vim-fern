@@ -43,7 +43,11 @@ function! s:init() abort
   if empty(fri.authority)
     let fri.authority = sha256(localtime())[:7]
     let bufname = fern#fri#format(fri)
-    execute printf('silent keepalt file %s$', fnameescape(bufname))
+    " NOTE:
+    " Do NOT use 'keepalt' in command below to remove previous
+    " buffer name from buffer list (#75)
+    execute printf('silent file %s$', fnameescape(bufname))
+    bwipeout #
   endif
 
   let resource_uri = fri.path
