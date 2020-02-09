@@ -9,12 +9,9 @@
 [![Doc](https://img.shields.io/badge/doc-%3Ah%20fern-orange.svg)](doc/fern.txt)
 [![Doc (dev)](https://img.shields.io/badge/doc-%3Ah%20fern--develop-orange.svg)](doc/fern-develop.txt)
 
-[![Actions Status](https://github.com/lambdalisue/fern.vim/workflows/reviewdog/badge.svg)](https://github.com/lambdalisue/fern.vim/actions)
-[![Actions Status](https://github.com/lambdalisue/fern.vim/workflows/linux_vim/badge.svg)](https://github.com/lambdalisue/fern.vim/actions)
-[![Actions Status](https://github.com/lambdalisue/fern.vim/workflows/linux_neovim/badge.svg)](https://github.com/lambdalisue/fern.vim/actions)
-[![Actions Status](https://github.com/lambdalisue/fern.vim/workflows/windows_vim/badge.svg)](https://github.com/lambdalisue/fern.vim/actions)
-[![Actions Status](https://github.com/lambdalisue/fern.vim/workflows/windows_neovim/badge.svg)](https://github.com/lambdalisue/fern.vim/actions)
-[![Actions Status](https://github.com/lambdalisue/fern.vim/workflows/mac_neovim/badge.svg)](https://github.com/lambdalisue/fern.vim/actions)
+[![reviewdog](https://github.com/lambdalisue/fern.vim/workflows/reviewdog/badge.svg)](https://github.com/lambdalisue/fern.vim/actions?query=workflow%3Areviewdog)
+[![vim](https://github.com/lambdalisue/fern.vim/workflows/vim/badge.svg)](https://github.com/lambdalisue/fern.vim/actions?query=workflow%3Avim)
+[![neovim](https://github.com/lambdalisue/fern.vim/workflows/neovim/badge.svg)](https://github.com/lambdalisue/fern.vim/actions?query=workflow%3Aneovim)
 
 General purpose asynchronous tree viewer written in Pure Vim script.
 
