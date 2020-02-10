@@ -234,6 +234,13 @@ VARIABLE						*fern-variable*
 	See https://github.com/lambdalisue/fern.vim/pull/80 for detail.
 	Default: 0
 
+*g:fern#disable_keepjumps_on_edit*
+	Set 1 to update |jumplist| after opening a node by "open:edit"
+	action from a split windows style. Otherwise the |jumplist| has keeped
+	to improve UX.
+	See https://github.com/lambdalisue/fern.vim/pull/80 for detail.
+	Default: 0
+
 *g:fern#disable_default_mappings*
 	Set 1 to disable default mappings
 	Note that this variable does not affect mappings for actions.

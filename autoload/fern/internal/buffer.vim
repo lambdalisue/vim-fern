@@ -20,6 +20,7 @@ function! fern#internal#buffer#open(bufname, ...) abort
         \ 'cmdarg': '',
         \ 'locator': 0,
         \ 'keepalt': 0,
+        \ 'keepjumps': 0,
         \}, a:0 ? a:1 : {},
         \)
   if options.opener ==# 'select'
@@ -38,6 +39,9 @@ function! fern#internal#buffer#open(bufname, ...) abort
   endif
   if options.keepalt && options.opener ==# 'edit'
     let options.mods .= ' keepalt'
+  endif
+  if options.keepjumps && options.opener ==# 'edit'
+    let options.mods .= ' keepjumps'
   endif
   let args = [
         \ options.mods,
