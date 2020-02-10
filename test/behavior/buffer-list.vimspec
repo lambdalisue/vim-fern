@@ -1,0 +1,27 @@
+Describe buffer-list
+  After all
+    %bwipeout!
+  End
+
+  Before
+    %bwipeout!
+  End
+
+  It Fern buffer is not listed in 'ls'
+    edit hello
+    Fern .
+    let output = split(execute('ls'), '\n')
+    Assert Match(output[0], '^\s*\d\+\s\+\#\s\+"hello"\s\+line 1$')
+    Assert Equals(len(output), 1)
+  End
+
+  It Fern command keeps 'ls!' clean
+    edit hello
+    Fern .
+    let output = split(execute('ls!'), '\n')
+    Assert Match(output[0], '^\s*\d\+\s\+\#\s\+"hello"\s\+line 1$')
+    Assert Match(output[1], '^\s*\d\+u%a-\s\+"fern://.*"\s\+line 1$')
+    Assert Equals(len(output), 2)
+  End
+End
+
