@@ -42,12 +42,10 @@ function! s:init() abort
   let fri = fern#internal#bufname#parse(bufname)
   if empty(fri.authority)
     let fri.authority = sha256(localtime())[:7]
+    let previous = bufname
     let bufname = fern#fri#format(fri)
-    " NOTE:
-    " Do NOT use 'keepalt' in command below to remove previous
-    " buffer name from buffer list (#75)
-    execute printf('silent file %s$', fnameescape(bufname))
-    bwipeout #
+    execute printf('silent keepalt file %s$', fnameescape(bufname))
+    execute printf('bwipeout %s', fnameescape(previous))
   endif
 
   let resource_uri = fri.path
