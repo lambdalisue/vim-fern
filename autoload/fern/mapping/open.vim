@@ -67,11 +67,13 @@ function! s:map_open(helper, opener) abort
   endif
   try
     let winid = win_getid()
+    let is_drawer = a:helper.sync.is_drawer()
     for node in nodes
       noautocmd call win_gotoid(winid)
       call fern#internal#buffer#open(expand(node.bufname), {
             \ 'opener': a:opener,
-            \ 'locator': a:helper.sync.is_drawer(),
+            \ 'locator': is_drawer,
+            \ 'keepalt': !is_drawer && !g:fern#disable_keepalt_on_edit,
             \})
     endfor
     " Fix <C-w><C-p> (#47)

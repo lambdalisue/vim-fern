@@ -15,6 +15,7 @@ call s:Config.config(expand('<sfile>:p'), {
       \ 'logfile': v:null,
       \ 'loglevel': g:fern#logger#INFO,
       \ 'opener': 'edit',
+      \ 'disable_keepalt_on_edit': 0,
       \ 'disable_default_mappings': 0,
       \ 'default_hidden': 0,
       \ 'default_include': '',
