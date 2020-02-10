@@ -528,6 +528,31 @@ fern#logger#error({object}...)
 =============================================================================
 UTILITY						*fern-develop-utility*
 
+						*fern#hook#add()*
+fern#hook#add({name}, {callback}[, {options}])
+	Add the {callback} to the {name} hook.
+	The {options} may contains the followings:
+
+	"id"		A |String| which is used to remove the hook.
+			Developer must specify this to remove a hook
+			later.
+	"once"		1 to remove the hook after initial call.
+			Default: 0
+>
+	call fern#hook#add('BufRead', { -> execute('echomsg "Ready"', '') })
+<
+						*fern#hook#remove()*
+fern#hook#remove({name}[, {id}])
+	Remove the {id} hook or all hooks when missing for the {name}.
+
+						*fern#hook#emit()*
+fern#hook#emit({name}[, {args}...])
+	Emit the {name} hooks with the {args}.
+>
+	call fern#hook#add('t', { -> execute('echomsg string(a:000)', '') })
+	call fern#hook#emit('t', 'Hello', 'World')
+	" -> ['Hello', 'World']
+<
 						*fern#util#sleep()*
 fern#util#sleep({ms})
 	Return a promise which will be resolved after {ms} milliseconds.
