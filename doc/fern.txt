@@ -268,10 +268,12 @@ VARIABLE						*fern-variable*
 COMMAND							*fern-command*
 
 							*:Fern*
-:Fern {url} [-opener={opener}] [-stay] [-reveal={reveal}]
+:Fern {url} [-opener={opener}] [-stay] [-wait] [-reveal={reveal}]
 	Open a fern buffer in split windows style with the {opener}.
 	If -stay options is specified, the focus stays on a window where the
-	command has executed.
+	command has executed. If -wait option is specified, the command wait
+	synchronously until the fern buffer become ready.
+
 							*fern-reveal*
 	If {reveal} is specified, parent nodes of the node which is identified
 	by the {reveal} are expanded and the node will be focused.

@@ -42,12 +42,10 @@ function! s:init() abort
   let fri = fern#internal#bufname#parse(bufname)
   if empty(fri.authority)
     let fri.authority = sha256(localtime())[:7]
+    let previous = bufname
     let bufname = fern#fri#format(fri)
-    " NOTE:
-    " Do NOT use 'keepalt' in command below to remove previous
-    " buffer name from buffer list (#75)
-    execute printf('silent file %s$', fnameescape(bufname))
-    bwipeout #
+    execute printf('silent keepalt file %s$', fnameescape(bufname))
+    execute printf('bwipeout %s', fnameescape(previous))
   endif
 
   let resource_uri = fri.path
@@ -86,6 +84,7 @@ function! s:init() abort
           \.finally({ -> Profile('redraw') })
           \.then({ -> helper.sync.focus_node(reveal) })
           \.finally({ -> Profile() })
+          \.then({ -> fern#hook#emit('read', helper) })
   catch
     return s:Promise.reject(v:exception)
   endtry
@@ -113,6 +112,7 @@ function! s:BufReadCmd() abort
         \.then({ -> helper.sync.set_cursor(cursor[1:2]) })
         \.then({ -> helper.async.reload_node(root.__key) })
         \.then({ -> helper.async.redraw() })
+        \.then({ -> fern#hook#emit('read', helper) })
         \.catch({ e -> fern#logger#error(e) })
 endfunction
 

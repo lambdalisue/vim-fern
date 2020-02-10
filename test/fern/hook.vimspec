@@ -1,0 +1,57 @@
+Describe fern#hook
+  Describe #emit()
+    It emits hooks added by #add()
+      let ns1 = []
+      let ns2 = []
+      call fern#hook#add('t', { -> extend(ns1, a:000) })
+      call fern#hook#add('t', { -> extend(ns2, a:000) })
+      call fern#hook#emit('t', 'hello', 'world')
+      Assert Equals(ns1, ['hello', 'world'])
+      Assert Equals(ns2, ['hello', 'world'])
+    End
+
+    It emits hooks added by #add() and remove 'once' hooks
+      let ns1 = []
+      let ns2 = []
+      call fern#hook#add('t', { -> extend(ns1, a:000) })
+      call fern#hook#add('t', { -> extend(ns2, a:000) }, {
+            \ 'once': 1,
+            \})
+      call fern#hook#emit('t', 'hello', 'world')
+      Assert Equals(ns1, ['hello', 'world'])
+      Assert Equals(ns2, ['hello', 'world'])
+
+      call fern#hook#emit('t', 'hello', 'world')
+      Assert Equals(ns1, ['hello', 'world', 'hello', 'world'])
+      Assert Equals(ns2, ['hello', 'world'])
+    End
+  End
+
+  Describe #remove()
+    It removes a specfied hook
+      let ns1 = []
+      let ns2 = []
+      call fern#hook#add('t', { -> extend(ns1, a:000) })
+      call fern#hook#add('t', { -> extend(ns2, a:000) }, {
+            \ 'id': 'remove this'
+            \})
+      call fern#hook#remove('t', 'remove this')
+      call fern#hook#emit('t', 'hello', 'world')
+      Assert Equals(ns1, ['hello', 'world'])
+      Assert Equals(ns2, [])
+    End
+
+    It removes all hooks if no {id} has specified
+      let ns1 = []
+      let ns2 = []
+      call fern#hook#add('t', { -> extend(ns1, a:000) })
+      call fern#hook#add('t', { -> extend(ns2, a:000) }, {
+            \ 'id': 'remove this'
+            \})
+      call fern#hook#remove('t')
+      call fern#hook#emit('t', 'hello', 'world')
+      Assert Equals(ns1, [])
+      Assert Equals(ns2, [])
+    End
+  End
+End

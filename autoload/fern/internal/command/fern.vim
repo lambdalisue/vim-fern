@@ -6,6 +6,7 @@ let s:options = [
       \ '-width=',
       \ '-keep',
       \ '-stay',
+      \ '-wait',
       \ '-reveal=',
       \ '-toggle',
       \ '-opener=',
@@ -14,6 +15,7 @@ let s:options = [
 function! fern#internal#command#fern#command(mods, fargs) abort
   try
     let stay = fern#internal#args#pop(a:fargs, 'stay', v:false)
+    let wait = fern#internal#args#pop(a:fargs, 'wait', v:false)
     let reveal = fern#internal#args#pop(a:fargs, 'reveal', '')
     let drawer = fern#internal#args#pop(a:fargs, 'drawer', v:false)
     if drawer
@@ -30,6 +32,7 @@ function! fern#internal#command#fern#command(mods, fargs) abort
 
     if len(a:fargs) isnot# 1
           \ || type(stay) isnot# v:t_bool
+          \ || type(wait) isnot# v:t_bool
           \ || type(reveal) isnot# v:t_string
           \ || type(drawer) isnot# v:t_bool
           \ || type(opener) isnot# v:t_string
@@ -37,9 +40,9 @@ function! fern#internal#command#fern#command(mods, fargs) abort
           \ || type(keep) isnot# v:t_bool
           \ || type(toggle) isnot# v:t_bool
       if empty(drawer)
-        throw 'Usage: Fern {url} [-opener={opener}] [-stay] [-reveal={reveal}]'
+        throw 'Usage: Fern {url} [-opener={opener}] [-stay] [-wait] [-reveal={reveal}]'
       else
-        throw 'Usage: Fern {url} -drawer [-toggle] [-keep] [-width={width}] [-stay] [-reveal={reveal}]'
+        throw 'Usage: Fern {url} -drawer [-toggle] [-keep] [-width={width}] [-stay] [-wait] [-reveal={reveal}]'
       endif
     endif
 
@@ -73,6 +76,13 @@ function! fern#internal#command#fern#command(mods, fargs) abort
 
     call fern#logger#debug('fri:', fri)
 
+    let wait_count = []
+    if wait
+      call fern#hook#add('read', { -> add(wait_count, 1) }, {
+            \ 'once': v:true,
+            \})
+    endif
+
     let winid_saved = win_getid()
     if fri.authority =~# '\<drawer\>'
       call fern#internal#drawer#open(fri, {
@@ -91,6 +101,11 @@ function! fern#internal#command#fern#command(mods, fargs) abort
     if stay
       call win_gotoid(winid_saved)
     endif
+
+    if wait
+      call s:wait({ -> len(wait_count) > 0 })
+    endif
+
   catch
     echohl ErrorMsg
     echo v:exception
@@ -122,4 +137,24 @@ function! s:norm_fragment(fri) abort
   let reveal = fern#internal#path#simplify(reveal)
   let reveal = fern#internal#path#relative(reveal, root)
   let a:fri.fragment = join(reveal, '/')
+endfunction
+
+function! s:wait(condition, ...) abort
+  let options = extend({
+        \ 'interval': 100,
+        \ 'timeout': 5000,
+        \}, a:0 ? a:1 : {},
+        \)
+  let start = reltime()
+  let expr = printf('sleep %dm', options.interval)
+  let dead = options.timeout isnot# v:null
+        \ ? reltimefloat(start) + options.timeout / 1000
+        \ : v:null
+  while dead is# v:null || dead > reltimefloat(reltime(start))
+    if a:condition()
+      return 0
+    endif
+    execute expr
+  endwhile
+  return 1
 endfunction

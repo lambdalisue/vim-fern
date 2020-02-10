@@ -178,13 +178,13 @@ Describe fern#helper
 
         It returns 1 if the fern is shown in a project drawer
           vsplit
-          Fern debug:/// -drawer
+          Fern debug:/// -drawer -wait
           let helper = fern#helper#new()
           Assert True(helper.sync.is_drawer())
         End
 
         It returns 0 if the fern is NOT shown in a project drawer
-          Fern debug:///
+          Fern debug:/// -wait
           let helper = fern#helper#new()
           Assert False(helper.sync.is_drawer())
         End
@@ -200,15 +200,15 @@ Describe fern#helper
         End
 
         It returns a scheme name of a fern buffer
-          Fern debug:///
+          Fern debug:/// -wait
           let helper = fern#helper#new()
           Assert Equals(helper.sync.get_scheme(), 'debug')
 
-          Fern dict:///
+          Fern dict:/// -wait
           let helper = fern#helper#new()
           Assert Equals(helper.sync.get_scheme(), 'dict')
 
-          Fern file:///
+          Fern file:/// -wait
           let helper = fern#helper#new()
           Assert Equals(helper.sync.get_scheme(), 'file')
         End
