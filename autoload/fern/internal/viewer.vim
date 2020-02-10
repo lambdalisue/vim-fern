@@ -86,6 +86,7 @@ function! s:init() abort
           \.finally({ -> Profile('redraw') })
           \.then({ -> helper.sync.focus_node(reveal) })
           \.finally({ -> Profile() })
+          \.then({ -> fern#hook#emit('read', helper) })
   catch
     return s:Promise.reject(v:exception)
   endtry
@@ -113,6 +114,7 @@ function! s:BufReadCmd() abort
         \.then({ -> helper.sync.set_cursor(cursor[1:2]) })
         \.then({ -> helper.async.reload_node(root.__key) })
         \.then({ -> helper.async.redraw() })
+        \.then({ -> fern#hook#emit('read', helper) })
         \.catch({ e -> fern#logger#error(e) })
 endfunction
 
