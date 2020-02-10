@@ -36,5 +36,10 @@ jobs:
       - name: Run tests
         env:
           THEMIS_VIM: ${{ steps.vim.outputs.executable }}
+          # XXX:
+          # Overwrite %TMP% to point a correct temp directory.
+          # Note that %TMP% only affects value of 'tempname()' in Windows.
+          # https://github.community/t5/GitHub-Actions/TEMP-is-broken-on-Windows/m-p/30432#M427
+          TMP: 'C:\Users\runneradmin\AppData\Local\Temp'
         run: |
           ./vim-themis/bin/themis
