@@ -19,6 +19,8 @@ function! fern#internal#buffer#open(bufname, ...) abort
         \ 'mods': '',
         \ 'cmdarg': '',
         \ 'locator': 0,
+        \ 'keepalt': 0,
+        \ 'keepjumps': 0,
         \}, a:0 ? a:1 : {},
         \)
   if options.opener ==# 'select'
@@ -34,6 +36,12 @@ function! fern#internal#buffer#open(bufname, ...) abort
   if options.opener =~# s:edit_or_opener_pattern
     let opener2 = matchstr(options.opener, s:edit_or_opener_pattern)
     let options.opener = &modified ? opener2 : options.opener
+  endif
+  if options.keepalt && options.opener ==# 'edit'
+    let options.mods .= ' keepalt'
+  endif
+  if options.keepjumps && options.opener ==# 'edit'
+    let options.mods .= ' keepjumps'
   endif
   let args = [
         \ options.mods,

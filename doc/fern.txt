@@ -227,6 +227,58 @@ VARIABLE						*fern-variable*
 	windows style.
 	Default: 'edit'
 
+*g:fern#keepalt_on_edit*
+	Set 1 to apply |keepalt| on the "open:edit" action to keep an
+	|alternate-file| in a split windows style like:
+>
+        g:fern#keepalt_on_edit =      0            1
+	                         +---------+  +---------+
+	:edit A                  |  %:A    |  |  %:A    |
+	                         |  #:     |  |  #:     |
+	                         +---------+  +---------+
+	                              v            v
+	                         +---------+  +---------+
+	:Fern .                  |  %:fern |  |  %:fern |
+	                         |  #:A    |  |  #:A    |
+	                         +---------+  +---------+
+	                              v            v
+	                         +---------+  +---------+
+	open:edit                |  %:B    |  |  %:B    |
+	on 'B'                   |  #:fern |  |  #:A    |
+	                         +---------+  +---------+
+<
+	Default: 0
+
+*g:fern#keepjumps_on_edit*
+	Set 1 to apply |keepjumps| on the "open:edit" action to keep a
+	|jumplist| in a split windows style like:
+>
+        g:fern#keepjumps_on_edit =      0            1
+	                           +---------+  +---------+
+	                           |  0:A    |  |  0:A    |
+	:edit A                    |  1:     |  |  1:     |
+	                           |  2:     |  |  2:     |
+	                           +---------+  +---------+
+	                                v            v
+	                           +---------+  +---------+
+	                           |  0:fern |  |  0:Fern |
+	:Fern .                    |  1:A    |  |  1:A    |
+	                           |  2:     |  |  2:     |
+	                           +---------+  +---------+
+	                                v            v
+	                           +---------+  +---------+
+	                           |  0:B    |  |  0:B    |
+	open:edit                  |  1:fern |  |  1:A    |
+	on 'B'                     |  2:A    |  |  2:     |
+	                           +---------+  +---------+
+<
+	Note that even with this option, any |jump-motions| performed in a
+	fern buffer updates |jumplist|. For example, if user move cursors by
+	"G" in above situation, |CTRL-O| in last step jumps to the fern buffer
+	rather than a buffer "A" because a jump for "G" has recoreded in
+	|jumplist|.
+	Default: 0
+
 *g:fern#disable_default_mappings*
 	Set 1 to disable default mappings
 	Note that this variable does not affect mappings for actions.

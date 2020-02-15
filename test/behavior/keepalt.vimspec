@@ -1,0 +1,15 @@
+Describe Behavior keepalt
+  After all
+    %bwipeout!
+  End
+
+  Before
+    %bwipeout!
+  End
+
+  It Fern command keeps 'alternate-file' correctly
+    edit hello
+    Fern .
+    Assert Equals(bufname('#'), 'hello')
+  End
+End

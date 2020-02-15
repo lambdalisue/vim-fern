@@ -1,0 +1,49 @@
+Describe alternate-file
+  Before all
+    let Path = vital#fern#import('System.Filepath')
+    let fern_keepalt_on_edit = g:fern#keepalt_on_edit
+    let workdir = tempname()
+    lockvar workdir
+    call mkdir(workdir, 'p')
+    call writefile([], Path.join(workdir, 'alpha'))
+    call writefile([], Path.join(workdir, 'beta'))
+    call writefile([], Path.join(workdir, 'gamma'))
+  End
+
+  After all
+    %bwipeout!
+    let g:fern#keepalt_on_edit = fern_keepalt_on_edit
+    call delete(workdir, 'rf')
+  End
+
+  Before
+    %bwipeout!
+    let g:fern#keepalt_on_edit = fern_keepalt_on_edit
+  End
+
+  It Fern command keeps 'alternate-file' correctly
+    edit alpha
+    Fern . -wait
+    Assert Equals(bufname('#'), 'alpha')
+  End
+
+  It Fern updates 'alternate-file' after 'open:edit' action in split windows style if g:fern#keepalt_on_edit is 0
+    let g:fern#keepalt_on_edit = 0
+
+    edit alpha
+    execute printf('Fern %s -wait', fnameescape(workdir))
+    execute "normal G\<Plug>(fern-action-open:edit)"
+    Assert Equals(expand('%:t'), 'gamma')
+    Assert Match(bufname('#'), '^fern://.*/file:///.*$')
+  End
+
+  It Fern keeps 'alternate-file' after 'open:edit' action in split windows style if g:fern#keepalt_on_edit is 1
+    let g:fern#keepalt_on_edit = 1
+
+    edit alpha
+    execute printf('Fern %s -wait', fnameescape(workdir))
+    execute "normal G\<Plug>(fern-action-open:edit)"
+    Assert Equals(expand('%:t'), 'gamma')
+    Assert Equals(bufname('#'), 'alpha')
+  End
+End
