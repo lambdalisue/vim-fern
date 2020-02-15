@@ -73,8 +73,8 @@ function! s:map_open(helper, opener) abort
       call fern#internal#buffer#open(expand(node.bufname), {
             \ 'opener': a:opener,
             \ 'locator': is_drawer,
-            \ 'keepalt': !is_drawer && !g:fern#disable_keepalt_on_edit,
-            \ 'keepjumps': !is_drawer && !g:fern#disable_keepjumps_on_edit,
+            \ 'keepalt': !is_drawer && g:fern#keepalt_on_edit,
+            \ 'keepjumps': !is_drawer && g:fern#keepjumps_on_edit,
             \})
     endfor
     " Fix <C-w><C-p> (#47)

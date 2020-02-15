@@ -1,7 +1,7 @@
 Describe jumplist
   Before all
     let Path = vital#fern#import('System.Filepath')
-    let fern_disable_keepjumps_on_edit = g:fern#disable_keepjumps_on_edit
+    let fern_keepjumps_on_edit = g:fern#keepjumps_on_edit
     let workdir = tempname()
     lockvar workdir
     call mkdir(workdir, 'p')
@@ -12,14 +12,14 @@ Describe jumplist
 
   After all
     %bwipeout!
-    let g:fern#disable_keepjumps_on_edit = fern_disable_keepjumps_on_edit
+    let g:fern#keepjumps_on_edit = fern_keepjumps_on_edit
     call delete(workdir, 'rf')
   End
 
   Before
     clearjumps
     %bwipeout!
-    let g:fern#disable_keepjumps_on_edit = fern_disable_keepjumps_on_edit
+    let g:fern#keepjumps_on_edit = fern_keepjumps_on_edit
   End
 
   It Fern command keeps jumps correctly
@@ -35,23 +35,8 @@ Describe jumplist
     Assert Equals(len(output), 5)
   End
 
-  It Fern keeps jumps after 'open:edit' action in split windows style if g:fern#disable_keepjumps_on_edit is 0
-    let g:fern#disable_keepjumps_on_edit = 0
-
-    edit alpha
-    execute printf('Fern %s -wait', fnameescape(workdir))
-    execute "normal G\<Plug>(fern-action-open:edit)"
-    let output = split(execute('jumps'), '\n')
-    " NOTE:
-    " It seems '-wait' affects 'jumps' somehow
-    Assert Match(output[1], '^\s\+2\s\+1\s\+\d\+ alpha$', output)
-    Assert Match(output[2], '^\s\+1\s\+1\s\+\d\+ fern://.*/file:///.*$', output)
-    Assert Match(output[3], '^>$', output)
-    Assert Equals(len(output), 4)
-  End
-
-  It Fern updates jumps after 'open:edit' action in split windows style if g:fern#disable_keepjumps_on_edit is 1
-    let g:fern#disable_keepjumps_on_edit = 1
+  It Fern updates jumps after 'open:edit' action in split windows style if g:fern#keepjumps_on_edit is 0
+    let g:fern#keepjumps_on_edit = 0
 
     edit alpha
     execute printf('Fern %s -wait', fnameescape(workdir))
@@ -64,6 +49,21 @@ Describe jumplist
     Assert Match(output[3], '^\s\+1\s\+4\s\+\d\+ fern://.*/file:///.*$', output)
     Assert Match(output[4], '^>$', output)
     Assert Equals(len(output), 5)
+  End
+
+  It Fern keeps jumps after 'open:edit' action in split windows style if g:fern#keepjumps_on_edit is 1
+    let g:fern#keepjumps_on_edit = 1
+
+    edit alpha
+    execute printf('Fern %s -wait', fnameescape(workdir))
+    execute "normal G\<Plug>(fern-action-open:edit)"
+    let output = split(execute('jumps'), '\n')
+    " NOTE:
+    " It seems '-wait' affects 'jumps' somehow
+    Assert Match(output[1], '^\s\+2\s\+1\s\+\d\+ alpha$', output)
+    Assert Match(output[2], '^\s\+1\s\+1\s\+\d\+ fern://.*/file:///.*$', output)
+    Assert Match(output[3], '^>$', output)
+    Assert Equals(len(output), 4)
   End
 End
 
