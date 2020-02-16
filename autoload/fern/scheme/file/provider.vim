@@ -82,114 +82,25 @@ function! s:safe(fn) abort
   endtry
 endfunction
 
-if !s:is_windows && executable('ls')
-  " NOTE:
-  " The -U option means different between Linux and FreeBSD.
-  " Linux   - do not sort; list entries in directory order
-  " FreeBSD - Use time when file was created for sorting or printing.
-  " But it improve performance in Linux and just noise in FreeBSD so
-  " the option is applied.
-  function! s:children_ls(path, token) abort
-    let Profile = fern#profile#start('fern#scheme#file#provider:children_ls')
-    return s:Process.start(['ls', '-1AU', a:path], { 'token': a:token })
-          \.then({ v -> v.stdout })
-          \.then(s:AsyncLambda.filter_f({ v -> !empty(v) }))
-          \.then(s:AsyncLambda.map_f({ v -> a:path . '/' . v }))
-          \.finally({ -> Profile() })
-  endfunction
-endif
-
-if !s:is_windows && executable('find')
-  function! s:children_find(path, token) abort
-    let Profile = fern#profile#start('fern#scheme#file#provider:children_find')
-    return s:Process.start(['find', a:path, '-follow', '-maxdepth', '1'], { 'token': a:token })
-          \.then({ v -> v.stdout })
-          \.then(s:AsyncLambda.filter_f({ v -> !empty(v) && v !=# a:path }))
-          \.finally({ -> Profile() })
-  endfunction
-endif
-
-if exists('*readdir')
-  function! s:children_vim_readdir(path, ...) abort
-    let Profile = fern#profile#start('fern#scheme#file#provider:children_vim_readdir')
-    let s = s:Path.separator()
-    return s:Promise.resolve(readdir(a:path))
-          \.then(s:AsyncLambda.map_f({ v -> a:path . s . v }))
-          \.finally({ -> Profile() })
-  endfunction
-endif
-
-function! s:children_vim_glob(path, ...) abort
-  let Profile = fern#profile#start('fern#scheme#file#provider:children_vim_glob')
-  let s = s:Path.separator()
-  let a = s:Promise.resolve(glob(a:path . s . '*', 1, 1, 1))
-  let b = s:Promise.resolve(glob(a:path . s . '.*', 1, 1, 1))
-        \.then(s:AsyncLambda.filter_f({ v -> v[-2:] !=# s . '.' && v[-3:] !=# s . '..' }))
-  return s:Promise.all([a, b])
-        \.then(s:AsyncLambda.reduce_f({ a, v -> a + v }, []))
-        \.finally({ -> Profile() })
-endfunction
-
 function! s:children(path, token) abort
-  return call(printf('s:children_%s', g:fern#scheme#file#provider#impl), [a:path, a:token])
+  return call(
+        \ printf('fern#scheme#file#util#list_entries_%s', g:fern#scheme#file#provider#impl),
+        \ [a:path, a:token],
+        \)
 endfunction
-
 
 " NOTE:
-" Performance 'find' > 'ls' >> 'vim_reddir' > 'vim_glob'
+" It is required while exists() does not invoke autoload
+runtime autoload/fern/scheme/file/util.vim
+
+" NOTE:
+" Performance 'find' > 'ls' >> 'reddir' > 'glob'
 call s:Config.config(expand('<sfile>:p'), {
-      \ 'impl': exists('*s:children_find')
+      \ 'impl': exists('*fern#scheme#file#util#list_entries_find')
       \   ? 'find'
-      \   : exists('*s:children_ls')
+      \   : exists('*fern#scheme#file#util#list_entries_ls')
       \     ? 'ls'
-      \     : exists('*s:children_vim_readdir')
-      \     ? 'vim_readdir'
-      \     : 'vim_glob',
+      \     : exists('*fern#scheme#file#util#list_entries_readdir')
+      \     ? 'readdir'
+      \     : 'glob',
       \})
-
-
-function! fern#scheme#file#provider#_benchmark() abort
-  let Path = vital#fern#import('System.Filepath')
-  redraw
-  echo 'Creating benchmark environment ...'
-  let t = tempname()
-  try
-    call mkdir(t, 'p')
-    call map(
-          \ range(100000),
-          \ { _, v -> writefile([], Path.join(t, v)) },
-          \)
-
-    let token = s:CancellationToken.none
-
-    if exists('*s:children_ls')
-      echo "Benchmarking 'ls' ..."
-      let s = reltime()
-      call s:children_ls(t, token)
-      echo reltimestr(reltime(s))
-    endif
-
-    if exists('*s:children_find')
-      echo "Benchmarking 'find' ..."
-      let s = reltime()
-      call s:children_find(t, token)
-      echo reltimestr(reltime(s))
-    endif
-
-    if exists('*s:children_vim_readdir')
-      echo "Benchmarking 'vim_readdir' ..."
-      let s = reltime()
-      call s:children_vim_readdir(t, token)
-      echo reltimestr(reltime(s))
-    endif
-
-    if exists('*s:children_vim_glob')
-      echo "Benchmarking 'vim_glob' ..."
-      let s = reltime()
-      call s:children_vim_glob(t, token)
-      echo reltimestr(reltime(s))
-    endif
-  finally
-    call delete(t, 'rf')
-  endtry
-endfunction
