@@ -1,4 +1,12 @@
 Describe fern#internal#bufname
+  Before all
+    let fern_internal_filepath_is_windows = g:fern#internal#filepath#is_windows
+  End
+
+  After all
+    let g:fern#internal#filepath#is_windows = fern_internal_filepath_is_windows
+  End
+
   Describe #parse()
     Context FRI bufname
       It returns FRI of fern://... from fern:///file:///foo/bar
@@ -180,9 +188,7 @@ Describe fern#internal#bufname
 
     Context FILE bufname (Unix)
       Before
-        if has('win32')
-          Skip This test must be run under Unix
-        endif
+        let g:fern#internal#filepath#is_windows = 0
       End
 
       It returns FRI of fern://... from /
@@ -214,7 +220,7 @@ Describe fern#internal#bufname
         let want = {
               \ 'scheme': 'fern',
               \ 'authority': '',
-              \ 'path': 'file:///foo/bar%3Fa&b=c',
+              \ 'path': 'file:///foo/bar%3Fa&b%3Dc',
               \ 'query': {},
               \ 'fragment': '',
               \}
@@ -226,7 +232,7 @@ Describe fern#internal#bufname
         let want = {
               \ 'scheme': 'fern',
               \ 'authority': '',
-              \ 'path': 'file:///foo/bar%3Ba&b=c',
+              \ 'path': 'file:///foo/bar%3Ba&b%3Dc',
               \ 'query': {},
               \ 'fragment': '',
               \}
@@ -250,7 +256,7 @@ Describe fern#internal#bufname
         let want = {
               \ 'scheme': 'fern',
               \ 'authority': '',
-              \ 'path': 'file:///foo/bar%3Fa&b=c%23foo/bar/hoge',
+              \ 'path': 'file:///foo/bar%3Fa&b%3Dc%23foo/bar/hoge',
               \ 'query': {},
               \ 'fragment': '',
               \}
@@ -262,7 +268,7 @@ Describe fern#internal#bufname
         let want = {
               \ 'scheme': 'fern',
               \ 'authority': '',
-              \ 'path': 'file:///foo/bar%3Ba&b=c%23foo/bar/hoge',
+              \ 'path': 'file:///foo/bar%3Ba&b%3Dc%23foo/bar/hoge',
               \ 'query': {},
               \ 'fragment': '',
               \}
@@ -272,9 +278,7 @@ Describe fern#internal#bufname
 
     Context FILE bufname (Windows)
       Before
-        if !has('win32')
-          Skip This test must be run under Windows
-        endif
+        let g:fern#internal#filepath#is_windows = 1
       End
 
       It returns FRI of fern://... from C:\
@@ -306,7 +310,7 @@ Describe fern#internal#bufname
         let want = {
               \ 'scheme': 'fern',
               \ 'authority': '',
-              \ 'path': 'file:///C:/foo/bar%3Fa&b=c',
+              \ 'path': 'file:///C:/foo/bar%3Fa&b%3Dc',
               \ 'query': {},
               \ 'fragment': '',
               \}
@@ -318,7 +322,7 @@ Describe fern#internal#bufname
         let want = {
               \ 'scheme': 'fern',
               \ 'authority': '',
-              \ 'path': 'file:///C:/foo/bar%3Ba&b=c',
+              \ 'path': 'file:///C:/foo/bar%3Ba&b%3Dc',
               \ 'query': {},
               \ 'fragment': '',
               \}
@@ -342,7 +346,7 @@ Describe fern#internal#bufname
         let want = {
               \ 'scheme': 'fern',
               \ 'authority': '',
-              \ 'path': 'file:///C:/foo/bar%3Fa&b=c%23foo/bar/hoge',
+              \ 'path': 'file:///C:/foo/bar%3Fa&b%3Dc%23foo/bar/hoge',
               \ 'query': {},
               \ 'fragment': '',
               \}
@@ -354,7 +358,7 @@ Describe fern#internal#bufname
         let want = {
               \ 'scheme': 'fern',
               \ 'authority': '',
-              \ 'path': 'file:///C:/foo/bar%3Ba&b=c%23foo/bar/hoge',
+              \ 'path': 'file:///C:/foo/bar%3Ba&b%3Dc%23foo/bar/hoge',
               \ 'query': {},
               \ 'fragment': '',
               \}
