@@ -3,7 +3,6 @@ let s:Lambda = vital#fern#import('Lambda')
 let s:AsyncLambda = vital#fern#import('Async.Lambda')
 let s:Promise = vital#fern#import('Async.Promise')
 let s:Process = vital#fern#import('Async.Promise.Process')
-let s:Path = vital#fern#import('System.Filepath')
 let s:CancellationToken = vital#fern#import('Async.CancellationToken')
 let s:is_windows = has('win32')
 let s:windows_drive_nodes = s:Promise.resolve([])
@@ -34,13 +33,15 @@ function! s:provider_get_root(uri) abort
 endfunction
 
 function! s:provider_get_parent(node, ...) abort
-  if s:Path.is_root_directory(a:node._path)
+  if fern#internal#filepath#is_root(a:node._path)
     return s:Promise.reject('no parent node exists for the root')
   elseif s:is_windows && fern#internal#filepath#is_drive_root(a:node._path)
     return s:Promise.resolve(s:windows_drive_root)
   endif
   try
-    let parent = fnamemodify(a:node._path, ':h')
+    let path = fern#internal#filepath#to_slash(a:node._path)
+    let parent = fern#internal#path#dirname(path)
+    let parent = fern#internal#filepath#from_slash(parent)
     return s:Promise.resolve(s:node(parent))
   catch
     return s:Promise.reject(v:exception)
@@ -63,32 +64,19 @@ function! s:provider_get_children(node, ...) abort
 endfunction
 
 function! s:node(path) abort
-  let path = s:Path.abspath(a:path)
-  let path = s:Path.remove_last_separator(path)
-  let path = simplify(path)
-  if s:is_windows && path =~# '^\w:$'
-    let path .= '\'
+  if empty(getftype(a:path))
+    throw printf('no such file or directory exists: %s', a:path)
   endif
-  let path = empty(path) ? '/' : path
-  if empty(getftype(path))
-    throw printf('no such file or directory exists: %s', path)
-  endif
-  let name = fnamemodify(path, ':t')
-  let status = isdirectory(path)
+  let status = isdirectory(a:path)
+  let path = fern#internal#filepath#to_slash(a:path)
+  let name = fern#internal#path#basename(path)
   return {
         \ 'name': name,
-        \ 'label': name ==# '' ? '/' : name,
         \ 'status': status,
         \ 'hidden': name[:0] ==# '.',
-        \ 'bufname': path,
-        \ '_path': path,
+        \ 'bufname': a:path,
+        \ '_path': a:path,
         \}
-endfunction
-
-function! s:to_file_uri(abspath) abort
-  let path = s:Path.to_slash(a:abspath)
-  let path = join(split(path, '/'), '/')
-  return printf('file:///%s', path)
 endfunction
 
 function! s:safe(fn) abort

@@ -30,6 +30,14 @@ function! fern#internal#filepath#is_absolute(path) abort
         \ : s:is_absolute_unix(a:path)
 endfunction
 
+function! fern#internal#filepath#join(paths) abort
+  let paths = map(
+        \ copy(a:paths),
+        \ 'fern#internal#filepath#to_slash(v:val)',
+        \)
+  return fern#internal#filepath#from_slash(join(paths, '/'))
+endfunction
+
 function! s:to_slash_windows(path) abort
   let prefix = s:is_absolute_windows(a:path) ? '/' : ''
   let terms = filter(split(a:path, '\\'), '!empty(v:val)')

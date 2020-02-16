@@ -1,6 +1,5 @@
 let s:Promise = vital#fern#import('Async.Promise')
 let s:Prompt = vital#fern#import('Prompt')
-let s:Path = vital#fern#import('System.Filepath')
 
 let s:clipboard = {
       \ 'mode': 'copy',
@@ -73,10 +72,13 @@ function! s:map_clipboard_paste(helper) abort
 
   let node = a:helper.sync.get_cursor_node()
   let node = node.status isnot# a:helper.STATUS_EXPANDED ? node.__owner : node
+  let base = fern#internal#filepath#to_slash(node._path)
   let token = a:helper.fern.source.token
   let ps = []
   for src in s:clipboard.candidates
-    let dst = s:Path.join(node._path, fnamemodify(src, ':t'))
+    let name = fern#internal#filepath#to_slash(src)
+    let name = fern#internal#path#basename(name)
+    let dst = fern#internal#filepath#from_slash(join([base, name], '/'))
     if s:clipboard.mode ==# 'move'
       echo printf('Move %s -> %s', src, dst)
       call add(ps, fern#scheme#file#shutil#move(src, dst, token))
