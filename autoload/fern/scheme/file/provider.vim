@@ -6,6 +6,15 @@ let s:Process = vital#fern#import('Async.Promise.Process')
 let s:Path = vital#fern#import('System.Filepath')
 let s:CancellationToken = vital#fern#import('Async.CancellationToken')
 let s:is_windows = has('win32')
+let s:windows_drive_nodes = s:Promise.resolve([])
+let s:windows_drive_root = {
+      \ 'name': '',
+      \ 'label': 'Drives',
+      \ 'status': 1,
+      \ 'hidden': 0,
+      \ 'bufname': 'fern:///file:///',
+      \ '_path': '',
+      \}
 
 function! fern#scheme#file#provider#new() abort
   return {
@@ -18,12 +27,17 @@ endfunction
 function! s:provider_get_root(uri) abort
   let fri = fern#fri#parse(a:uri)
   let path = fern#internal#filepath#from_slash('/' . fri.path)
+  if s:is_windows && path ==# ''
+    return s:windows_drive_root
+  endif
   return s:node(path)
 endfunction
 
 function! s:provider_get_parent(node, ...) abort
   if s:Path.is_root_directory(a:node._path)
     return s:Promise.reject('no parent node exists for the root')
+  elseif s:is_windows && fern#internal#filepath#is_drive_root(a:node._path)
+    return s:Promise.resolve(s:windows_drive_root)
   endif
   try
     let parent = fnamemodify(a:node._path, ':h')
@@ -34,6 +48,9 @@ function! s:provider_get_parent(node, ...) abort
 endfunction
 
 function! s:provider_get_children(node, ...) abort
+  if s:is_windows && a:node._path ==# ''
+    return s:windows_drive_nodes
+  endif
   let token = a:0 ? a:1 : s:CancellationToken.none
   if a:node.status is# 0
     return s:Promise.reject('no children exists for %s', a:node._path)
@@ -88,6 +105,12 @@ function! s:children(path, token) abort
         \ [a:path, a:token],
         \)
 endfunction
+
+if s:is_windows
+  let s:windows_drive_nodes = fern#scheme#file#util#list_drives(s:CancellationToken.none)
+          \.then(s:AsyncLambda.map_f({ v -> s:safe(funcref('s:node', [v . '\'])) }))
+          \.then(s:AsyncLambda.filter_f({ v -> !empty(v) }))
+endif
 
 " NOTE:
 " It is required while exists() does not invoke autoload

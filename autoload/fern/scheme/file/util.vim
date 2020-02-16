@@ -50,3 +50,14 @@ function! fern#scheme#file#util#list_entries_glob(path, ...) abort
         \.then(s:AsyncLambda.reduce_f({ a, v -> a + v }, []))
         \.finally({ -> Profile() })
 endfunction
+
+if s:is_windows
+  function! fern#scheme#file#util#list_drives(token) abort
+    let Profile = fern#profile#start('fern#scheme#file#util#list_drives')
+    return s:Process.start(['wmic', 'logicaldisk', 'get', 'name'], { 'token': a:token })
+          \.then({ v -> v.stdout })
+          \.then(s:AsyncLambda.filter_f({ v -> v =~# '^\w:' }))
+          \.then(s:AsyncLambda.map_f({ v -> v:val[:1] . '\' }))
+          \.finally({ -> Profile() })
+  endfunction
+endif
