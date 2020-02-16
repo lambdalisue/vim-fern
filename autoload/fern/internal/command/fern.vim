@@ -1,5 +1,3 @@
-let s:Path = vital#fern#import('System.Filepath')
-
 let s:drawer_opener = 'topleft vsplit'
 let s:options = [
       \ '-drawer',
