@@ -1,5 +1,4 @@
 let s:Config = vital#fern#import('Config')
-let s:Prompt = vital#fern#import('Prompt')
 
 function! fern#internal#window#find(predicator, ...) abort
   let n = winnr('$')
