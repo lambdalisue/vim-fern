@@ -1,63 +1,246 @@
 Describe fern#internal#path
   Describe #simplify()
-    It removes empty segment from path
-      let val = '/foo/bar//hoge'
-      let exp = '/foo/bar/hoge'
-      Assert Equals(fern#internal#path#simplify(val), exp)
+    It returns an absolute path (/usr/local -> /usr/local)
+      let path = '/usr/local'
+      let want = '/usr/local'
+      let got = fern#internal#path#simplify(path)
+      Assert Equals(got, want)
     End
 
-    It removes '.' from path
-      let val = '/foo/./bar/./hoge'
-      let exp = '/foo/bar/hoge'
-      Assert Equals(fern#internal#path#simplify(val), exp)
+    It returns a relative path (usr/local -> usr/local)
+      let path = 'usr/local'
+      let want = 'usr/local'
+      let got = fern#internal#path#simplify(path)
+      Assert Equals(got, want)
     End
 
-    It removes '..' and corresponding terms from path
-      let val = '/foo/../bar/../hoge'
-      let exp = '/hoge'
-      Assert Equals(fern#internal#path#simplify(val), exp)
+    It removes duplicate slashes (/usr//local -> /usr/local)
+      let path = '/usr//local'
+      let want = '/usr/local'
+      let got = fern#internal#path#simplify(path)
+      Assert Equals(got, want)
 
-      let val = 'foo/../bar/../../hoge'
-      let exp = '../hoge'
-      Assert Equals(fern#internal#path#simplify(val), exp)
+      let path = '/usr///local'
+      let want = '/usr/local'
+      let got = fern#internal#path#simplify(path)
+      Assert Equals(got, want)
+    End
 
-      let val = 'foo/../../bar/../../hoge'
-      let exp = '../../hoge'
-      Assert Equals(fern#internal#path#simplify(val), exp)
+    It removes trailing slashes (/usr/local/ -> /usr/local)
+      let path = '/usr/local/'
+      let want = '/usr/local'
+      let got = fern#internal#path#simplify(path)
+      Assert Equals(got, want)
+
+      let path = '/usr/local//'
+      let want = '/usr/local'
+      let got = fern#internal#path#simplify(path)
+      Assert Equals(got, want)
+    End
+
+    It removes '.' (/usr/./local -> /usr/local)
+      let path = '/usr/./local'
+      let want = '/usr/local'
+      let got = fern#internal#path#simplify(path)
+      Assert Equals(got, want)
+
+      let path = '/usr/././local'
+      let want = '/usr/local'
+      let got = fern#internal#path#simplify(path)
+      Assert Equals(got, want)
+
+      let path = './usr/local'
+      let want = 'usr/local'
+      let got = fern#internal#path#simplify(path)
+      Assert Equals(got, want)
+    End
+
+    It removes '..' and corresponding components (/usr/../local -> /local)
+      let path = '/usr/../local'
+      let want = '/local'
+      let got = fern#internal#path#simplify(path)
+      Assert Equals(got, want)
+
+      let path = '../usr/local'
+      let want = '../usr/local'
+      let got = fern#internal#path#simplify(path)
+      Assert Equals(got, want)
+
+      let path = '/usr/../../local'
+      let want = '../local'
+      let got = fern#internal#path#simplify(path)
+      Assert Equals(got, want)
     End
   End
 
   Describe #commonpath()
-    It returns a relative path from a given base
-      let path = '/foo/bar/hoge/a/b/c'
-      let base = '/foo/bar/hoge'
-      let exp = '/foo/bar/hoge'
-      Assert Equals(fern#internal#path#commonpath([path, base]), exp)
-
-      let path = '/foo/bar/hoge/a/b/c'
-      let base = '/foo1/bar2/hoge3'
-      let exp = ''
-      Assert Equals(fern#internal#path#commonpath([path, base]), exp)
+    It throws an error when {paths} contains non absolute paths
+      let paths = [
+            \ 'usr/local',
+            \]
+      Throws /must be an absolute path/ fern#internal#path#commonpath(paths)
     End
 
-    It throws error when non absolute path has specified
-      Throws /must be absolute/ fern#internal#path#commonpath(['foo/bar'])
+    It returns a common path of among given {paths}
+      let paths = [
+            \ '/usr/local/bin/vim',
+            \ '/usr/local/openssh',
+            \ '/usr/bin/vim',
+            \]
+      let want = '/usr'
+      let got = fern#internal#path#commonpath(paths)
+      Assert Equals(got, want)
+    End
+
+    It returns '/' if no common path exists
+      let paths = [
+            \ '/usr/local/bin/vim',
+            \ '/usr/local/openssh',
+            \ '/vim',
+            \]
+      let want = '/'
+      let got = fern#internal#path#commonpath(paths)
+      Assert Equals(got, want)
+    End
+  End
+
+  Describe #absolute()
+    It throws an error when {base} is not absolute path
+      let base = 'home/fern'
+      let path = '/usr/local'
+      Throws /must be an absolute path/ fern#internal#path#absolute(path, base)
+    End
+
+    It returns an absolute path (/usr/local,/home/fern -> /usr/local)
+      let base = '/home/fern'
+      let path = '/usr/local'
+      let want = '/usr/local'
+      let got = fern#internal#path#absolute(path, base)
+      Assert Equals(got, want)
+    End
+
+    It returns an absolute path from the base (usr/local,/home/fern -> /home/fern/usr/local)
+      let base = '/home/fern'
+      let path = 'usr/local'
+      let want = '/home/fern/usr/local'
+      let got = fern#internal#path#absolute(path, base)
+      Assert Equals(got, want)
+    End
+
+    It returns a simplified absolute path from the base (../../usr/local,/home/fern -> /usr/local)
+      let base = '/home/fern'
+      let path = '../../usr/local'
+      let want = '/usr/local'
+      let got = fern#internal#path#absolute(path, base)
+      Assert Equals(got, want)
+    End
+
+    It throws an error when the path beyonds the base
+      let base = '/home/fern'
+      let path = '../../../usr/local'
+      Throws /beyonds/ fern#internal#path#absolute(path, base)
     End
   End
 
   Describe #relative()
-    It returns a relative path from a given base
-      let path = '/foo/bar/hoge'
-      let base = '/foo'
-      let exp = 'bar/hoge'
-      Assert Equals(fern#internal#path#relative(path, base), exp)
+    It throws an error when {base} is not absolute path
+      let base = 'home/fern'
+      let path = '/usr/local'
+      Throws /must be an absolute path/ fern#internal#path#relative(path, base)
     End
 
-    It return a path contains '..' if no common prefix exists
-      let path = '/foo/bar/hoge'
-      let base = '/piyo/puyo'
-      let exp = '../../foo/bar/hoge'
-      Assert Equals(fern#internal#path#relative(path, base), exp)
+    It returns a relative path (usr/local,/home/fern -> usr/local)
+      let base = '/home/fern'
+      let path = 'usr/local'
+      let want = 'usr/local'
+      let got = fern#internal#path#relative(path, base)
+      Assert Equals(got, want)
+    End
+
+    It returns a relative path from the base (/home/fern/usr/local,/home/fern -> /usr/local)
+      let base = '/home/fern'
+      let path = '/home/fern/usr/local'
+      let want = 'usr/local'
+      let got = fern#internal#path#relative(path, base)
+      Assert Equals(got, want)
+    End
+
+    It returns a simplified relative path from the base (/usr/local,/home/fern -> ../../usr/local)
+      let base = '/home/fern'
+      let path = '/usr/local'
+      let want = '../../usr/local'
+      let got = fern#internal#path#relative(path, base)
+      Assert Equals(got, want)
+    End
+  End
+
+  Describe #basename()
+    It returns '' if path is an empty string ('' -> '')
+      let path = ''
+      let want = ''
+      let got = fern#internal#path#basename(path)
+      Assert Equals(got, want)
+    End
+
+    It returns '/' if path is a root ('/' -> '/')
+      let path = '/'
+      let want = '/'
+      let got = fern#internal#path#basename(path)
+      Assert Equals(got, want)
+    End
+
+    It returns a last component of a {path} ('/usr/local' -> 'local')
+      let path = '/usr/local'
+      let want = 'local'
+      let got = fern#internal#path#basename(path)
+      Assert Equals(got, want)
+    End
+
+    It removes trailing slashes prior to get a last component of a {path} ('/usr/local/' -> 'local')
+      let path = '/usr/local/'
+      let want = 'local'
+      let got = fern#internal#path#basename(path)
+      Assert Equals(got, want)
+
+      let path = '/usr/local//'
+      let want = 'local'
+      let got = fern#internal#path#basename(path)
+      Assert Equals(got, want)
+    End
+  End
+
+  Describe #dirname()
+    It returns '' if path is an empty string ('' -> '')
+      let path = ''
+      let want = ''
+      let got = fern#internal#path#dirname(path)
+      Assert Equals(got, want)
+    End
+
+    It returns '/' if path is a root ('/' -> '/')
+      let path = '/'
+      let want = '/'
+      let got = fern#internal#path#dirname(path)
+      Assert Equals(got, want)
+    End
+
+    It removes a last component of a {path} ('/usr/local' -> '/usr')
+      let path = '/usr/local'
+      let want = '/usr'
+      let got = fern#internal#path#dirname(path)
+      Assert Equals(got, want)
+    End
+
+    It removes trailing slashes prior to remove a last component of a {path} ('/usr/local/' -> '/usr')
+      let path = '/usr/local/'
+      let want = '/usr'
+      let got = fern#internal#path#dirname(path)
+      Assert Equals(got, want)
+
+      let path = '/usr/local//'
+      let want = '/usr'
+      let got = fern#internal#path#dirname(path)
+      Assert Equals(got, want)
     End
   End
 End
