@@ -129,12 +129,9 @@ function! s:norm_fragment(fri) abort
     return
   endif
   let frag = fern#internal#bufname#parse(a:fri.fragment)
-  let root = split(fern#fri#parse(a:fri.path).path, '/')
-  let root = fern#internal#path#simplify(root)
-  let reveal = split(fern#fri#parse(frag.path).path, '/')
-  let reveal = fern#internal#path#simplify(reveal)
-  let reveal = fern#internal#path#relative(reveal, root)
-  let a:fri.fragment = join(reveal, '/')
+  let root = fern#fri#parse(a:fri.path).path
+  let reveal = fern#fri#parse(frag.path).path
+  let a:fri.fragment = fern#internal#path#relative(reveal, root)
 endfunction
 
 function! s:wait(condition, ...) abort

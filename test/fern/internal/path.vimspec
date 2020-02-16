@@ -1,58 +1,62 @@
 Describe fern#internal#path
   Describe #simplify()
     It removes empty segment from path
-      let val = ['foo', 'bar', '', 'hoge']
-      let exp = ['foo', 'bar', 'hoge']
+      let val = '/foo/bar//hoge'
+      let exp = '/foo/bar/hoge'
       Assert Equals(fern#internal#path#simplify(val), exp)
     End
 
     It removes '.' from path
-      let val = ['foo', '.', 'bar', '.', 'hoge']
-      let exp = ['foo', 'bar', 'hoge']
+      let val = '/foo/./bar/./hoge'
+      let exp = '/foo/bar/hoge'
       Assert Equals(fern#internal#path#simplify(val), exp)
     End
 
     It removes '..' and corresponding terms from path
-      let val = ['foo', '..', 'bar', '..', 'hoge']
-      let exp = ['hoge']
+      let val = '/foo/../bar/../hoge'
+      let exp = '/hoge'
       Assert Equals(fern#internal#path#simplify(val), exp)
 
-      let val = ['foo', '..', 'bar', '..', '..', 'hoge']
-      let exp = ['..', 'hoge']
+      let val = 'foo/../bar/../../hoge'
+      let exp = '../hoge'
       Assert Equals(fern#internal#path#simplify(val), exp)
 
-      let val = ['foo', '..', '..', 'bar', '..', '..', 'hoge']
-      let exp = ['..', '..', 'hoge']
+      let val = 'foo/../../bar/../../hoge'
+      let exp = '../../hoge'
       Assert Equals(fern#internal#path#simplify(val), exp)
     End
   End
 
   Describe #commonpath()
     It returns a relative path from a given base
-      let path = ['foo', 'bar', 'hoge', 'a', 'b', 'c']
-      let base = ['foo', 'bar', 'hoge']
-      let exp = ['foo', 'bar', 'hoge']
+      let path = '/foo/bar/hoge/a/b/c'
+      let base = '/foo/bar/hoge'
+      let exp = '/foo/bar/hoge'
       Assert Equals(fern#internal#path#commonpath([path, base]), exp)
 
-      let path = ['foo', 'bar', 'hoge', 'a', 'b', 'c']
-      let base = ['foo1', 'bar2', 'hoge3']
-      let exp = []
+      let path = '/foo/bar/hoge/a/b/c'
+      let base = '/foo1/bar2/hoge3'
+      let exp = ''
       Assert Equals(fern#internal#path#commonpath([path, base]), exp)
+    End
+
+    It throws error when non absolute path has specified
+      Throws /must be absolute/ fern#internal#path#commonpath(['foo/bar'])
     End
   End
 
   Describe #relative()
     It returns a relative path from a given base
-      let path = ['foo', 'bar', 'hoge']
-      let base = ['foo']
-      let exp = ['bar', 'hoge']
+      let path = '/foo/bar/hoge'
+      let base = '/foo'
+      let exp = 'bar/hoge'
       Assert Equals(fern#internal#path#relative(path, base), exp)
     End
 
     It return a path contains '..' if no common prefix exists
-      let path = ['foo', 'bar', 'hoge']
-      let base = ['piyo', 'puyo']
-      let exp = ['..', '..', 'foo', 'bar', 'hoge']
+      let path = '/foo/bar/hoge'
+      let base = '/piyo/puyo'
+      let exp = '../../foo/bar/hoge'
       Assert Equals(fern#internal#path#relative(path, base), exp)
     End
   End
