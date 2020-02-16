@@ -4,7 +4,7 @@
 function! s:_SID() abort
   return matchstr(expand('<sfile>'), '<SNR>\zs\d\+\ze__SID$')
 endfunction
-execute join(['function! vital#_fern#Async#CancellationTokenSource#import() abort', printf("return map({'_vital_depends': '', '_vital_healthcheck': '', 'new': '', '_vital_loaded': ''}, \"vital#_fern#function('<SNR>%s_' . v:key)\")", s:_SID()), 'endfunction'], "\n")
+execute join(['function! vital#_fern#Async#CancellationTokenSource#import() abort', printf("return map({'_vital_depends': '', 'new': '', '_vital_loaded': ''}, \"vital#_fern#function('<SNR>%s_' . v:key)\")", s:_SID()), 'endfunction'], "\n")
 delfunction s:_SID
 " ___vital___
 function! s:_vital_depends() abort
@@ -14,14 +14,6 @@ endfunction
 function! s:_vital_loaded(V) abort
   let s:CancellationToken = a:V.import('Async.CancellationToken')
 endfunction
-
-function! s:_vital_healthcheck() abort
-  if (v:version >= 800 && !has('nvim')) || has('nvim-0.2.0')
-    return
-  endif
-  return 'This module requires Vim 8.0.0000 or Neovim 0.2.0'
-endfunction
-
 
 function! s:new(...) abort
   let source = {
