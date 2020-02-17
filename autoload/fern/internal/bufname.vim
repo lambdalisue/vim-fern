@@ -1,6 +1,7 @@
 let s:PATTERN = '^$~.*[]\'
 
-function! fern#internal#bufname#parse(bufname) abort
+function! fern#internal#bufname#parse(bufname, ...) abort
+  let cwd = a:0 ? a:1 : getcwd()
   let bufname = a:bufname[-1:] ==# '$'
         \ ? a:bufname[:-2]
         \ : a:bufname
@@ -10,7 +11,7 @@ function! fern#internal#bufname#parse(bufname) abort
   if bufname !~# '^[^\w]\+://'
     let bufname = fern#internal#path#absolute(
           \ fern#internal#filepath#to_slash(bufname),
-          \ fern#internal#filepath#to_slash(getcwd()),
+          \ fern#internal#filepath#to_slash(cwd),
           \)
     let bufname = fern#fri#format({
           \ 'scheme': 'file',

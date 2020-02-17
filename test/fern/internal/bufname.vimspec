@@ -189,6 +189,7 @@ Describe fern#internal#bufname
     Context FILE bufname (Unix)
       Before
         let g:fern#internal#filepath#is_windows = 0
+        let cwd = '/home/fern'
       End
 
       It returns FRI of fern://... from /
@@ -200,7 +201,7 @@ Describe fern#internal#bufname
               \ 'query': {},
               \ 'fragment': '',
               \}
-        Assert Equals(fern#internal#bufname#parse(expr), want)
+        Assert Equals(fern#internal#bufname#parse(expr, cwd), want)
       End
 
       It returns FRI of fern://... from /foo/bar
@@ -212,7 +213,7 @@ Describe fern#internal#bufname
               \ 'query': {},
               \ 'fragment': '',
               \}
-        Assert Equals(fern#internal#bufname#parse(expr), want)
+        Assert Equals(fern#internal#bufname#parse(expr, cwd), want)
       End
 
       It returns FRI of fern://... from /foo/bar?a&b=c
@@ -224,7 +225,7 @@ Describe fern#internal#bufname
               \ 'query': {},
               \ 'fragment': '',
               \}
-        Assert Equals(fern#internal#bufname#parse(expr), want)
+        Assert Equals(fern#internal#bufname#parse(expr, cwd), want)
       End
 
       It returns FRI of fern://... from /foo/bar;a&b=c
@@ -236,7 +237,7 @@ Describe fern#internal#bufname
               \ 'query': {},
               \ 'fragment': '',
               \}
-        Assert Equals(fern#internal#bufname#parse(expr), want)
+        Assert Equals(fern#internal#bufname#parse(expr, cwd), want)
       End
 
       It returns FRI of fern://... from /foo/bar#foo/bar/hoge
@@ -248,7 +249,7 @@ Describe fern#internal#bufname
               \ 'query': {},
               \ 'fragment': '',
               \}
-        Assert Equals(fern#internal#bufname#parse(expr), want)
+        Assert Equals(fern#internal#bufname#parse(expr, cwd), want)
       End
 
       It returns FRI of fern://... from /foo/bar?a&b=c#foo/bar/hoge
@@ -260,7 +261,7 @@ Describe fern#internal#bufname
               \ 'query': {},
               \ 'fragment': '',
               \}
-        Assert Equals(fern#internal#bufname#parse(expr), want)
+        Assert Equals(fern#internal#bufname#parse(expr, cwd), want)
       End
 
       It returns FRI of fern://... from /foo/bar;a&b=c#foo/bar/hoge
@@ -272,13 +273,14 @@ Describe fern#internal#bufname
               \ 'query': {},
               \ 'fragment': '',
               \}
-        Assert Equals(fern#internal#bufname#parse(expr), want)
+        Assert Equals(fern#internal#bufname#parse(expr, cwd), want)
       End
     End
 
     Context FILE bufname (Windows)
       Before
         let g:fern#internal#filepath#is_windows = 1
+        let cwd = 'C:\Users\fern'
       End
 
       It returns FRI of fern://... from C:\
@@ -290,7 +292,7 @@ Describe fern#internal#bufname
               \ 'query': {},
               \ 'fragment': '',
               \}
-        Assert Equals(fern#internal#bufname#parse(expr), want)
+        Assert Equals(fern#internal#bufname#parse(expr, cwd), want)
       End
 
       It returns FRI of fern://... from C:\foo\bar
@@ -302,7 +304,7 @@ Describe fern#internal#bufname
               \ 'query': {},
               \ 'fragment': '',
               \}
-        Assert Equals(fern#internal#bufname#parse(expr), want)
+        Assert Equals(fern#internal#bufname#parse(expr, cwd), want)
       End
 
       It returns FRI of fern://... from C:\foo\bar?a&b=c
@@ -314,7 +316,7 @@ Describe fern#internal#bufname
               \ 'query': {},
               \ 'fragment': '',
               \}
-        Assert Equals(fern#internal#bufname#parse(expr), want)
+        Assert Equals(fern#internal#bufname#parse(expr, cwd), want)
       End
 
       It returns FRI of fern://... from C:\foo\bar;a&b=c
@@ -326,7 +328,7 @@ Describe fern#internal#bufname
               \ 'query': {},
               \ 'fragment': '',
               \}
-        Assert Equals(fern#internal#bufname#parse(expr), want)
+        Assert Equals(fern#internal#bufname#parse(expr, cwd), want)
       End
 
       It returns FRI of fern://... from C:\foo\bar#foo\bar\hoge
@@ -338,7 +340,7 @@ Describe fern#internal#bufname
               \ 'query': {},
               \ 'fragment': '',
               \}
-        Assert Equals(fern#internal#bufname#parse(expr), want)
+        Assert Equals(fern#internal#bufname#parse(expr, cwd), want)
       End
 
       It returns FRI of fern://... from C:\foo\bar?a&b=c#foo\bar\hoge
@@ -350,7 +352,7 @@ Describe fern#internal#bufname
               \ 'query': {},
               \ 'fragment': '',
               \}
-        Assert Equals(fern#internal#bufname#parse(expr), want)
+        Assert Equals(fern#internal#bufname#parse(expr, cwd), want)
       End
 
       It returns FRI of fern://... from C:\foo\bar;a&b=c#foo\bar\hoge
@@ -362,7 +364,7 @@ Describe fern#internal#bufname
               \ 'query': {},
               \ 'fragment': '',
               \}
-        Assert Equals(fern#internal#bufname#parse(expr), want)
+        Assert Equals(fern#internal#bufname#parse(expr, cwd), want)
       End
     End
   End
