@@ -44,8 +44,8 @@ function! s:init() abort
     let fri.authority = sha256(localtime())[:7]
     let previous = bufname
     let bufname = fern#fri#format(fri)
-    execute printf('silent keepalt file %s$', fnameescape(bufname))
-    execute printf('bwipeout %s', previous)
+    execute printf('silent! keepalt file %s$', fnameescape(bufname))
+    execute printf('silent! bwipeout %s', previous)
   endif
 
   let resource_uri = fri.path
