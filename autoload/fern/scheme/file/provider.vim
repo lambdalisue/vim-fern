@@ -70,11 +70,14 @@ function! s:node(path) abort
   let status = isdirectory(a:path)
   let path = fern#internal#filepath#to_slash(a:path)
   let name = fern#internal#path#basename(path)
+  let bufname = status
+        \ ? printf('fern:///file://%s', path)
+        \ : a:path
   return {
         \ 'name': name,
         \ 'status': status,
         \ 'hidden': name[:0] ==# '.',
-        \ 'bufname': a:path,
+        \ 'bufname': bufname,
         \ '_path': a:path,
         \}
 endfunction
