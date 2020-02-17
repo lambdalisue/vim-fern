@@ -45,7 +45,7 @@ function! s:init() abort
     let previous = bufname
     let bufname = fern#fri#format(fri)
     execute printf('silent keepalt file %s$', fnameescape(bufname))
-    execute printf('bwipeout %s', fnameescape(previous))
+    execute printf('bwipeout %s', previous)
   endif
 
   let resource_uri = fri.path
