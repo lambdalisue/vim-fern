@@ -65,7 +65,7 @@ function! fern#internal#command#fern#command(mods, fargs) abort
           \ 'width': width,
           \ 'keep': keep,
           \})
-    let fri.fragment = expand(reveal)
+    let fri.fragment = fern#internal#filepath#to_slash(expand(reveal))
 
     " Normalize fragment if expr does not start from {scheme}://
     if expr !~# '^[^:]\+://'
@@ -128,9 +128,12 @@ function! s:norm_fragment(fri) abort
   if empty(a:fri.fragment)
     return
   endif
-  let frag = fern#internal#bufname#parse(a:fri.fragment)
-  let root = fern#fri#parse(a:fri.path).path
-  let reveal = fern#fri#parse(frag.path).path
+  " fragment is one of the following
+  " 1) An absolute path of fs (/ in Unix, \ in Windows)
+  " 2) A relative path of fs (/ in Unix, \ in Windows)
+  " 3) A relative path of URI (/ in all platform)
+  let root = '/' . fern#fri#parse(a:fri.path).path
+  let reveal = fern#internal#filepath#to_slash(a:fri.fragment)
   let a:fri.fragment = fern#internal#path#relative(reveal, root)
 endfunction
 
@@ -143,7 +146,7 @@ function! s:wait(condition, ...) abort
   let start = reltime()
   let expr = printf('sleep %dm', options.interval)
   let dead = options.timeout isnot# v:null
-        \ ? reltimefloat(start) + options.timeout / 1000
+        \ ? options.timeout / 1000
         \ : v:null
   while dead is# v:null || dead > reltimefloat(reltime(start))
     if a:condition()

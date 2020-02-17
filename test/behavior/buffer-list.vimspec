@@ -7,20 +7,29 @@ Describe buffer-list
     %bwipeout!
   End
 
-  It Fern buffer is not listed in 'ls'
+  It 'Fern debug:///' keeps 'ls' (visible buffer list)
     edit hello
-    Fern . -wait
+    Fern debug:/// -wait
     let output = split(execute('ls'), '\n')
     Assert Match(output[0], '^\s*\d\+\s\+\#\s\+"hello"\s\+line 1$')
     Assert Equals(len(output), 1)
   End
 
-  It Fern command keeps 'ls!' clean
+  It 'Fern debug:///' keeps 'ls!' (all buffer list)
     edit hello
-    Fern . -wait
+    Fern debug:/// -wait
     let output = split(execute('ls!'), '\n')
     Assert Match(output[0], '^\s*\d\+\s\+\#\s\+"hello"\s\+line 1$')
     Assert Match(output[1], '^\s*\d\+u%a-\s\+"fern://.*"\s\+line 1$')
+    Assert Equals(len(output), 2)
+  End
+
+  It 'Fern debug:/// -reveal=deep/alpha/beta' keeps 'ls!'
+    edit hello
+    Fern debug:/// -reveal=deep/alpha/beta -wait
+    let output = split(execute('ls!'), '\n')
+    Assert Match(output[0], '^\s*\d\+\s\+\#\s\+"hello"\s\+line 1$')
+    Assert Match(output[1], '^\s*\d\+u%a-\s\+"fern://.*"\s\+line \d\+$')
     Assert Equals(len(output), 2)
   End
 End
