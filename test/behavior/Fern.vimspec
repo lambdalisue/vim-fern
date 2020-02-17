@@ -1,0 +1,122 @@
+Describe Fern
+  Before all
+    let Join = function('fern#internal#filepath#join')
+    let workdir = tempname()
+    lockvar workdir
+    call mkdir(Join([workdir, 'deep', 'alpha', 'beta']), 'p')
+    call mkdir(Join([workdir, 'shallow', 'alpha']), 'p')
+    call mkdir(Join([workdir, 'shallow', 'beta']), 'p')
+    call writefile([], Join([workdir, 'deep', 'alpha', 'beta', 'gamma']))
+    call writefile([], Join([workdir, 'shallow', 'gamma']))
+    call writefile([], Join([workdir, 'leaf']))
+  End
+
+  After all
+    %bwipeout!
+    call delete(workdir, 'rf')
+  End
+
+  Before
+    %bwipeout!
+  End
+
+  Context debug scheme
+    It Fern debug:/// opens a fern buffer on a current window
+      Fern debug:/// -wait
+      Assert Equals(winnr('$'), 1)
+      Assert Equals(getline(1, '$'), [
+            \ '  root',
+            \ '  |+ deep',
+            \ '  |+ heavy',
+            \ '  |+ shallow',
+            \ '  |  leaf',
+            \])
+    End
+
+    It Fern debug:/// -reveal=deep/alpha/beta reveals to 'deep/alpha/beta'
+      Fern debug:/// -reveal=deep/alpha/beta -wait
+      Assert Equals(getline(1, '$'), [
+            \ '  root',
+            \ '  |- deep',
+            \ '   |- alpha',
+            \ '    |- beta',
+            \ '     |  gamma',
+            \ '  |+ heavy',
+            \ '  |+ shallow',
+            \ '  |  leaf',
+            \])
+    End
+
+    It Fern debug:/// -reveal=deep/alpha/zeta reveals to 'deep/alpha'
+      Fern debug:/// -reveal=deep/alpha/zeta -wait
+      Assert Equals(getline(1, '$'), [
+            \ '  root',
+            \ '  |- deep',
+            \ '   |- alpha',
+            \ '    |+ beta',
+            \ '  |+ heavy',
+            \ '  |+ shallow',
+            \ '  |  leaf',
+            \])
+    End
+  End
+
+  Context file scheme
+    It Fern {workdir} opens a fern buffer on a current window
+      execute printf('Fern %s -wait', fnameescape(workdir))
+      Assert Equals(winnr('$'), 1)
+      Assert Equals(getline(2, '$'), [
+            \ '  |+ deep',
+            \ '  |+ shallow',
+            \ '  |  leaf',
+            \])
+    End
+
+    It Fern {workdir} -reveal=deep/alpha/beta reveals to 'deep/alpha/beta'
+      execute printf('Fern %s -reveal=deep/alpha/beta -wait', fnameescape(workdir))
+      Assert Equals(winnr('$'), 1)
+      Assert Equals(getline(2, '$'), [
+            \ '  |- deep',
+            \ '   |- alpha',
+            \ '    |- beta',
+            \ '     |  gamma',
+            \ '  |+ shallow',
+            \ '  |  leaf',
+            \])
+    End
+
+    It Fern {workdir} -reveal={deep/alpha/beta} reveals to 'deep/alpha/beta'
+      execute printf(
+            \ 'Fern %s -reveal=%s -wait',
+            \ fnameescape(workdir),
+            \ fnameescape(Join(['deep', 'alpha', 'beta']))
+            \)
+      Assert Equals(winnr('$'), 1)
+      Assert Equals(getline(2, '$'), [
+            \ '  |- deep',
+            \ '   |- alpha',
+            \ '    |- beta',
+            \ '     |  gamma',
+            \ '  |+ shallow',
+            \ '  |  leaf',
+            \])
+    End
+
+    It Fern {workdir} -reveal={workdir/deep/alpha/beta} reveals to 'deep/alpha/beta'
+      execute printf(
+            \ 'Fern %s -reveal=%s -wait',
+            \ fnameescape(workdir),
+            \ fnameescape(Join([workdir, 'deep', 'alpha', 'beta']))
+            \)
+      Assert Equals(winnr('$'), 1)
+      Assert Equals(getline(2, '$'), [
+            \ '  |- deep',
+            \ '   |- alpha',
+            \ '    |- beta',
+            \ '     |  gamma',
+            \ '  |+ shallow',
+            \ '  |  leaf',
+            \])
+    End
+  End
+End
