@@ -143,7 +143,7 @@ function! s:wait(condition, ...) abort
   let start = reltime()
   let expr = printf('sleep %dm', options.interval)
   let dead = options.timeout isnot# v:null
-        \ ? reltimefloat(start) + options.timeout / 1000
+        \ ? options.timeout / 1000
         \ : v:null
   while dead is# v:null || dead > reltimefloat(reltime(start))
     if a:condition()
