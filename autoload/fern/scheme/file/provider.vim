@@ -17,7 +17,7 @@ endfunction
 
 function! s:provider_get_root(uri) abort
   let fri = fern#fri#parse(a:uri)
-  let path = fern#scheme#file#fri#from_fri(fri)
+  let path = fern#internal#filepath#from_slash('/' . fri.path)
   return s:node(path)
 endfunction
 
