@@ -1,0 +1,378 @@
+Describe fern#internal#filepath
+  Before all
+    let fern_internal_filepath_is_windows = g:fern#internal#filepath#is_windows
+  End
+
+  After all
+    let g:fern#internal#filepath#is_windows = fern_internal_filepath_is_windows
+  End
+
+  Context Unix
+    Before
+      let g:fern#internal#filepath#is_windows = 0
+    End
+
+    Describe #to_slash()
+      It returns an absolute path ('/usr/local' -> '/usr/local')
+        let path = '/usr/local'
+        let want = '/usr/local'
+        let got = fern#internal#filepath#to_slash(path)
+        Assert Equals(got, want)
+      End
+
+      It returns a relative path ('usr/local' -> 'usr/local')
+        let path = 'usr/local'
+        let want = 'usr/local'
+        let got = fern#internal#filepath#to_slash(path)
+        Assert Equals(got, want)
+      End
+
+      It removes duplicate slashes ('/usr//local' -> '/usr/local')
+        let path = '/usr//local'
+        let want = '/usr/local'
+        let got = fern#internal#filepath#to_slash(path)
+        Assert Equals(got, want)
+
+        let path = '/usr///local'
+        let want = '/usr/local'
+        let got = fern#internal#filepath#to_slash(path)
+        Assert Equals(got, want)
+      End
+
+      It removes trailing slashes ('/usr/local/' -> '/usr/local')
+        let path = '/usr/local/'
+        let want = '/usr/local'
+        let got = fern#internal#filepath#to_slash(path)
+        Assert Equals(got, want)
+
+        let path = '/usr/local//'
+        let want = '/usr/local'
+        let got = fern#internal#filepath#to_slash(path)
+        Assert Equals(got, want)
+      End
+
+      It does not remove a root slash ('/' -> '/')
+        let path = '/'
+        let want = '/'
+        let got = fern#internal#filepath#to_slash(path)
+        Assert Equals(got, want)
+      End
+
+      It return a root for an empty string ('' -> '/')
+        let path = ''
+        let want = '/'
+        let got = fern#internal#filepath#to_slash(path)
+        Assert Equals(got, want)
+      End
+    End
+
+    Describe #from_slash()
+      It returns an absolute path ('/usr/local' -> '/usr/local')
+        let path = '/usr/local'
+        let want = '/usr/local'
+        let got = fern#internal#filepath#from_slash(path)
+        Assert Equals(got, want)
+      End
+
+      It returns a relative path ('usr/local' -> 'usr/local')
+        let path = 'usr/local'
+        let want = 'usr/local'
+        let got = fern#internal#filepath#from_slash(path)
+        Assert Equals(got, want)
+      End
+
+      It removes duplicate slashes ('/usr//local' -> '/usr/local')
+        let path = '/usr//local'
+        let want = '/usr/local'
+        let got = fern#internal#filepath#from_slash(path)
+        Assert Equals(got, want)
+
+        let path = '/usr///local'
+        let want = '/usr/local'
+        let got = fern#internal#filepath#from_slash(path)
+        Assert Equals(got, want)
+      End
+
+      It removes trailing slashes ('/usr/local/' -> '/usr/local')
+        let path = '/usr/local/'
+        let want = '/usr/local'
+        let got = fern#internal#filepath#from_slash(path)
+        Assert Equals(got, want)
+
+        let path = '/usr/local//'
+        let want = '/usr/local'
+        let got = fern#internal#filepath#from_slash(path)
+        Assert Equals(got, want)
+      End
+
+      It does not remove a root slash ('/' -> '/')
+        let path = '/'
+        let want = '/'
+        let got = fern#internal#filepath#from_slash(path)
+        Assert Equals(got, want)
+      End
+
+      It return a root for an empty string ('' -> '/')
+        let path = ''
+        let want = '/'
+        let got = fern#internal#filepath#from_slash(path)
+        Assert Equals(got, want)
+      End
+    End
+
+    Describe #is_root()
+      It returns 1 for '/'
+        let path = '/'
+        Assert True(fern#internal#filepath#is_root(path))
+      End
+
+      It returns 0 for ''
+        let path = ''
+        Assert False(fern#internal#filepath#is_root(path))
+      End
+
+      It returns 0 for '/usr/local'
+        let path = '/usr/local'
+        Assert False(fern#internal#filepath#is_root(path))
+      End
+    End
+
+    Describe #is_drive_root()
+      It returns 1 for '/'
+        let path = '/'
+        Assert True(fern#internal#filepath#is_drive_root(path))
+      End
+
+      It returns 0 for ''
+        let path = ''
+        Assert False(fern#internal#filepath#is_drive_root(path))
+      End
+
+      It returns 0 for '/usr/local'
+        let path = '/usr/local'
+        Assert False(fern#internal#filepath#is_drive_root(path))
+      End
+    End
+
+    Describe #is_absolute()
+      It returns 1 for '/usr/local'
+        Assert True(fern#internal#filepath#is_absolute('/usr/local'))
+      End
+
+      It returns 1 for '/'
+        Assert True(fern#internal#filepath#is_absolute('/'))
+      End
+
+      It returns 1 for '' (to keep behavior consistency to Windows)
+        Assert True(fern#internal#filepath#is_absolute(''))
+      End
+
+      It returns 0 for 'usr/local'
+        Assert False(fern#internal#filepath#is_absolute('usr/local'))
+      End
+
+      It returns 0 for 'usr'
+        Assert False(fern#internal#filepath#is_absolute('usr'))
+      End
+    End
+
+    Describe #join()
+      It returns a joined path
+        let paths = [
+              \ '/usr/local',
+              \ 'bin',
+              \]
+        let want = '/usr/local/bin'
+        let got = fern#internal#filepath#join(paths)
+        Assert Equals(got, want)
+      End
+    End
+  End
+
+  Context Windows
+    Before
+      let g:fern#internal#filepath#is_windows = 1
+    End
+
+    Describe #to_slash()
+      It returns a slash separated absolute path ('C:\Windows\System32' -> '/C:/Windows/System32')
+        let path = 'C:\Windows\System32'
+        let want = '/C:/Windows/System32'
+        let got = fern#internal#filepath#to_slash(path)
+        Assert Equals(got, want)
+      End
+
+      It returns a slash separated relative path ('Windows\System32' for 'Windows/System32')
+        let path = 'Windows\System32'
+        let want = 'Windows/System32'
+        let got = fern#internal#filepath#to_slash(path)
+        Assert Equals(got, want)
+      End
+
+      It removes duplicate baskslashes ('C:\Windows\\System32' -> '/C:/Windows/System32')
+        let path = 'C:\Windows\\System32'
+        let want = '/C:/Windows/System32'
+        let got = fern#internal#filepath#to_slash(path)
+        Assert Equals(got, want)
+
+        let path = 'C:\Windows\\\System32'
+        let want = '/C:/Windows/System32'
+        let got = fern#internal#filepath#to_slash(path)
+        Assert Equals(got, want)
+      End
+
+      It removes trailing baskslashes ('C:\Windows\System32\' -> '/C:/Windows/System32')
+        let path = 'C:\Windows\System32\'
+        let want = '/C:/Windows/System32'
+        let got = fern#internal#filepath#to_slash(path)
+        Assert Equals(got, want)
+
+        let path = 'C:\Windows\System32\\'
+        let want = '/C:/Windows/System32'
+        let got = fern#internal#filepath#to_slash(path)
+        Assert Equals(got, want)
+      End
+
+      It removes a backslash of a drive root ('C:\' -> '/C:')
+        let path = 'C:\'
+        let want = '/C:'
+        let got = fern#internal#filepath#to_slash(path)
+        Assert Equals(got, want)
+
+        let path = ''
+        let want = '/'
+        let got = fern#internal#filepath#to_slash(path)
+        Assert Equals(got, want)
+      End
+
+      It returns a root for an empty string ('' -> '/')
+        let path = ''
+        let want = '/'
+        let got = fern#internal#filepath#to_slash(path)
+        Assert Equals(got, want)
+      End
+    End
+
+    Describe #from_slash()
+      It returns a baskslash separated absolute path ('/C:/Windows/System32' -> 'C:\Windows\System32')
+        let path = '/C:/Windows/System32'
+        let want = 'C:\Windows\System32'
+        let got = fern#internal#filepath#from_slash(path)
+        Assert Equals(got, want)
+      End
+
+      It returns a backslash separated relative path ('Windows/System32' -> 'Windows\System32')
+        let path = 'Windows/System32'
+        let want = 'Windows\System32'
+        let got = fern#internal#filepath#from_slash(path)
+        Assert Equals(got, want)
+      End
+
+      It removes duplicate slashes ('/C:/Windows//System32' -> 'C:\Windows\System32')
+        let path = '/C:/Windows//System32'
+        let want = 'C:\Windows\System32'
+        let got = fern#internal#filepath#from_slash(path)
+        Assert Equals(got, want)
+
+        let path = '/C:/Windows///System32'
+        let want = 'C:\Windows\System32'
+        let got = fern#internal#filepath#from_slash(path)
+        Assert Equals(got, want)
+      End
+
+      It removes trailing baskslashes ('/C:/Windows/System32/' -> 'C:\Windows\System32')
+        let path = '/C:/Windows/System32/'
+        let want = 'C:\Windows\System32'
+        let got = fern#internal#filepath#from_slash(path)
+        Assert Equals(got, want)
+
+        let path = '/C:/Windows/System32//'
+        let want = 'C:\Windows\System32'
+        let got = fern#internal#filepath#from_slash(path)
+        Assert Equals(got, want)
+      End
+
+      It does not remove a trailing baskslash of a drive root ('/C:/' -> 'C:\')
+        let path = '/C:/'
+        let want = 'C:\'
+        let got = fern#internal#filepath#from_slash(path)
+        Assert Equals(got, want)
+
+        let path = '/C:'
+        let want = 'C:\'
+        let got = fern#internal#filepath#from_slash(path)
+        Assert Equals(got, want)
+      End
+
+      It returns an empty string for a root ('/' -> '')
+        let path = '/'
+        let want = ''
+        let got = fern#internal#filepath#from_slash(path)
+        Assert Equals(got, want)
+      End
+    End
+
+    Describe #is_root()
+      It returns 1 for ''
+        let path = ''
+        Assert True(fern#internal#filepath#is_root(path))
+      End
+
+      It returns 0 for 'C:\Windows\System32'
+        let path = 'C:\Windows\System32'
+        Assert False(fern#internal#filepath#is_root(path))
+      End
+    End
+
+    Describe #is_drive_root()
+      It returns 1 for 'C:\'
+        let path = 'C:\'
+        Assert True(fern#internal#filepath#is_drive_root(path))
+      End
+
+      It returns 0 for ''
+        let path = ''
+        Assert False(fern#internal#filepath#is_drive_root(path))
+      End
+
+      It returns 0 for 'C:\Windows\System32'
+        let path = 'C:\Windows\System32'
+        Assert False(fern#internal#filepath#is_drive_root(path))
+      End
+    End
+
+    Describe #is_absolute()
+      It returns 1 for 'C:\Windows\System32'
+        Assert True(fern#internal#filepath#is_absolute('C:\Windows\System32'))
+      End
+
+      It returns 1 for 'C:\' (a drive root)
+        Assert True(fern#internal#filepath#is_absolute('C:\'))
+      End
+
+      It returns 1 for '' (a root)
+        Assert True(fern#internal#filepath#is_absolute(''))
+      End
+
+      It returns 0 for 'Windows\System32'
+        Assert False(fern#internal#filepath#is_absolute('Windows\System32'))
+      End
+
+      It returns 0 for 'Windows'
+        Assert False(fern#internal#filepath#is_absolute('Windows'))
+      End
+    End
+
+    Describe #join()
+      It returns a joined path
+        let paths = [
+              \ 'C:\Windows\System32',
+              \ 'Foo',
+              \]
+        let want = 'C:\Windows\System32\Foo'
+        let got = fern#internal#filepath#join(paths)
+        Assert Equals(got, want)
+      End
+    End
+  End
+End

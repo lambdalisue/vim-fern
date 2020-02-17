@@ -1,19 +1,30 @@
 let s:PATTERN = '^$~.*[]\'
 
-function! fern#internal#bufname#parse(bufname) abort
+function! fern#internal#bufname#parse(bufname, ...) abort
+  let cwd = a:0 ? a:1 : getcwd()
   let bufname = a:bufname[-1:] ==# '$'
         \ ? a:bufname[:-2]
         \ : a:bufname
   if bufname[:6] ==# 'fern://'
     return fern#fri#parse(bufname)
   endif
-  let expr = bufname =~# '^[^\w]\+://'
-        \ ? bufname
-        \ : fern#scheme#file#fri#to_fri(bufname)
+  if bufname !~# '^[^\w]\+://'
+    let bufname = fern#internal#path#absolute(
+          \ fern#internal#filepath#to_slash(bufname),
+          \ fern#internal#filepath#to_slash(cwd),
+          \)
+    let bufname = fern#fri#format({
+          \ 'scheme': 'file',
+          \ 'authority': '',
+          \ 'path': bufname[1:],
+          \ 'query': {},
+          \ 'fragment': '',
+          \})
+  endif
   let out = {
         \ 'scheme': 'fern',
         \ 'authority': '',
-        \ 'path': s:escape_uri(expr),
+        \ 'path': s:escape_uri(bufname),
         \ 'query': {},
         \ 'fragment': '',
         \}

@@ -3,9 +3,17 @@ let s:Lambda = vital#fern#import('Lambda')
 let s:AsyncLambda = vital#fern#import('Async.Lambda')
 let s:Promise = vital#fern#import('Async.Promise')
 let s:Process = vital#fern#import('Async.Promise.Process')
-let s:Path = vital#fern#import('System.Filepath')
 let s:CancellationToken = vital#fern#import('Async.CancellationToken')
 let s:is_windows = has('win32')
+let s:windows_drive_nodes = s:Promise.resolve([])
+let s:windows_drive_root = {
+      \ 'name': '',
+      \ 'label': 'Drives',
+      \ 'status': 1,
+      \ 'hidden': 0,
+      \ 'bufname': 'fern:///file:///',
+      \ '_path': '',
+      \}
 
 function! fern#scheme#file#provider#new() abort
   return {
@@ -17,16 +25,23 @@ endfunction
 
 function! s:provider_get_root(uri) abort
   let fri = fern#fri#parse(a:uri)
-  let path = fern#scheme#file#fri#from_fri(fri)
+  let path = fern#internal#filepath#from_slash('/' . fri.path)
+  if s:is_windows && path ==# ''
+    return s:windows_drive_root
+  endif
   return s:node(path)
 endfunction
 
 function! s:provider_get_parent(node, ...) abort
-  if s:Path.is_root_directory(a:node._path)
+  if fern#internal#filepath#is_root(a:node._path)
     return s:Promise.reject('no parent node exists for the root')
+  elseif s:is_windows && fern#internal#filepath#is_drive_root(a:node._path)
+    return s:Promise.resolve(s:windows_drive_root)
   endif
   try
-    let parent = fnamemodify(a:node._path, ':h')
+    let path = fern#internal#filepath#to_slash(a:node._path)
+    let parent = fern#internal#path#dirname(path)
+    let parent = fern#internal#filepath#from_slash(parent)
     return s:Promise.resolve(s:node(parent))
   catch
     return s:Promise.reject(v:exception)
@@ -34,6 +49,9 @@ function! s:provider_get_parent(node, ...) abort
 endfunction
 
 function! s:provider_get_children(node, ...) abort
+  if s:is_windows && a:node._path ==# ''
+    return s:windows_drive_nodes
+  endif
   let token = a:0 ? a:1 : s:CancellationToken.none
   if a:node.status is# 0
     return s:Promise.reject('no children exists for %s', a:node._path)
@@ -46,32 +64,22 @@ function! s:provider_get_children(node, ...) abort
 endfunction
 
 function! s:node(path) abort
-  let path = s:Path.abspath(a:path)
-  let path = s:Path.remove_last_separator(path)
-  let path = simplify(path)
-  if s:is_windows && path =~# '^\w:$'
-    let path .= '\'
+  if empty(getftype(a:path))
+    throw printf('no such file or directory exists: %s', a:path)
   endif
-  let path = empty(path) ? '/' : path
-  if empty(getftype(path))
-    throw printf('no such file or directory exists: %s', path)
-  endif
-  let name = fnamemodify(path, ':t')
-  let status = isdirectory(path)
+  let status = isdirectory(a:path)
+  let path = fern#internal#filepath#to_slash(a:path)
+  let name = fern#internal#path#basename(path)
+  let bufname = status
+        \ ? printf('fern:///file://%s', path)
+        \ : a:path
   return {
         \ 'name': name,
-        \ 'label': name ==# '' ? '/' : name,
         \ 'status': status,
         \ 'hidden': name[:0] ==# '.',
-        \ 'bufname': path,
-        \ '_path': path,
+        \ 'bufname': bufname,
+        \ '_path': a:path,
         \}
-endfunction
-
-function! s:to_file_uri(abspath) abort
-  let path = s:Path.to_slash(a:abspath)
-  let path = join(split(path, '/'), '/')
-  return printf('file:///%s', path)
 endfunction
 
 function! s:safe(fn) abort
@@ -82,114 +90,31 @@ function! s:safe(fn) abort
   endtry
 endfunction
 
-if !s:is_windows && executable('ls')
-  " NOTE:
-  " The -U option means different between Linux and FreeBSD.
-  " Linux   - do not sort; list entries in directory order
-  " FreeBSD - Use time when file was created for sorting or printing.
-  " But it improve performance in Linux and just noise in FreeBSD so
-  " the option is applied.
-  function! s:children_ls(path, token) abort
-    let Profile = fern#profile#start('fern#scheme#file#provider:children_ls')
-    return s:Process.start(['ls', '-1AU', a:path], { 'token': a:token })
-          \.then({ v -> v.stdout })
-          \.then(s:AsyncLambda.filter_f({ v -> !empty(v) }))
-          \.then(s:AsyncLambda.map_f({ v -> a:path . '/' . v }))
-          \.finally({ -> Profile() })
-  endfunction
-endif
-
-if !s:is_windows && executable('find')
-  function! s:children_find(path, token) abort
-    let Profile = fern#profile#start('fern#scheme#file#provider:children_find')
-    return s:Process.start(['find', a:path, '-follow', '-maxdepth', '1'], { 'token': a:token })
-          \.then({ v -> v.stdout })
-          \.then(s:AsyncLambda.filter_f({ v -> !empty(v) && v !=# a:path }))
-          \.finally({ -> Profile() })
-  endfunction
-endif
-
-if exists('*readdir')
-  function! s:children_vim_readdir(path, ...) abort
-    let Profile = fern#profile#start('fern#scheme#file#provider:children_vim_readdir')
-    let s = s:Path.separator()
-    return s:Promise.resolve(readdir(a:path))
-          \.then(s:AsyncLambda.map_f({ v -> a:path . s . v }))
-          \.finally({ -> Profile() })
-  endfunction
-endif
-
-function! s:children_vim_glob(path, ...) abort
-  let Profile = fern#profile#start('fern#scheme#file#provider:children_vim_glob')
-  let s = s:Path.separator()
-  let a = s:Promise.resolve(glob(a:path . s . '*', 1, 1, 1))
-  let b = s:Promise.resolve(glob(a:path . s . '.*', 1, 1, 1))
-        \.then(s:AsyncLambda.filter_f({ v -> v[-2:] !=# s . '.' && v[-3:] !=# s . '..' }))
-  return s:Promise.all([a, b])
-        \.then(s:AsyncLambda.reduce_f({ a, v -> a + v }, []))
-        \.finally({ -> Profile() })
-endfunction
-
 function! s:children(path, token) abort
-  return call(printf('s:children_%s', g:fern#scheme#file#provider#impl), [a:path, a:token])
+  return call(
+        \ printf('fern#scheme#file#util#list_entries_%s', g:fern#scheme#file#provider#impl),
+        \ [a:path, a:token],
+        \)
 endfunction
 
+if s:is_windows
+  let s:windows_drive_nodes = fern#scheme#file#util#list_drives(s:CancellationToken.none)
+          \.then(s:AsyncLambda.map_f({ v -> s:safe(funcref('s:node', [v . '\'])) }))
+          \.then(s:AsyncLambda.filter_f({ v -> !empty(v) }))
+endif
 
 " NOTE:
-" Performance 'find' > 'ls' >> 'vim_reddir' > 'vim_glob'
+" It is required while exists() does not invoke autoload
+runtime autoload/fern/scheme/file/util.vim
+
+" NOTE:
+" Performance 'find' > 'ls' >> 'reddir' > 'glob'
 call s:Config.config(expand('<sfile>:p'), {
-      \ 'impl': exists('*s:children_find')
+      \ 'impl': exists('*fern#scheme#file#util#list_entries_find')
       \   ? 'find'
-      \   : exists('*s:children_ls')
+      \   : exists('*fern#scheme#file#util#list_entries_ls')
       \     ? 'ls'
-      \     : exists('*s:children_vim_readdir')
-      \     ? 'vim_readdir'
-      \     : 'vim_glob',
+      \     : exists('*fern#scheme#file#util#list_entries_readdir')
+      \     ? 'readdir'
+      \     : 'glob',
       \})
-
-
-function! fern#scheme#file#provider#_benchmark() abort
-  let Path = vital#fern#import('System.Filepath')
-  redraw
-  echo 'Creating benchmark environment ...'
-  let t = tempname()
-  try
-    call mkdir(t, 'p')
-    call map(
-          \ range(100000),
-          \ { _, v -> writefile([], Path.join(t, v)) },
-          \)
-
-    let token = s:CancellationToken.none
-
-    if exists('*s:children_ls')
-      echo "Benchmarking 'ls' ..."
-      let s = reltime()
-      call s:children_ls(t, token)
-      echo reltimestr(reltime(s))
-    endif
-
-    if exists('*s:children_find')
-      echo "Benchmarking 'find' ..."
-      let s = reltime()
-      call s:children_find(t, token)
-      echo reltimestr(reltime(s))
-    endif
-
-    if exists('*s:children_vim_readdir')
-      echo "Benchmarking 'vim_readdir' ..."
-      let s = reltime()
-      call s:children_vim_readdir(t, token)
-      echo reltimestr(reltime(s))
-    endif
-
-    if exists('*s:children_vim_glob')
-      echo "Benchmarking 'vim_glob' ..."
-      let s = reltime()
-      call s:children_vim_glob(t, token)
-      echo reltimestr(reltime(s))
-    endif
-  finally
-    call delete(t, 'rf')
-  endtry
-endfunction

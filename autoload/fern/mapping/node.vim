@@ -1,5 +1,4 @@
 let s:Promise = vital#fern#import('Async.Promise')
-let s:Prompt = vital#fern#import('Prompt')
 
 function! fern#mapping#node#init(disable_default_mappings) abort
   nnoremap <buffer><silent> <Plug>(fern-action-debug)         :<C-u>call <SID>call('debug')<CR>

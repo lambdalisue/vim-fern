@@ -1,6 +1,5 @@
 let s:Promise = vital#fern#import('Async.Promise')
 let s:Prompt = vital#fern#import('Prompt')
-let s:Path = vital#fern#import('System.Filepath')
 
 function! fern#scheme#file#mapping#init(disable_default_mappings) abort
   call fern#scheme#file#mapping#cd#init(a:disable_default_mappings)
@@ -62,7 +61,9 @@ function! s:map_new_file(helper) abort
   endif
   let node = a:helper.sync.get_cursor_node()
   let node = node.status isnot# a:helper.STATUS_EXPANDED ? node.__owner : node
-  let path = s:Path.join(node._path, name)
+  let path = fern#internal#filepath#to_slash(node._path)
+  let path = join([path, name], '/')
+  let path = fern#internal#filepath#from_slash(path)
   let key = node.__key + [name]
   let token = a:helper.fern.source.token
   let previous = a:helper.sync.get_cursor_node()
@@ -80,7 +81,9 @@ function! s:map_new_dir(helper) abort
   endif
   let node = a:helper.sync.get_cursor_node()
   let node = node.status isnot# a:helper.STATUS_EXPANDED ? node.__owner : node
-  let path = s:Path.join(node._path, name)
+  let path = fern#internal#filepath#to_slash(node._path)
+  let path = join([path, name], '/')
+  let path = fern#internal#filepath#from_slash(path)
   let key = node.__key + [name]
   let token = a:helper.fern.source.token
   let previous = a:helper.sync.get_cursor_node()

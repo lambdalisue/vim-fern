@@ -1,5 +1,4 @@
 let s:Promise = vital#fern#import('Async.Promise')
-let s:Prompt = vital#fern#import('Prompt')
 let s:WindowCursor = vital#fern#import('Vim.Window.Cursor')
 
 function! fern#mapping#tree#init(disable_default_mappings) abort

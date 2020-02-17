@@ -1,4 +1,3 @@
-let s:Prompt = vital#fern#import('Prompt')
 let s:Promise = vital#fern#import('Async.Promise')
 
 function! fern#scheme#dict#provider#new(...) abort

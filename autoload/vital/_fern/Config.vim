@@ -4,7 +4,7 @@
 function! s:_SID() abort
   return matchstr(expand('<sfile>'), '<SNR>\zs\d\+\ze__SID$')
 endfunction
-execute join(['function! vital#_fern#Config#import() abort', printf("return map({'define': '', 'translate': '', '_vital_healthcheck': '', 'config': ''}, \"vital#_fern#function('<SNR>%s_' . v:key)\")", s:_SID()), 'endfunction'], "\n")
+execute join(['function! vital#_fern#Config#import() abort', printf("return map({'define': '', 'translate': '', 'config': ''}, \"vital#_fern#function('<SNR>%s_' . v:key)\")", s:_SID()), 'endfunction'], "\n")
 delfunction s:_SID
 " ___vital___
 let s:plugin_name = expand('<sfile>:p:h:t')
@@ -13,13 +13,6 @@ let s:plugin_name = s:plugin_name =~# '^__.\+__$'
       \ : s:plugin_name =~# '^_.\+$'
       \   ? s:plugin_name[1:]
       \   : s:plugin_name
-
-function! s:_vital_healthcheck() abort
-  if (!has('nvim') && v:version >= 800) || has('nvim-0.2.0')
-    return
-  endif
-  return 'This module requires Vim 8.0.0000 or Neovim 0.2.0'
-endfunction
 
 function! s:define(prefix, default) abort
   let prefix = a:prefix =~# '^g:' ? a:prefix : 'g:' . a:prefix

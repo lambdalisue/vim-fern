@@ -4,7 +4,7 @@
 function! s:_SID() abort
   return matchstr(expand('<sfile>'), '<SNR>\zs\d\+\ze__SID$')
 endfunction
-execute join(['function! vital#_fern#System#Job#import() abort', printf("return map({'_vital_depends': '', '_vital_healthcheck': '', 'is_available': '', 'start': '', '_vital_loaded': ''}, \"vital#_fern#function('<SNR>%s_' . v:key)\")", s:_SID()), 'endfunction'], "\n")
+execute join(['function! vital#_fern#System#Job#import() abort', printf("return map({'_vital_depends': '', 'is_available': '', 'start': '', '_vital_loaded': ''}, \"vital#_fern#function('<SNR>%s_' . v:key)\")", s:_SID()), 'endfunction'], "\n")
 delfunction s:_SID
 " ___vital___
 let s:t_string = type('')
@@ -24,14 +24,6 @@ function! s:_vital_depends() abort
         \ 'System.Job.Neovim',
         \]
 endfunction
-
-function! s:_vital_healthcheck() abort
-  if has('patch-8.0.0027') || has('nvim-0.2.0')
-    return
-  endif
-  return 'This module requires Vim 8.0.0027 or Neovim 0.2.0'
-endfunction
-
 
 " Note:
 " Vim does not raise E902 on Unix system even the prog is not found so use a

@@ -1,5 +1,3 @@
-let s:Prompt = vital#fern#import('Prompt')
-
 function! fern#mapping#filter#init(disable_default_mappings) abort
   nnoremap <buffer><silent> <Plug>(fern-action-hidden-set)    :<C-u>call <SID>call('hidden_set')<CR>
   nnoremap <buffer><silent> <Plug>(fern-action-hidden-unset)  :<C-u>call <SID>call('hidden_unset')<CR>
