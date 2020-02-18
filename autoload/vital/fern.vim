@@ -186,12 +186,7 @@ function! s:_format_throwpoint(throwpoint) abort
 endfunction
 
 function! s:_get_file_by_func_name(name) abort
-  try
-    redir => body
-    silent execute 'verbose function' a:name
-  finally
-    redir END
-  endtry
+  let body = execute(printf('verbose function %s', a:name))
   let lines = split(body, "\n")
   let signature = matchstr(lines[0], '^\s*\zs.*')
   let file = matchstr(lines[1], '^\t\%(Last set from\|.\{-}:\)\s*\zs.*$')
@@ -265,7 +260,7 @@ function! s:_sid(path, filter_pattern) abort
   if has_key(s:cache_sid, unified_path)
     return s:cache_sid[unified_path]
   endif
-  for line in filter(split(s:_execute(':scriptnames'), "\n"), 'v:val =~# a:filter_pattern')
+  for line in filter(split(execute(':scriptnames'), "\n"), 'v:val =~# a:filter_pattern')
     let [_, sid, path; __] = matchlist(line, '^\s*\(\d\+\):\s\+\(.\+\)\s*$')
     if s:_unify_path(path) is# unified_path
       let s:cache_sid[unified_path] = sid
@@ -273,21 +268,6 @@ function! s:_sid(path, filter_pattern) abort
     endif
   endfor
   return 0
-endfunction
-
-" We want to use an execute() builtin function instead of s:_execute(),
-" however there is a bug in execute().
-" execute() returns empty string when it is called in
-" completion function of user defined ex command.
-" https://github.com/vim-jp/issues/issues/1129
-function! s:_execute(cmd) abort
-  let [save_verbose, save_verbosefile] = [&verbose, &verbosefile]
-  set verbose=0 verbosefile=
-  redir => res
-    silent! execute a:cmd
-  redir END
-  let [&verbose, &verbosefile] = [save_verbose, save_verbosefile]
-  return res
 endfunction
 
 if filereadable(expand('<sfile>:r') . '.VIM') " is case-insensitive or not
@@ -314,7 +294,7 @@ endif
 " copied and modified from Vim.ScriptLocal
 let s:SNR = join(map(range(len("\<SNR>")), '"[\\x" . printf("%0x", char2nr("\<SNR>"[v:val])) . "]"'), '')
 function! s:sid2sfuncs(sid) abort
-  let fs = split(s:_execute(printf(':function /^%s%s_', s:SNR, a:sid)), "\n")
+  let fs = split(execute(printf(':function /^%s%s_', s:SNR, a:sid)), "\n")
   let r = {}
   let pattern = printf('\m^function\s<SNR>%d_\zs\w\{-}\ze(', a:sid)
   for fname in map(fs, 'matchstr(v:val, pattern)')
