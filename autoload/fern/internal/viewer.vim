@@ -7,9 +7,6 @@ function! fern#internal#viewer#open(fri, options) abort
 endfunction
 
 function! fern#internal#viewer#init() abort
-  if exists('b:fern') && !get(g:, 'fern_debug')
-    return s:Promise.resolve()
-  endif
   let bufnr = bufnr('%')
   return s:init()
         \.then({ -> s:notify(bufnr, v:null) })
