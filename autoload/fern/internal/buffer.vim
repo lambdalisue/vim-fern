@@ -26,7 +26,7 @@ function! fern#internal#buffer#open(bufname, ...) abort
   if options.opener ==# 'select'
     let options.opener = 'edit'
     if fern#internal#window#select()
-      return
+      return 1
     endif
   else
     if options.locator

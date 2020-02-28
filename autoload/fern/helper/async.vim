@@ -198,8 +198,23 @@ function! s:async_enter_tree(node) abort dict
   if a:node.status is# helper.STATUS_NONE
     return s:Promise.reject()
   endif
+  let saved = {
+        \ 'hidden': fern.hidden,
+        \ 'include': fern.include,
+        \ 'exclude': fern.exclude,
+        \}
   return s:Promise.resolve(a:node)
         \.then({ n -> s:enter(fern, n) })
+        \.then({ bufnr -> fern#helper#new(bufnr) })
+        \.then({ helper -> s:async_enter_tree_post(helper, saved) })
+endfunction
+function! s:async_enter_tree_post(helper, saved) abort
+  let fern = a:helper.fern
+  let fern.hidden = a:saved.hidden
+  let fern.include = a:saved.include
+  let fern.exclude = a:saved.exclude
+  return a:helper.async.update_nodes(fern.nodes)
+        \.then({ -> a:helper.async.redraw() })
 endfunction
 let s:async.enter_tree = funcref('s:async_enter_tree')
 
@@ -207,6 +222,12 @@ function! s:async_leave_tree() abort dict
   let helper = self.helper
   let fern = helper.fern
   let root = helper.sync.get_root_node()
+  let saved = {
+        \ 'name': root.name,
+        \ 'hidden': fern.hidden,
+        \ 'include': fern.include,
+        \ 'exclude': fern.exclude,
+        \}
   return s:Promise.resolve()
         \.then({ -> fern#internal#node#parent(
         \   root,
@@ -215,8 +236,17 @@ function! s:async_leave_tree() abort dict
         \ )
         \})
         \.then({ n -> s:enter(fern, n) })
-        \.then({ -> fern#helper#new(winbufnr(helper.winid)) })
-        \.then({ h -> h.sync.focus_node([root.name]) })
+        \.then({ bufnr -> fern#helper#new(bufnr) })
+        \.then({ helper -> s:async_leave_tree_post(helper, saved) })
+endfunction
+function! s:async_leave_tree_post(helper, saved) abort
+  let fern = a:helper.fern
+  let fern.hidden = a:saved.hidden
+  let fern.include = a:saved.include
+  let fern.exclude = a:saved.exclude
+  return a:helper.async.update_nodes(fern.nodes)
+        \.then({ -> a:helper.async.redraw() })
+        \.then({ -> a:helper.sync.focus_node([a:saved.name]) })
 endfunction
 let s:async.leave_tree = funcref('s:async_leave_tree')
 
