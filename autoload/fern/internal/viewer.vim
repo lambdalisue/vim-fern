@@ -14,7 +14,10 @@ function! fern#internal#viewer#init() abort
 endfunction
 
 function! s:open(bufname, options, resolve, reject) abort
-  call fern#internal#buffer#open(a:bufname . '$', a:options)
+  if fern#internal#buffer#open(a:bufname . '$', a:options)
+    call a:reject('Cancelled')
+    return
+  endif
   let b:fern_notifier = {
         \ 'resolve': a:resolve,
         \ 'reject': a:reject,
