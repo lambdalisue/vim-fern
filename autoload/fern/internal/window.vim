@@ -90,10 +90,10 @@ endfunction
 
 function! s:cnoremap_all(chars) abort
   for nr in range(256)
-    execute printf("silent! cnoremap \<buffer>\<silent> \<Char-%d> \<Nop>", nr)
+    silent! execute printf("cnoremap \<buffer>\<silent> \<Char-%d> \<Nop>", nr)
   endfor
   for char in a:chars
-    execute printf("silent! cnoremap \<buffer>\<silent> %s %s\<CR>", char, char)
+    silent! execute printf("cnoremap \<buffer>\<silent> %s %s\<CR>", char, char)
   endfor
   silent! cunmap <buffer> <Return>
   silent! cunmap <buffer> <Esc>
@@ -101,7 +101,7 @@ endfunction
 
 function! s:cunmap_all() abort
   for nr in range(256)
-    execute printf("silent! cunmap \<buffer> \<Char-%d>", nr)
+    silent! execute printf("cunmap \<buffer> \<Char-%d>", nr)
   endfor
 endfunction
 
