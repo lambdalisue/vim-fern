@@ -1,7 +1,7 @@
-if exists('g:fern#loaded')
+if exists('g:fern_loaded')
   finish
 endif
-let g:fern#loaded = 1
+let g:fern_loaded = 1
 
 command! -bar -nargs=*
       \ -complete=customlist,fern#internal#command#fern#complete
