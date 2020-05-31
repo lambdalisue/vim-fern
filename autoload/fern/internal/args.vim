@@ -1,3 +1,15 @@
+function! fern#internal#args#split(cmd) abort
+  let sq = '''\zs[^'']\+\ze'''
+  let dq = '"\zs[^"]\+\ze"'
+  let bs = '\%(\\\s\|[^ ''"]\)\+'
+  let pp = printf(
+        \ '\%%(%s\)*\zs\%%(\s\+\|$\)\ze',
+        \ join([sq, dq, bs], '\|')
+        \)
+  let np = '^\%("\zs.*\ze"\|''\zs.*\ze''\|.*\)$'
+  return map(split(a:cmd, pp), { -> matchstr(v:val, np) })
+endfunction
+
 function! fern#internal#args#index(args, pattern) abort
   for index in range(len(a:args))
     if a:args[index] =~# a:pattern
