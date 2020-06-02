@@ -41,6 +41,7 @@ function! s:map_rename(helper, opener) abort
   let options = {
         \ 'opener': a:opener,
         \ 'cursor': [1, len(root._path) + 1],
+        \ 'is_drawer': a:helper.sync.is_drawer(),
         \}
   let ns = {}
   return fern#internal#renamer#rename(Factory, options)
