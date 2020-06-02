@@ -4,6 +4,7 @@ function! fern#internal#renamer#rename(factory, ...) abort
   let options = extend({
         \ 'bufname': printf('fern-renamer:%s', sha256(localtime()))[:7],
         \ 'opener': 'vsplit',
+        \ 'cursor': [1, 1],
         \}, a:0 ? a:1 : {},
         \)
   return s:Promise.new(funcref('s:executor', [a:factory, options]))
@@ -47,6 +48,7 @@ function! s:executor(factory, options, resolve, reject) abort
   imap <buffer> <C-m> <Plug>(fern-renamer-warn)
   imap <buffer> <Return> <Plug>(fern-renamer-warn)
   edit
+  call cursor(a:options.cursor)
 endfunction
 
 function! s:map_warn() abort
