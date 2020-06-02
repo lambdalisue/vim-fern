@@ -38,8 +38,13 @@ endfunction
 function! s:map_rename(helper, opener) abort
   let root = a:helper.sync.get_root_node()
   let Factory = { -> map(copy(a:helper.sync.get_selected_nodes()), { _, n -> n._path }) }
+  let options = {
+        \ 'opener': a:opener,
+        \ 'cursor': [1, len(root._path) + 1],
+        \ 'is_drawer': a:helper.sync.is_drawer(),
+        \}
   let ns = {}
-  return fern#internal#renamer#rename(Factory, { 'opener': a:opener })
+  return fern#internal#renamer#rename(Factory, options)
         \.then({ r -> s:_map_rename(a:helper, r) })
         \.then({ n -> s:Lambda.let(ns, 'n', n) })
         \.then({ -> a:helper.async.reload_node(root.__key) })
