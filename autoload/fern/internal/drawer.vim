@@ -27,6 +27,7 @@ function! fern#internal#drawer#init() abort
     autocmd BufEnter <buffer> call s:auto_quit()
     autocmd BufEnter <buffer> call s:auto_resize()
     autocmd BufLeave <buffer> call s:auto_resize()
+    autocmd BufEnter <buffer> call s:auto_winfixwidth()
   augroup END
 endfunction
 
@@ -45,6 +46,10 @@ function! s:focus_next() abort
   endif
   noautocmd call win_gotoid(win_getid(winnr))
   return 1
+endfunction
+
+function! s:auto_winfixwidth() abort
+  setlocal winfixwidth
 endfunction
 
 function! s:auto_resize() abort
