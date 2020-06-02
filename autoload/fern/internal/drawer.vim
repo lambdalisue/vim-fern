@@ -20,14 +20,16 @@ function! fern#internal#drawer#init() abort
     return
   endif
 
-  setlocal winfixwidth
-
   augroup fern_drawer_internal
     autocmd! * <buffer>
     autocmd BufEnter <buffer> call s:auto_quit()
-    autocmd BufEnter <buffer> call s:auto_resize()
-    autocmd BufLeave <buffer> call s:auto_resize()
+    autocmd BufEnter <buffer> call s:auto_resize(v:false)
+    autocmd BufLeave <buffer> call s:auto_resize(v:false)
+    autocmd BufEnter <buffer> call s:auto_winfixwidth(v:false)
   augroup END
+
+  call s:auto_resize(v:true)
+  call s:auto_winfixwidth(v:true)
 endfunction
 
 function! fern#internal#drawer#is_drawer(...) abort
@@ -47,13 +49,26 @@ function! s:focus_next() abort
   return 1
 endfunction
 
-function! s:auto_resize() abort
+function! s:auto_winfixwidth(force) abort
+  if !a:force && g:fern#disable_drawer_auto_winfixwidth
+    return
+  endif
+  setlocal winfixwidth
+endfunction
+
+function! s:auto_resize(force) abort
+  if !a:force && g:fern#disable_drawer_auto_resize
+    return
+  endif
   let fri = fern#internal#bufname#parse(bufname('%'))
   let width = str2nr(get(fri.query, 'width', string(g:fern#drawer_width)))
   execute 'vertical resize' width
 endfunction
 
 function! s:auto_quit() abort
+  if g:fern#disable_drawer_auto_quit
+    return
+  endif
   let fri = fern#internal#bufname#parse(bufname('%'))
   let keep = get(fri.query, 'keep', g:fern#drawer_keep)
   let width = str2nr(get(fri.query, 'width', string(g:fern#drawer_width)))
