@@ -25,9 +25,6 @@ INTRODUCTION					*fern-develop-introduction*
 
 This is documentation for |fern.vim| developer.
 
-WARNING:
-fern.vim is in beta stage and anything will be changed without annoucement.
-
 
 =============================================================================
 FRI						*fern-develop-fri*

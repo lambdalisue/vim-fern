@@ -14,8 +14,6 @@
 
 General purpose asynchronous tree viewer written in Pure Vim script.
 
-**WARNING: This project is in beta stage. Any changes are applied without announcements.**
-
 <p align="center">
 <img src="https://user-images.githubusercontent.com/546312/73183241-d89aa980-415d-11ea-876f-30bd4d80f0cd.png">
 <small><strong>Split windows</strong></small>
