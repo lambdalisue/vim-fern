@@ -37,7 +37,8 @@ endfunction
 
 function! s:map_rename(helper, opener) abort
   let root = a:helper.sync.get_root_node()
-  let Factory = { -> map(copy(a:helper.sync.get_selected_nodes()), { _, n -> n._path }) }
+  let nodes = a:helper.sync.get_selected_nodes()
+  let Factory = { -> map(copy(nodes), { -> v:val._path }) }
   let options = {
         \ 'opener': a:opener,
         \ 'cursor': [1, len(root._path) + 1],
@@ -47,6 +48,7 @@ function! s:map_rename(helper, opener) abort
   return fern#internal#renamer#rename(Factory, options)
         \.then({ r -> s:_map_rename(a:helper, r) })
         \.then({ n -> s:Lambda.let(ns, 'n', n) })
+        \.then({ -> s:collapse_nodes(a:helper, nodes) })
         \.then({ -> a:helper.async.reload_node(root.__key) })
         \.then({ -> a:helper.async.redraw() })
         \.then({ -> a:helper.sync.echo(printf('%d items are renamed', ns.n)) })
@@ -67,4 +69,11 @@ function! s:_map_rename(helper, result) abort
   endfor
   return s:Promise.all(ps)
         \.then({ -> len(ps) })
+endfunction
+
+function! s:collapse_nodes(helper, nodes) abort
+  return s:Promise.all(map(
+        \ copy(a:nodes),
+        \ { -> a:helper.async.collapse_node(v:val.__key) },
+        \))
 endfunction
