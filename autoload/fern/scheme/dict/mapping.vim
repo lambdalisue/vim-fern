@@ -108,7 +108,7 @@ function! s:map_copy(helper) abort
 
   let root = a:helper.sync.get_root_node()
   return s:Promise.resolve()
-        \.then({ -> s:collapse_nodes(a:helper, nodes) })
+        \.then({ -> a:helper.async.collapse_modified_nodes(nodes) })
         \.then({ -> a:helper.async.reload_node(root.__key) })
         \.then({ -> a:helper.async.redraw() })
         \.then({ -> a:helper.sync.echo(printf('%d items are copied', processed)) })
@@ -137,7 +137,7 @@ function! s:map_move(helper) abort
 
   let root = a:helper.sync.get_root_node()
   return s:Promise.resolve()
-        \.then({ -> s:collapse_nodes(a:helper, nodes) })
+        \.then({ -> a:helper.async.collapse_modified_nodes(nodes) })
         \.then({ -> a:helper.async.reload_node(root.__key) })
         \.then({ -> a:helper.async.redraw() })
         \.then({ -> a:helper.sync.echo(printf('%d items are moved', processed)) })
@@ -170,7 +170,7 @@ function! s:map_remove(helper) abort
   call provider._update_tree(tree)
   let root = a:helper.sync.get_root_node()
   return s:Promise.resolve()
-        \.then({ -> s:collapse_nodes(a:helper, nodes) })
+        \.then({ -> a:helper.async.collapse_modified_nodes(nodes) })
         \.then({ -> a:helper.async.reload_node(root.__key) })
         \.then({ -> a:helper.async.redraw() })
         \.then({ -> a:helper.sync.echo(printf('%d items are removed', len(nodes))) })
@@ -203,11 +203,4 @@ function! s:map_edit_leaf(helper) abort
   return s:Promise.resolve()
         \.then({ -> a:helper.async.reload_node(root.__key) })
         \.then({ -> a:helper.async.redraw() })
-endfunction
-
-function! s:collapse_nodes(helper, nodes) abort
-  return s:Promise.all(map(
-        \ copy(a:nodes),
-        \ { -> a:helper.async.collapse_node(v:val.__key) },
-        \))
 endfunction

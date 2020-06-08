@@ -48,7 +48,7 @@ function! s:map_rename(helper, opener) abort
   return fern#internal#renamer#rename(Factory, options)
         \.then({ r -> s:_map_rename(a:helper, r) })
         \.then({ n -> s:Lambda.let(ns, 'n', n) })
-        \.then({ -> s:collapse_nodes(a:helper, nodes) })
+        \.then({ -> a:helper.async.collapse_modified_nodes(nodes) })
         \.then({ -> a:helper.async.reload_node(root.__key) })
         \.then({ -> a:helper.async.redraw() })
         \.then({ -> a:helper.sync.echo(printf('%d items are renamed', ns.n)) })
@@ -71,11 +71,4 @@ function! s:_map_rename(helper, result) abort
   endfor
   call provider._update_tree(provider._tree)
   return s:Promise.resolve(proceeded)
-endfunction
-
-function! s:collapse_nodes(helper, nodes) abort
-  return s:Promise.all(map(
-        \ copy(a:nodes),
-        \ { -> a:helper.async.collapse_node(v:val.__key) },
-        \))
 endfunction

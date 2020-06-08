@@ -91,7 +91,7 @@ function! s:map_clipboard_paste(helper) abort
 
   let root = a:helper.sync.get_root_node()
   return s:Promise.resolve()
-        \.then({ -> s:collapse_nodes(a:helper, s:clipboard.candidates) })
+        \.then({ -> a:helper.async.collapse_modified_nodes(s:clipboard.candidates) })
         \.then({ -> a:helper.async.reload_node(root.__key) })
         \.then({ -> a:helper.async.redraw() })
         \.then({ -> a:helper.sync.echo(printf('%d items are proceeded', processed)) })
@@ -102,11 +102,4 @@ function! s:map_clipboard_clear(helper) abort
         \ 'mode': 'copy',
         \ 'candidates': [],
         \}
-endfunction
-
-function! s:collapse_nodes(helper, nodes) abort
-  return s:Promise.all(map(
-        \ copy(a:nodes),
-        \ { -> a:helper.async.collapse_node(v:val.__key) },
-        \))
 endfunction
