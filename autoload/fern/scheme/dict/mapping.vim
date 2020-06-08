@@ -166,7 +166,6 @@ function! s:map_remove(helper) abort
   for node in nodes
     echo printf('Delete %s', node._path)
     call fern#scheme#dict#tree#remove(tree, node._path)
-    let node.status = a:helper.STATUS_COLLAPSED
   endfor
   call provider._update_tree(tree)
   let root = a:helper.sync.get_root_node()

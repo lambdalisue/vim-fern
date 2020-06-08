@@ -162,7 +162,6 @@ function! s:map_trash(helper) abort
   for node in nodes
     echo printf('Trash %s', node._path)
     call add(ps, fern#scheme#file#shutil#trash(node._path, token))
-    let node.status = a:helper.STATUS_COLLAPSED
   endfor
   let root = a:helper.sync.get_root_node()
   return s:Promise.all(ps)
@@ -191,7 +190,6 @@ function! s:map_remove(helper) abort
   for node in nodes
     echo printf('Remove %s', node._path)
     call add(ps, fern#scheme#file#shutil#remove(node._path, token))
-    let node.status = a:helper.STATUS_COLLAPSED
   endfor
   let root = a:helper.sync.get_root_node()
   return s:Promise.all(ps)
