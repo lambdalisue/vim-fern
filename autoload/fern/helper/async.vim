@@ -250,6 +250,30 @@ function! s:async_leave_tree_post(helper, saved) abort
 endfunction
 let s:async.leave_tree = funcref('s:async_leave_tree')
 
+function! s:async_collapse_modified_nodes(nodes) abort dict
+  let helper = self.helper
+  let fern = helper.fern
+  let ps = []
+  for node in a:nodes
+    if node.__owner is# v:null || node.status isnot# helper.STATUS_EXPANDED
+      continue
+    endif
+    let p = fern#internal#node#collapse(
+          \ node,
+          \ fern.nodes,
+          \ fern.provider,
+          \ fern.comparator,
+          \ fern.source.token,
+          \)
+          \.then({ ns -> self.update_nodes(ns) })
+    call add(ps, p)
+  endfor
+  let Profile = fern#profile#start('fern#helper:helper.async.collapse_modified_nodes')
+  return s:Promise.all(ps)
+        \.finally({ -> Profile() })
+endfunction
+let s:async.collapse_modified_nodes = funcref('s:async_collapse_modified_nodes')
+
 
 " Private
 function! s:enter(fern, node) abort
