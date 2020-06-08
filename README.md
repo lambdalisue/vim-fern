@@ -35,7 +35,7 @@ General purpose asynchronous tree viewer written in Pure Vim script.
 
 ## Installation
 
-fern.vim has no extra dependencies so use your favorite Vim plugin manager or see [How to install](https://github.com/lambdalisue/fern.vim/wiki/How-to-install) page for detail.
+fern.vim has no extra dependencies so use your favorite Vim plugin manager or see [How to install](https://github.com/lambdalisue/fern.vim/wiki#how-to-install) page for detail.
 
 ## Usage
 
