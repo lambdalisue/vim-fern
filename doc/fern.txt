@@ -449,6 +449,27 @@ fern#smart#scheme({default}, {schemes})
 	      \   },
 	      \ )
 <
+							*fern#smart#ready()*
+fern#smart#ready({expr}[, {options}])
+	Execute an {expr} as a normal mapping once fern buffer has become
+	ready. If no unready fern buffer exists when the function has called,
+	it waits {options.timeout} then execute the {expr}.
+	Note that this function is NOT for |:map-<expr>| thus use it as a
+	normal function (e.g. ":<C-u>call fern#smart#ready(...)")
+>
+	" Create a new mapping which execute 'tcd:root' action once fern
+	" buffer has become ready
+	nnoremap <buffer><silent> <Plug>(fern-tcd-on-ready)
+	      \ :<C-u>call fern#smart#ready(
+	      \   "\<Plug>(fern-action-tcd:root)",
+	      \   { 'timeout': 500 },
+	      \ )<CR>
+
+	" Use above mapping to automatically execute tcd after enter
+	nmap <buffer> <Plug>(fern-enter-and-tcd)
+	      \ <Plug>(fern-action-enter)
+	      \ <Plug>(fern-tcd-on-ready)
+<
 
 
 =============================================================================
