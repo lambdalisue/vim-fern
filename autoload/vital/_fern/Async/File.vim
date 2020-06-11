@@ -281,7 +281,7 @@ else
   endfunction
   " freedesktop
   " https://www.freedesktop.org/wiki/Specifications/trash-spec/
-  function! s:trash(path) abort
+  function! s:trash(path, ...) abort
     throw 'vital: Async.File: trash(): Not supported platform.'
   endfunction
 endif

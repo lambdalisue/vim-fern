@@ -4,7 +4,7 @@
 function! s:_SID() abort
   return matchstr(expand('<sfile>'), '<SNR>\zs\d\+\ze__SID$')
 endfunction
-execute join(['function! vital#_fern#System#Filepath#import() abort', printf("return map({'path_separator': '', 'is_case_tolerant': '', 'dirname': '', 'abspath': '', 'relpath': '', 'realpath': '', 'unify_separator': '', 'to_slash': '', 'is_root_directory': '', 'split': '', 'path_extensions': '', 'unixpath': '', 'which': '', 'winpath': '', 'from_slash': '', 'join': '', 'separator': '', 'is_relative': '', 'basename': '', 'remove_last_separator': '', 'is_absolute': '', 'contains': ''}, \"vital#_fern#function('<SNR>%s_' . v:key)\")", s:_SID()), 'endfunction'], "\n")
+execute join(['function! vital#_fern#System#Filepath#import() abort', printf("return map({'path_separator': '', 'is_case_tolerant': '', 'dirname': '', 'abspath': '', 'relpath': '', 'realpath': '', 'unify_separator': '', 'to_slash': '', 'is_root_directory': '', 'split': '', 'path_extensions': '', 'unixpath': '', 'which': '', 'winpath': '', 'from_slash': '', 'join': '', 'expand_home': '', 'separator': '', 'is_relative': '', 'basename': '', 'remove_last_separator': '', 'is_absolute': '', 'contains': ''}, \"vital#_fern#function('<SNR>%s_' . v:key)\")", s:_SID()), 'endfunction'], "\n")
 delfunction s:_SID
 " ___vital___
 " You should check the following related builtin functions.
@@ -206,12 +206,23 @@ function! s:is_case_tolerant() abort
 endfunction
 
 
+function! s:expand_home(path) abort
+  if a:path[:0] !=# '~'
+    return a:path
+  endif
+  let post_home_idx = match(a:path, s:path_sep_pattern)
+  return post_home_idx is# -1
+        \ ? s:remove_last_separator(expand(a:path))
+        \ : s:remove_last_separator(expand(a:path[0 : post_home_idx - 1]))
+        \   . a:path[post_home_idx :]
+endfunction
+
 function! s:abspath(path) abort
   if s:is_absolute(a:path)
     return a:path
   endif
-  " Note:
-  "   the behavior of ':p' for non existing file path/directory is not defined
+  " NOTE: The behavior of ':p' for a non existing file/directory path
+  " is not defined.
   return (filereadable(a:path) || isdirectory(a:path))
         \ ? fnamemodify(a:path, ':p')
         \ : s:join(fnamemodify(getcwd(), ':p'), a:path)
