@@ -113,6 +113,7 @@ function! s:map_copy(helper) abort
   endfor
   let root = a:helper.sync.get_root_node()
   return s:Promise.all(ps)
+        \.then({ -> a:helper.async.collapse_modified_nodes(nodes) })
         \.then({ -> a:helper.async.reload_node(root.__key) })
         \.then({ -> a:helper.async.redraw() })
         \.then({ -> a:helper.sync.echo(printf('%d items are copied', len(ps))) })
@@ -136,6 +137,7 @@ function! s:map_move(helper) abort
   endfor
   let root = a:helper.sync.get_root_node()
   return s:Promise.all(ps)
+        \.then({ -> a:helper.async.collapse_modified_nodes(nodes) })
         \.then({ -> a:helper.async.reload_node(root.__key) })
         \.then({ -> a:helper.async.redraw() })
         \.then({ -> a:helper.sync.echo(printf('%d items are moved', len(ps))) })
@@ -160,10 +162,10 @@ function! s:map_trash(helper) abort
   for node in nodes
     echo printf('Trash %s', node._path)
     call add(ps, fern#scheme#file#shutil#trash(node._path, token))
-    let node.status = a:helper.STATUS_COLLAPSED
   endfor
   let root = a:helper.sync.get_root_node()
   return s:Promise.all(ps)
+        \.then({ -> a:helper.async.collapse_modified_nodes(nodes) })
         \.then({ -> a:helper.async.reload_node(root.__key) })
         \.then({ -> a:helper.async.redraw() })
         \.then({ -> a:helper.sync.echo(printf('%d items are trashed', len(ps))) })
@@ -188,10 +190,10 @@ function! s:map_remove(helper) abort
   for node in nodes
     echo printf('Remove %s', node._path)
     call add(ps, fern#scheme#file#shutil#remove(node._path, token))
-    let node.status = a:helper.STATUS_COLLAPSED
   endfor
   let root = a:helper.sync.get_root_node()
   return s:Promise.all(ps)
+        \.then({ -> a:helper.async.collapse_modified_nodes(nodes) })
         \.then({ -> a:helper.async.reload_node(root.__key) })
         \.then({ -> a:helper.async.redraw() })
         \.then({ -> a:helper.sync.echo(printf('%d items are removed', len(ps))) })

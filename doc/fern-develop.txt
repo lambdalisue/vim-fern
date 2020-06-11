@@ -492,6 +492,13 @@ Following methods are executed asynchronously and return a promise.
 	Note that "bufname" of the parent node must be properly configured to
 	use this feature.
 
+			*fern-develop-helper.async.collapse_modified_nodes()*
+.async.collapse_modified_nodes({nodes})
+	Return a promise to collapse {nodes}.
+	It does NOT reload the node instead when the node has collapsed or
+	leaf, not like |fern-develop-helper.async.collapse_node()|.
+	It is used to collapse modified nodes to solve issue #103.
+
 
 =============================================================================
 LOGGER						*fern-develop-logger*

@@ -108,6 +108,7 @@ function! s:map_copy(helper) abort
 
   let root = a:helper.sync.get_root_node()
   return s:Promise.resolve()
+        \.then({ -> a:helper.async.collapse_modified_nodes(nodes) })
         \.then({ -> a:helper.async.reload_node(root.__key) })
         \.then({ -> a:helper.async.redraw() })
         \.then({ -> a:helper.sync.echo(printf('%d items are copied', processed)) })
@@ -136,6 +137,7 @@ function! s:map_move(helper) abort
 
   let root = a:helper.sync.get_root_node()
   return s:Promise.resolve()
+        \.then({ -> a:helper.async.collapse_modified_nodes(nodes) })
         \.then({ -> a:helper.async.reload_node(root.__key) })
         \.then({ -> a:helper.async.redraw() })
         \.then({ -> a:helper.sync.echo(printf('%d items are moved', processed)) })
@@ -164,11 +166,11 @@ function! s:map_remove(helper) abort
   for node in nodes
     echo printf('Delete %s', node._path)
     call fern#scheme#dict#tree#remove(tree, node._path)
-    let node.status = a:helper.STATUS_COLLAPSED
   endfor
   call provider._update_tree(tree)
   let root = a:helper.sync.get_root_node()
   return s:Promise.resolve()
+        \.then({ -> a:helper.async.collapse_modified_nodes(nodes) })
         \.then({ -> a:helper.async.reload_node(root.__key) })
         \.then({ -> a:helper.async.redraw() })
         \.then({ -> a:helper.sync.echo(printf('%d items are removed', len(nodes))) })

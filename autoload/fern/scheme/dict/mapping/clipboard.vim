@@ -30,7 +30,7 @@ function! s:map_clipboard_move(helper) abort
   let nodes = a:helper.sync.get_selected_nodes()
   let s:clipboard = {
         \ 'mode': 'move',
-        \ 'candidates': map(copy(nodes), { _, v -> v._path }),
+        \ 'candidates': copy(nodes),
         \}
   return s:Promise.resolve()
         \.then({ -> a:helper.async.update_marks([]) })
@@ -42,7 +42,7 @@ function! s:map_clipboard_copy(helper) abort
   let nodes = a:helper.sync.get_selected_nodes()
   let s:clipboard = {
         \ 'mode': 'copy',
-        \ 'candidates': map(copy(nodes), { _, v -> v._path }),
+        \ 'candidates': copy(nodes),
         \}
   return s:Promise.resolve()
         \.then({ -> a:helper.async.update_marks([]) })
@@ -56,7 +56,7 @@ function! s:map_clipboard_paste(helper) abort
   endif
 
   if s:clipboard.mode ==# 'move'
-    let paths = copy(s:clipboard.candidates)
+    let paths = map(copy(s:clipboard.candidates), { -> v:val._path })
     let prompt = printf('The following %d nodes will be moved', len(paths))
     for path in paths[:5]
       let prompt .= "\n" . path
@@ -77,13 +77,13 @@ function! s:map_clipboard_paste(helper) abort
   let node = node.status isnot# a:helper.STATUS_EXPANDED ? node.__owner : node
   let processed = 0
   for src in s:clipboard.candidates
-    let dst = '/' . join(split(node._path . '/' . matchstr(src, '[^/]\+$'), '/'), '/')
+    let dst = '/' . join(split(node._path . '/' . matchstr(src._path, '[^/]\+$'), '/'), '/')
     if s:clipboard.mode ==# 'move'
-      echo printf('Move %s -> %s', src, dst)
-      call fern#scheme#dict#tree#move(tree, src, dst)
+      echo printf('Move %s -> %s', src._path, dst)
+      call fern#scheme#dict#tree#move(tree, src._path, dst)
     else
-      echo printf('Copy %s -> %s', src, dst)
-      call fern#scheme#dict#tree#copy(tree, src, dst)
+      echo printf('Copy %s -> %s', src._path, dst)
+      call fern#scheme#dict#tree#copy(tree, src._path, dst)
     endif
     let processed += 1
   endfor
@@ -91,6 +91,7 @@ function! s:map_clipboard_paste(helper) abort
 
   let root = a:helper.sync.get_root_node()
   return s:Promise.resolve()
+        \.then({ -> a:helper.async.collapse_modified_nodes(s:clipboard.candidates) })
         \.then({ -> a:helper.async.reload_node(root.__key) })
         \.then({ -> a:helper.async.redraw() })
         \.then({ -> a:helper.sync.echo(printf('%d items are proceeded', processed)) })

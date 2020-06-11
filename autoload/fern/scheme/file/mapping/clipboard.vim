@@ -30,7 +30,7 @@ function! s:map_clipboard_move(helper) abort
   let nodes = a:helper.sync.get_selected_nodes()
   let s:clipboard = {
         \ 'mode': 'move',
-        \ 'candidates': map(copy(nodes), { _, v -> v._path }),
+        \ 'candidates': copy(nodes),
         \}
   return s:Promise.resolve()
         \.then({ -> a:helper.async.update_marks([]) })
@@ -42,7 +42,7 @@ function! s:map_clipboard_copy(helper) abort
   let nodes = a:helper.sync.get_selected_nodes()
   let s:clipboard = {
         \ 'mode': 'copy',
-        \ 'candidates': map(copy(nodes), { _, v -> v._path }),
+        \ 'candidates': copy(nodes),
         \}
   return s:Promise.resolve()
         \.then({ -> a:helper.async.update_marks([]) })
@@ -56,7 +56,7 @@ function! s:map_clipboard_paste(helper) abort
   endif
 
   if s:clipboard.mode ==# 'move'
-    let paths = copy(s:clipboard.candidates)
+    let paths = map(copy(s:clipboard.candidates), { -> v:val._path })
     let prompt = printf('The following %d nodes will be moved', len(paths))
     for path in paths[:5]
       let prompt .= "\n" . path
@@ -64,7 +64,7 @@ function! s:map_clipboard_paste(helper) abort
     if len(paths) > 5
       let prompt .= "\n..."
     endif
-    let prompt .= "\nAre you sure to continue (Y[es]/no): "
+    let prompt .= "\nAre you sure to continue (y[es]/n[o]): "
     if !s:Prompt.confirm(prompt)
       return s:Promise.reject('Cancelled')
     endif
@@ -76,19 +76,20 @@ function! s:map_clipboard_paste(helper) abort
   let token = a:helper.fern.source.token
   let ps = []
   for src in s:clipboard.candidates
-    let name = fern#internal#filepath#to_slash(src)
+    let name = fern#internal#filepath#to_slash(src._path)
     let name = fern#internal#path#basename(name)
     let dst = fern#internal#filepath#from_slash(join([base, name], '/'))
     if s:clipboard.mode ==# 'move'
-      echo printf('Move %s -> %s', src, dst)
-      call add(ps, fern#scheme#file#shutil#move(src, dst, token))
+      echo printf('Move %s -> %s', src._path, dst)
+      call add(ps, fern#scheme#file#shutil#move(src._path, dst, token))
     else
-      echo printf('Copy %s -> %s', src, dst)
-      call add(ps, fern#scheme#file#shutil#copy(src, dst, token))
+      echo printf('Copy %s -> %s', src._path, dst)
+      call add(ps, fern#scheme#file#shutil#copy(src._path, dst, token))
     endif
   endfor
   let root = a:helper.sync.get_root_node()
   return s:Promise.all(ps)
+        \.then({ -> a:helper.async.collapse_modified_nodes(s:clipboard.candidates) })
         \.then({ -> a:helper.async.reload_node(root.__key) })
         \.then({ -> a:helper.async.redraw() })
         \.then({ -> a:helper.sync.echo(printf('%d items are proceeded', len(ps))) })
