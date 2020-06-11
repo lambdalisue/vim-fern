@@ -1,3 +1,4 @@
+let s:Promise = vital#fern#import('Async.Promise')
 let s:drawer_opener = 'topleft vsplit'
 let s:options = [
       \ '-drawer',
@@ -74,13 +75,6 @@ function! fern#internal#command#fern#command(mods, fargs) abort
 
     call fern#logger#debug('fri:', fri)
 
-    let wait_count = []
-    if wait
-      call fern#hook#add('viewer:ready', { -> add(wait_count, 1) }, {
-            \ 'once': v:true,
-            \})
-    endif
-
     let winid_saved = win_getid()
     if fri.authority =~# '\<drawer\>'
       call fern#internal#drawer#open(fri, {
@@ -101,12 +95,20 @@ function! fern#internal#command#fern#command(mods, fargs) abort
     endif
 
     if wait
-      call s:wait({ -> len(wait_count) > 0 })
+      let [_, err] = s:Promise.wait(
+            \ fern#hook#promise('viewer:ready'),
+            \ {
+            \   'interval': 100,
+            \   'timeout': 5000,
+            \ },
+            \)
+      if err isnot# v:null
+        throw printf('[fern] Failed to wait: %s', err)
+      endif
     endif
-
   catch
     echohl ErrorMsg
-    echo v:exception
+    echomsg v:exception
     echohl None
     call fern#logger#debug(v:exception)
     call fern#logger#debug(v:throwpoint)
@@ -135,24 +137,4 @@ function! s:norm_fragment(fri) abort
   let root = '/' . fern#fri#parse(a:fri.path).path
   let reveal = fern#internal#filepath#to_slash(a:fri.fragment)
   let a:fri.fragment = fern#internal#path#relative(reveal, root)
-endfunction
-
-function! s:wait(condition, ...) abort
-  let options = extend({
-        \ 'interval': 100,
-        \ 'timeout': 5000,
-        \}, a:0 ? a:1 : {},
-        \)
-  let start = reltime()
-  let expr = printf('sleep %dm', options.interval)
-  let dead = options.timeout isnot# v:null
-        \ ? options.timeout / 1000
-        \ : v:null
-  while dead is# v:null || dead > reltimefloat(reltime(start))
-    if a:condition()
-      return 0
-    endif
-    execute expr
-  endwhile
-  return 1
 endfunction

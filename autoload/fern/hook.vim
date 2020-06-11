@@ -1,3 +1,4 @@
+let s:Promise = vital#fern#import('Async.Promise')
 let s:hooks = {}
 
 function! fern#hook#add(name, callback, ...) abort
@@ -43,4 +44,8 @@ function! fern#hook#emit(name, ...) abort
     endtry
   endfor
   let s:hooks[a:name] = keeps
+endfunction
+
+function! fern#hook#promise(name) abort
+  return s:Promise.new({ r -> fern#hook#add(a:name, r, { 'once': v:true }) })
 endfunction
