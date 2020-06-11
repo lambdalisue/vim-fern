@@ -454,8 +454,11 @@ fern#smart#scheme({default}, {schemes})
 =============================================================================
 CHANGELOG						*fern-changelog*
 
-2020-06-02~
-	Release v1.0.0
+2020-06-12 v1.1~
+	Collapse node prior to perform modification to fix invalid node update
+	issue.
+2020-06-02 v1.0~
+	First stable release.
 
 =============================================================================
 vim:tw=78:fo=tcq2mM:ts=8:ft=help:norl
