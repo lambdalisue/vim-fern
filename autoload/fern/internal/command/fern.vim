@@ -76,7 +76,7 @@ function! fern#internal#command#fern#command(mods, fargs) abort
 
     let wait_count = []
     if wait
-      call fern#hook#add('read', { -> add(wait_count, 1) }, {
+      call fern#hook#add('viewer:ready', { -> add(wait_count, 1) }, {
             \ 'once': v:true,
             \})
     endif
