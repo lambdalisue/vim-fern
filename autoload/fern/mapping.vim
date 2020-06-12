@@ -23,11 +23,11 @@ endfunction
 
 call s:Config.config(expand('<sfile>:p'), {
       \ 'mappings': [
-      \   'tree',
+      \   'drawer',
+      \   'filter',
+      \   'mark',
       \   'node',
       \   'open',
-      \   'mark',
-      \   'filter',
-      \   'drawer',
+      \   'tree',
       \ ],
       \})
