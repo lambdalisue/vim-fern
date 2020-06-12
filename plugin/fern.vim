@@ -13,6 +13,11 @@ command! -bar -nargs=*
       \ FernFocus
       \ call fern#internal#command#focus#command(<q-mods>, [<f-args>])
 
+command! -bar -nargs=*
+      \ -complete=customlist,fern#internal#command#do#complete
+      \ FernDo
+      \ call fern#internal#command#do#command(<q-mods>, [<f-args>])
+
 function! s:BufReadCmd() abort
   if exists('b:fern') && !get(g:, 'fern_debug')
     return

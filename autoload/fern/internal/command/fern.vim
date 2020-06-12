@@ -1,15 +1,5 @@
 let s:Promise = vital#fern#import('Async.Promise')
 let s:drawer_opener = 'topleft vsplit'
-let s:options = [
-      \ '-drawer',
-      \ '-width=',
-      \ '-keep',
-      \ '-stay',
-      \ '-wait',
-      \ '-reveal=',
-      \ '-toggle',
-      \ '-opener=',
-      \]
 
 function! fern#internal#command#fern#command(mods, fargs) abort
   try

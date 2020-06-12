@@ -382,8 +382,18 @@ COMMAND							*fern-command*
 	See |:Fern| for other arguments and options. Note that -opener options
 	is ignored for project drawer style.
 
+							*:FernDo*
+:FernDo {expr...} [-drawer] [-stay]
+	Focus a next fern viewer and execute {expr...}. It does nothing if no
+	next fern viewer is found.
+	If "-drawer" option is specified, it focus and execute only a project
+	drawer style fern.
+	If "-stay" option is specified, it stay focus after execution.
+	Note that the command can be followed by a '|' and another command.
+
 							*:FernFocus*
 :FernFocus [-drawer]
+	DEPRECATED: Use |:FernDo| with ":" like ":FernDo :" instead.
 	Focus a next fern viewer. If "-drawer" option is specified, it focus
 	only a project drawer style fern.
 	Note that the command can be followed by a '|' and another command.
