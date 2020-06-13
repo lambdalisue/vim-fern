@@ -29,5 +29,6 @@ call s:Config.config(expand('<sfile>:p'), {
       \   'node',
       \   'open',
       \   'tree',
+      \   'wait',
       \ ],
       \})

@@ -169,6 +169,25 @@ hit "e", add the following code:
 	" Use 'open:split' instead of 'open:edit' for 'open' action
 	nmap <buffer> <Plug>(fern-action-open) <Plug>(fern-action-open:split)
 <
+							*fern-custom-wait*
+Fern provide following mapping helper:
+
+	*<Plug>(fern-wait)*	Wait until the fern buffer become ready which
+				would opened just before this mapping. This is
+				required while fern buffers are loaded
+				asynchronously but mappings are inovked
+				synchronously.
+
+For example, following execute "tcd:root" action every after "leave" action.
+>
+	nmap <buffer> <Plug>(fern-my-leave-and-tcd)
+	      \ <Plug>(fern-action-leave)
+	      \ <Plug>(fern-wait)
+	      \ <Plug>(fern-action-tcd:root)
+<
+Without <Plug>(fern-wait), the "tcd:root" action will be invoked before actual
+"leave" while "leave" action is asynchronous.
+
 							*fern-custom-smart*
 Fern provide following mapping helper functions:
 
