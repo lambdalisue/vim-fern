@@ -29,4 +29,5 @@ endfunction
 augroup fern_internal
   autocmd! *
   autocmd BufReadCmd fern://* ++nested call s:BufReadCmd()
+  autocmd SessionLoadPost fern://* ++nested call s:BufReadCmd()
 augroup END
