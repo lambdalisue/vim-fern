@@ -149,7 +149,7 @@ function! s:_import(name) abort dict
     call module._vital_created(module)
   endif
   let export_module = filter(copy(module), 'v:key =~# "^\\a"')
-  " Cache module before calling module.vital_loaded() to avoid cyclic
+  " Cache module before calling module._vital_loaded() to avoid cyclic
   " dependences but remove the cache if module._vital_loaded() fails.
   " let s:loaded[a:name] = export_module
   let s:loaded[a:name] = export_module
@@ -167,30 +167,51 @@ let s:Vital._import = function('s:_import')
 
 function! s:_format_throwpoint(throwpoint) abort
   let funcs = []
-  let stack = matchstr(a:throwpoint, '^function \zs.*\ze, line \d\+$')
+  let stack = matchstr(a:throwpoint, '^function \zs.*, .\{-} \d\+$')
   for line in split(stack, '\.\.')
-    let m = matchlist(line, '^\%(<SNR>\(\d\+\)_\)\?\(.\+\)\[\(\d\+\)\]$')
-    if empty(m)
-      call add(funcs, line)
-      continue
+    let m = matchlist(line, '^\(.\+\)\%(\[\(\d\+\)\]\|, .\{-} \(\d\+\)\)$')
+    if !empty(m)
+      let [name, lnum, lnum2] = m[1:3]
+      if empty(lnum)
+        let lnum = lnum2
+      endif
+      let info = s:_get_func_info(name)
+      if !empty(info)
+        let attrs = empty(info.attrs) ? '' : join([''] + info.attrs)
+        let flnum = info.lnum == 0 ? '' : printf(' Line:%d', info.lnum + lnum)
+        call add(funcs, printf('function %s(...)%s Line:%d (%s%s)',
+        \        info.funcname, attrs, lnum, info.filename, flnum))
+        continue
+      endif
     endif
-    let [sid, name, lnum] = m[1:3]
-    let attr = ''
-    if !empty(sid)
-      let name = printf('<SNR>%d_%s', sid, name)
-    endif
-    let file = s:_get_file_by_func_name(name)
-    call add(funcs, printf('function %s(...)%s Line:%d (%s)', name, attr, lnum, file))
+    " fallback when function information cannot be detected
+    call add(funcs, line)
   endfor
   return join(funcs, "\n")
 endfunction
 
-function! s:_get_file_by_func_name(name) abort
-  let body = execute(printf('verbose function %s', a:name))
+function! s:_get_func_info(name) abort
+  let name = a:name
+  if a:name =~# '^\d\+$'  " is anonymous-function
+    let name = printf('{%s}', a:name)
+  elseif a:name =~# '^<lambda>\d\+$'  " is lambda-function
+    let name = printf("{'%s'}", a:name)
+  endif
+  if !exists('*' . name)
+    return {}
+  endif
+  let body = execute(printf('verbose function %s', name))
   let lines = split(body, "\n")
   let signature = matchstr(lines[0], '^\s*\zs.*')
-  let file = matchstr(lines[1], '^\t\%(Last set from\|.\{-}:\)\s*\zs.*$')
-  return substitute(file, '[/\\]\+', '/', 'g')
+  let [_, file, lnum; __] = matchlist(lines[1],
+  \   '^\t\%(Last set from\|.\{-}:\)\s*\zs\(.\{-}\)\%( \S\+ \(\d\+\)\)\?$')
+  return {
+  \   'filename': substitute(file, '[/\\]\+', '/', 'g'),
+  \   'lnum': 0 + lnum,
+  \   'funcname': a:name,
+  \   'arguments': split(matchstr(signature, '(\zs.*\ze)'), '\s*,\s*'),
+  \   'attrs': filter(['dict', 'abort', 'range', 'closure'], 'signature =~# (").*" . v:val)'),
+  \ }
 endfunction
 
 " s:_get_module() returns module object wihch has all script local functions.
