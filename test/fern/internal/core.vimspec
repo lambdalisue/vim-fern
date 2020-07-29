@@ -9,6 +9,7 @@ Describe fern#internal#core
   Describe #new()
     It returns a fern instance of given url and provider
       let fern = fern#internal#core#new('debug:///', provider)
+      Assert KeyExists(fern, 'scheme')
       Assert KeyExists(fern, 'source')
       Assert KeyExists(fern, 'provider')
       Assert KeyExists(fern, 'comparator')

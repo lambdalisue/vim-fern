@@ -304,6 +304,7 @@ VARIABLE				*fern-develop-helper-variable*
 .fern
 	A fern instance which has the following attributes:
 
+	"scheme"	A scheme name used to determine "provider"
 	"source"	A cancellation token source to cancel requests
 	"provider"	A provider instance for the fren tree
 	"renderer"	A renderer instance to sort nodes
