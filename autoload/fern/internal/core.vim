@@ -14,8 +14,10 @@ function! fern#internal#core#new(url, provider, ...) abort
         \ 'comparator': g:fern#comparator,
         \}, a:0 ? a:1 : {},
         \)
+  let scheme = fern#fri#parse(a:url).scheme
   let root = fern#internal#node#root(a:url, a:provider)
   let fern = {
+        \ 'scheme': scheme,
         \ 'source': s:CancellationTokenSource.new(),
         \ 'provider': a:provider,
         \ 'renderer': s:get_renderer(options.renderer),

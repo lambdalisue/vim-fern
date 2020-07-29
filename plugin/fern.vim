@@ -1,7 +1,8 @@
-if exists('g:fern_loaded')
+if exists('g:loaded_fern')
   finish
 endif
-let g:fern_loaded = 1
+let g:loaded_fern = 1
+let g:fern_loaded = 1 " Obsolete: For backward compatibility
 
 command! -bar -nargs=*
       \ -complete=customlist,fern#internal#command#fern#complete
@@ -30,4 +31,8 @@ augroup fern_internal
   autocmd! *
   autocmd BufReadCmd fern://* ++nested call s:BufReadCmd()
   autocmd SessionLoadPost fern://* ++nested call s:BufReadCmd()
+  autocmd User FernInit ++once :
 augroup END
+
+" Tell 3rd parties that fern has initialized
+doautocmd <nomodeline> User FernInit

@@ -104,7 +104,9 @@ endfunction
 
 function! s:BufReadCmd() abort
   let helper = fern#helper#new()
+  setlocal filetype=fern
   call helper.fern.renderer.syntax()
+  call fern#hook#emit('renderer:syntax', helper)
   let root = helper.sync.get_root_node()
   let cursor = get(b:, 'fern_cursor', getcurpos())
   call s:Promise.resolve()
@@ -119,4 +121,5 @@ endfunction
 function! s:ColorScheme() abort
   let helper = fern#helper#new()
   call helper.fern.renderer.highlight()
+  call fern#hook#emit('renderer:highlight', helper)
 endfunction
