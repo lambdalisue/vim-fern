@@ -31,4 +31,8 @@ augroup fern_internal
   autocmd! *
   autocmd BufReadCmd fern://* ++nested call s:BufReadCmd()
   autocmd SessionLoadPost fern://* ++nested call s:BufReadCmd()
+  autocmd User FernInit ++once :
 augroup END
+
+" Tell 3rd parties that fern has initialized
+doautocmd <nomodeline> User FernInit
