@@ -15,6 +15,7 @@ RENDERER				|fern-develop-renderer|
 SCHEME					|fern-develop-scheme|
   PROVIDER				|fern-develop-scheme-provider|
   MAPPING				|fern-develop-scheme-provider|
+HOOK					|fern-develop-hook|
 HELPER					|fern-develop-helper|
 LOGGER					|fern-develop-logger|
 UTILITY					|fern-develop-utility|
@@ -498,6 +499,29 @@ Following methods are executed asynchronously and return a promise.
 	It does NOT reload the node instead when the node has collapsed or
 	leaf, not like |fern-develop-helper.async.collapse_node()|.
 	It is used to collapse modified nodes to solve issue #103.
+
+
+=============================================================================
+HOOK						*fern-develop-hook*
+
+Following hook will be emitted by |fern#hook#emit()| from fern itself.
+
+"renderer:syntax" ({helper})
+	Called when fern renderer has register its syntax.
+	The {helper} is a helper instance described in |fern-develop-helper|.
+
+"renderer:highlight" ({helper})
+	Called when fern renderer has register its highlight.
+	The {helper} is a helper instance described in |fern-develop-helper|.
+
+"viewer:redraw" ({helper})
+	Called when fern viewer has redrawed.
+	The {helper} is a helper instance described in |fern-develop-helper|.
+
+"viewer:ready" ({helper})
+	Called when fern viewer has ready, mean that the buffer has opened and
+	all content has rendererd.
+	The {helper} is a helper instance described in |fern-develop-helper|.
 
 
 =============================================================================

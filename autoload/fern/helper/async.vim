@@ -23,6 +23,7 @@ function! s:async_redraw() abort dict
         \ )
         \})
         \.then({ v -> fern#internal#buffer#replace(helper.bufnr, v) })
+        \.then({ -> fern#hook#emit('viewer:redraw', helper) })
         \.finally({ -> Profile() })
 endfunction
 let s:async.redraw = funcref('s:async_redraw')
