@@ -566,6 +566,13 @@ User FernInit
 =============================================================================
 CHANGELOG						*fern-changelog*
 
+2020-07-30 v1.4~
+	Add FernInit user autocmd and some internal changes for 3rd party
+	plugins.
+2020-06-13 v1.3~
+	<Plug>(fern-wait) mapping has added to wait asynchronous mapping.
+2020-06-13 v1.2~
+	FernDo has added and FernFocus has deprecated.
 2020-06-12 v1.1~
 	Collapse node prior to perform modification to fix invalid node update
 	issue.
