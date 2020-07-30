@@ -234,7 +234,7 @@ renderer itself like:
 	      \ 'foo': function('fern#renderer#foo#new'),
 	      \})
 <
-See https://github.com/lambdalisue/fern-renderer-devicons.vim as example.
+See https://github.com/lambdalisue/fern-renderer-nerdfont.vim as example.
 
 
 =============================================================================
