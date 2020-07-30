@@ -11,19 +11,6 @@ function! fern#helper#new(...) abort
         \}, s:helper)
   let helper.sync = fern#helper#sync#new(helper)
   let helper.async = fern#helper#async#new(helper)
-  " Add deprecated methods
-  for name in keys(helper.sync)
-    if name[:0] ==# '_'
-      continue
-    endif
-    let helper[name] = funcref('s:sync_method', [name])
-  endfor
-  for name in keys(helper.async)
-    if name[:0] ==# '_'
-      continue
-    endif
-    let helper[name] = funcref('s:async_method', [name])
-  endfor
   return helper
 endfunction
 
@@ -36,19 +23,3 @@ let s:helper = {
       \ 'STATUS_COLLAPSED': g:fern#STATUS_COLLAPSED,
       \ 'STATUS_EXPANDED': g:fern#STATUS_EXPANDED,
       \}
-
-function! s:sync_method(name, ...) abort dict
-  call fern#util#deprecated(
-        \ printf('helper.%s()', a:name),
-        \ printf('helper.sync.%s()', a:name),
-        \)
-  return call(self.sync[a:name], a:000, self.sync)
-endfunction
-
-function! s:async_method(name, ...) abort dict
-  call fern#util#deprecated(
-        \ printf('helper.%s()', a:name),
-        \ printf('helper.async.%s()', a:name),
-        \)
-  return call(self.async[a:name], a:000, self.async)
-endfunction

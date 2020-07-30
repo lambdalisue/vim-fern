@@ -10,11 +10,6 @@ command! -bar -nargs=*
       \ call fern#internal#command#fern#command(<q-mods>, [<f-args>])
 
 command! -bar -nargs=*
-      \ -complete=customlist,fern#internal#command#focus#complete
-      \ FernFocus
-      \ call fern#internal#command#focus#command(<q-mods>, [<f-args>])
-
-command! -bar -nargs=*
       \ -complete=customlist,fern#internal#command#do#complete
       \ FernDo
       \ call fern#internal#command#do#command(<q-mods>, [<f-args>])
