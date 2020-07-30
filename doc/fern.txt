@@ -11,6 +11,8 @@ INTRODUCTION				|fern-introduction|
 USAGE					|fern-usage|
   ACTION				|fern-action|
   CUSTOM				|fern-custom|
+COMPARATOR				|fern-comparator|
+RENDERER				|fern-renderer|
 INTERFACE				|fern-interface|
   VARIABLE				|fern-variable|
   COMMAND				|fern-command|
@@ -210,6 +212,70 @@ For example, following execute "open" on leaf but "expand" on branch.
 	      \ )
 <
 See https://github.com/lambdalisue/fern.vim/wiki/ for custom tips.
+
+
+=============================================================================
+COMPARATOR						*fern-comparator*
+
+Comparator is an object to sort nodes for making a tree.
+Users can create user custom comparator to change the order of appearance of
+nodes in the tree.
+See |fern-develop-comparator| for more details.
+
+
+=============================================================================
+RENDERER						*fern-renderer*
+
+Renderer is an object to render nodes as a tree like (default renderer):
+>
+	  fern.vim
+	* |- autoload
+	   |+ fern
+	   |+ vital
+	*  |  fern.vim
+	* |- doc
+	   |  fern-develop.txt
+	   |  fern.txt
+	   |  tags
+	  |+ ftplugin
+	  |+ plugin
+	  |+ test
+	  |  LICENSE
+	  |  README.md
+<
+Users can customize above appearance by the following variables.
+
+*g:fern#renderer#default#leading*
+	A |String| used as leading space unit (one indentation level.)
+	Default: " "
+
+*g:fern#renderer#default#root_symbol*
+	A |String| used as a symbol of root node.
+	Default: ""
+
+*g:fern#renderer#default#leaf_symbol*
+	A |String| used as a symbol of leaf node (non branch node like file).
+	Default: "|  "
+
+*g:fern#renderer#default#collapsed_symbol*
+	A |String| used as a symbol of collapsed branch node.
+	Default: "|+ "
+
+*g:fern#renderer#default#expanded_symbol*
+	A |String| used as a symbol of expanded branch node.
+	Default: "|- "
+
+*g:fern#renderer#default#marked_symbol*
+	A |String| used as a symbol of mark.
+	Default: "* "
+
+*g:fern#renderer#default#marked_symbol*
+	A |String| used as a symbol of unmark.
+	Default: "  "
+
+Or create user custom renderer to change the appearance completely.
+See |fern-develop-renderer| for more details.
+
 
 =============================================================================
 INTERFACE						*fern-interface*
