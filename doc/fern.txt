@@ -15,6 +15,7 @@ INTERFACE				|fern-interface|
   VARIABLE				|fern-variable|
   COMMAND				|fern-command|
   FUNCTION				|fern-function|
+  AUTOCMD				|fern-autocmd|
 CHANGELOG				|fern-changelog|
 
 
@@ -478,7 +479,23 @@ fern#smart#scheme({default}, {schemes})
 	      \   },
 	      \ )
 <
+-----------------------------------------------------------------------------
+AUTOCMD							*fern-autocmd*
 
+						*User-FernInit*
+User FernInit
+	After fern has loaded. Mainly for 3rd party plugins to know they can
+	use fern autoload functions.
+>
+	function! s:fern_init() abort
+	  " Now any autoload functions of fern are available
+	endfunction
+
+	augroup my-fern-init
+	  autocmd!
+	  autocmd User FernInit call s:fern_init()
+	augroup END
+<
 
 =============================================================================
 CHANGELOG						*fern-changelog*
