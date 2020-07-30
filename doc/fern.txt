@@ -548,6 +548,8 @@ fern#smart#scheme({default}, {schemes})
 =============================================================================
 CHANGELOG						*fern-changelog*
 
+2020-07-31 v1.5~
+	Remove FernInit and all deprecated features.
 2020-07-30 v1.4~
 	Add FernInit user autocmd and some internal changes for 3rd party
 	plugins.
