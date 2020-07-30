@@ -269,7 +269,7 @@ Users can customize above appearance by the following variables.
 	A |String| used as a symbol of mark.
 	Default: "* "
 
-*g:fern#renderer#default#marked_symbol*
+*g:fern#renderer#default#unmarked_symbol*
 	A |String| used as a symbol of unmark.
 	Default: "  "
 
