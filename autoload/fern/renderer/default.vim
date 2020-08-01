@@ -51,9 +51,10 @@ function! s:syntax() abort
         \ escape(g:fern#renderer#default#collapsed_symbol, s:ESCAPE_PATTERN),
         \ escape(g:fern#renderer#default#expanded_symbol, s:ESCAPE_PATTERN),
         \)
-  syntax match FernRootText   /.*$/ contained
-  syntax match FernLeafText   /.*$/ contained
-  syntax match FernBranchText /.*$/ contained
+  syntax match FernRootText   /.*\ze .*$/ contained nextgroup=FernBadge
+  syntax match FernLeafText   /.*\ze .*$/ contained nextgroup=FernBadge
+  syntax match FernBranchText /.*\ze .*$/ contained nextgroup=FernBadge
+  syntax match FernBadge      /.*/        contained
 endfunction
 
 function! s:highlight() abort
@@ -68,7 +69,7 @@ endfunction
 function! s:render_node(node, base, options) abort
   let level = len(a:node.__key) - a:base
   if level is# 0
-    return prefix . a:options.root_symbol . a:node.label
+    return a:options.root_symbol . a:node.label . ' ' . a:node.badge
   endif
   let leading = repeat(a:options.leading, level - 1)
   let symbol = a:node.status is# s:STATUS_NONE
@@ -76,7 +77,7 @@ function! s:render_node(node, base, options) abort
         \ : a:node.status is# s:STATUS_COLLAPSED
         \   ? a:options.collapsed_symbol
         \   : a:options.expanded_symbol
-  return prefix . leading . symbol . a:node.label
+  return leading . symbol . a:node.label . ' ' . a:node.badge
 endfunction
 
 call s:Config.config(expand('<sfile>:p'), {

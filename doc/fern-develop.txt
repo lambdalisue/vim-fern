@@ -110,6 +110,9 @@ A node instance is a tree item which has the following attributes:
 
 "label"		A |String| used to display the node in a tree view.
 
+"badge"		A |String| used to display the node badge in a tree view.
+		Only first character is used in the default renderer.
+
 "hidden"	A 1/0 to indicate if the node should be hidden. All hidden
 		nodes become visible once fern enter hidden mode.
 
