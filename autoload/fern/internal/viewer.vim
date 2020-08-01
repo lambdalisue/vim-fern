@@ -67,12 +67,18 @@ function! s:init() abort
     call fern#internal#drawer#init()
     call fern#internal#spinner#start()
     call helper.fern.renderer.highlight()
+    " Notify plugins
     call fern#hook#emit('renderer:highlight', helper)
+    " Notify users
+    doautocmd <nomodeline> User FernHighlight
 
     " now the buffer is ready so set filetype to emit FileType
     setlocal filetype=fern
     call helper.fern.renderer.syntax()
+    " Notify plugins
     call fern#hook#emit('renderer:syntax', helper)
+    " Notify users
+    doautocmd <nomodeline> User FernSyntax
     call fern#internal#action#init()
 
     let reveal = split(fri.fragment, '/')
@@ -108,7 +114,10 @@ function! s:BufReadCmd() abort
   let helper = fern#helper#new()
   setlocal filetype=fern
   call helper.fern.renderer.syntax()
+  " Notify plugins
   call fern#hook#emit('renderer:syntax', helper)
+  " Notify users
+  doautocmd <nomodeline> User FernSyntax
   let root = helper.sync.get_root_node()
   let cursor = get(b:, 'fern_cursor', getcurpos())
   call s:Promise.resolve()
@@ -123,5 +132,14 @@ endfunction
 function! s:ColorScheme() abort
   let helper = fern#helper#new()
   call helper.fern.renderer.highlight()
+  " Notify plugins
   call fern#hook#emit('renderer:highlight', helper)
+  " Notify users
+  doautocmd <nomodeline> User FernHighlight
 endfunction
+
+augroup fern-internal-viewer-internal
+  autocmd!
+  autocmd User FernSyntax :
+  autocmd User FernHighlight :
+augroup END
