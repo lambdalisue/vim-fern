@@ -38,7 +38,6 @@ function! s:lnum(index) abort
 endfunction
 
 function! s:syntax() abort
-  syntax clear
   execute printf(
         \ 'syntax match FernRootSymbol /\%%1l%s/ nextgroup=FernRootText',
         \ escape(g:fern#renderer#default#root_symbol, s:ESCAPE_PATTERN),
