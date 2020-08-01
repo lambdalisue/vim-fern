@@ -192,8 +192,11 @@ Renderer is an instance which has the following methods to render a list of
 nodes as a tree.
 
 					*fern-develop-renderer.render()*
-.render({nodes}, {marks})
+.render({nodes})
 	Return a promise which is resolved to a list of |String|.
+
+	Change (v1.6.0):~
+	Second argumet ({marks}) has removed.
 
 					*fern-develop-renderer.index()*
 .index({lnum})

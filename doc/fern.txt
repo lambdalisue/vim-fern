@@ -227,20 +227,20 @@ RENDERER						*fern-renderer*
 
 Renderer is an object to render nodes as a tree like (default renderer):
 >
-	  fern.vim
-	* |- autoload
-	   |+ fern
-	   |+ vital
-	*  |  fern.vim
-	* |- doc
-	   |  fern-develop.txt
-	   |  fern.txt
-	   |  tags
-	  |+ ftplugin
-	  |+ plugin
-	  |+ test
-	  |  LICENSE
-	  |  README.md
+	fern.vim
+	|- autoload
+	 |+ fern
+	 |+ vital
+	 |  fern.vim
+	|- doc
+	 |  fern-develop.txt
+	 |  fern.txt
+	 |  tags
+	|+ ftplugin
+	|+ plugin
+	|+ test
+	|  LICENSE
+	|  README.md
 <
 Users can customize above appearance by the following variables.
 
@@ -265,12 +265,12 @@ Users can customize above appearance by the following variables.
 	Default: "|- "
 
 *g:fern#renderer#default#marked_symbol*
-	A |String| used as a symbol of mark.
-	Default: "* "
+	OBSOLETE(v1.6.0)~
+	Use |g:fern#mark_symbol| instead.
 
 *g:fern#renderer#default#unmarked_symbol*
-	A |String| used as a symbol of unmark.
-	Default: "  "
+	OBSOLETE(v1.6.0)~
+	No alternative feature is provided.
 
 Or create user custom renderer to change the appearance completely.
 See |fern-develop-renderer| for more details.
@@ -414,6 +414,11 @@ VARIABLE						*fern-variable*
 	A |Boolean| which indicate wheter the last fern window should be keep
 	open or close.
 	Default: |v:false|
+
+*g:fern#mark_symbol*
+	A |String| which is used as a mark symbol text.
+	Note that users must restart Vim to apply changes.
+	Default: "*"
 
 -----------------------------------------------------------------------------
 COMMAND							*fern-command*
