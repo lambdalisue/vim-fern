@@ -37,6 +37,7 @@ Describe fern#helper
     let async_methods = [
           \ 'sleep',
           \ 'redraw',
+          \ 'remark',
           \ 'set_mark',
           \ 'set_hidden',
           \ 'set_include',

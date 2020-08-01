@@ -30,7 +30,7 @@ function! s:map_mark_set(helper) abort
     return s:Promise.reject('no node found on a cursor line')
   endif
   return a:helper.async.set_mark(node.__key, 1)
-        \.then({ -> a:helper.async.redraw() })
+        \.then({ -> a:helper.async.remark() })
 endfunction
 
 function! s:map_mark_unset(helper) abort
@@ -39,7 +39,7 @@ function! s:map_mark_unset(helper) abort
     return s:Promise.reject('no node found on a cursor line')
   endif
   return a:helper.async.set_mark(node.__key, 0)
-        \.then({ -> a:helper.async.redraw() })
+        \.then({ -> a:helper.async.remark() })
 endfunction
 
 function! s:map_mark_toggle(helper) abort
@@ -55,5 +55,6 @@ function! s:map_mark_toggle(helper) abort
 endfunction
 
 function! s:map_mark_clear(helper) abort
-  return a:helper.update_marks([])
+  return a:helper.async.update_marks([])
+        \.then({ -> a:helper.async.remark() })
 endfunction

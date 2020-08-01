@@ -53,7 +53,7 @@ function! s:map_terminal(helper, opener) abort
       enew | call s:term(node._path)
     endfor
     return a:helper.async.update_marks([])
-        \.then({ -> a:helper.async.redraw() })
+        \.then({ -> a:helper.async.remark() })
   catch
     return s:Promise.reject(v:exception)
   endtry

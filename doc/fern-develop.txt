@@ -438,6 +438,10 @@ Following methods are executed asynchronously and return a promise.
 .async.redraw()
 	Return a promise to redraw the content.
 
+			*fern-develop-helper.async.remark()*
+.async.remark()
+	Return a promise to remark the content.
+
 			*fern-develop-helper.async.set_mark()*
 .async.set_mark({key}, {value})
 	Return a promise to set mark to a node identified by the {key}.
@@ -517,6 +521,10 @@ Following hook will be emitted by |fern#hook#emit()| from fern itself.
 
 "viewer:redraw" ({helper})
 	Called when fern viewer has redrawed.
+	The {helper} is a helper instance described in |fern-develop-helper|.
+
+"viewer:remark" ({helper})
+	Called when fern viewer has remarked.
 	The {helper} is a helper instance described in |fern-develop-helper|.
 
 "viewer:ready" ({helper})
