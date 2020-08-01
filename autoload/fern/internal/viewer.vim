@@ -67,10 +67,12 @@ function! s:init() abort
     call fern#internal#drawer#init()
     call fern#internal#spinner#start()
     call helper.fern.renderer.highlight()
+    call fern#hook#emit('renderer:highlight', helper)
 
     " now the buffer is ready so set filetype to emit FileType
     setlocal filetype=fern
     call helper.fern.renderer.syntax()
+    call fern#hook#emit('renderer:syntax', helper)
     call fern#internal#action#init()
 
     let reveal = split(fri.fragment, '/')
