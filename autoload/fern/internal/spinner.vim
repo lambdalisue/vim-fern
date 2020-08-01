@@ -25,7 +25,7 @@ function! s:update(timer, spinner, bufnr) abort
     return
   endif
   let frame = a:spinner.next()
-  call execute(printf('sign unplace * group=fern buffer=%d', a:bufnr))
+  call execute(printf('sign unplace * group=fern-spinner buffer=%d', a:bufnr))
   let info = getwininfo(winid)[0]
   let rng = sort([info.topline, info.botline], 'n')
   for lnum in range(rng[0], rng[1])
@@ -36,7 +36,7 @@ function! s:update(timer, spinner, bufnr) abort
       continue
     endif
     call execute(printf(
-          \ 'sign place %d group=fern line=%d name=%s buffer=%d',
+          \ 'sign place %d group=fern-spinner line=%d name=%s buffer=%d',
           \ lnum,
           \ lnum,
           \ frame,
