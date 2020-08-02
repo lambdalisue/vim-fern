@@ -185,7 +185,21 @@ See https://github.com/lambdalisue/fern-comparator-lexical.vim as example.
 =============================================================================
 MAPPING						*fern-develop-mapping*
 
-TBW
+Fern provides global mappings under "autoload/fern/mapping" directory.
+Mapping MUST provide an init function as "fern#mapping#{name}#init()" with
+a boolean argument to disable default mappings.
+
+Mappings under that directory are registered automatically when a filename has
+listed in |g:fern#mapping#mappings| variable.
+
+So 3rd party plugin MUST register mappings by add followings to plugin.vim
+like:
+>
+	call add(g:fern#mapping#mappings, ['your_plugin'])
+>
+*g:fern#mapping#mappings*
+	A |List| of globally available mapping names. 
+	A target mapping MUST exist under "fern#mapping#" namespace.
 
 
 =============================================================================
@@ -292,7 +306,23 @@ the following methods.
 -----------------------------------------------------------------------------
 MAPPING					*fern-develop-scheme-mapping*
 
-TBW
+Fern provides scheme mappings under "autoload/fern/scheme/{scheme}/mapping"
+directory.  Mapping MUST provide an init function as 
+"fern#scheme#{scheme}#mapping#{name}#init()" with a boolean argument to disable 
+default mappings.
+
+Mappings under that directory are registered automatically when a filename has
+listed in |g:fern#scheme#{scheme}#mapping#mappings| variable.
+
+So 3rd party plugin MUST register mappings by add followings to plugin.vim
+like:
+>
+	call add(g:fern#scheme#file#mapping#mappings, ['your_plugin'])
+>
+*g:fern#scheme#{scheme}#mapping#mappings*
+	A |List| of scheme available mapping names for {scheme}.
+	A target mapping MUST exist under "fern#scheme#{scheme}#mapping#"
+	namespace.
 
 
 =============================================================================

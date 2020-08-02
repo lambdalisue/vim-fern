@@ -2,9 +2,6 @@ let s:Prompt = vital#fern#import('Prompt')
 let s:Promise = vital#fern#import('Async.Promise')
 
 function! fern#scheme#dict#mapping#init(disable_default_mappings) abort
-  call fern#scheme#dict#mapping#clipboard#init(a:disable_default_mappings)
-  call fern#scheme#dict#mapping#rename#init(a:disable_default_mappings)
-
   nnoremap <buffer><silent> <Plug>(fern-action-new-leaf)   :<C-u>call <SID>call('new_leaf')<CR>
   nnoremap <buffer><silent> <Plug>(fern-action-new-branch) :<C-u>call <SID>call('new_branch')<CR>
   nnoremap <buffer><silent> <Plug>(fern-action-copy)       :<C-u>call <SID>call('copy')<CR>
@@ -204,3 +201,8 @@ function! s:map_edit_leaf(helper) abort
         \.then({ -> a:helper.async.reload_node(root.__key) })
         \.then({ -> a:helper.async.redraw() })
 endfunction
+
+let g:fern#scheme#dict#mapping#mappings = get(g:, 'fern#scheme#dict#mapping#mappings', [
+      \ 'clipboard',
+      \ 'rename',
+      \])

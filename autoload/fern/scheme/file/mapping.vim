@@ -2,13 +2,6 @@ let s:Promise = vital#fern#import('Async.Promise')
 let s:Prompt = vital#fern#import('Prompt')
 
 function! fern#scheme#file#mapping#init(disable_default_mappings) abort
-  call fern#scheme#file#mapping#cd#init(a:disable_default_mappings)
-  call fern#scheme#file#mapping#system#init(a:disable_default_mappings)
-  call fern#scheme#file#mapping#clipboard#init(a:disable_default_mappings)
-  call fern#scheme#file#mapping#rename#init(a:disable_default_mappings)
-  call fern#scheme#file#mapping#terminal#init(a:disable_default_mappings)
-  call fern#scheme#file#mapping#grep#init(a:disable_default_mappings)
-
   nnoremap <buffer><silent> <Plug>(fern-action-new-file) :<C-u>call <SID>call('new_file')<CR>
   nnoremap <buffer><silent> <Plug>(fern-action-new-dir)  :<C-u>call <SID>call('new_dir')<CR>
   nnoremap <buffer><silent> <Plug>(fern-action-copy)     :<C-u>call <SID>call('copy')<CR>
@@ -198,3 +191,12 @@ function! s:map_remove(helper) abort
         \.then({ -> a:helper.async.redraw() })
         \.then({ -> a:helper.sync.echo(printf('%d items are removed', len(ps))) })
 endfunction
+
+let g:fern#scheme#file#mapping#mappings = get(g:, 'fern#scheme#file#mapping#mappings', [
+      \ 'cd',
+      \ 'clipboard',
+      \ 'grep',
+      \ 'rename',
+      \ 'system',
+      \ 'terminal',
+      \])
