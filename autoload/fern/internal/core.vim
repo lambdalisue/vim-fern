@@ -5,11 +5,14 @@ let s:Promise = vital#fern#import('Async.Promise')
 let s:CancellationTokenSource = vital#fern#import('Async.CancellationTokenSource')
 
 let s:STATUS_EXPANDED = g:fern#STATUS_EXPANDED
+let s:default_grantor = function('fern#grantor#default#new')
 let s:default_renderer = function('fern#renderer#default#new')
 let s:default_comparator = function('fern#comparator#default#new')
 
 function! fern#internal#core#new(url, provider, ...) abort
+  call fern#internal#grantor#init_once()
   let options = extend({
+        \ 'grantor': g:fern#grantor,
         \ 'renderer': g:fern#renderer,
         \ 'comparator': g:fern#comparator,
         \}, a:0 ? a:1 : {},
@@ -20,6 +23,7 @@ function! fern#internal#core#new(url, provider, ...) abort
         \ 'scheme': scheme,
         \ 'source': s:CancellationTokenSource.new(),
         \ 'provider': a:provider,
+        \ 'grantor': s:get_grantor(options.grantor),
         \ 'renderer': s:get_renderer(options.renderer),
         \ 'comparator': s:get_comparator(options.comparator),
         \ 'root': root,
@@ -75,6 +79,17 @@ function! fern#internal#core#update_marks(fern, marks) abort
         \.finally({ -> Profile('filter') })
         \.then({ ms -> s:Lambda.let(a:fern, 'marks', ms) })
         \.finally({ -> Profile() })
+endfunction
+
+function! s:get_grantor(name) abort
+  try
+    let Grantor = get(g:fern#grantors, a:name, s:default_grantor)
+    return Grantor()
+  catch
+    call fern#logger#error('fern#internal#core:get_grantor', v:exception)
+    call fern#logger#debug(v:throwpoint)
+    return s:default_grantor()
+  endtry
 endfunction
 
 function! s:get_renderer(name) abort

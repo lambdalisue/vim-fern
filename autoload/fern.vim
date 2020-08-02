@@ -25,6 +25,8 @@ call s:Config.config(expand('<sfile>:p'), {
       \ 'default_hidden': 0,
       \ 'default_include': '',
       \ 'default_exclude': '',
+      \ 'grantor': 'default',
+      \ 'grantors': {},
       \ 'renderer': 'default',
       \ 'renderers': {},
       \ 'comparator': 'default',
