@@ -10,7 +10,6 @@ lockvar g:fern#STATUS_EXPANDED
 
 " Define Public variables
 call s:Config.config(expand('<sfile>:p'), {
-      \ 'debug': 0,
       \ 'profile': 0,
       \ 'logfile': v:null,
       \ 'loglevel': g:fern#logger#INFO,
@@ -26,9 +25,9 @@ call s:Config.config(expand('<sfile>:p'), {
       \ 'default_include': '',
       \ 'default_exclude': '',
       \ 'renderer': 'default',
-      \ 'renderers': get(g:, 'fern#internal#core#renderers', {}),
+      \ 'renderers': {},
       \ 'comparator': 'default',
-      \ 'comparators': get(g:, 'fern#internal#core#comparators', {}),
+      \ 'comparators': {},
       \ 'drawer_width': 30,
       \ 'drawer_keep': v:false,
       \ 'mark_symbol': '*',

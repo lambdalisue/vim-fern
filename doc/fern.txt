@@ -287,10 +287,6 @@ INTERFACE						*fern-interface*
 -----------------------------------------------------------------------------
 VARIABLE						*fern-variable*
 
-*g:fern#debug*
-	Set 1 to enable fern debug mode.
-	Default: 0
-
 *g:fern#profile*
 	Set 1 to enable fern profiling mode.
 	Default: 0

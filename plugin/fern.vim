@@ -15,7 +15,7 @@ command! -bar -nargs=*
       \ call fern#internal#command#do#command(<q-mods>, [<f-args>])
 
 function! s:BufReadCmd() abort
-  if exists('b:fern') && !get(g:, 'fern_debug')
+  if exists('b:fern')
     return
   endif
   call fern#internal#viewer#init()
