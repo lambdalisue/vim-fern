@@ -30,4 +30,5 @@ call s:Config.config(expand('<sfile>:p'), {
       \ 'comparators': get(g:, 'fern#internal#core#comparators', {}),
       \ 'drawer_width': 30,
       \ 'drawer_keep': v:false,
+      \ 'mark_symbol': '*',
       \})

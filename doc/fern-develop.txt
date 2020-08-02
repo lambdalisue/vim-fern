@@ -110,6 +110,9 @@ A node instance is a tree item which has the following attributes:
 
 "label"		A |String| used to display the node in a tree view.
 
+"badge"		A |String| used to display the node badge in a tree view.
+		Only first character is used in the default renderer.
+
 "hidden"	A 1/0 to indicate if the node should be hidden. All hidden
 		nodes become visible once fern enter hidden mode.
 
@@ -192,8 +195,11 @@ Renderer is an instance which has the following methods to render a list of
 nodes as a tree.
 
 					*fern-develop-renderer.render()*
-.render({nodes}, {marks})
+.render({nodes})
 	Return a promise which is resolved to a list of |String|.
+
+	Change (v1.6.0):~
+	Second argumet ({marks}) has removed.
 
 					*fern-develop-renderer.index()*
 .index({lnum})
@@ -438,6 +444,10 @@ Following methods are executed asynchronously and return a promise.
 .async.redraw()
 	Return a promise to redraw the content.
 
+			*fern-develop-helper.async.remark()*
+.async.remark()
+	Return a promise to remark the content.
+
 			*fern-develop-helper.async.set_mark()*
 .async.set_mark({key}, {value})
 	Return a promise to set mark to a node identified by the {key}.
@@ -517,6 +527,10 @@ Following hook will be emitted by |fern#hook#emit()| from fern itself.
 
 "viewer:redraw" ({helper})
 	Called when fern viewer has redrawed.
+	The {helper} is a helper instance described in |fern-develop-helper|.
+
+"viewer:remark" ({helper})
+	Called when fern viewer has remarked.
 	The {helper} is a helper instance described in |fern-develop-helper|.
 
 "viewer:ready" ({helper})

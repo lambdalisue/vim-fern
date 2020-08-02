@@ -34,7 +34,7 @@ function! s:map_clipboard_move(helper) abort
         \}
   return s:Promise.resolve()
         \.then({ -> a:helper.async.update_marks([]) })
-        \.then({ -> a:helper.async.redraw() })
+        \.then({ -> a:helper.async.remark() })
         \.then({ -> a:helper.sync.echo(printf('%d items are saved in clipboard to move', len(nodes))) })
 endfunction
 
@@ -46,7 +46,7 @@ function! s:map_clipboard_copy(helper) abort
         \}
   return s:Promise.resolve()
         \.then({ -> a:helper.async.update_marks([]) })
-        \.then({ -> a:helper.async.redraw() })
+        \.then({ -> a:helper.async.remark() })
         \.then({ -> a:helper.sync.echo(printf('%d items are saved in clipboard to copy', len(nodes))) })
 endfunction
 

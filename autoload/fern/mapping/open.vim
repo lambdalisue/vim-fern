@@ -82,7 +82,7 @@ function! s:map_open(helper, opener) abort
     noautocmd call win_gotoid(winid)
     noautocmd call win_gotoid(winid_fern)
     return a:helper.async.update_marks([])
-        \.then({ -> a:helper.async.redraw() })
+        \.then({ -> a:helper.async.remark() })
   catch
     return s:Promise.reject(v:exception)
   endtry

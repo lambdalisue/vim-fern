@@ -28,22 +28,22 @@ Describe fern#renderer#default
       End
 
       It returns a promise
-        let p = renderer.render(nodes, [])
+        let p = renderer.render(nodes)
         Assert True(Promise.is_promise(p))
       End
 
       It resolves to a string list for a buffer content
         let [r, e] = Promise.wait(
-              \ renderer.render(nodes, []),
+              \ renderer.render(nodes),
               \ { 'timeout': TIMEOUT },
               \)
         Assert Equals(e, v:null)
         Assert Equals(r, [
-              \ '  root',
-              \ '  |- shallow',
-              \ '   |+ alpha',
-              \ '   |+ beta',
-              \ '   |  gamma',
+              \ 'root ',
+              \ '|- shallow ',
+              \ ' |+ alpha ',
+              \ ' |+ beta ',
+              \ ' |  gamma ',
               \])
       End
 
@@ -53,16 +53,16 @@ Describe fern#renderer#default
               \ ['shallow', 'gamma'],
               \]
         let [r, e] = Promise.wait(
-              \ renderer.render(nodes, marks),
+              \ renderer.render(nodes),
               \ { 'timeout': TIMEOUT },
               \)
         Assert Equals(e, v:null)
         Assert Equals(r, [
-              \ '  root',
-              \ '  |- shallow',
-              \ '*  |+ alpha',
-              \ '   |+ beta',
-              \ '*  |  gamma',
+              \ 'root ',
+              \ '|- shallow ',
+              \ ' |+ alpha ',
+              \ ' |+ beta ',
+              \ ' |  gamma ',
               \])
       End
     End

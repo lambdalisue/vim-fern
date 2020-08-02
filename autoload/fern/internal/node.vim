@@ -207,6 +207,7 @@ endfunction
 function! s:new(node, ...) abort
   let node = extend(a:node, {
         \ 'label': get(a:node, 'label', a:node.name),
+        \ 'badge': get(a:node, 'badge', ''),
         \ 'hidden': get(a:node, 'hidden', 0),
         \ 'bufname': get(a:node, 'bufname', v:null),
         \ 'concealed': get(a:node, 'concealed', {}),

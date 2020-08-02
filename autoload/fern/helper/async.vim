@@ -1,4 +1,5 @@
 let s:Promise = vital#fern#import('Async.Promise')
+let s:AsyncLambda = vital#fern#import('Async.Lambda')
 
 function! fern#helper#async#new(helper) abort
   let async = extend({ 'helper': a:helper }, s:async)
@@ -17,16 +18,27 @@ function! s:async_redraw() abort dict
   let helper = self.helper
   let fern = helper.fern
   return s:Promise.resolve()
-        \.then({ -> fern.renderer.render(
-        \   fern.visible_nodes,
-        \   fern.marks,
-        \ )
-        \})
+        \.then({ -> fern.renderer.render(fern.visible_nodes) })
         \.then({ v -> fern#internal#buffer#replace(helper.bufnr, v) })
+        \.then({ -> helper.async.remark() })
         \.then({ -> fern#hook#emit('viewer:redraw', helper) })
         \.finally({ -> Profile() })
 endfunction
 let s:async.redraw = funcref('s:async_redraw')
+
+function! s:async_remark() abort dict
+  let Profile = fern#profile#start('fern#helper:helper.async.remark')
+  let helper = self.helper
+  let fern = helper.fern
+  let marks = fern.marks
+  return s:Promise.resolve(fern.visible_nodes)
+        \.then(s:AsyncLambda.map_f({ n, i -> index(marks, n.__key) isnot# -1 ? i + 1 : 0 }))
+        \.then(s:AsyncLambda.filter_f({ v -> v isnot# 0 }))
+        \.then({ v -> fern#internal#mark#replace(helper.bufnr, v) })
+        \.then({ -> fern#hook#emit('viewer:remark', helper) })
+        \.finally({ -> Profile() })
+endfunction
+let s:async.remark = funcref('s:async_remark')
 
 function! s:async_set_mark(key, value) abort dict
   let helper = self.helper

@@ -17,6 +17,8 @@ INTERFACE				|fern-interface|
   VARIABLE				|fern-variable|
   COMMAND				|fern-command|
   FUNCTION				|fern-function|
+  AUTOCMD				|fern-autocmd|
+  HIGHLIGHT				|fern-highlight|
 CHANGELOG				|fern-changelog|
 
 
@@ -227,20 +229,20 @@ RENDERER						*fern-renderer*
 
 Renderer is an object to render nodes as a tree like (default renderer):
 >
-	  fern.vim
-	* |- autoload
-	   |+ fern
-	   |+ vital
-	*  |  fern.vim
-	* |- doc
-	   |  fern-develop.txt
-	   |  fern.txt
-	   |  tags
-	  |+ ftplugin
-	  |+ plugin
-	  |+ test
-	  |  LICENSE
-	  |  README.md
+	fern.vim
+	|- autoload
+	 |+ fern
+	 |+ vital
+	 |  fern.vim
+	|- doc
+	 |  fern-develop.txt
+	 |  fern.txt
+	 |  tags
+	|+ ftplugin
+	|+ plugin
+	|+ test
+	|  LICENSE
+	|  README.md
 <
 Users can customize above appearance by the following variables.
 
@@ -265,12 +267,14 @@ Users can customize above appearance by the following variables.
 	Default: "|- "
 
 *g:fern#renderer#default#marked_symbol*
-	A |String| used as a symbol of mark.
-	Default: "* "
+	OBSOLETE(v1.6.0)~
+	Use |g:fern#mark_symbol| instead.
 
 *g:fern#renderer#default#unmarked_symbol*
-	A |String| used as a symbol of unmark.
-	Default: "  "
+	OBSOLETE(v1.6.0)~
+	No alternative feature is provided.
+
+See |FernHighlight| and |fern-highlight| to change pre-defeined |highlight|.
 
 Or create user custom renderer to change the appearance completely.
 See |fern-develop-renderer| for more details.
@@ -415,6 +419,11 @@ VARIABLE						*fern-variable*
 	open or close.
 	Default: |v:false|
 
+*g:fern#mark_symbol*
+	A |String| which is used as a mark symbol text.
+	Note that users must restart Vim to apply changes.
+	Default: "*"
+
 -----------------------------------------------------------------------------
 COMMAND							*fern-command*
 
@@ -543,7 +552,74 @@ fern#smart#scheme({default}, {schemes})
 	      \     'bookmark': "\<C-^>",
 	      \   },
 	      \ )
+
+-----------------------------------------------------------------------------
+AUTOCMD							*fern-autocmd*
+
+						*FernHighlight*
+FernHighlight
+	Invoked after a fern renderer and 3rd party plugins defined highlight.
+	Use this autocmd to overwrite existing |highlight| like:
+>
+	function! s:on_highlight() abort
+	  " Use brighter highlight on root node
+	  highlight link FernRootSymbol Title
+	  highlight link FernRootText   Title
+	endfunction
+
+	augroup my-fern-highlight
+	  autocmd!
+	  autocmd User FernHighlight call s:on_highlight()
+	augroup END
 <
+	See |fern-highlight| for pre-defined |highlight|.
+
+						*FernSyntax*
+FernSyntax
+	Invoked after a fern renderer and 3rd party plugins defined syntax.
+	Use this |autocmd| to overwrite existing |syntax|.
+	Note that if you'd like to change color/highlight, use |FernHighlight|
+	autocmd instead. This autocmd exists for more complex (heavy) use.
+
+-----------------------------------------------------------------------------
+HIGHLIGHT						*fern-highlight*
+
+FernMarkedLine					*hl-FernMarkedLine*
+	A |highlight| group used as a line highlight of mark |sign|.
+
+FernMarkedText					*hl-FernMarkedText*
+	A |highlight| group used as a text highlight of mark |sign|.
+
+FernRootSymbol					*hl-FernRootSymbol*
+	A |highlight| group of renderer used for root node symbol.
+	An actual appearance will be determined by the |fern-renderer| thus 
+	this highlight might not be referred.
+	
+FernRootText					*hl-FernRootText*
+	A |highlight| group of renderer used for root node text.
+	An actual appearance will be determined by the |fern-renderer| thus 
+	this highlight might not be referred.
+
+FernLeafSymbol					*hl-FernLeafSymbol*
+	A |highlight| group of renderer used for leaf node symbol.
+	An actual appearance will be determined by the |fern-renderer| thus 
+	this highlight might not be referred.
+	
+FernLeafText					*hl-FernLeafText*
+	A |highlight| group of renderer used for leaf node text.
+	An actual appearance will be determined by the |fern-renderer| thus 
+	this highlight might not be referred.
+
+FernBranchSymbol				*hl-FernBranchSymbol*
+	A |highlight| group of renderer used for branch node symbol.
+	An actual appearance will be determined by the |fern-renderer| thus 
+	this highlight might not be referred.
+	
+FernBranchText				*hl-FernBranchText*
+	A |highlight| group of renderer used for branch node text.
+	An actual appearance will be determined by the |fern-renderer| thus 
+	this highlight might not be referred.
+
 
 =============================================================================
 CHANGELOG						*fern-changelog*
