@@ -624,6 +624,13 @@ FernBranchText				*hl-FernBranchText*
 =============================================================================
 CHANGELOG						*fern-changelog*
 
+2020-07-31 v1.6~
+	1. Use |sign| instead to represent marked nodes.
+	   Existing 3rd party renderer will break with this change.
+	   See below to find required changes to apply if you made a custom 
+	   renderer.
+	   https://github.com/lambdalisue/fern-renderer-nerdfont.vim/pull/2
+	2. Add "badge" support for 3rd party plugins.
 2020-07-31 v1.5~
 	Remove FernInit and all deprecated features.
 2020-07-30 v1.4~
