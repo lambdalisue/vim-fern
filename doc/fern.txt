@@ -411,7 +411,7 @@ VARIABLE						*fern-variable*
 	Default: 30
 
 *g:fern#drawer_keep*
-	A |Boolean| which indicate wheter the last fern window should be keep
+	A |Boolean| which indicate whether the last fern window should be keep
 	open or close.
 	Default: |v:false|
 
