@@ -95,7 +95,7 @@ function! s:get_comparator(name) abort
   catch
     call fern#logger#error('fern#internal#core:get_comparator', v:exception)
     call fern#logger#debug(v:throwpoint)
-    return s:default_renderer()
+    return s:default_comparator()
   endtry
 endfunction
 
