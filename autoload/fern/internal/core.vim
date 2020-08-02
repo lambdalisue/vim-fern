@@ -98,6 +98,3 @@ function! s:get_comparator(name) abort
     return s:default_comparator()
   endtry
 endfunction
-
-let g:fern#internal#core#renderers = g:fern#renderers
-let g:fern#internal#core#comparators = g:fern#comparators
