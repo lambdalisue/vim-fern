@@ -116,6 +116,7 @@ function! s:map_move(helper) abort
   let nodes = a:helper.sync.get_selected_nodes()
   let token = a:helper.fern.source.token
   let ps = []
+  let bufutil_pairs = []
   for node in nodes
     let src = node._path
     let dst = input(
@@ -127,9 +128,11 @@ function! s:map_move(helper) abort
       continue
     endif
     call add(ps, fern#scheme#file#shutil#move(src, dst, token))
+    call add(bufutil_pairs, [src, dst])
   endfor
   let root = a:helper.sync.get_root_node()
   return s:Promise.all(ps)
+        \.then({ -> fern#scheme#file#bufutil#moves(bufutil_pairs) })
         \.then({ -> a:helper.async.collapse_modified_nodes(nodes) })
         \.then({ -> a:helper.async.reload_node(root.__key) })
         \.then({ -> a:helper.async.redraw() })
