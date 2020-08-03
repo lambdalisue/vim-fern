@@ -155,12 +155,16 @@ function! s:map_trash(helper) abort
   endif
   let token = a:helper.fern.source.token
   let ps = []
+  let bufutil_paths = []
   for node in nodes
-    echo printf('Trash %s', node._path)
-    call add(ps, fern#scheme#file#shutil#trash(node._path, token))
+    let path = node._path
+    echo printf('Trash %s', path)
+    call add(ps, fern#scheme#file#shutil#trash(path, token))
+    call add(bufutil_paths, path)
   endfor
   let root = a:helper.sync.get_root_node()
   return s:Promise.all(ps)
+        \.then({ -> fern#scheme#file#bufutil#removes(bufutil_paths) })
         \.then({ -> a:helper.async.collapse_modified_nodes(nodes) })
         \.then({ -> a:helper.async.reload_node(root.__key) })
         \.then({ -> a:helper.async.redraw() })
@@ -183,12 +187,16 @@ function! s:map_remove(helper) abort
   endif
   let token = a:helper.fern.source.token
   let ps = []
+  let bufutil_paths = []
   for node in nodes
-    echo printf('Remove %s', node._path)
-    call add(ps, fern#scheme#file#shutil#remove(node._path, token))
+    let path = node._path
+    echo printf('Remove %s', path)
+    call add(ps, fern#scheme#file#shutil#remove(path, token))
+    call add(bufutil_paths, path)
   endfor
   let root = a:helper.sync.get_root_node()
   return s:Promise.all(ps)
+        \.then({ -> fern#scheme#file#bufutil#removes(bufutil_paths) })
         \.then({ -> a:helper.async.collapse_modified_nodes(nodes) })
         \.then({ -> a:helper.async.reload_node(root.__key) })
         \.then({ -> a:helper.async.redraw() })
