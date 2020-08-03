@@ -82,7 +82,7 @@ function! s:statusline(winnr, char) abort
   let width = winwidth(a:winnr) - len(a:winnr . '') - 6
   let leading = repeat(' ', width / 2)
   return printf(
-        \ '%%#NonText#%s%%#DiffText#   %s   %%#NonText#',
+        \ '%%#FernWindowSelectStatusLine#%s%%#FernWindowSelectIndicator#   %s   %%#FernWindowSelectStatusLine#',
         \ leading,
         \ a:char,
         \)
@@ -105,7 +105,19 @@ function! s:cunmap_all() abort
   endfor
 endfunction
 
+function! s:highlight() abort
+  highlight default link FernWindowSelectStatusLine StatusLineNC
+  highlight default link FernWindowSelectIndicator  DiffText
+endfunction
+
 call s:Config.config(expand('<sfile>:p'), {
       \ 'auto_select': 1,
       \ 'select_chars': split('abcdefghijklmnopqrstuvwxyz', '\zs'),
       \})
+
+augroup fern_internal_window_internal
+  autocmd!
+  autocmd ColorScheme * call s:highlight()
+augroup END
+
+call s:highlight()

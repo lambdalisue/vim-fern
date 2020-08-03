@@ -65,6 +65,8 @@ Window selector~
 	Fern has an internal window selector which works like 
 	t9md/vim-choosewin.  Users can quickly select which window to open a 
 	selected node.
+	See |hl-FernWindowSelectIndicator| and |hl-FernWindowSelectStatusLine|
+	to customize the statusline when selecting a window.
 	https://github.com/t9md/vim-choosewin
 
 Renamer (A.k.a exrename)~
@@ -615,10 +617,18 @@ FernBranchSymbol				*hl-FernBranchSymbol*
 	An actual appearance will be determined by the |fern-renderer| thus 
 	this highlight might not be referred.
 	
-FernBranchText				*hl-FernBranchText*
+FernBranchText					*hl-FernBranchText*
 	A |highlight| group of renderer used for branch node text.
 	An actual appearance will be determined by the |fern-renderer| thus 
 	this highlight might not be referred.
+
+FernWindowSelectIndicator		*hl-FernWindowSelectIndicator*
+	A |highlight| group used for an indicator when selecting a window
+	through "open:select" action.
+
+FernWindowSelectStatusLine		*hl-FernWindowSelectStatusLine*
+	A |highlight| group used for |statusline| when selecting a window
+	through "open:select" action.
 
 
 =============================================================================
