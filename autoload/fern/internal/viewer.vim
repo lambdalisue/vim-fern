@@ -30,11 +30,11 @@ function! s:init() abort
   setlocal signcolumn=yes
 
   augroup fern_viewer_internal
-    autocmd! * <buffer>
+    autocmd!
     autocmd BufEnter <buffer> setlocal nobuflisted
     autocmd BufReadCmd <buffer> ++nested call s:BufReadCmd()
     autocmd ColorScheme <buffer> call s:ColorScheme()
-    autocmd CursorMoved,CursorMovedI <buffer> let b:fern_cursor = getcurpos()
+    autocmd CursorMoved,CursorMovedI,BufLeave <buffer> let b:fern_cursor = getcurpos()[1:2]
   augroup END
 
   " Add unique fragment to make each buffer uniq
@@ -119,10 +119,10 @@ function! s:BufReadCmd() abort
   " Notify users
   doautocmd <nomodeline> User FernSyntax
   let root = helper.sync.get_root_node()
-  let cursor = get(b:, 'fern_cursor', getcurpos())
+  let cursor = get(b:, 'fern_cursor', getcurpos()[1:2])
   call s:Promise.resolve()
         \.then({ -> helper.async.redraw() })
-        \.then({ -> helper.sync.set_cursor(cursor[1:2]) })
+        \.then({ -> helper.sync.set_cursor(cursor) })
         \.then({ -> helper.async.reload_node(root.__key) })
         \.then({ -> helper.async.redraw() })
         \.then({ -> fern#hook#emit('viewer:ready', helper) })

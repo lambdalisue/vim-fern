@@ -81,6 +81,7 @@ function! s:sync_set_cursor(cursor) abort dict
   let helper = self.helper
   let fern = helper.fern
   call s:WindowCursor.set_cursor(helper.winid, a:cursor)
+  call setbufvar(helper.bufnr, 'fern_cursor', a:cursor)
 endfunction
 let s:sync.set_cursor = funcref('s:sync_set_cursor')
 
