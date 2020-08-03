@@ -1,4 +1,10 @@
 let s:Later = vital#fern#import('Async.Later')
+let s:LEVEL_HIGHLIGHT = {
+      \ 'DEBUG': 'Comment',
+      \ 'INFO': 'Special',
+      \ 'WARN': 'WarningMsg',
+      \ 'ERROR': 'ErrorMsg',
+      \}
 
 function! fern#logger#debug(...) abort
   if g:fern#loglevel > g:fern#logger#DEBUG
@@ -31,20 +37,23 @@ endfunction
 function! s:log(level, ...) abort
   let content = s:format(a:level, a:000)
   if g:fern#logfile is# v:null
-    call s:Later.call({ -> s:echomsg(content) })
+    let hl = get(s:LEVEL_HIGHLIGHT, a:level, 'None')
+    call s:Later.call({ -> s:echomsg(hl, content) })
   else
     call s:Later.call({ -> s:writefile(content) })
   endif
 endfunction
 
-function! s:echomsg(content) abort
+function! s:echomsg(hl, content) abort
   let more = &more
   try
     set nomore
+    execute printf('echohl %s', a:hl)
     for line in a:content
       echomsg '[fern] ' . line | redraw | echo
     endfor
   finally
+    echohl None
     let &more = more
   endtry
 endfunction
@@ -65,7 +74,7 @@ endfunction
 
 function! s:format(level, args) abort
   let m = join(map(copy(a:args), { _, v -> type(v) is# v:t_string ? v : string(v) }))
-  return map(split(m, '\n'), { -> printf("%-5S:\t%s", a:level, v:val) })
+  return map(split(m, '\n'), { -> printf("%-5S: %s", a:level, v:val) })
 endfunction
 
 let g:fern#logger#DEBUG = 0
