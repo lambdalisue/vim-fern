@@ -11,11 +11,13 @@ function! fern#internal#scheme#provider_new(scheme) abort
 endfunction
 
 function! fern#internal#scheme#mapping_init(scheme, disable_default_mappings) abort
-  let mappings = get(g:, printf('fern#scheme#%s#mapping#mappings', a:scheme), [])
-  for name in mappings
-    call s:call(a:scheme, printf('mapping#%s#init', name), a:disable_default_mappings)
-  endfor
-  return s:call(a:scheme, 'mapping#init', a:disable_default_mappings)
+  call s:call(a:scheme, 'mapping#init', a:disable_default_mappings)
+  try
+    for name in g:fern#scheme#{a:scheme}#mapping#mappings
+      call s:call(a:scheme, printf('mapping#%s#init', name), a:disable_default_mappings)
+    endfor
+  catch /^Vim\%((\a\+)\)\=:E121:/
+  endtry
 endfunction
 
 function! fern#internal#scheme#complete_url(scheme, arglead, cmdline, cursorpos) abort
