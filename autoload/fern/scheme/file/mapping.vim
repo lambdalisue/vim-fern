@@ -2,6 +2,7 @@ let s:Promise = vital#fern#import('Async.Promise')
 let s:Prompt = vital#fern#import('Prompt')
 
 function! fern#scheme#file#mapping#init(disable_default_mappings) abort
+  nnoremap <buffer><silent> <Plug>(fern-action-new-path) :<C-u>call <SID>call('new_path')<CR>
   nnoremap <buffer><silent> <Plug>(fern-action-new-file) :<C-u>call <SID>call('new_file')<CR>
   nnoremap <buffer><silent> <Plug>(fern-action-new-dir)  :<C-u>call <SID>call('new_dir')<CR>
   nnoremap <buffer><silent> <Plug>(fern-action-copy)     :<C-u>call <SID>call('copy')<CR>
@@ -48,24 +49,26 @@ function! s:map_open_system(helper) abort
         \.finally({ -> Done() })
 endfunction
 
+function! s:map_new_path(helper) abort
+  let name = input(
+        \ "(Hint: Ends with '/' create a directory instead of a file)\nNew path: ",
+        \ '',
+        \ 'file',
+        \)
+  if empty(name)
+    return s:Promise.reject('Cancelled')
+  endif
+  return name[-1:] ==# '/'
+        \ ? s:new_dir(a:helper, name)
+        \ : s:new_file(a:helper, name)
+endfunction
+
 function! s:map_new_file(helper) abort
   let name = input('New file: ', '', 'file')
   if empty(name)
     return s:Promise.reject('Cancelled')
   endif
-  let node = a:helper.sync.get_cursor_node()
-  let node = node.status isnot# a:helper.STATUS_EXPANDED ? node.__owner : node
-  let path = fern#internal#filepath#to_slash(node._path)
-  let path = join([path, name], '/')
-  let path = fern#internal#filepath#from_slash(path)
-  let key = node.__key + [name]
-  let token = a:helper.fern.source.token
-  let previous = a:helper.sync.get_cursor_node()
-  return fern#scheme#file#shutil#mkfile(path, token)
-        \.then({ -> a:helper.async.reload_node(node.__key) })
-        \.then({ -> a:helper.async.reveal_node(key) })
-        \.then({ -> a:helper.async.redraw() })
-        \.then({ -> a:helper.sync.focus_node(key, { 'previous': previous }) })
+  return s:new_file(a:helper, name)
 endfunction
 
 function! s:map_new_dir(helper) abort
@@ -73,19 +76,7 @@ function! s:map_new_dir(helper) abort
   if empty(name)
     return s:Promise.reject('Cancelled')
   endif
-  let node = a:helper.sync.get_cursor_node()
-  let node = node.status isnot# a:helper.STATUS_EXPANDED ? node.__owner : node
-  let path = fern#internal#filepath#to_slash(node._path)
-  let path = join([path, name], '/')
-  let path = fern#internal#filepath#from_slash(path)
-  let key = node.__key + [name]
-  let token = a:helper.fern.source.token
-  let previous = a:helper.sync.get_cursor_node()
-  return fern#scheme#file#shutil#mkdir(path, token)
-        \.then({ -> a:helper.async.reload_node(node.__key) })
-        \.then({ -> a:helper.async.reveal_node(key) })
-        \.then({ -> a:helper.async.redraw() })
-        \.then({ -> a:helper.sync.focus_node(key, { 'previous': previous }) })
+  return s:new_dir(a:helper, name)
 endfunction
 
 function! s:map_copy(helper) abort
@@ -190,6 +181,38 @@ function! s:map_remove(helper) abort
         \.then({ -> a:helper.async.reload_node(root.__key) })
         \.then({ -> a:helper.async.redraw() })
         \.then({ -> a:helper.sync.echo(printf('%d items are removed', len(ps))) })
+endfunction
+
+function! s:new_file(helper, name) abort
+  let node = a:helper.sync.get_cursor_node()
+  let node = node.status isnot# a:helper.STATUS_EXPANDED ? node.__owner : node
+  let path = fern#internal#filepath#to_slash(node._path)
+  let path = join([path, a:name], '/')
+  let path = fern#internal#filepath#from_slash(path)
+  let key = node.__key + [a:name]
+  let token = a:helper.fern.source.token
+  let previous = a:helper.sync.get_cursor_node()
+  return fern#scheme#file#shutil#mkfile(path, token)
+        \.then({ -> a:helper.async.reload_node(node.__key) })
+        \.then({ -> a:helper.async.reveal_node(key) })
+        \.then({ -> a:helper.async.redraw() })
+        \.then({ -> a:helper.sync.focus_node(key, { 'previous': previous }) })
+endfunction
+
+function! s:new_dir(helper, name) abort
+  let node = a:helper.sync.get_cursor_node()
+  let node = node.status isnot# a:helper.STATUS_EXPANDED ? node.__owner : node
+  let path = fern#internal#filepath#to_slash(node._path)
+  let path = join([path, a:name], '/')
+  let path = fern#internal#filepath#from_slash(path)
+  let key = node.__key + [a:name]
+  let token = a:helper.fern.source.token
+  let previous = a:helper.sync.get_cursor_node()
+  return fern#scheme#file#shutil#mkdir(path, token)
+        \.then({ -> a:helper.async.reload_node(node.__key) })
+        \.then({ -> a:helper.async.reveal_node(key) })
+        \.then({ -> a:helper.async.redraw() })
+        \.then({ -> a:helper.sync.focus_node(key, { 'previous': previous }) })
 endfunction
 
 let g:fern#scheme#file#mapping#mappings = get(g:, 'fern#scheme#file#mapping#mappings', [

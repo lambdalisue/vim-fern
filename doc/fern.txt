@@ -798,6 +798,13 @@ FILE							*fern-mapping-file*
 
 The following mappings/actions are only available on file:// scheme.
 
+<Plug>(fern-action-new-path)
+	Open a prompt to ask a path and create a file/directory of the input
+	path from the path of a cursor node.
+	Any intermediate directories of the destination will be created.
+	If the path ends with "/", it creates a directory. Otherwise it
+	creates a file.
+
 <Plug>(fern-action-new-file)
 	Open a prompt to ask a path and create a file of the input path from
 	the path of a cursor node.
