@@ -19,6 +19,11 @@ INTERFACE				|fern-interface|
   FUNCTION				|fern-function|
   AUTOCMD				|fern-autocmd|
   HIGHLIGHT				|fern-highlight|
+MAPPING					|fern-mapping|
+  GLOBAL				|fern-mapping-global|
+  FILE					|fern-mapping-file|
+  DICT					|fern-mapping-dict|
+GLOSSARY				|fern-glossary|
 CHANGELOG				|fern-changelog|
 
 
@@ -629,6 +634,336 @@ FernWindowSelectIndicator		*hl-FernWindowSelectIndicator*
 FernWindowSelectStatusLine		*hl-FernWindowSelectStatusLine*
 	A |highlight| group used for |statusline| when selecting a window
 	through "open:select" action.
+
+
+=============================================================================
+MAPPING							*fern-mapping*
+
+As described in |fern-action|, some mappings in fern are used as action.
+See |fern-action| for more detail.
+
+-----------------------------------------------------------------------------
+GLOBAL							*fern-mapping-global*
+
+<Plug>(fern-action-zoom:half)
+	Zoom width of the drawer style fern to half of the global width.
+	The original window width will be restored once user leave the window.
+	It only works on a drawer style fern window.
+
+<Plug>(fern-action-zoom:full)
+	Zoom width of the drawer style fern to full of the global width.
+	The original window width will be restored once user leave the window.
+	It only works on a drawer style fern window.
+
+<Plug>(fern-action-hidden-set)
+	Show hidden nodes. For example hidden nodes in file:// scheme is a
+	file or directory starts from '.' character.
+	
+<Plug>(fern-action-hidden-unset)
+	Hide hidden nodes. For example hidden nodes in file:// scheme is a
+	file or directory starts from '.' character.
+
+<Plug>(fern-action-hidden-unset)
+	Toggle hidden nodes. For example hidden nodes in file:// scheme is a
+	file or directory starts from '.' character.
+
+<Plug>(fern-action-include)
+	Open a prompt to enter include filter. Users can type a |pattern| to
+	filter nodes recursively.
+
+<Plug>(fern-action-exclude)
+	Open a prompt to enter exclude filter. Users can type a |pattern| to
+	filter nodes recursively.
+
+<Plug>(fern-action-mark-clear)
+	Clear existing marks.
+
+<Plug>(fern-action-mark-toggle)
+	Toggle marks on cursor node(s).
+
+<Plug>(fern-action-mark-set)
+	Set marks on cursor node(s).
+
+<Plug>(fern-action-mark-unset)
+	Unset marks on cursor node(s).
+
+<Plug>(fern-action-debug)
+	Echo debug information of a cursor node.
+
+<Plug>(fern-action-reload)
+	Reload on a cursor node and its children.
+
+<Plug>(fern-action-expand)
+	Expand on a cursor node.
+
+<Plug>(fern-action-collapse)
+	Collapse on a cursor node.
+
+<Plug>(fern-action-reveal)
+	Open a prompt to reveal a node in a tree.
+
+<Plug>(fern-action-enter)
+	Open a new fern buffer which root node is a cursor node. In other
+	word, get enter the directory.
+
+<Plug>(fern-action-leave)
+	Open a new fern buffer which root node is a parent node of the current 
+	root node. In other word, go up directory.
+
+<Plug>(fern-action-open:select)
+	Open a cursor node or marked nodes through "window selector"
+	(|fern-glofern-glossary-window-selector|.)
+
+<Plug>(fern-action-open:split)
+<Plug>(fern-action-open:vsplit)
+<Plug>(fern-action-open:tabedit)
+	Open a cursor node or marked nodes with a corresponding command.
+	The command will be applied on an "anchor" window when invoked from a
+	drawer style fern (|fern-glossary-anchor|.)
+
+<Plug>(fern-action-edit-or-error)
+	Open a cursor node or marked nodes with |edit| command or fallback
+	to print an error. 
+	Note that when 'hidden' has set or 'bufhidden' is "hide", the |edit|
+	command will never fails.
+
+<Plug>(fern-action-open:edit-or-split)
+<Plug>(fern-action-open:edit-or-vsplit)
+<Plug>(fern-action-open:edit-or-tabedit)
+	Open a cursor node or marked nodes with |edit| command or fallback
+	to a corresponding command.
+	Note that when 'hidden' has set or 'bufhidden' is "hide", the |edit|
+	command will never fails.
+
+<Plug>(fern-action-open:above)
+<Plug>(fern-action-open:left)
+<Plug>(fern-action-open:below)
+<Plug>(fern-action-open:right)
+	Open a cursor node or marked nodes on a corresponding direction
+	from an "anchor" window.
+	The command will be applied on the anchor window when invoked from a
+	drawer style fern (|fern-glossary-anchor|.)
+
+<Plug>(fern-action-open:top)
+<Plug>(fern-action-open:leftest)
+<Plug>(fern-action-open:bottom)
+<Plug>(fern-action-open:rightest)
+	Open a cursor node or marked nodes on a edge of a corresponding
+	direction from an "anchor" window.
+	The command will be applied on the anchor window when invoked from a
+	drawer style fern (|fern-glossary-anchor|.)
+
+<Plug>(fern-action-open:side)
+	Open a cursor node or marked nodes on the right side of the current
+	window. The behavior is slightly different between a drawer style fern
+	window and a split style fern window due to the presence of "anchor".
+
+<Plug>(fern-action-open-or-enter)
+	Invoke "open" action on a leaf node and "enter" action on a branch
+	node.
+
+<Plug>(fern-action-open-or-expand)
+	Invoke "open" action on a leaf node and "expand" action on a branch
+	node.
+
+<Plug>(fern-action-open:edit)
+	An alias to "open:edit-or-error" action. Users can overwrite this
+	mapping to change the default behavior of "open:edit" action like:
+>
+	nmap <buffer> 
+	      \ <Plug>(fern-action-open:edit)
+	      \ <Plug>(fern-action-open:edit-or-tabedit)
+<
+<Plug>(fern-action-open)
+	An alias to "open:edit" action. Users can overwrite this mapping to
+	change the default behavior of "open" action like:
+>
+	nmap <buffer> 
+	      \ <Plug>(fern-action-open)
+	      \ <Plug>(fern-action-open:select)
+<
+<Plug>(fern-action-cancel)
+	Cancel tree rendering.
+
+<Plug>(fern-action-redraw)
+	Redraw tree.
+
+<Plug>(fern-wait)
+	Wait a previous asynchronous action to continue asynchronous actions
+	sequentially.
+	Note this is not action.
+
+-----------------------------------------------------------------------------
+FILE							*fern-mapping-file*
+
+The following mappings/actions are only available on file:// scheme.
+
+<Plug>(fern-action-new-file)
+	Open a prompt to ask a path and create a file of the input path from
+	the path of a cursor node.
+	Any intermediate directories of the destination will be created.
+
+<Plug>(fern-action-new-dir)
+	Open a prompt to ask a path and create a directory of the input path 
+	from the path of a cursor node.
+	Any intermediate directories of the destination will be created.
+
+<Plug>(fern-action-copy)
+	Open a prompt to ask a path and copy a file/directory of the cursor
+	node or marked node path(s) to the input path(s).
+	Any intermediate directories of the destination will be created.
+	The prompt will repeatedly open if multiple nodes has marked.
+
+<Plug>(fern-action-move)
+	Open a prompt to ask a path and move a file/directory of the cursor
+	node or marked node path(s) to the input path(s).
+	Any intermediate directories of the destination will be created.
+	The prompt will repeatedly open if multiple nodes has marked.
+
+<Plug>(fern-action-trash)
+	Open a prompt to ask if fern can send the cursor node or marked nodes
+	to the system trash-bin. It uses the following implementations to send
+	the node(s) into system trash-bin.
+	OS		Requirement~
+	macOS:		osascript (OS builtin)
+	Windows:	PowerShell (OS builtin)
+	Linux:		trash-ci or gomi (Users need to install)
+			https://github.com/andreafrancia/trash-cli
+			https://github.com/b4b4r07/gomi
+	Note that the action fails without removing the files/directories if
+	no requirement exists on Linux.
+
+<Plug>(fern-action-remove)
+	Open a prompt to ask if fern can DELETE the cursor node or marked
+	nodes. BE CAREFUL with this action while it DELETE the file/direcoty
+	and users cannot restore (like "rm" in terminal.)
+
+<Plug>(fern-action-cd:root)
+<Plug>(fern-action-lcd:root)
+<Plug>(fern-action-tcd:root)
+	Invoke |:cd|, |:lcd|, or |:tcd| command on the path of the root node.
+
+<Plug>(fern-action-cd:cursor)
+<Plug>(fern-action-lcd:cursor)
+<Plug>(fern-action-tcd:cursor)
+	Invoke |:cd|, |:lcd|, or |:tcd| command on the path of a cursor node.
+
+<Plug>(fern-action-cd)
+<Plug>(fern-action-lcd)
+<Plug>(fern-action-tcd)
+	An alias to "cd:cursor", "lcd:cursor", and "tcd:cursor" action.
+	Users can overwrite this mapping to change the default behavior like:
+>
+	nmap <buffer> 
+	      \ <Plug>(fern-action-cd)
+	      \ <Plug>(fern-action-cd:root)
+<
+<Plug>(fern-action-clipboard-copy)
+	Copy a cursor node or marked nodes into an internal clipboard.
+	Actual copy happens when users paste the nodes with "clipboard-paste"
+	action.
+	Note that this action has NO-relation with the system clipboard.
+
+<Plug>(fern-action-clipboard-move)
+	Move a cursor node or marked nodes into an internal clipboard.
+	Actual move happens when users paste the nodes with "clipboard-paste"
+	action.
+	Note that this action has NO-relation with the system clipboard.
+
+<Plug>(fern-action-clipboard-paste)
+	Paste copied/moved nodes on a cursor node. It does not clear the
+	internal clipboard so users can copy -> paste -> paste -> ...
+	Note that this action has NO-relation with the system clipboard.
+
+<Plug>(fern-action-clipboard-clear)
+	Clear the internal clipboard.
+	Note that this action has NO-relation with the system clipboard.
+
+<Plug>(fern-action-grep)
+	Open a prompt to ask a grep pattern and execute grep command under the
+	cursor node. It respects the value of 'grepprg' and 'grepformat'.
+	
+<Plug>(fern-action-rename:select)
+<Plug>(fern-action-rename:split)
+<Plug>(fern-action-rename:vsplit)
+<Plug>(fern-action-rename:tabedit)
+<Plug>(fern-action-rename:above)
+<Plug>(fern-action-rename:left)
+<Plug>(fern-action-rename:below)
+<Plug>(fern-action-rename:right)
+<Plug>(fern-action-rename:top)
+<Plug>(fern-action-rename:leftest)
+<Plug>(fern-action-rename:bottom)
+<Plug>(fern-action-rename:rightest)
+<Plug>(fern-action-rename:edit-or-error)
+<Plug>(fern-action-rename:edit-or-split)
+<Plug>(fern-action-rename:edit-or-vsplit)
+<Plug>(fern-action-rename:edit-or-tabedit)
+<Plug>(fern-action-rename:edit)
+<Plug>(fern-action-rename:side)
+<Plug>(fern-action-rename)
+	Open "renamer" (|fern-glossary-renamer|) for a cursor node or marked
+	nodes in similar manners of global "open" actions.
+
+<Plug>(fern-action-open:system)
+	Open a cursor node or marked nodes on a default program of the system.
+	For example, a cursor node points a PDF file, an application "Preview"
+	will open that file in macOS.
+
+<Plug>(fern-action-terminal:select)
+<Plug>(fern-action-terminal:split)
+<Plug>(fern-action-terminal:vsplit)
+<Plug>(fern-action-terminal:tabedit)
+<Plug>(fern-action-terminal:above)
+<Plug>(fern-action-terminal:left)
+<Plug>(fern-action-terminal:below)
+<Plug>(fern-action-terminal:right)
+<Plug>(fern-action-terminal:top)
+<Plug>(fern-action-terminal:leftest)
+<Plug>(fern-action-terminal:bottom)
+<Plug>(fern-action-terminal:rightest)
+<Plug>(fern-action-terminal:edit-or-error)
+<Plug>(fern-action-terminal:edit-or-split)
+<Plug>(fern-action-terminal:edit-or-vsplit)
+<Plug>(fern-action-terminal:edit-or-tabedit)
+<Plug>(fern-action-terminal:edit)
+<Plug>(fern-action-terminal:side)
+<Plug>(fern-action-terminal)
+	Open terminal window(s) on or on parent of a cursor node or marked 
+	nodes in similar manners of global "open" actions.
+
+-----------------------------------------------------------------------------
+DICT							*fern-mapping-dict*
+
+The following mappings/actions are only available on dict:// scheme.
+
+TBW
+
+
+=============================================================================
+GLOSSARY						*fern-glossary*
+
+					*fern-glossary-anchor*
+"anchor"		A nearest suitable window from a drawer style fern
+			window. "suitable" window is a window which is
+			1. not quickfix window
+			2. not location-list window
+			3. not 'winfixwidth'
+			4. not 'winfixheight'
+			5. not 'previewwindow'
+			Usually a right window by the drawer become "anchor".
+
+					*fern-glossary-renamer*
+"renamer"		A special buffer which lists paths. Users can modify
+			the paths and save. Once user save the content with
+			|:write| command, corresponding rename process will
+			invokes (e.g. file/directory rename on file:// scheme)
+
+					*fern-glossary-window-selector*
+"window selector"	A special prompt to select window to open a node.
+			Once user hit a window indicator displayed under each
+			window, a content of the node will be opened at that
+			window.
 
 
 =============================================================================
