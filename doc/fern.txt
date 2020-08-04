@@ -24,6 +24,7 @@ MAPPING					|fern-mapping|
   FILE					|fern-mapping-file|
   DICT					|fern-mapping-dict|
 GLOSSARY				|fern-glossary|
+DEVELOPMENT				|fern-development|
 CHANGELOG				|fern-changelog|
 
 
@@ -959,6 +960,12 @@ GLOSSARY						*fern-glossary*
 			Once user hit a window indicator displayed under each
 			window, a content of the node will be opened at that
 			window.
+
+
+=============================================================================
+DEVELOPMENT						*fern-development*
+
+There is |fern-develop.txt| as an API documentation for fern plugin developer.
 
 
 =============================================================================
