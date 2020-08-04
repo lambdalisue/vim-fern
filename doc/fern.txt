@@ -181,14 +181,7 @@ hit "e", add the following code:
 	nmap <buffer> <Plug>(fern-action-open) <Plug>(fern-action-open:split)
 <
 							*fern-custom-wait*
-Fern provide following mapping helper:
-
-	*<Plug>(fern-wait)*	Wait until the fern buffer become ready which
-				would opened just before this mapping. This is
-				required while fern buffers are loaded
-				asynchronously but mappings are inovked
-				synchronously.
-
+Fern provide |<Plug>(fern-wait)| mapping as a helper.
 For example, following execute "tcd:root" action every after "leave" action.
 >
 	nmap <buffer> <Plug>(fern-my-leave-and-tcd)
@@ -663,7 +656,7 @@ GLOBAL							*fern-mapping-global*
 	Hide hidden nodes. For example hidden nodes in file:// scheme is a
 	file or directory starts from '.' character.
 
-*<Plug>(fern-action-hidden-unset)*
+*<Plug>(fern-action-hidden-toggle)*
 	Toggle hidden nodes. For example hidden nodes in file:// scheme is a
 	file or directory starts from '.' character.
 
@@ -789,9 +782,11 @@ GLOBAL							*fern-mapping-global*
 	Redraw tree.
 
 *<Plug>(fern-wait)*
-	Wait a previous asynchronous action to continue asynchronous actions
-	sequentially.
+	Wait until the fern buffer become ready which would opened just before 
+	this mapping. This is required while fern buffers are loaded 
+	asynchronously but mappings are inovked synchronously.
 	Note this is not action.
+
 
 -----------------------------------------------------------------------------
 FILE							*fern-mapping-file*
