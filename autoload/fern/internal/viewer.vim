@@ -30,7 +30,7 @@ function! s:init() abort
   setlocal signcolumn=yes
 
   augroup fern_viewer_internal
-    autocmd!
+    autocmd! * <buffer>
     autocmd BufEnter <buffer> setlocal nobuflisted
     autocmd BufReadCmd <buffer> ++nested call s:BufReadCmd()
     autocmd ColorScheme <buffer> call s:ColorScheme()
