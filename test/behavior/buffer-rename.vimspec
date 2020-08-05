@@ -1,0 +1,63 @@
+Describe buffer-rename
+  Before
+    let workdir = tempname()
+    lockvar workdir
+    call mkdir(workdir, 'p')
+    call writefile([], fern#internal#filepath#join([workdir, 'alpha']))
+    call writefile([], fern#internal#filepath#join([workdir, 'beta']))
+    call writefile([], fern#internal#filepath#join([workdir, 'gamma']))
+    %bwipeout!
+  End
+
+  After
+    %bwipeout!
+    call delete(workdir, 'rf')
+    set hidden&
+  End
+
+  It "move" action will update bufname of a corresponding opened buffer
+    execute printf('edit %s', fnameescape(fern#internal#filepath#join([workdir, 'alpha'])))
+    execute printf('Fern %s -wait', fnameescape(workdir))
+    Assert Match(execute('ls'), '\<alpha\>')
+    call timer_start(0, { -> feedkeys("\<C-w>OMEGA\<CR>") })
+    execute "normal ggj\<Plug>(fern-action-move)\<Plug>(fern-wait)"
+    Assert Equals(getline(1, '$'), [
+          \ printf('%s ', fnamemodify(workdir, ':t')),
+          \ '|  OMEGA ',
+          \ '|  beta ',
+          \ '|  gamma ',
+          \])
+    Assert NotMatch(execute('ls'), '\<alpha\>')
+    Assert Match(execute('ls'), '\<OMEGA\>')
+  End
+
+  It "remove" action will remove a corresponding opened buffer
+    execute printf('edit %s', fnameescape(fern#internal#filepath#join([workdir, 'alpha'])))
+    execute printf('Fern %s -wait', fnameescape(workdir))
+    Assert Match(execute('ls'), '\<alpha\>')
+    call timer_start(0, { -> feedkeys("y\<CR>") })
+    execute "normal ggj\<Plug>(fern-action-remove)\<Plug>(fern-wait)"
+    Assert Equals(getline(1, '$'), [
+          \ printf('%s ', fnamemodify(workdir, ':t')),
+          \ '|  beta ',
+          \ '|  gamma ',
+          \])
+    Assert NotMatch(execute('ls'), '\<alpha\>')
+  End
+
+  It "remove" action does NOT remove a corresponding opened buffer if modified
+    set hidden
+    execute printf('edit %s', fnameescape(fern#internal#filepath#join([workdir, 'alpha'])))
+    call append(0, ["Hello World"])
+    execute printf('Fern %s -wait', fnameescape(workdir))
+    Assert Match(execute('ls'), '\<alpha\>')
+    call timer_start(0, { -> feedkeys("y\<CR>") })
+    execute "normal ggj\<Plug>(fern-action-remove)\<Plug>(fern-wait)"
+    Assert Equals(getline(1, '$'), [
+          \ printf('%s ', fnamemodify(workdir, ':t')),
+          \ '|  beta ',
+          \ '|  gamma ',
+          \])
+    Assert Match(execute('ls'), '\<alpha\>')
+  End
+End

@@ -57,8 +57,7 @@ endfunction
 function! s:_map_rename(helper, result) abort
   let token = a:helper.fern.source.token
   let ps = []
-  for pair in a:result
-    let [src, dst] = pair
+  for [src, dst] in a:result
     if !filereadable(src) && !isdirectory(src)
       echohl WarningMsg
       echo printf('%s does not exist', src)
@@ -68,5 +67,6 @@ function! s:_map_rename(helper, result) abort
     call add(ps, fern#scheme#file#shutil#move(src, dst, token))
   endfor
   return s:Promise.all(ps)
+        \.then({ -> fern#scheme#file#bufutil#moves(a:result) })
         \.then({ -> len(ps) })
 endfunction
