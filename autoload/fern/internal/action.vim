@@ -85,10 +85,13 @@ function! s:map_help(all) abort
   call map(rs, { _, v -> v[3:] })
   call map(rs, { _, v -> matchlist(v, '^\([^ ]\+\)\s*\*\?@\?\(.*\)$')[1:2] })
 
+  " To action mapping
   let rs1 = map(copy(rs), { _, v -> v + [matchstr(v[1], '^<Plug>(fern-action-\zs.*\ze)$')] })
   call filter(rs1, { _, v -> !empty(v[2]) })
+  call filter(rs1, { _, v -> v[0] !~# '^<Plug>' || v[0] =~# '^<Plug>(fern-action-' })
   call map(rs1, { _, v -> [v[0], v[2], v[1]] })
 
+  " From action mapping
   let rs2 = map(copy(rs), { _, v -> v + [matchstr(v[0], '^<Plug>(fern-action-\zs.*\ze)$')] })
   call filter(rs2, { _, v -> !empty(v[2]) })
   call map(rs2, { _, v -> ['', v[2], v[0]] })
