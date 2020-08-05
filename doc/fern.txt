@@ -506,7 +506,7 @@ fern#smart#leaf({leaf}, {collapsed}[, {expanded}])
 >
 	" Perform 'open' on leaf node and 'enter' on branch node
 	nmap <buffer><expr>
-	      \ <Plug>(fern-open-or-enter)
+	      \ <Plug>(fern-my-open-or-enter)
 	      \ fern#smart#leaf(
 	      \   "\<Plug>(fern-action-open)",
 	      \   "\<Plug>(fern-action-enter)",
@@ -515,7 +515,7 @@ fern#smart#leaf({leaf}, {collapsed}[, {expanded}])
 	" Perform 'open' on leaf node, 'expand' on collapsed node, and
 	" 'collapse' on expanded node.
 	nmap <buffer><expr>
-	      \ <Plug>(fern-open-or-expand-or-collapse)
+	      \ <Plug>(fern-my-open-or-expand-or-collapse)
 	      \ fern#smart#leaf(
 	      \   "\<Plug>(fern-action-open)",
 	      \   "\<Plug>(fern-action-expand)",
