@@ -49,8 +49,8 @@ function! fern#mapping#open#init(disable_default_mappings) abort
   nmap <buffer><silent> <Plug>(fern-action-open) <Plug>(fern-action-open:edit)
 
   if !a:disable_default_mappings
-    nmap <buffer><nowait> <C-m> <Plug>(fern-open-or-enter)
-    nmap <buffer><nowait> l <Plug>(fern-open-or-expand)
+    nmap <buffer><nowait> <C-m> <Plug>(fern-action-open-or-enter)
+    nmap <buffer><nowait> l <Plug>(fern-action-open-or-expand)
     nmap <buffer><nowait> s <Plug>(fern-action-open:select)
     nmap <buffer><nowait> e <Plug>(fern-action-open)
     nmap <buffer><nowait> E <Plug>(fern-action-open:side)
