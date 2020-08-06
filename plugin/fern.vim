@@ -1,4 +1,4 @@
-if exists('g:loaded_fern')
+if exists('g:loaded_fern') || ( !has('nvim') && v:version < 801 )
   finish
 endif
 let g:loaded_fern = 1
