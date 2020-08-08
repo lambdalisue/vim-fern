@@ -1,0 +1,130 @@
+Describe fern#internal#rename_solver
+  Before all
+    let Exist = { -> 0 }
+    let Tempname = { p -> '@temp/' . p }
+    let IsDirectory = { -> 1 }
+  End
+
+  Describe #solve()
+    It solves "Simple renames"
+      let in = [
+            \ ['foo', 'a'],
+            \ ['bar', 'b'],
+            \]
+      let out = fern#internal#rename_solver#solve(in, {
+            \ 'exist': { p -> index(['foo', 'bar'], p) isnot# -1 },
+            \ 'tempname': Tempname,
+            \ 'isdirectory': IsDirectory,
+            \})
+      Assert Equals(out, [
+            \ ['foo', 'a'],
+            \ ['bar', 'b'],
+            \])
+    End
+
+    It solves "Nested renames"
+      let in = [
+            \ ['foo', 'bar'],
+            \ ['foo/a', 'bar/a'],
+            \ ['foo/b', 'bar/c'],
+            \]
+      let out = fern#internal#rename_solver#solve(in, {
+            \ 'exist': { p -> index(['foo', 'foo/a', 'foo/b'], p) isnot# -1 },
+            \ 'tempname': Tempname,
+            \ 'isdirectory': IsDirectory,
+            \})
+      Assert Equals(out, [
+            \ ['foo', 'bar'],
+            \ ['bar/b', 'bar/c'],
+            \])
+    End
+
+    It solves "Cross renames"
+      let in = [
+            \ ['foo', 'a/foo'],
+            \ ['foo/a', 'a'],
+            \]
+      let out = fern#internal#rename_solver#solve(in, {
+            \ 'exist': { p -> index(['foo', 'foo/a'], p) isnot# -1 },
+            \ 'tempname': Tempname,
+            \ 'isdirectory': IsDirectory,
+            \})
+      Assert Equals(out, [
+            \ ['foo/a', 'a'],
+            \ ['foo', 'a/foo'],
+            \])
+    End
+
+    It solves "Cyclic renames"
+      let in = [
+            \ ['foo', 'bar'],
+            \ ['bar', 'foo'],
+            \]
+      let out = fern#internal#rename_solver#solve(in, {
+            \ 'exist': { p -> index(['foo', 'bar'], p) isnot# -1 },
+            \ 'tempname': Tempname,
+            \ 'isdirectory': IsDirectory,
+            \})
+      Assert Equals(out, [
+            \ ['foo', '@temp/bar'],
+            \ ['bar', 'foo'],
+            \ ['@temp/bar', 'bar'],
+            \])
+    End
+
+    It solves "Nested cyclic renames"
+      let in = [
+            \ ['a', 'b'],
+            \ ['a/b', 'b/c'],
+            \ ['a/c', 'b/b'],
+            \]
+      let out = fern#internal#rename_solver#solve(in, {
+            \ 'exist': { p -> index(['a', 'a/b', 'a/c'], p) isnot# -1 },
+            \ 'tempname': Tempname,
+            \ 'isdirectory': IsDirectory,
+            \})
+      Assert Equals(out, [
+            \ ['a', 'b'],
+            \ ['b/b', '@temp/b/c'],
+            \ ['b/c', 'b/b'],
+            \ ['@temp/b/c', 'b/c'],
+            \])
+    End
+
+    It throws an error when destinations are not unique
+      let in = [
+            \ ['foo', 'baz'],
+            \ ['bar', 'baz'],
+            \]
+      Throws /more than once/ fern#internal#rename_solver#solve(in, {
+            \ 'exist': Exist,
+            \ 'tempname': Tempname,
+            \ 'isdirectory': IsDirectory,
+            \})
+    End
+
+    It throws an error on "Confclits with existing file"
+      let in = [
+            \ ['foo', 'bar'],
+            \ ['foo/a', 'bar/b'],
+            \]
+      Throws /already exist/ fern#internal#rename_solver#solve(in, {
+            \ 'exist': { p -> index(['foo', 'foo/a', 'foo/b'], p) isnot# -1 },
+            \ 'tempname': Tempname,
+            \ 'isdirectory': IsDirectory,
+            \})
+    End
+
+    It throws an error on "Rename into files"
+      let in = [
+            \ ['foo', 'a/foo'],
+            \ ['foo/a', 'a'],
+            \]
+      Throws /is not directory/ fern#internal#rename_solver#solve(in, {
+            \ 'exist': { p -> index(['foo', 'foo/a'], p) isnot# -1 },
+            \ 'tempname': Tempname,
+            \ 'isdirectory': { p -> index(['foo'], p) isnot# -1 },
+            \})
+    End
+  End
+End
