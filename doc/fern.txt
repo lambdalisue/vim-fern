@@ -822,6 +822,7 @@ The following mappings/actions are only available on file:// scheme.
 	node or marked node path(s) to the input path(s).
 	Any intermediate directories of the destination will be created.
 	The prompt will repeatedly open if multiple nodes has marked.
+	Note: This behaves like `mv` but creates non-existent parent directories.
 
 *<Plug>(fern-action-trash)*
 	Open a prompt to ask if fern can send the cursor node or marked nodes
