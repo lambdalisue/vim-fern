@@ -375,6 +375,11 @@ VARIABLE						*fern-variable*
 	See |fern-action-mappings| for more detail.
 	Default: 0
 
+*g:fern#disable_viewer_auto_duplication*
+	Set 1 to disable viewer auto duplication on |WinEnter| autocmd.
+	The duplication is mainly occured when user execute |split| or
+	|vsplit| command to duplicate window.
+
 *g:fern#disable_drawer_auto_winfixwidth*
 	Set 1 to disable automatically enable 'winfixwidth' to drawer on
 	|BufEnter| autocmd.

@@ -18,6 +18,7 @@ call s:Config.config(expand('<sfile>:p'), {
       \ 'keepalt_on_edit': 0,
       \ 'keepjumps_on_edit': 0,
       \ 'disable_default_mappings': 0,
+      \ 'disable_viewer_auto_duplication': 0,
       \ 'disable_drawer_auto_winfixwidth': 0,
       \ 'disable_drawer_auto_resize': 0,
       \ 'disable_drawer_auto_quit': 0,
