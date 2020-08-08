@@ -38,11 +38,20 @@ endfunction
 function! s:map_rename(helper, opener) abort
   let root = a:helper.sync.get_root_node()
   let nodes = a:helper.sync.get_selected_nodes()
+  let tree = a:helper.fern.provider._tree
   let Factory = { -> map(copy(nodes), { -> v:val._path }) }
+  let solver_options = {
+        \ 'exist': { v -> fern#scheme#dict#tree#exists(tree, v) },
+        \ 'tempname': { _ -> fern#scheme#dict#tree#tempname(tree) },
+        \ 'isdirectory': { v -> type(fern#scheme#dict#tree#read(tree, v)) is# v:t_dict },
+        \}
   let options = {
         \ 'opener': a:opener,
         \ 'cursor': [1, len(root._path) + 1],
         \ 'is_drawer': a:helper.sync.is_drawer(),
+        \ 'modifiers': [
+        \   { r -> fern#internal#rename_solver#solve(r, solver_options) },
+        \ ],
         \}
   let ns = {}
   return fern#internal#replacer#start(Factory, options)
@@ -57,18 +66,10 @@ endfunction
 function! s:_map_rename(helper, result) abort
   let provider = a:helper.fern.provider
   let tree = provider._tree
-  let proceeded = 0
-  for pair in a:result
-    let [src, dst] = pair
-    if fern#scheme#dict#tree#exists(tree, src)
-      echohl WarningMsg
-      echo printf('%s does not exist', src)
-      echohl None
-      continue
-    endif
+  let fs = []
+  for [src, dst] in a:result
     call fern#scheme#dict#tree#move(tree, src, dst)
-    let proceeded += 1
   endfor
   call provider._update_tree(provider._tree)
-  return s:Promise.resolve(proceeded)
+  return s:Promise.resolve(len(fs))
 endfunction
