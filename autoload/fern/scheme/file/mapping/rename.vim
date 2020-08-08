@@ -43,9 +43,12 @@ function! s:map_rename(helper, opener) abort
         \ 'opener': a:opener,
         \ 'cursor': [1, len(root._path) + 1],
         \ 'is_drawer': a:helper.sync.is_drawer(),
+        \ 'modifiers':[
+        \   { r -> fern#internal#rename_solver#solve(r) },
+        \ ],
         \}
   let ns = {}
-  return fern#internal#renamer#rename(Factory, options)
+  return fern#internal#replacer#start(Factory, options)
         \.then({ r -> s:_map_rename(a:helper, r) })
         \.then({ n -> s:Lambda.let(ns, 'n', n) })
         \.then({ -> a:helper.async.collapse_modified_nodes(nodes) })
@@ -56,17 +59,11 @@ endfunction
 
 function! s:_map_rename(helper, result) abort
   let token = a:helper.fern.source.token
-  let ps = []
+  let fs = []
   for [src, dst] in a:result
-    if !filereadable(src) && !isdirectory(src)
-      echohl WarningMsg
-      echo printf('%s does not exist', src)
-      echohl None
-      continue
-    endif
-    call add(ps, fern#scheme#file#shutil#move(src, dst, token))
+    call add(fs, function('fern#scheme#file#shutil#move', [src, dst, token]))
   endfor
-  return s:Promise.all(ps)
+  return s:Promise.chain(fs)
         \.then({ -> fern#scheme#file#bufutil#moves(a:result) })
-        \.then({ -> len(ps) })
+        \.then({ -> len(fs) })
 endfunction

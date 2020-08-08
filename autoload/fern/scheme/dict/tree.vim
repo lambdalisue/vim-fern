@@ -99,6 +99,17 @@ function! fern#scheme#dict#tree#move(tree, src, dst) abort
   call fern#scheme#dict#tree#remove(a:tree, a:src)
 endfunction
 
+function! fern#scheme#dict#tree#tempname(tree) abort
+  let value = 0
+  while 1
+    let value += 1
+    let path = '@temp:' . sha256(value)
+    if !fern#scheme#dict#tree#exists(a:tree, path)
+      return path
+    endif
+  endwhile
+endfunction
+
 function! s:select_overwrite_method(path) abort
   let prompt = join([
         \ printf(

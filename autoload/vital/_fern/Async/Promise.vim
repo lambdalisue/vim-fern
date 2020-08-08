@@ -4,7 +4,7 @@
 function! s:_SID() abort
   return matchstr(expand('<sfile>'), '<SNR>\zs\d\+\ze__SID$')
 endfunction
-execute join(['function! vital#_fern#Async#Promise#import() abort', printf("return map({'resolve': '', '_vital_depends': '', 'wait': '', '_vital_created': '', 'all': '', 'noop': '', 'on_unhandled_rejection': '', 'is_promise': '', 'race': '', 'is_available': '', 'reject': '', 'new': '', '_vital_loaded': ''}, \"vital#_fern#function('<SNR>%s_' . v:key)\")", s:_SID()), 'endfunction'], "\n")
+execute join(['function! vital#_fern#Async#Promise#import() abort', printf("return map({'resolve': '', '_vital_depends': '', 'race': '', 'wait': '', '_vital_created': '', 'all': '', 'noop': '', 'on_unhandled_rejection': '', 'is_promise': '', 'chain': '', 'is_available': '', 'reject': '', 'new': '', '_vital_loaded': ''}, \"vital#_fern#function('<SNR>%s_' . v:key)\")", s:_SID()), 'endfunction'], "\n")
 delfunction s:_SID
 " ___vital___
 " ECMAScript like Promise library for asynchronous operations.
@@ -277,6 +277,27 @@ function! s:wait(promise, ...) abort
   else
     return [v:null, a:promise._result]
   endif
+endfunction
+
+function! s:chain(promise_factories) abort
+  return s:_chain(copy(a:promise_factories), [])
+endfunction
+
+function! s:_chain(promise_factories, results) abort
+  if len(a:promise_factories) is# 0
+    return s:resolve(a:results)
+  endif
+  let Factory = remove(a:promise_factories, 0)
+  try
+    return Factory()
+          \.then({ v -> add(a:results, v) })
+          \.then({ -> s:_chain(a:promise_factories, a:results) })
+  catch
+    return s:reject({
+          \ 'exception': v:exception,
+          \ 'throwpoint': v:throwpoint,
+          \})
+  endtry
 endfunction
 
 let s:_on_unhandled_rejection = s:NOOP
