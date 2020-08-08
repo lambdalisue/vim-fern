@@ -120,7 +120,7 @@ function! s:WinEnter() abort
   let fri = fern#internal#bufname#parse(bufname('%'))
   let fri.authority = ''
   let bufname = fern#fri#format(fri)
-  execute printf('silent! keepalt edit %s$', fnameescape(bufname))
+  execute printf('silent! keepalt edit %s', fnameescape(bufname))
 endfunction
 
 function! s:BufReadCmd() abort
