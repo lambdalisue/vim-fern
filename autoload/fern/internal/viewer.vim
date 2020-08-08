@@ -32,10 +32,13 @@ function! s:init() abort
   augroup fern_viewer_internal
     autocmd! * <buffer>
     autocmd BufEnter <buffer> setlocal nobuflisted
-    autocmd WinEnter <buffer> ++nested call s:WinEnter()
     autocmd BufReadCmd <buffer> ++nested call s:BufReadCmd()
     autocmd ColorScheme <buffer> call s:ColorScheme()
     autocmd CursorMoved,CursorMovedI,BufLeave <buffer> let b:fern_cursor = getcurpos()[1:2]
+
+    if !g:fern#disable_viewer_auto_duplication
+      autocmd WinEnter <buffer> ++nested call s:WinEnter()
+    endif
   augroup END
 
   " Add unique fragment to make each buffer uniq
