@@ -45,7 +45,7 @@ function! s:map_rename(helper, opener) abort
         \ 'is_drawer': a:helper.sync.is_drawer(),
         \}
   let ns = {}
-  return fern#internal#renamer#rename(Factory, options)
+  return fern#internal#replacer#start(Factory, options)
         \.then({ r -> s:_map_rename(a:helper, r) })
         \.then({ n -> s:Lambda.let(ns, 'n', n) })
         \.then({ -> a:helper.async.collapse_modified_nodes(nodes) })
