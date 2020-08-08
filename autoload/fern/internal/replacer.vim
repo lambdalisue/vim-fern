@@ -7,6 +7,7 @@ function! fern#internal#replacer#start(factory, ...) abort
         \ 'opener': 'vsplit',
         \ 'cursor': [1, 1],
         \ 'is_drawer': v:false,
+        \ 'modifiers': [],
         \}, a:0 ? a:1 : {},
         \)
   return s:Promise.new(funcref('s:executor', [a:factory, options]))
@@ -29,6 +30,7 @@ function! s:executor(factory, options, resolve, reject) abort
   let b:fern_replacer_resolve = a:resolve
   let b:fern_replacer_factory = a:factory
   let b:fern_replacer_candidates = a:factory()
+  let b:fern_replacer_modifiers = a:options.modifiers
 
   augroup fern_replacer_internal
     autocmd! * <buffer>
@@ -83,19 +85,29 @@ function! s:BufWriteCmd() abort
     return
   endif
   let candidates = b:fern_replacer_candidates
-  let results = []
+  let result = []
   for index in range(len(candidates))
     let src = candidates[index]
     let dst = getline(index + 1)
     if empty(dst) || dst ==# src
       continue
     endif
-    call add(results, [src, dst])
+    call add(result, [src, dst])
   endfor
-  let Resolve = b:fern_replacer_resolve
-  set nomodified
-  close
-  call Resolve(results)
+  try
+    for Modifier in b:fern_replacer_modifiers
+      let result = Modifier(result)
+    endfor
+    let Resolve = b:fern_replacer_resolve
+    set nomodified
+    close
+    call Resolve(result)
+  catch
+    echohl ErrorMsg
+    echo '[fern] Please fix the following error first to continue or cancel with ":q!"'
+    echo printf('[fern] %s', substitute(v:exception, '^Vim(.*):', '', ''))
+    echohl None
+  endtry
 endfunction
 
 function! s:syntax() abort
