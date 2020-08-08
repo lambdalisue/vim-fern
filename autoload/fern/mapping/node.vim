@@ -2,13 +2,16 @@ let s:Promise = vital#fern#import('Async.Promise')
 
 function! fern#mapping#node#init(disable_default_mappings) abort
   nnoremap <buffer><silent> <Plug>(fern-action-debug)         :<C-u>call <SID>call('debug')<CR>
-  nnoremap <buffer><silent> <Plug>(fern-action-reload)        :<C-u>call <SID>call('reload')<CR>
+  nnoremap <buffer><silent> <Plug>(fern-action-reload:all)    :<C-u>call <SID>call('reload_all')<CR>
+  nnoremap <buffer><silent> <Plug>(fern-action-reload:cursor) :<C-u>call <SID>call('reload_cursor')<CR>
   nnoremap <buffer><silent> <Plug>(fern-action-expand)        :<C-u>call <SID>call('expand')<CR>
   nnoremap <buffer><silent> <Plug>(fern-action-collapse)      :<C-u>call <SID>call('collapse')<CR>
   nnoremap <buffer><silent> <Plug>(fern-action-reveal)        :<C-u>call <SID>call('reveal')<CR>
 
   nnoremap <buffer><silent> <Plug>(fern-action-enter)         :<C-u>call <SID>call('enter')<CR>
   nnoremap <buffer><silent> <Plug>(fern-action-leave)         :<C-u>call <SID>call('leave')<CR>
+
+  nmap <buffer> <Plug>(fern-action-reload) <Plug>(fern-action-reload:all)
 
   if !a:disable_default_mappings
     nmap <buffer><nowait> <F5> <Plug>(fern-action-reload)
@@ -34,7 +37,13 @@ function! s:map_debug(helper) abort
   redraw | echo fern#internal#node#debug(node)
 endfunction
 
-function! s:map_reload(helper) abort
+function! s:map_reload_all(helper) abort
+  let node = a:helper.sync.get_root_node()
+  return a:helper.async.reload_node(node.__key)
+        \.then({ -> a:helper.async.redraw() })
+endfunction
+
+function! s:map_reload_cursor(helper) abort
   let node = a:helper.sync.get_cursor_node()
   if node is# v:null
     return s:Promise.reject('no node found on a cursor line')

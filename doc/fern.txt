@@ -689,9 +689,20 @@ GLOBAL							*fern-mapping-global*
 *<Plug>(fern-action-debug)*
 	Echo debug information of a cursor node.
 
-*<Plug>(fern-action-reload)*
+*<Plug>(fern-action-reload:all)*
+	Reload on the root node and its children.
+
+*<Plug>(fern-action-reload:cursor)*
 	Reload on a cursor node and its children.
 
+*<Plug>(fern-action-reload)*
+	An alias to "reload:all" action. Users can overwrite this mapping to
+	change the default behavior of "reload" action like:
+>
+	nmap <buffer> 
+	      \ <Plug>(fern-action-reload)
+	      \ <Plug>(fern-action-reload:cursor)
+<
 *<Plug>(fern-action-expand)*
 	Expand on a cursor node.
 
