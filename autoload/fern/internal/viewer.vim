@@ -32,6 +32,7 @@ function! s:init() abort
   augroup fern_viewer_internal
     autocmd! * <buffer>
     autocmd BufEnter <buffer> setlocal nobuflisted
+    autocmd WinEnter <buffer> ++nested call s:WinEnter()
     autocmd BufReadCmd <buffer> ++nested call s:BufReadCmd()
     autocmd ColorScheme <buffer> call s:ColorScheme()
     autocmd CursorMoved,CursorMovedI,BufLeave <buffer> let b:fern_cursor = getcurpos()[1:2]
@@ -108,6 +109,18 @@ function! s:notify(bufnr, error) abort
       call notifier.reject([a:bufnr, a:error])
     endif
   endif
+endfunction
+
+function! s:WinEnter() abort
+  if len(win_findbuf(bufnr('%'))) < 2
+    return
+  endif
+  " Only one window is allowed to display one fern buffer.
+  " So create a new fern buffer with same options
+  let fri = fern#internal#bufname#parse(bufname('%'))
+  let fri.authority = ''
+  let bufname = fern#fri#format(fri)
+  execute printf('silent! keepalt edit %s$', fnameescape(bufname))
 endfunction
 
 function! s:BufReadCmd() abort
