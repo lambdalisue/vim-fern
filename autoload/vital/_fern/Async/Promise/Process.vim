@@ -23,9 +23,14 @@ function! s:start(args, ...) abort
         \ 'raw': 0,
         \ 'stdin': s:Promise.reject(),
         \ 'token': s:CancellationToken.none,
+        \ 'reject_on_failure': v:false,
         \}, a:0 ? a:1 : {},
         \)
-  return s:Promise.new(funcref('s:_executor', [a:args, options]))
+  let p = s:Promise.new(funcref('s:_executor', [a:args, options]))
+  if options.reject_on_failure
+    let p = p.then(funcref('s:_reject_on_failure'))
+  endif
+  return p
 endfunction
 
 function! s:is_available() abort
@@ -33,6 +38,13 @@ function! s:is_available() abort
     return 0
   endif
   return s:Promise.is_available() && s:Job.is_available()
+endfunction
+
+function! s:_reject_on_failure(result) abort
+  if a:result.exitval
+    return s:Promise.reject(a:result)
+  endif
+  return a:result
 endfunction
 
 function! s:_executor(args, options, resolve, reject) abort
