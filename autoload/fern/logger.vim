@@ -7,28 +7,28 @@ let s:LEVEL_HIGHLIGHT = {
       \}
 
 function! fern#logger#debug(...) abort
-  if g:fern#loglevel > g:fern#logger#DEBUG
+  if g:fern#loglevel > g:fern#DEBUG
     return
   endif
   call call('s:log', ['DEBUG'] + a:000)
 endfunction
 
 function! fern#logger#info(...) abort
-  if g:fern#loglevel > g:fern#logger#INFO
+  if g:fern#loglevel > g:fern#INFO
     return
   endif
   call call('s:log', ['INFO'] + a:000)
 endfunction
 
 function! fern#logger#warn(...) abort
-  if g:fern#loglevel > g:fern#logger#WARN
+  if g:fern#loglevel > g:fern#WARN
     return
   endif
   call call('s:log', ['WARN'] + a:000)
 endfunction
 
 function! fern#logger#error(...) abort
-  if g:fern#loglevel > g:fern#logger#ERROR
+  if g:fern#loglevel > g:fern#ERROR
     return
   endif
   call call('s:log', ['ERROR'] + a:000)
@@ -77,10 +77,11 @@ function! s:format(level, args) abort
   return map(split(m, '\n'), { -> printf("%-5S: %s", a:level, v:val) })
 endfunction
 
-let g:fern#logger#DEBUG = 0
-let g:fern#logger#INFO = 1
-let g:fern#logger#WARN = 2
-let g:fern#logger#ERROR = 3
+" For backword compatibility
+let g:fern#logger#DEBUG = g:fern#DEBUG
+let g:fern#logger#INFO = g:fern#INFO
+let g:fern#logger#WARN = g:fern#WARN
+let g:fern#logger#ERROR = g:fern#ERROR
 lockvar g:fern#logger#DEBUG
 lockvar g:fern#logger#INFO
 lockvar g:fern#logger#WARN

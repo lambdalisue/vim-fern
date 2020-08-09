@@ -302,11 +302,11 @@ VARIABLE						*fern-variable*
 *g:fern#loglevel*
 	A |Number| to indicate a current loglevel. Use the following constant
 	variable to set loglevel.
-	*g:fern#logger#DEBUG*		Debug level
-	*g:fern#logger#INFO*		Info level
-	*g:fern#logger#WARN*		Warn level
-	*g:fern#logger#ERROR*		Error level
-	Default: |g:fern#logger#ERROR|
+	*g:fern#DEBUG*		Debug level
+	*g:fern#INFO*		Info level
+	*g:fern#WARN*		Warn level
+	*g:fern#ERROR*		Error level
+	Default: |g:fern#ERROR|
 
 *g:fern#opener*
 	A default |fern-opener| used to open a fern buffer itself in split

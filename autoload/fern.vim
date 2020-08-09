@@ -8,11 +8,20 @@ lockvar g:fern#STATUS_NONE
 lockvar g:fern#STATUS_COLLAPSED
 lockvar g:fern#STATUS_EXPANDED
 
+let g:fern#DEBUG = 0
+let g:fern#INFO = 1
+let g:fern#WARN = 2
+let g:fern#ERROR = 3
+lockvar g:fern#DEBUG
+lockvar g:fern#INFO
+lockvar g:fern#WARN
+lockvar g:fern#ERROR
+
 " Define Public variables
 call s:Config.config(expand('<sfile>:p'), {
       \ 'profile': 0,
       \ 'logfile': v:null,
-      \ 'loglevel': g:fern#logger#INFO,
+      \ 'loglevel': g:fern#INFO,
       \ 'opener': 'edit',
       \ 'keepalt_on_edit': 0,
       \ 'keepjumps_on_edit': 0,
