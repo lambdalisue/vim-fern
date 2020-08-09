@@ -35,11 +35,12 @@ function! fern#logger#error(...) abort
 endfunction
 
 function! s:log(level, ...) abort
-  let content = s:format(a:level, a:000)
   if g:fern#logfile is# v:null
     let hl = get(s:LEVEL_HIGHLIGHT, a:level, 'None')
+    let content = s:format(a:level, a:000, ' ')
     call s:Later.call({ -> s:echomsg(hl, content) })
   else
+    let content = s:format(a:level, a:000, "\t")
     call s:Later.call({ -> s:writefile(content) })
   endif
 endfunction
@@ -72,9 +73,9 @@ function! s:writefile(content) abort
   endtry
 endfunction
 
-function! s:format(level, args) abort
+function! s:format(level, args, sep) abort
   let m = join(map(copy(a:args), { _, v -> type(v) is# v:t_string ? v : string(v) }))
-  return map(split(m, '\n'), { -> printf("%-5S: %s", a:level, v:val) })
+  return map(split(m, '\n'), { -> printf("%-5S:%s%s", a:level, a:sep, v:val) })
 endfunction
 
 " For backword compatibility
