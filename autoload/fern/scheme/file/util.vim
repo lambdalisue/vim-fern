@@ -12,7 +12,8 @@ if !s:is_windows && executable('ls')
   " the option is applied.
   function! fern#scheme#file#util#list_entries_ls(path, token) abort
     let Profile = fern#profile#start('fern#scheme#file#util#list_entries_ls')
-    return s:Process.start(['ls', '-1AU', a:path], { 'token': a:token })
+    return s:Process.start(['ls', '-1AU', a:path], { 'token': a:token, 'reject_on_failure': 1 })
+          \.catch({ v -> s:Promise.reject(join(v.stderr, "\n")) })
           \.then({ v -> v.stdout })
           \.then(s:AsyncLambda.filter_f({ v -> !empty(v) }))
           \.then(s:AsyncLambda.map_f({ v -> a:path . '/' . v }))
@@ -23,7 +24,8 @@ endif
 if !s:is_windows && executable('find')
   function! fern#scheme#file#util#list_entries_find(path, token) abort
     let Profile = fern#profile#start('fern#scheme#file#util#list_entries_find')
-    return s:Process.start(['find', a:path, '-follow', '-maxdepth', '1'], { 'token': a:token })
+    return s:Process.start(['find', a:path, '-follow', '-maxdepth', '1'], { 'token': a:token, 'reject_on_failure': 1 })
+          \.catch({ v -> s:Promise.reject(join(v.stderr, "\n")) })
           \.then({ v -> v.stdout })
           \.then(s:AsyncLambda.filter_f({ v -> !empty(v) && v !=# a:path }))
           \.finally({ -> Profile() })
@@ -54,7 +56,8 @@ endfunction
 if s:is_windows
   function! fern#scheme#file#util#list_drives(token) abort
     let Profile = fern#profile#start('fern#scheme#file#util#list_drives')
-    return s:Process.start(['wmic', 'logicaldisk', 'get', 'name'], { 'token': a:token })
+    return s:Process.start(['wmic', 'logicaldisk', 'get', 'name'], { 'token': a:token, 'reject_on_failure': 1 })
+          \.catch({ v -> s:Promise.reject(join(v.stderr, "\n")) })
           \.then({ v -> v.stdout })
           \.then(s:AsyncLambda.filter_f({ v -> v =~# '^\w:' }))
           \.then(s:AsyncLambda.map_f({ v -> v:val[:1] . '\' }))

@@ -8,12 +8,20 @@ lockvar g:fern#STATUS_NONE
 lockvar g:fern#STATUS_COLLAPSED
 lockvar g:fern#STATUS_EXPANDED
 
+let g:fern#DEBUG = 0
+let g:fern#INFO = 1
+let g:fern#WARN = 2
+let g:fern#ERROR = 3
+lockvar g:fern#DEBUG
+lockvar g:fern#INFO
+lockvar g:fern#WARN
+lockvar g:fern#ERROR
+
 " Define Public variables
 call s:Config.config(expand('<sfile>:p'), {
-      \ 'debug': 0,
       \ 'profile': 0,
       \ 'logfile': v:null,
-      \ 'loglevel': g:fern#logger#INFO,
+      \ 'loglevel': g:fern#INFO,
       \ 'opener': 'edit',
       \ 'keepalt_on_edit': 0,
       \ 'keepjumps_on_edit': 0,
@@ -26,9 +34,9 @@ call s:Config.config(expand('<sfile>:p'), {
       \ 'default_include': '',
       \ 'default_exclude': '',
       \ 'renderer': 'default',
-      \ 'renderers': get(g:, 'fern#internal#core#renderers', {}),
+      \ 'renderers': {},
       \ 'comparator': 'default',
-      \ 'comparators': get(g:, 'fern#internal#core#comparators', {}),
+      \ 'comparators': {},
       \ 'drawer_width': 30,
       \ 'drawer_keep': v:false,
       \ 'mark_symbol': '*',

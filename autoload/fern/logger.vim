@@ -7,39 +7,40 @@ let s:LEVEL_HIGHLIGHT = {
       \}
 
 function! fern#logger#debug(...) abort
-  if g:fern#loglevel > g:fern#logger#DEBUG
+  if g:fern#loglevel > g:fern#DEBUG
     return
   endif
   call call('s:log', ['DEBUG'] + a:000)
 endfunction
 
 function! fern#logger#info(...) abort
-  if g:fern#loglevel > g:fern#logger#INFO
+  if g:fern#loglevel > g:fern#INFO
     return
   endif
   call call('s:log', ['INFO'] + a:000)
 endfunction
 
 function! fern#logger#warn(...) abort
-  if g:fern#loglevel > g:fern#logger#WARN
+  if g:fern#loglevel > g:fern#WARN
     return
   endif
   call call('s:log', ['WARN'] + a:000)
 endfunction
 
 function! fern#logger#error(...) abort
-  if g:fern#loglevel > g:fern#logger#ERROR
+  if g:fern#loglevel > g:fern#ERROR
     return
   endif
   call call('s:log', ['ERROR'] + a:000)
 endfunction
 
 function! s:log(level, ...) abort
-  let content = s:format(a:level, a:000)
   if g:fern#logfile is# v:null
     let hl = get(s:LEVEL_HIGHLIGHT, a:level, 'None')
+    let content = s:format(a:level, a:000, ' ')
     call s:Later.call({ -> s:echomsg(hl, content) })
   else
+    let content = s:format(a:level, a:000, "\t")
     call s:Later.call({ -> s:writefile(content) })
   endif
 endfunction
@@ -72,15 +73,16 @@ function! s:writefile(content) abort
   endtry
 endfunction
 
-function! s:format(level, args) abort
+function! s:format(level, args, sep) abort
   let m = join(map(copy(a:args), { _, v -> type(v) is# v:t_string ? v : string(v) }))
-  return map(split(m, '\n'), { -> printf("%-5S: %s", a:level, v:val) })
+  return map(split(m, '\n'), { -> printf("%-5S:%s%s", a:level, a:sep, v:val) })
 endfunction
 
-let g:fern#logger#DEBUG = 0
-let g:fern#logger#INFO = 1
-let g:fern#logger#WARN = 2
-let g:fern#logger#ERROR = 3
+" For backword compatibility
+let g:fern#logger#DEBUG = g:fern#DEBUG
+let g:fern#logger#INFO = g:fern#INFO
+let g:fern#logger#WARN = g:fern#WARN
+let g:fern#logger#ERROR = g:fern#ERROR
 lockvar g:fern#logger#DEBUG
 lockvar g:fern#logger#INFO
 lockvar g:fern#logger#WARN
