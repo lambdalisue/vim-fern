@@ -64,7 +64,7 @@ function! s:patch155_BufWriteCmd() abort
   echomsg printf(
         \ '"%s" %dL, %dC written',
         \ expand('%:p:~'),
-        \ split(info[1])[-1],
-        \ split(info[3])[-1],
+        \ split(get(info, 1, '0'))[-1],
+        \ split(get(info, 3, '0'))[-1],
         \)
 endfunction
