@@ -71,17 +71,13 @@ function! s:init() abort
     call fern#internal#drawer#init()
     call fern#internal#spinner#start()
     call helper.fern.renderer.highlight()
-    " Notify plugins
-    call fern#hook#emit('renderer:highlight', helper)
-    " Notify users
+    call fern#hook#emit('viewer:highlight', helper)
     doautocmd <nomodeline> User FernHighlight
 
     " now the buffer is ready so set filetype to emit FileType
     setlocal filetype=fern
     call helper.fern.renderer.syntax()
-    " Notify plugins
-    call fern#hook#emit('renderer:syntax', helper)
-    " Notify users
+    call fern#hook#emit('viewer:syntax', helper)
     doautocmd <nomodeline> User FernSyntax
     call fern#internal#action#init()
 
@@ -130,9 +126,7 @@ function! s:BufReadCmd() abort
   let helper = fern#helper#new()
   setlocal filetype=fern
   call helper.fern.renderer.syntax()
-  " Notify plugins
-  call fern#hook#emit('renderer:syntax', helper)
-  " Notify users
+  call fern#hook#emit('viewer:syntax', helper)
   doautocmd <nomodeline> User FernSyntax
   let root = helper.sync.get_root_node()
   let cursor = get(b:, 'fern_cursor', getcurpos()[1:2])
@@ -148,9 +142,7 @@ endfunction
 function! s:ColorScheme() abort
   let helper = fern#helper#new()
   call helper.fern.renderer.highlight()
-  " Notify plugins
-  call fern#hook#emit('renderer:highlight', helper)
-  " Notify users
+  call fern#hook#emit('viewer:highlight', helper)
   doautocmd <nomodeline> User FernHighlight
 endfunction
 
@@ -159,3 +151,7 @@ augroup fern-internal-viewer-internal
   autocmd User FernSyntax :
   autocmd User FernHighlight :
 augroup END
+
+" Deprecated:
+call fern#hook#add('viewer:highlight', { h -> fern#hook#emit('renderer:highlight', h) })
+call fern#hook#add('viewer:syntax', { h -> fern#hook#emit('renderer:syntax', h) })
