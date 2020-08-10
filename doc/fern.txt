@@ -497,6 +497,10 @@ COMMAND							*fern-command*
 -----------------------------------------------------------------------------
 FUNCTION						*fern-function*
 
+							*fern#version()*
+fern#version()
+	Show fern version itself.
+
 							*fern#smart#leaf()*
 fern#smart#leaf({leaf}, {collapsed}[, {expanded}])
 	Return one of a given mapping expression determined by a "status" of a

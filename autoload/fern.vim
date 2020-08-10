@@ -1,3 +1,4 @@
+let s:root = expand('<sfile>:p:h')
 let s:Config = vital#fern#import('Config')
 
 " Define Public constant
@@ -41,3 +42,14 @@ call s:Config.config(expand('<sfile>:p'), {
       \ 'drawer_keep': v:false,
       \ 'mark_symbol': '*',
       \})
+
+function! fern#version() abort
+  if !executable('git')
+    echohl ErrorMsg
+    echo '[fern] "git" is not executable'
+    echohl None
+    return
+  endif
+  let r = system(printf('git -C %s describe --tags --always --dirty', s:root))
+  echo printf('[fern] %s', r)
+endfunction
