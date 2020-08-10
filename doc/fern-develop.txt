@@ -9,14 +9,14 @@ CONTENTS					*fern-develop-contents*
 INTRODUCTION				|fern-develop-introduction|
 FRI					|fern-develop-fri|
 NODE					|fern-develop-node|
-COMPARATOR				|fern-develop-comparator|
 MAPPING					|fern-develop-mapping|
-RENDERER				|fern-develop-renderer|
 SCHEME					|fern-develop-scheme|
   PROVIDER				|fern-develop-scheme-provider|
   MAPPING				|fern-develop-scheme-provider|
 HOOK					|fern-develop-hook|
 HELPER					|fern-develop-helper|
+RENDERER				|fern-develop-renderer|
+COMPARATOR				|fern-develop-comparator|
 LOGGER					|fern-develop-logger|
 UTILITY					|fern-develop-utility|
 
@@ -153,36 +153,6 @@ A node instance is a tree item which has the following attributes:
 
 
 =============================================================================
-COMPARATOR					*fern-develop-comparator*
-
-Comparator is an instance which has the following methods to sort nodes in an
-entire tree.
-
-					*fern-develop-comparator.compare()*
-.compare({lhs}, {rhs})
-	Compare {lhs} and {rhs} nodes and return -1, 0, or 1.
-
-*g:fern#comparators*
-	comparator and the value is a function reference which return a
-	comparator instance when called.
-	Default: {}
-
-A 3rd-party plugin MUST extend |g:fern#comparators| in plugin
-directory to register a comparator itself like:
->
-	if exists('g:loaded_fern_comparator_foo')
-	  finish
-	endif
-	let g:loaded_fern_comparator_foo = 1
-
-	call extend(g:fern#comparators, {
-	      \ 'foo': function('fern#comparator#foo#new'),
-	      \})
-<
-See https://github.com/lambdalisue/fern-comparator-lexical.vim as example.
-
-
-=============================================================================
 MAPPING						*fern-develop-mapping*
 
 Fern provides global mappings under "autoload/fern/mapping" directory.
@@ -200,61 +170,6 @@ like:
 *g:fern#mapping#mappings*
 	A |List| of globally available mapping names. 
 	A target mapping MUST exist under "fern#mapping#" namespace.
-
-
-=============================================================================
-RENDERER					*fern-develop-renderer*
-
-Renderer is an instance which has the following methods to render a list of
-nodes as a tree.
-
-					*fern-develop-renderer.render()*
-.render({nodes})
-	Return a promise which is resolved to a list of |String|.
-
-	Change (v1.6.0):~
-	Second argumet ({marks}) has removed.
-
-					*fern-develop-renderer.index()*
-.index({lnum})
-	Return a corresponding index (|Number|) of {lnum}. It is used to find
-	a node under a cursor.
-
-					*fern-develop-renderer.lnum()*
-.lnum({index})
-	Return a corresponding lnum (|Number|) of {index}. It is used to find
-	a line number where a node has displayed.
-
-					*fern-develop-renderer.syntax()*
-.syntax()
-	Define syntax on a current buffer. The function is called posterior to
-	'filetype' specification and every after |BufReadCmd| has fired.
-
-					*fern-develop-renderer.highlight()*
-.highlight()
-	Define highlight on a current buffer. The function is called prior to
-	'filetype' specification and every after |ColorScheme| has fired.
-
-*g:fern#renderers*
-	A |Dict| to define external renderers. The key is a name of renderer
-	and the value is a function reference which return a renderer instance
-	when called.
-	Default: {}
-
-A 3rd-party plugin MUST extend |g:fern#renderers| to register a
-renderer itself like:
->
-	" plugin/fern_renderer_foo.vim
-	if exists('g:loaded_fern_renderer_foo')
-	  finish
-	endif
-	let g:loaded_fern_renderer_foo = 1
-
-	call extend(g:fern#renderers, {
-	      \ 'foo': function('fern#renderer#foo#new'),
-	      \})
-<
-See https://github.com/lambdalisue/fern-renderer-nerdfont.vim as example.
 
 
 =============================================================================
@@ -323,6 +238,41 @@ like:
 	A |List| of scheme available mapping names for {scheme}.
 	A target mapping MUST exist under "fern#scheme#{scheme}#mapping#"
 	namespace.
+
+
+=============================================================================
+HOOK						*fern-develop-hook*
+
+Following hook will be emitted by |fern#hook#emit()| from fern itself.
+
+"viewer:syntax" ({helper})
+	Called when fern viewer has registered the syntax.
+	The {helper} is a helper instance described in |fern-develop-helper|.
+
+"viewer:highlight" ({helper})
+	Called when fern viewer has registered the highlight.
+	The {helper} is a helper instance described in |fern-develop-helper|.
+
+"viewer:redraw" ({helper})
+	Called when fern viewer has redrawed.
+	The {helper} is a helper instance described in |fern-develop-helper|.
+
+"viewer:remark" ({helper})
+	Called when fern viewer has remarked.
+	The {helper} is a helper instance described in |fern-develop-helper|.
+
+"viewer:ready" ({helper})
+	Called when fern viewer has ready, mean that the buffer has opened and
+	all content has rendererd.
+	The {helper} is a helper instance described in |fern-develop-helper|.
+
+"renderer:syntax" ({helper})
+	DEPRECATED:
+	Use "viewer:syntax" instead.
+
+"renderer:highlight" ({helper})
+	DEPRECATED:
+	Use "viewer:highlight" instead.
 
 
 =============================================================================
@@ -543,31 +493,88 @@ Following methods are executed asynchronously and return a promise.
 
 
 =============================================================================
-HOOK						*fern-develop-hook*
+COMPARATOR					*fern-develop-comparator*
 
-Following hook will be emitted by |fern#hook#emit()| from fern itself.
+Comparator is an instance which has the following methods to sort nodes in an
+entire tree.
 
-"renderer:syntax" ({helper})
-	Called when fern renderer has register its syntax.
-	The {helper} is a helper instance described in |fern-develop-helper|.
+					*fern-develop-comparator.compare()*
+.compare({lhs}, {rhs})
+	Compare {lhs} and {rhs} nodes and return -1, 0, or 1.
 
-"renderer:highlight" ({helper})
-	Called when fern renderer has register its highlight.
-	The {helper} is a helper instance described in |fern-develop-helper|.
+*g:fern#comparators*
+	comparator and the value is a function reference which return a
+	comparator instance when called.
+	Default: {}
 
-"viewer:redraw" ({helper})
-	Called when fern viewer has redrawed.
-	The {helper} is a helper instance described in |fern-develop-helper|.
+A 3rd-party plugin MUST extend |g:fern#comparators| in plugin
+directory to register a comparator itself like:
+>
+	if exists('g:loaded_fern_comparator_foo')
+	  finish
+	endif
+	let g:loaded_fern_comparator_foo = 1
 
-"viewer:remark" ({helper})
-	Called when fern viewer has remarked.
-	The {helper} is a helper instance described in |fern-develop-helper|.
+	call extend(g:fern#comparators, {
+	      \ 'foo': function('fern#comparator#foo#new'),
+	      \})
+<
+See https://github.com/lambdalisue/fern-comparator-lexical.vim as example.
 
-"viewer:ready" ({helper})
-	Called when fern viewer has ready, mean that the buffer has opened and
-	all content has rendererd.
-	The {helper} is a helper instance described in |fern-develop-helper|.
 
+=============================================================================
+RENDERER					*fern-develop-renderer*
+
+Renderer is an instance which has the following methods to render a list of
+nodes as a tree.
+
+					*fern-develop-renderer.render()*
+.render({nodes})
+	Return a promise which is resolved to a list of |String|.
+
+	Change (v1.6.0):~
+	Second argumet ({marks}) has removed.
+
+					*fern-develop-renderer.index()*
+.index({lnum})
+	Return a corresponding index (|Number|) of {lnum}. It is used to find
+	a node under a cursor.
+
+					*fern-develop-renderer.lnum()*
+.lnum({index})
+	Return a corresponding lnum (|Number|) of {index}. It is used to find
+	a line number where a node has displayed.
+
+					*fern-develop-renderer.syntax()*
+.syntax()
+	Define syntax on a current buffer. The function is called posterior to
+	'filetype' specification and every after |BufReadCmd| has fired.
+
+					*fern-develop-renderer.highlight()*
+.highlight()
+	Define highlight on a current buffer. The function is called prior to
+	'filetype' specification and every after |ColorScheme| has fired.
+
+*g:fern#renderers*
+	A |Dict| to define external renderers. The key is a name of renderer
+	and the value is a function reference which return a renderer instance
+	when called.
+	Default: {}
+
+A 3rd-party plugin MUST extend |g:fern#renderers| to register a
+renderer itself like:
+>
+	" plugin/fern_renderer_foo.vim
+	if exists('g:loaded_fern_renderer_foo')
+	  finish
+	endif
+	let g:loaded_fern_renderer_foo = 1
+
+	call extend(g:fern#renderers, {
+	      \ 'foo': function('fern#renderer#foo#new'),
+	      \})
+<
+See https://github.com/lambdalisue/fern-renderer-nerdfont.vim as example.
 
 =============================================================================
 LOGGER						*fern-develop-logger*
@@ -614,6 +621,8 @@ fern#hook#add({name}, {callback}[, {options}])
 >
 	call fern#hook#add('BufRead', { -> execute('echomsg "Ready"', '') })
 <
+	See |fern-develop-hook| for available hook {name}.
+
 						*fern#hook#remove()*
 fern#hook#remove({name}[, {id}])
 	Remove the {id} hook or all hooks when missing for the {name}.
