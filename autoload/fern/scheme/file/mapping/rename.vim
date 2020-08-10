@@ -64,6 +64,6 @@ function! s:_map_rename(helper, result) abort
     call add(fs, function('fern#scheme#file#shutil#move', [src, dst, token]))
   endfor
   return s:Promise.chain(fs)
-        \.then({ -> fern#scheme#file#bufutil#moves(a:result) })
+        \.then({ -> fern#internal#buffer#renames(a:result) })
         \.then({ -> len(fs) })
 endfunction
