@@ -22,10 +22,10 @@ Describe buffer-rename
     call timer_start(0, { -> feedkeys("\<C-w>OMEGA\<CR>") })
     execute "normal ggj\<Plug>(fern-action-move)\<Plug>(fern-wait)"
     Assert Equals(getline(1, '$'), [
-          \ printf('%s ', fnamemodify(workdir, ':t')),
-          \ '|  OMEGA ',
-          \ '|  beta ',
-          \ '|  gamma ',
+          \ printf('%s', fnamemodify(workdir, ':t')),
+          \ '|  OMEGA',
+          \ '|  beta',
+          \ '|  gamma',
           \])
     Assert NotMatch(execute('ls'), '\<alpha\>')
     Assert Match(execute('ls'), '\<OMEGA\>')
@@ -38,9 +38,9 @@ Describe buffer-rename
     call timer_start(0, { -> feedkeys("y\<CR>") })
     execute "normal ggj\<Plug>(fern-action-remove)\<Plug>(fern-wait)"
     Assert Equals(getline(1, '$'), [
-          \ printf('%s ', fnamemodify(workdir, ':t')),
-          \ '|  beta ',
-          \ '|  gamma ',
+          \ printf('%s', fnamemodify(workdir, ':t')),
+          \ '|  beta',
+          \ '|  gamma',
           \])
     Assert NotMatch(execute('ls'), '\<alpha\>')
   End
@@ -54,9 +54,9 @@ Describe buffer-rename
     call timer_start(0, { -> feedkeys("y\<CR>") })
     execute "normal ggj\<Plug>(fern-action-remove)\<Plug>(fern-wait)"
     Assert Equals(getline(1, '$'), [
-          \ printf('%s ', fnamemodify(workdir, ':t')),
-          \ '|  beta ',
-          \ '|  gamma ',
+          \ printf('%s', fnamemodify(workdir, ':t')),
+          \ '|  beta',
+          \ '|  gamma',
           \])
     Assert Match(execute('ls'), '\<alpha\>')
   End
