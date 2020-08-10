@@ -123,7 +123,7 @@ function! s:map_move(helper) abort
   endfor
   let root = a:helper.sync.get_root_node()
   return s:Promise.all(ps)
-        \.then({ -> fern#scheme#file#bufutil#moves(bufutil_pairs) })
+        \.then({ -> fern#internal#buffer#renames(bufutil_pairs) })
         \.then({ -> a:helper.async.collapse_modified_nodes(nodes) })
         \.then({ -> a:helper.async.reload_node(root.__key) })
         \.then({ -> a:helper.async.redraw() })
@@ -155,7 +155,7 @@ function! s:map_trash(helper) abort
   endfor
   let root = a:helper.sync.get_root_node()
   return s:Promise.all(ps)
-        \.then({ -> fern#scheme#file#bufutil#removes(bufutil_paths) })
+        \.then({ -> fern#internal#buffer#removes(bufutil_paths) })
         \.then({ -> a:helper.async.collapse_modified_nodes(nodes) })
         \.then({ -> a:helper.async.reload_node(root.__key) })
         \.then({ -> a:helper.async.redraw() })
@@ -187,7 +187,7 @@ function! s:map_remove(helper) abort
   endfor
   let root = a:helper.sync.get_root_node()
   return s:Promise.all(ps)
-        \.then({ -> fern#scheme#file#bufutil#removes(bufutil_paths) })
+        \.then({ -> fern#internal#buffer#removes(bufutil_paths) })
         \.then({ -> a:helper.async.collapse_modified_nodes(nodes) })
         \.then({ -> a:helper.async.reload_node(root.__key) })
         \.then({ -> a:helper.async.redraw() })

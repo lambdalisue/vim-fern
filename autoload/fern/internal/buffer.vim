@@ -53,3 +53,50 @@ function! fern#internal#buffer#open(bufname, ...) abort
   call fern#logger#debug('fern#internal#buffer#open', 'cmdline', cmdline)
   execute cmdline
 endfunction
+
+function! fern#internal#buffer#removes(paths) abort
+  for path in a:paths
+    let bufnr = bufnr(path)
+    if bufnr is# -1 || getbufvar(bufnr, '&modified')
+      continue
+    endif
+    execute printf('silent! noautocmd %dbwipeout', bufnr)
+  endfor
+endfunction
+
+function! fern#internal#buffer#renames(pairs) abort
+  let bufnr_saved = bufnr('%')
+  let hidden_saved = &hidden
+  set hidden
+  try
+    for [src, dst] in a:pairs
+      let bufnr = bufnr(src)
+      if bufnr is# -1
+        return
+      endif
+      execute printf('silent! noautocmd keepjumps keepalt %dbuffer', bufnr)
+      execute printf('silent! noautocmd keepalt file %s', fnameescape(dst))
+      call s:patch_to_avoid_e13()
+    endfor
+  finally
+    execute printf('keepjumps keepalt %dbuffer', bufnr_saved)
+    let &hidden = hidden_saved
+  endtry
+endfunction
+
+" NOTE: Perform pseudo 'write!' to avoid E13
+function! s:patch_to_avoid_e13() abort
+  augroup fern_internal_buffer_patch_to_avoid_e13
+    autocmd! * <buffer>
+    autocmd BufWriteCmd <buffer> ++once :
+  augroup END
+  let buftype = &buftype
+  let modified = &modified
+  try
+    setlocal buftype=acwrite
+    silent! write!
+  finally
+    let &buftype = buftype
+    let &modified = modified
+  endtry
+endfunction
