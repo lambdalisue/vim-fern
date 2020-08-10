@@ -76,7 +76,7 @@ function! fern#internal#buffer#renames(pairs) abort
       endif
       execute printf('silent! noautocmd keepjumps keepalt %dbuffer', bufnr)
       execute printf('silent! noautocmd keepalt file %s', fnameescape(dst))
-      call s:patch155()
+      call s:patch_to_avoid_e13()
     endfor
   finally
     execute printf('keepjumps keepalt %dbuffer', bufnr_saved)
@@ -84,43 +84,19 @@ function! fern#internal#buffer#renames(pairs) abort
   endtry
 endfunction
 
-" NOTE:
-" Avoid E13 on :write once to fix #155.
-" Let me know if you know better way to fix that.
-function! s:patch155() abort
-  let b:fern_scheme_file_bufutil_patch155 = {
-        \ 'buftype': &buftype,
-        \ 'bufname': bufname('%'),
-        \}
-  setlocal buftype=acwrite
-  augroup fern_schem_file_bufutil_patch155
+" NOTE: Perform pseudo 'write!' to avoid E13
+function! s:patch_to_avoid_e13() abort
+  augroup fern_internal_buffer_patch_to_avoid_e13
     autocmd! * <buffer>
-    autocmd BufWriteCmd <buffer> ++once ++nested call s:patch155_BufWriteCmd()
+    autocmd BufWriteCmd <buffer> ++once :
   augroup END
-endfunction
-
-function! s:patch155_BufWriteCmd() abort
-  let patch = get(b:, 'fern_scheme_file_bufutil_patch155', {})
-  silent! unlet! b:fern_scheme_file_bufutil_patch155
-  let &buftype = get(patch, 'buftype', '')
+  let buftype = &buftype
+  let modified = &modified
   try
-    execute printf('write%s %s', v:cmdbang ? '!' : '', v:cmdarg)
-  catch /^Vim\%((\a\+)\)\=:E13:/
-    if bufname('%') !=# get(patch, 'bufname', '')
-      " filename had changed by user thus do NOT avoid E13
-      echohl ErrorMsg
-      echomsg substitute(v:exception, '^Vim(.\{-}):', '', '')
-      echohl None
-      return
-    endif
-    execute printf('write! %s', v:cmdarg)
+    setlocal buftype=acwrite
+    silent! write!
+  finally
+    let &buftype = buftype
+    let &modified = modified
   endtry
-  " Mimic native write output
-  let info = split(execute("normal! g\<C-g>"), ';')
-  echomsg printf(
-        \ '"%s" %dL, %dC written',
-        \ expand('%:p:~'),
-        \ split(get(info, 1, '0'))[-1],
-        \ split(get(info, 3, '0'))[-1],
-        \)
 endfunction
