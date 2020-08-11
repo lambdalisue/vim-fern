@@ -82,16 +82,12 @@ function! s:init() abort
     doautocmd <nomodeline> User FernSyntax
     call fern#internal#action#init()
 
-    let reveal = split(fri.fragment, '/')
     let Profile = fern#profile#start('fern#internal#viewer:init')
     return s:Promise.resolve()
           \.then({ -> helper.async.expand_node(root.__key) })
           \.finally({ -> Profile('expand') })
-          \.then({ -> helper.async.reveal_node(reveal) })
-          \.finally({ -> Profile('reveal') })
           \.then({ -> helper.async.redraw() })
           \.finally({ -> Profile('redraw') })
-          \.then({ -> helper.sync.focus_node(reveal) })
           \.finally({ -> Profile() })
           \.then({ -> fern#hook#emit('viewer:ready', helper) })
   catch

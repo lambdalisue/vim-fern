@@ -46,9 +46,6 @@ function! fern#internal#command#fern#command(mods, fargs) abort
       let opener = s:drawer_opener
     endif
 
-    " Resolve reveal
-    let reveal = empty(reveal) ? '' : expand(reveal)
-
     let expr = expand(a:fargs[0])
     let path = fern#fri#format(
           \ expr =~# '^[^:]\+://'
@@ -67,13 +64,6 @@ function! fern#internal#command#fern#command(mods, fargs) abort
           \ 'width': width,
           \ 'keep': keep,
           \})
-    let fri.fragment = empty(reveal) ? '' : fern#internal#filepath#to_slash(reveal)
-
-    " Normalize fragment if expr does not start from {scheme}://
-    if expr !~# '^[^:]\+://'
-      call s:norm_fragment(fri)
-    endif
-
     call fern#logger#debug('expr:', expr)
     call fern#logger#debug('fri:', fri)
 
@@ -126,17 +116,4 @@ function! fern#internal#command#fern#complete(arglead, cmdline, cursorpos) abort
     return fern#internal#complete#options(a:arglead, a:cmdline, a:cursorpos)
   endif
   return fern#internal#complete#url(a:arglead, a:cmdline, a:cursorpos)
-endfunction
-
-function! s:norm_fragment(fri) abort
-  if empty(a:fri.fragment)
-    return
-  endif
-  " fragment is one of the following
-  " 1) An absolute path of fs (/ in Unix, \ in Windows)
-  " 2) A relative path of fs (/ in Unix, \ in Windows)
-  " 3) A relative path of URI (/ in all platform)
-  let root = fern#fri#to#path(fern#fri#parse(a:fri.path))
-  let reveal = fern#internal#filepath#to_slash(a:fri.fragment)
-  let a:fri.fragment = fern#internal#path#relative(reveal, root)
 endfunction
