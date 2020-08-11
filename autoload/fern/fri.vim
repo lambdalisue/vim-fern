@@ -56,7 +56,7 @@ function! fern#fri#format(fri) abort
 endfunction
 
 function! fern#fri#encode(str, ...) abort
-  let pattern = a:0 ? a:1 : '[#\[\]= ]'
+  let pattern = a:0 ? a:1 : '[%<>|?\*]'
   return s:encode(a:str, pattern)
 endfunction
 

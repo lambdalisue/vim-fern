@@ -92,7 +92,10 @@ fern#fri#format({fri})
 							*fern#fri#encode()*
 fern#fri#encode({str}[, {pattern}])
 	Apply percent-encoding to characters which matches the {pattern} in
-	the {str}. When the {pattern} is omitted, "[#\[\]= ]" is used.
+	the {str}. When the {pattern} is omitted, unusable characters and
+	percent character itself in {str} are encoded.
+	NOTE:
+	The default {pattern} has changed from v1.16.0
 
 							*fern#fri#decode()*
 fern#fri#decode({str})
