@@ -21,11 +21,7 @@ function! fern#internal#viewer#reveal(helper, path) abort
   return s:Promise.resolve()
         \.then({ -> a:helper.async.reveal_node(reveal) })
         \.then({ -> a:helper.async.redraw() })
-        \.then({ -> a:helper.sync.focus_node(
-        \   reveal,
-        \   { 'previous': previous },
-        \ )
-        \})
+        \.then({ -> a:helper.sync.focus_node(reveal) })
 endfunction
 
 function! s:open(bufname, options, resolve, reject) abort
