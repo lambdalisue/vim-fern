@@ -57,7 +57,8 @@ endfunction
 function! fern#internal#complete#reveal(arglead, cmdline, cursorpos) abort
   let scheme = matchstr(a:cmdline, '\<[^ :]\+\ze://')
   if empty(scheme)
-    let rs = getcompletion(matchstr(a:arglead, '^-reveal=\zs.*'), 'dir')
+    let rs = getcompletion(matchstr(a:arglead, '^-reveal=\zs.*'), 'file')
+    call map(rs, { _, v -> matchstr(v, '.\{-}\ze[/\\]\?$') })
     return map(rs, { _, v -> printf('-reveal=%s', escape(v, ' ')) })
   endif
   let rs = fern#internal#scheme#complete_reveal(scheme, a:arglead, a:cmdline, a:cursorpos)
