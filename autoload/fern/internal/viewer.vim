@@ -121,6 +121,12 @@ function! s:notify(bufnr, error) abort
   endif
 endfunction
 
+function! s:cache_content(helper) abort
+  let bufnr = a:helper.bufnr
+  let content = getbufline(bufnr, 1, '$')
+  call setbufvar(bufnr, 'fern_viewer_cache_content', content)
+endfunction
+
 function! s:reveal(fargs) abort
   try
     let wait = fern#internal#args#pop(a:fargs, 'wait', v:false)
@@ -185,11 +191,12 @@ function! s:BufReadCmd() abort
   call helper.fern.renderer.syntax()
   call fern#hook#emit('viewer:syntax', helper)
   doautocmd <nomodeline> User FernSyntax
+  setlocal modifiable
+  call setline(1, get(b:, 'fern_viewer_cache_content', []))
+  setlocal nomodifiable
+  call helper.sync.set_cursor(get(b:, 'fern_cursor', getcurpos()[1:2]))
   let root = helper.sync.get_root_node()
-  let cursor = get(b:, 'fern_cursor', getcurpos()[1:2])
   call s:Promise.resolve()
-        \.then({ -> helper.async.redraw() })
-        \.then({ -> helper.sync.set_cursor(cursor) })
         \.then({ -> helper.async.reload_node(root.__key) })
         \.then({ -> helper.async.redraw() })
         \.then({ -> fern#hook#emit('viewer:ready', helper) })
@@ -208,6 +215,9 @@ augroup fern-internal-viewer-internal
   autocmd User FernSyntax :
   autocmd User FernHighlight :
 augroup END
+
+" Cache content to accelerate rendering
+call fern#hook#add('viewer:redraw', { h -> s:cache_content(h) })
 
 " Deprecated:
 call fern#hook#add('viewer:highlight', { h -> fern#hook#emit('renderer:highlight', h) })
