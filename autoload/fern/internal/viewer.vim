@@ -14,7 +14,7 @@ function! fern#internal#viewer#init() abort
 endfunction
 
 function! s:open(bufname, options, resolve, reject) abort
-  if fern#internal#buffer#open(a:bufname . '$', a:options)
+  if fern#internal#buffer#open(a:bufname, a:options)
     call a:reject('Cancelled')
     return
   endif
@@ -48,7 +48,7 @@ function! s:init() abort
     let fri.authority = sha256(localtime())[:7]
     let previous = bufname
     let bufname = fern#fri#format(fri)
-    execute printf('silent! keepalt file %s$', fnameescape(bufname))
+    execute printf('silent! keepalt file %s', fnameescape(bufname))
     execute printf('silent! bwipeout %s', previous)
   endif
 
