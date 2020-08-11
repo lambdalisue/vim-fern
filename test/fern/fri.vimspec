@@ -1,4 +1,61 @@
 Describe fern#fri
+  Describe #new()
+    It returns FRI from a full FRI
+      let want = {
+            \ 'scheme': 'ssh',
+            \ 'authority': 'user:pass@example.com',
+            \ 'path': 'foo/bar',
+            \ 'query': {
+            \   'drawer': v:true,
+            \   'width': '50',
+            \ },
+            \ 'fragment': 'fragment',
+            \}
+      let full = copy(want)
+      Assert Equals(fern#fri#new(full), want)
+    End
+
+    It returns FRI from a partial FRI
+      Assert Equals(fern#fri#new({ 'scheme': 'hello' }), {
+            \ 'scheme': 'hello',
+            \ 'authority': '',
+            \ 'path': '',
+            \ 'query': {},
+            \ 'fragment': '',
+            \})
+      Assert Equals(fern#fri#new({ 'authority': 'hello' }), {
+            \ 'scheme': '',
+            \ 'authority': 'hello',
+            \ 'path': '',
+            \ 'query': {},
+            \ 'fragment': '',
+            \})
+      Assert Equals(fern#fri#new({ 'path': 'hello' }), {
+            \ 'scheme': '',
+            \ 'authority': '',
+            \ 'path': 'hello',
+            \ 'query': {},
+            \ 'fragment': '',
+            \})
+      Assert Equals(fern#fri#new({ 'query': { 'hello': 'world' } }), {
+            \ 'scheme': '',
+            \ 'authority': '',
+            \ 'path': '',
+            \ 'query': {
+            \   'hello': 'world',
+            \ },
+            \ 'fragment': '',
+            \})
+      Assert Equals(fern#fri#new({ 'fragment': 'hello' }), {
+            \ 'scheme': '',
+            \ 'authority': '',
+            \ 'path': '',
+            \ 'query': {},
+            \ 'fragment': 'hello',
+            \})
+    End
+  End
+
   Describe #parse()
     It returns FRI for 'file:///foo/bar'
       let expr = 'file:///foo/bar'

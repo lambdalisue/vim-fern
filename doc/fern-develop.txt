@@ -60,6 +60,11 @@ in buffer names in Windows from URI definition:
 
 Developers can use the following function to parse/format FRIs.
 
+							*fern#fri#new()*
+fern#fri#new({partial})
+	Create a FRI instance from {partial} |Dictionary|.
+	Note that omitted fields in {partial} is filled with an empty string.
+
 							*fern#fri#parse()*
 fern#fri#parse({expr})
 	Parse the {expr} (|String|) and return a FRI instance.

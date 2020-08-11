@@ -1,4 +1,15 @@
 let s:PATTERN = '^$~.*[]\'
+let s:FRI = {
+      \ 'scheme': '',
+      \ 'authority': '',
+      \ 'path': '',
+      \ 'query': {},
+      \ 'fragment': '',
+      \}
+
+function! fern#fri#new(partial) abort
+  return extend(deepcopy(s:FRI), a:partial)
+endfunction
 
 function! fern#fri#parse(expr) abort
   let remains = a:expr
