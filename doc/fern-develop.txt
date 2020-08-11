@@ -33,7 +33,7 @@ FRI						*fern-develop-fri*
 Fern Resource Identifier (FRI) is designed to be used in Vim's buffer name and
 explained as the following:
 
-  FRI = scheme "://" [ auth ] "/" path [ ";" query ][ "#" fragment ]
+  FRI = scheme "://" [ auth ] "/" path [ ";" query ][ "#" fragment ][$]
 
 Where:
 
@@ -58,6 +58,10 @@ in buffer names in Windows from URI definition:
 
   unusable   = "<" | ">" | "|" | "?" | "*"
 
+Note that "fern" scheme may end with "$" to avoid unwilling filetype plugins.
+For example, some filetype plugin add "BufRead *.vim ..." thus if the FRI ends
+with ".vim", that autocmd is triggered without "$".
+
 Developers can use the following function to parse/format FRIs.
 
 							*fern#fri#new()*
@@ -76,9 +80,14 @@ fern#fri#parse({expr})
 	"query"		A |Dict| query part
 	"fragment"	A |String| fragment part
 
+	Note that "fern" scheme always end with "$" thus the trailing "$" is
+	removed from {expr} if scheme is "fern".
+
 							*fern#fri#format()*
 fern#fri#format({fri})
 	Format a |String| representation of the {fri} instance.
+	Note that "fern" scheme always end with "$" thus the trailing "$" is
+	added to the result if scheme is "fern".
 >
 	echo fern#fri#format({
 	      \ 'scheme': 'http',

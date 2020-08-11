@@ -12,7 +12,9 @@ function! fern#fri#new(partial) abort
 endfunction
 
 function! fern#fri#parse(expr) abort
-  let remains = a:expr
+  let remains = a:expr =~# '^fern:'
+        \ ? matchstr(a:expr, '.\{-}\ze\$\?$')
+        \ : a:expr
   let [scheme, remains] = s:split1(remains, escape('://', s:PATTERN))
   if empty(remains)
     let remains = scheme
@@ -52,7 +54,9 @@ function! fern#fri#format(fri) abort
   if !empty(a:fri.fragment)
     let expr .= '#' . s:encode_fragment(a:fri.fragment)
   endif
-  return expr
+  return a:fri.scheme ==# 'fern'
+        \ ? expr . '$'
+        \ : expr
 endfunction
 
 function! fern#fri#encode(str, ...) abort
