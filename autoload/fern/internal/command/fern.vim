@@ -47,8 +47,16 @@ function! fern#internal#command#fern#command(mods, fargs) abort
     endif
 
     let expr = expand(a:fargs[0])
+    let path = fern#fri#format(
+          \ expr =~# '^[^:]\+://'
+          \   ? fern#fri#parse(expr)
+          \   : fern#fri#from#filepath(fnamemodify(expand(expr), ':p'))
+          \)
     " Build FRI for fern buffer from argument
-    let fri = fern#internal#bufname#parse(expr)
+    let fri = fern#fri#new({
+          \ 'scheme': 'fern',
+          \ 'path': path,
+          \})
     let fri.authority = drawer
           \ ? printf('drawer:%d', tabpagenr())
           \ : ''
@@ -124,7 +132,7 @@ function! s:norm_fragment(fri) abort
   " 1) An absolute path of fs (/ in Unix, \ in Windows)
   " 2) A relative path of fs (/ in Unix, \ in Windows)
   " 3) A relative path of URI (/ in all platform)
-  let root = '/' . fern#fri#parse(a:fri.path).path
+  let root = fern#fri#to#path(fern#fri#parse(a:fri.path))
   let reveal = fern#internal#filepath#to_slash(a:fri.fragment)
   let a:fri.fragment = fern#internal#path#relative(reveal, root)
 endfunction

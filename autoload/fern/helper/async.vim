@@ -294,8 +294,8 @@ function! s:enter(fern, node) abort
     return s:Promise.reject('the node does not have bufname attribute')
   endif
   try
-    let cur = fern#internal#bufname#parse(bufname('%'))
-    let fri = fern#internal#bufname#parse(a:node.bufname)
+    let cur = fern#fri#parse(bufname('%'))
+    let fri = fern#fri#parse(a:node.bufname)
     let fri.authority = cur.authority
     let fri.query = cur.query
     return fern#internal#viewer#open(fri, {})

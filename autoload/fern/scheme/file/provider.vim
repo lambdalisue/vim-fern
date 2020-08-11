@@ -24,8 +24,10 @@ function! fern#scheme#file#provider#new() abort
 endfunction
 
 function! s:provider_get_root(uri) abort
+  call fern#logger#debug('file:get_root:uri', a:uri)
   let fri = fern#fri#parse(a:uri)
-  let path = fern#internal#filepath#from_slash('/' . fri.path)
+  call fern#logger#debug('file:get_root:fri', fri)
+  let path = fern#fri#to#filepath(fri)
   if s:is_windows && path ==# ''
     return s:windows_drive_root
   endif
@@ -68,10 +70,12 @@ function! s:node(path) abort
     throw printf('no such file or directory exists: %s', a:path)
   endif
   let status = isdirectory(a:path)
-  let path = fern#internal#filepath#to_slash(a:path)
-  let name = fern#internal#path#basename(path)
+  let name = fern#internal#path#basename(fern#internal#filepath#to_slash(a:path))
   let bufname = status
-        \ ? printf('fern:///file://%s', path)
+        \ ? fern#fri#format(fern#fri#new({
+        \     'scheme': 'fern',
+        \     'path': fern#fri#format(fern#fri#from#filepath(a:path)),
+        \   }))
         \ : a:path
   return {
         \ 'name': name,
