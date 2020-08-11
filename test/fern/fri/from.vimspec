@@ -1,0 +1,266 @@
+Describe fern#fri#from
+  Before all
+    let fern_internal_filepath_is_windows = g:fern#internal#filepath#is_windows
+  End
+
+  After all
+    let g:fern#internal#filepath#is_windows = fern_internal_filepath_is_windows
+  End
+
+  Describe #path()
+    It throws an error if the path does not start from "/"
+      Throws /The "path" must start from "\/"/ fern#fri#from#path('foo/bar')
+    End
+
+    It returns FRI of file:///foo/bar from /foo/bar
+      let expr = '/foo/bar'
+      let want = {
+            \ 'scheme': 'file',
+            \ 'authority': '',
+            \ 'path': 'foo/bar',
+            \ 'query': {},
+            \ 'fragment': '',
+            \}
+      Assert Equals(fern#fri#from#path(expr), want)
+    End
+
+    It returns FRI of file:///foo/bar from /foo/bar/hoge/hoge/../../
+      let expr = '/foo/bar/hoge/hoge/../../'
+      let want = {
+            \ 'scheme': 'file',
+            \ 'authority': '',
+            \ 'path': 'foo/bar',
+            \ 'query': {},
+            \ 'fragment': '',
+            \}
+      Assert Equals(fern#fri#from#path(expr), want)
+    End
+
+    It returns FRI of file:///foo/bar/%25 from /foo/bar/% (percent character)
+      let expr = '/foo/bar/%'
+      let want = {
+            \ 'scheme': 'file',
+            \ 'authority': '',
+            \ 'path': 'foo/bar/%25',
+            \ 'query': {},
+            \ 'fragment': '',
+            \}
+      Assert Equals(fern#fri#from#path(expr), want)
+    End
+
+    It returns FRI of file:///foo/bar/%3C%3E%7C%3F%2A from /foo/bar/<>|?* (unusable characters)
+      let expr = '/foo/bar/<>|?*'
+      let want = {
+            \ 'scheme': 'file',
+            \ 'authority': '',
+            \ 'path': 'foo/bar/%3C%3E%7C%3F%2A',
+            \ 'query': {},
+            \ 'fragment': '',
+            \}
+      Assert Equals(fern#fri#from#path(expr), want)
+    End
+
+    It returns FRI of file:///foo/bar/%23%5B%5D%3B%20 from /foo/bar/#[];  (non pchar)
+      let expr = '/foo/bar/#[]; '
+      let want = {
+            \ 'scheme': 'file',
+            \ 'authority': '',
+            \ 'path': 'foo/bar/%23%5B%5D%3B%20',
+            \ 'query': {},
+            \ 'fragment': '',
+            \}
+      Assert Equals(fern#fri#from#path(expr), want)
+    End
+  End
+
+  Describe #filepath()
+    Context Windows
+      Before
+        let g:fern#internal#filepath#is_windows = 1
+      End
+
+      It throws an error if the path is not an absolute path
+        Throws /The "path" must be an absolute path/ fern#fri#from#filepath('foo\bar')
+      End
+
+      It returns FRI from C:\
+        let expr = 'C:\'
+        let want = {
+              \ 'scheme': 'file',
+              \ 'authority': '',
+              \ 'path': 'C:',
+              \ 'query': {},
+              \ 'fragment': '',
+              \}
+        Assert Equals(fern#fri#from#filepath(expr), want)
+      End
+
+      It returns FRI from C:\foo\bar
+        let expr = 'C:\foo\bar'
+        let want = {
+              \ 'scheme': 'file',
+              \ 'authority': '',
+              \ 'path': 'C:/foo/bar',
+              \ 'query': {},
+              \ 'fragment': '',
+              \}
+        Assert Equals(fern#fri#from#filepath(expr), want)
+      End
+
+      It returns FRI from C:\foo\bar?a&b=c
+        let expr = 'C:\foo\bar?a&b=c'
+        let want = {
+              \ 'scheme': 'file',
+              \ 'authority': '',
+              \ 'path': 'C:/foo/bar%3Fa&b=c',
+              \ 'query': {},
+              \ 'fragment': '',
+              \}
+        Assert Equals(fern#fri#from#filepath(expr), want)
+      End
+
+      It returns FRI from C:\foo\bar;a&b=c
+        let expr = 'C:\foo\bar;a&b=c'
+        let want = {
+              \ 'scheme': 'file',
+              \ 'authority': '',
+              \ 'path': 'C:/foo/bar%3Ba&b=c',
+              \ 'query': {},
+              \ 'fragment': '',
+              \}
+        Assert Equals(fern#fri#from#filepath(expr), want)
+      End
+
+      It returns FRI from C:\foo\bar#foo\bar\hoge
+        let expr = 'C:\foo\bar#foo\bar\hoge'
+        let want = {
+              \ 'scheme': 'file',
+              \ 'authority': '',
+              \ 'path': 'C:/foo/bar%23foo/bar/hoge',
+              \ 'query': {},
+              \ 'fragment': '',
+              \}
+        Assert Equals(fern#fri#from#filepath(expr), want)
+      End
+
+      It returns FRI from C:\foo\bar?a&b=c#foo\bar\hoge
+        let expr = 'C:\foo\bar?a&b=c#foo\bar\hoge'
+        let want = {
+              \ 'scheme': 'file',
+              \ 'authority': '',
+              \ 'path': 'C:/foo/bar%3Fa&b=c%23foo/bar/hoge',
+              \ 'query': {},
+              \ 'fragment': '',
+              \}
+        Assert Equals(fern#fri#from#filepath(expr), want)
+      End
+
+      It returns FRI from C:\foo\bar;a&b=c#foo\bar\hoge
+        let expr = 'C:\foo\bar;a&b=c#foo\bar\hoge'
+        let want = {
+              \ 'scheme': 'file',
+              \ 'authority': '',
+              \ 'path': 'C:/foo/bar%3Ba&b=c%23foo/bar/hoge',
+              \ 'query': {},
+              \ 'fragment': '',
+              \}
+        Assert Equals(fern#fri#from#filepath(expr), want)
+      End
+    End
+
+    Context Unix
+      Before
+        let g:fern#internal#filepath#is_windows = 0
+      End
+
+      It throws an error if the path is not an absolute path
+        Throws /The "path" must be an absolute path/ fern#fri#from#filepath('foo/bar')
+      End
+
+      It returns FRI from /
+        let expr = '/'
+        let want = {
+              \ 'scheme': 'file',
+              \ 'authority': '',
+              \ 'path': '',
+              \ 'query': {},
+              \ 'fragment': '',
+              \}
+        Assert Equals(fern#fri#from#filepath(expr), want)
+      End
+
+      It returns FRI from /foo/bar
+        let expr = '/foo/bar'
+        let want = {
+              \ 'scheme': 'file',
+              \ 'authority': '',
+              \ 'path': 'foo/bar',
+              \ 'query': {},
+              \ 'fragment': '',
+              \}
+        Assert Equals(fern#fri#from#filepath(expr), want)
+      End
+
+      It returns FRI from /foo/bar?a&b=c
+        let expr = '/foo/bar?a&b=c'
+        let want = {
+              \ 'scheme': 'file',
+              \ 'authority': '',
+              \ 'path': 'foo/bar%3Fa&b=c',
+              \ 'query': {},
+              \ 'fragment': '',
+              \}
+        Assert Equals(fern#fri#from#filepath(expr), want)
+      End
+
+      It returns FRI from /foo/bar;a&b=c
+        let expr = '/foo/bar;a&b=c'
+        let want = {
+              \ 'scheme': 'file',
+              \ 'authority': '',
+              \ 'path': 'foo/bar%3Ba&b=c',
+              \ 'query': {},
+              \ 'fragment': '',
+              \}
+        Assert Equals(fern#fri#from#filepath(expr), want)
+      End
+
+      It returns FRI from /foo/bar#foo/bar/hoge
+        let expr = '/foo/bar#foo/bar/hoge'
+        let want = {
+              \ 'scheme': 'file',
+              \ 'authority': '',
+              \ 'path': 'foo/bar%23foo/bar/hoge',
+              \ 'query': {},
+              \ 'fragment': '',
+              \}
+        Assert Equals(fern#fri#from#filepath(expr), want)
+      End
+
+      It returns FRI from /foo/bar?a&b=c#foo/bar/hoge
+        let expr = '/foo/bar?a&b=c#foo/bar/hoge'
+        let want = {
+              \ 'scheme': 'file',
+              \ 'authority': '',
+              \ 'path': 'foo/bar%3Fa&b=c%23foo/bar/hoge',
+              \ 'query': {},
+              \ 'fragment': '',
+              \}
+        Assert Equals(fern#fri#from#filepath(expr), want)
+      End
+
+      It returns FRI from /foo/bar;a&b=c#foo/bar/hoge
+        let expr = '/foo/bar;a&b=c#foo/bar/hoge'
+        let want = {
+              \ 'scheme': 'file',
+              \ 'authority': '',
+              \ 'path': 'foo/bar%3Ba&b=c%23foo/bar/hoge',
+              \ 'query': {},
+              \ 'fragment': '',
+              \}
+        Assert Equals(fern#fri#from#filepath(expr), want)
+      End
+    End
+  End
+End
+
