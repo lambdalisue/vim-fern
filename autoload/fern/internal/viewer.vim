@@ -14,6 +14,15 @@ function! fern#internal#viewer#init() abort
         \.catch({ e -> s:Lambda.pass(e, s:notify(bufnr, e)) })
 endfunction
 
+function! fern#internal#viewer#reveal(helper, path) abort
+  let path = fern#internal#filepath#to_slash(a:path)
+  let reveal = split(path, '/')
+  return s:Promise.resolve()
+        \.then({ -> a:helper.async.reveal_node(reveal) })
+        \.then({ -> a:helper.async.redraw() })
+        \.then({ -> a:helper.sync.focus_node(reveal) })
+endfunction
+
 function! s:open(bufname, options, resolve, reject) abort
   if fern#internal#buffer#open(a:bufname, a:options)
     call a:reject('Cancelled')
@@ -26,6 +35,11 @@ function! s:open(bufname, options, resolve, reject) abort
 endfunction
 
 function! s:init() abort
+  execute printf(
+        \ 'command! -buffer -bar -nargs=* -complete=customlist,%s FernReveal call s:reveal([<f-args>])',
+        \ get(funcref('s:reveal_complete'), 'name'),
+        \)
+
   setlocal buftype=nofile bufhidden=unload
   setlocal noswapfile nobuflisted nomodifiable
   setlocal signcolumn=yes
@@ -105,6 +119,52 @@ function! s:notify(bufnr, error) abort
       call notifier.reject([a:bufnr, a:error])
     endif
   endif
+endfunction
+
+function! s:reveal(fargs) abort
+  try
+    let wait = fern#internal#args#pop(a:fargs, 'wait', v:false)
+    if len(a:fargs) isnot# 1
+          \ || type(wait) isnot# v:t_bool
+      throw 'Usage: FernReveal {reveal} [-wait]'
+    endif
+
+    " Does all options are handled?
+    call fern#internal#args#throw_if_dirty(a:fargs)
+
+    let expr = expand(a:fargs[0])
+    let helper = fern#helper#new()
+    let promise = fern#internal#viewer#reveal(helper, expr)
+
+    if wait
+      let [_, err] = s:Promise.wait(
+            \ promise,
+            \ {
+            \   'interval': 100,
+            \   'timeout': 5000,
+            \ },
+            \)
+      if err isnot# v:null
+        throw printf('[fern] Failed to wait: %s', err)
+      endif
+    endif
+  catch
+    echohl ErrorMsg
+    echomsg v:exception
+    echohl None
+    call fern#logger#debug(v:exception)
+    call fern#logger#debug(v:throwpoint)
+  endtry
+endfunction
+
+function! s:reveal_complete(arglead, cmdline, cursorpos) abort
+  let helper = fern#helper#new()
+  let fri = fern#fri#parse(bufname('%'))
+  let scheme = helper.fern.scheme
+  let cmdline = fri.path
+  let arglead = printf('-reveal=%s', a:arglead)
+  let rs = fern#internal#complete#reveal(arglead, cmdline, a:cursorpos)
+  return map(rs, { -> matchstr(v:val, '-reveal=\zs.*') })
 endfunction
 
 function! s:WinEnter() abort
