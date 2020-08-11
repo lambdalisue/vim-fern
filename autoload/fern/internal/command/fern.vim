@@ -67,14 +67,13 @@ function! fern#internal#command#fern#command(mods, fargs) abort
     call fern#logger#debug('expr:', expr)
     call fern#logger#debug('fri:', fri)
 
+    " A promise which will be resolved once the viewer become ready
+    let waiter = fern#hook#promise('viewer:ready')
+
     " Register callback to reveal node
     let reveal = s:normalize_reveal(fri, reveal)
     if reveal !=# ''
-      cal fern#hook#add(
-            \ 'viewer:ready',
-            \ { helper -> fern#internal#viewer#reveal(helper, reveal) },
-            \ { 'once': v:true },
-            \)
+      let waiter = waiter.then({ h -> fern#internal#viewer#reveal(h, reveal) })
     endif
 
     let winid_saved = win_getid()
@@ -98,13 +97,10 @@ function! fern#internal#command#fern#command(mods, fargs) abort
     endif
 
     if wait
-      let [_, err] = s:Promise.wait(
-            \ fern#hook#promise('viewer:ready'),
-            \ {
-            \   'interval': 100,
-            \   'timeout': 5000,
-            \ },
-            \)
+      let [_, err] = s:Promise.wait(waiter, {
+            \ 'interval': 100,
+            \ 'timeout': 5000,
+            \})
       if err isnot# v:null
         throw printf('[fern] Failed to wait: %s', err)
       endif
