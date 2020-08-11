@@ -99,22 +99,22 @@ function! s:format_query(query) abort
 endfunction
 
 function! s:encode_authority(path) abort
-  let pattern = '[/;#\[\]= ]'
+  let pattern = '[%/;#\[\]= ]'
   return s:encode(a:path, pattern)
 endfunction
 
 function! s:encode_path(path) abort
-  let pattern = '[;#\[\]= ]'
+  let pattern = '[%;#\[\]= ]'
   return s:encode(a:path, pattern)
 endfunction
 
 function! s:encode_query(pchar) abort
-  let pattern = '[#\[\]= ]'
+  let pattern = '[%#\[\]= ]'
   return s:encode(a:pchar, pattern)
 endfunction
 
 function! s:encode_fragment(pchar) abort
-  let pattern = '[#\[\]= ]'
+  let pattern = '[%#\[\]= ]'
   return s:encode(a:pchar, pattern)
 endfunction
 
