@@ -128,11 +128,11 @@ endfunction
 
 function! s:decode(str) abort
   let str = a:str
-  let hex = matchstr(str, '%\zs[0-9a-fA-F]\{2}')
+  let [hex, s, e] = matchstrpos(str, '%\zs[0-9a-fA-F]\{2}')
   while !empty(hex)
     let repl = nr2char(str2nr(hex, 16))
     let str = substitute(str, '%' . hex, escape(repl, '&'), 'ig')
-    let hex = matchstr(str, '%\zs[0-9a-fA-F]\{2}')
+    let [hex, s, e] = matchstrpos(str, '%\zs[0-9a-fA-F]\{2}', s + 1)
   endwhile
   return str
 endfunction

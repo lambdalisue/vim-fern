@@ -250,5 +250,11 @@ Describe fern#fri
       Assert Equals(fern#fri#decode('%3D'), '=')
       Assert Equals(fern#fri#decode('%20'), ' ')
     End
+
+    It decodes only one depth
+      Assert Equals(fern#fri#decode('%252523'), '%2523')
+      Assert Equals(fern#fri#decode('%2523'), '%23')
+      Assert Equals(fern#fri#decode('%23'), '#')
+    End
   End
 End
