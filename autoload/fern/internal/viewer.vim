@@ -17,10 +17,15 @@ endfunction
 function! fern#internal#viewer#reveal(helper, path) abort
   let path = fern#internal#filepath#to_slash(a:path)
   let reveal = split(path, '/')
+  let previous = a:helper.sync.get_cursor_node()
   return s:Promise.resolve()
         \.then({ -> a:helper.async.reveal_node(reveal) })
         \.then({ -> a:helper.async.redraw() })
-        \.then({ -> a:helper.sync.focus_node(reveal) })
+        \.then({ -> a:helper.sync.focus_node(
+        \   reveal,
+        \   { 'previous': previous },
+        \ )
+        \})
 endfunction
 
 function! s:open(bufname, options, resolve, reject) abort
