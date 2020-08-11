@@ -67,6 +67,16 @@ function! fern#internal#command#fern#command(mods, fargs) abort
     call fern#logger#debug('expr:', expr)
     call fern#logger#debug('fri:', fri)
 
+    " Register callback to reveal node
+    let reveal = s:normalize_reveal(fri, reveal)
+    if reveal !=# ''
+      cal fern#hook#add(
+            \ 'viewer:ready',
+            \ { helper -> fern#internal#viewer#reveal(helper, reveal) },
+            \ { 'once': v:true },
+            \)
+    endif
+
     let winid_saved = win_getid()
     if fri.authority =~# '\<drawer\>'
       call fern#internal#drawer#open(fri, {
@@ -82,6 +92,7 @@ function! fern#internal#command#fern#command(mods, fargs) abort
             \ 'stay': stay ? win_getid() : 0,
             \})
     endif
+
     if stay
       call win_gotoid(winid_saved)
     endif
@@ -116,4 +127,17 @@ function! fern#internal#command#fern#complete(arglead, cmdline, cursorpos) abort
     return fern#internal#complete#options(a:arglead, a:cmdline, a:cursorpos)
   endif
   return fern#internal#complete#url(a:arglead, a:cmdline, a:cursorpos)
+endfunction
+
+function! s:normalize_reveal(fri, reveal) abort
+  let reveal = expand(a:reveal)
+  if a:reveal ==# reveal
+    return reveal
+  endif
+  " reveal points a real filesystem
+  let fri = fern#fri#parse(a:fri.path)
+  let root = '/' . fri.path
+  let reveal = fern#internal#filepath#to_slash(reveal)
+  let reveal = fern#internal#path#relative(reveal, root)
+  return reveal
 endfunction
