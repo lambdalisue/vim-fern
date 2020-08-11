@@ -46,6 +46,9 @@ function! fern#internal#command#fern#command(mods, fargs) abort
       let opener = s:drawer_opener
     endif
 
+    " Resolve reveal
+    let reveal = empty(reveal) ? '' : expand(reveal)
+
     let expr = expand(a:fargs[0])
     let path = fern#fri#format(
           \ expr =~# '^[^:]\+://'
@@ -64,13 +67,14 @@ function! fern#internal#command#fern#command(mods, fargs) abort
           \ 'width': width,
           \ 'keep': keep,
           \})
-    let fri.fragment = fern#internal#filepath#to_slash(expand(reveal))
+    let fri.fragment = empty(reveal) ? '' : fern#internal#filepath#to_slash(reveal)
 
     " Normalize fragment if expr does not start from {scheme}://
     if expr !~# '^[^:]\+://'
       call s:norm_fragment(fri)
     endif
 
+    call fern#logger#debug('expr:', expr)
     call fern#logger#debug('fri:', fri)
 
     let winid_saved = win_getid()
