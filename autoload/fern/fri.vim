@@ -1,7 +1,20 @@
 let s:PATTERN = '^$~.*[]\'
+let s:FRI = {
+      \ 'scheme': '',
+      \ 'authority': '',
+      \ 'path': '',
+      \ 'query': {},
+      \ 'fragment': '',
+      \}
+
+function! fern#fri#new(partial) abort
+  return extend(deepcopy(s:FRI), a:partial)
+endfunction
 
 function! fern#fri#parse(expr) abort
-  let remains = a:expr
+  let remains = a:expr =~# '^fern:'
+        \ ? matchstr(a:expr, '.\{-}\ze\$\?$')
+        \ : a:expr
   let [scheme, remains] = s:split1(remains, escape('://', s:PATTERN))
   if empty(remains)
     let remains = scheme
@@ -41,11 +54,13 @@ function! fern#fri#format(fri) abort
   if !empty(a:fri.fragment)
     let expr .= '#' . s:encode_fragment(a:fri.fragment)
   endif
-  return expr
+  return a:fri.scheme ==# 'fern'
+        \ ? expr . '$'
+        \ : expr
 endfunction
 
 function! fern#fri#encode(str, ...) abort
-  let pattern = a:0 ? a:1 : '[#\[\]= ]'
+  let pattern = a:0 ? a:1 : '[%<>|?\*]'
   return s:encode(a:str, pattern)
 endfunction
 
@@ -88,22 +103,22 @@ function! s:format_query(query) abort
 endfunction
 
 function! s:encode_authority(path) abort
-  let pattern = '[/;#\[\]= ]'
+  let pattern = '[%/;#\[\]= ]'
   return s:encode(a:path, pattern)
 endfunction
 
 function! s:encode_path(path) abort
-  let pattern = '[;#\[\]= ]'
+  let pattern = '[%;#\[\]= ]'
   return s:encode(a:path, pattern)
 endfunction
 
 function! s:encode_query(pchar) abort
-  let pattern = '[#\[\]= ]'
+  let pattern = '[%#\[\]= ]'
   return s:encode(a:pchar, pattern)
 endfunction
 
 function! s:encode_fragment(pchar) abort
-  let pattern = '[#\[\]= ]'
+  let pattern = '[%#\[\]= ]'
   return s:encode(a:pchar, pattern)
 endfunction
 
@@ -117,11 +132,11 @@ endfunction
 
 function! s:decode(str) abort
   let str = a:str
-  let hex = matchstr(str, '%\zs[0-9a-fA-F]\{2}')
+  let [hex, s, e] = matchstrpos(str, '%\zs[0-9a-fA-F]\{2}')
   while !empty(hex)
     let repl = nr2char(str2nr(hex, 16))
     let str = substitute(str, '%' . hex, escape(repl, '&'), 'ig')
-    let hex = matchstr(str, '%\zs[0-9a-fA-F]\{2}')
+    let [hex, s, e] = matchstrpos(str, '%\zs[0-9a-fA-F]\{2}', s + 1)
   endwhile
   return str
 endfunction

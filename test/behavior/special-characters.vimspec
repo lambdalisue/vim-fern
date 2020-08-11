@@ -1,0 +1,65 @@
+Describe special-characters
+  Before all
+    let Join = function('fern#internal#filepath#join')
+    let workdir = tempname()
+    lockvar workdir
+    let candidates = [
+          \ ';',
+          \ '#',
+          \ '$',
+          \ '%',
+          \ '%20',
+          \]
+    for candidate in candidates
+      call mkdir(Join([workdir, candidate, 'hello']), 'p')
+      call writefile([], Join([workdir, candidate, 'hello', 'world']))
+    endfor
+  End
+
+  After all
+    %bwipeout!
+    call delete(workdir, 'rf')
+  End
+
+  Before
+    %bwipeout!
+  End
+
+  It Fern {workdir}/; opens the directory
+    if has('win32')
+      Skip It seems a directory ";" does not work on Windows for now. Not sure if it's an issue or not.
+    endif
+    execute printf('Fern %s -wait', fnameescape(Join([workdir, ';'])))
+    Assert Equals(getline(2, '$'), [
+          \ '|+ hello',
+          \])
+  End
+
+  It Fern {workdir}/# opens the directory
+    execute printf('Fern %s -wait', fnameescape(Join([workdir, '#'])))
+    Assert Equals(getline(2, '$'), [
+          \ '|+ hello',
+          \])
+  End
+
+  It Fern {workdir}/$ opens the directory
+    execute printf('Fern %s -wait', fnameescape(Join([workdir, '$'])))
+    Assert Equals(getline(2, '$'), [
+          \ '|+ hello',
+          \])
+  End
+
+  It Fern {workdir}/% opens the directory
+    execute printf('Fern %s -wait', fnameescape(Join([workdir, '%'])))
+    Assert Equals(getline(2, '$'), [
+          \ '|+ hello',
+          \])
+  End
+
+  It Fern {workdir}/%20 opens the directory
+    execute printf('Fern %s -wait', fnameescape(Join([workdir, '%20'])))
+    Assert Equals(getline(2, '$'), [
+          \ '|+ hello',
+          \])
+  End
+End

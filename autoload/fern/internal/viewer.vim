@@ -2,6 +2,7 @@ let s:Lambda = vital#fern#import('Lambda')
 let s:Promise = vital#fern#import('Async.Promise')
 
 function! fern#internal#viewer#open(fri, options) abort
+  call fern#logger#debug('open:', a:fri)
   let bufname = fern#fri#format(a:fri)
   return s:Promise.new(funcref('s:open', [bufname, a:options]))
 endfunction
@@ -14,7 +15,7 @@ function! fern#internal#viewer#init() abort
 endfunction
 
 function! s:open(bufname, options, resolve, reject) abort
-  if fern#internal#buffer#open(a:bufname . '$', a:options)
+  if fern#internal#buffer#open(a:bufname, a:options)
     call a:reject('Cancelled')
     return
   endif
@@ -43,12 +44,12 @@ function! s:init() abort
 
   " Add unique fragment to make each buffer uniq
   let bufname = bufname('%')
-  let fri = fern#internal#bufname#parse(bufname)
+  let fri = fern#fri#parse(bufname)
   if empty(fri.authority)
     let fri.authority = sha256(localtime())[:7]
     let previous = bufname
     let bufname = fern#fri#format(fri)
-    execute printf('silent! keepalt file %s$', fnameescape(bufname))
+    execute printf('silent! keepalt file %s', fnameescape(bufname))
     execute printf('silent! bwipeout %s', previous)
   endif
 
@@ -116,7 +117,7 @@ function! s:WinEnter() abort
   endif
   " Only one window is allowed to display one fern buffer.
   " So create a new fern buffer with same options
-  let fri = fern#internal#bufname#parse(bufname('%'))
+  let fri = fern#fri#parse(bufname('%'))
   let fri.authority = ''
   let bufname = fern#fri#format(fri)
   execute printf('silent! keepalt edit %s', fnameescape(bufname))

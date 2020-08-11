@@ -46,9 +46,20 @@ function! fern#internal#command#fern#command(mods, fargs) abort
       let opener = s:drawer_opener
     endif
 
+    " Resolve reveal
+    let reveal = empty(reveal) ? '' : expand(reveal)
+
     let expr = expand(a:fargs[0])
+    let path = fern#fri#format(
+          \ expr =~# '^[^:]\+://'
+          \   ? fern#fri#parse(expr)
+          \   : fern#fri#from#filepath(fnamemodify(expand(expr), ':p'))
+          \)
     " Build FRI for fern buffer from argument
-    let fri = fern#internal#bufname#parse(expr)
+    let fri = fern#fri#new({
+          \ 'scheme': 'fern',
+          \ 'path': path,
+          \})
     let fri.authority = drawer
           \ ? printf('drawer:%d', tabpagenr())
           \ : ''
@@ -56,13 +67,14 @@ function! fern#internal#command#fern#command(mods, fargs) abort
           \ 'width': width,
           \ 'keep': keep,
           \})
-    let fri.fragment = fern#internal#filepath#to_slash(expand(reveal))
+    let fri.fragment = empty(reveal) ? '' : fern#internal#filepath#to_slash(reveal)
 
     " Normalize fragment if expr does not start from {scheme}://
     if expr !~# '^[^:]\+://'
       call s:norm_fragment(fri)
     endif
 
+    call fern#logger#debug('expr:', expr)
     call fern#logger#debug('fri:', fri)
 
     let winid_saved = win_getid()
@@ -124,7 +136,7 @@ function! s:norm_fragment(fri) abort
   " 1) An absolute path of fs (/ in Unix, \ in Windows)
   " 2) A relative path of fs (/ in Unix, \ in Windows)
   " 3) A relative path of URI (/ in all platform)
-  let root = '/' . fern#fri#parse(a:fri.path).path
+  let root = fern#fri#to#path(fern#fri#parse(a:fri.path))
   let reveal = fern#internal#filepath#to_slash(a:fri.fragment)
   let a:fri.fragment = fern#internal#path#relative(reveal, root)
 endfunction

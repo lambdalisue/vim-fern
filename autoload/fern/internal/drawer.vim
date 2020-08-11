@@ -60,7 +60,7 @@ function! s:auto_resize(force) abort
   if !a:force && g:fern#disable_drawer_auto_resize
     return
   endif
-  let fri = fern#internal#bufname#parse(bufname('%'))
+  let fri = fern#fri#parse(bufname('%'))
   let width = str2nr(get(fri.query, 'width', string(g:fern#drawer_width)))
   execute 'vertical resize' width
 endfunction
@@ -69,7 +69,7 @@ function! s:auto_quit() abort
   if g:fern#disable_drawer_auto_quit
     return
   endif
-  let fri = fern#internal#bufname#parse(bufname('%'))
+  let fri = fern#fri#parse(bufname('%'))
   let keep = get(fri.query, 'keep', g:fern#drawer_keep)
   let width = str2nr(get(fri.query, 'width', string(g:fern#drawer_width)))
   if winnr('$') isnot# 1
