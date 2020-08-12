@@ -46,9 +46,6 @@ function! fern#internal#command#fern#command(mods, fargs) abort
       let opener = s:drawer_opener
     endif
 
-    " Resolve reveal
-    let reveal = empty(reveal) ? '' : expand(reveal)
-
     let expr = expand(a:fargs[0])
     let path = fern#fri#format(
           \ expr =~# '^[^:]\+://'
@@ -67,15 +64,17 @@ function! fern#internal#command#fern#command(mods, fargs) abort
           \ 'width': width,
           \ 'keep': keep,
           \})
-    let fri.fragment = empty(reveal) ? '' : fern#internal#filepath#to_slash(reveal)
-
-    " Normalize fragment if expr does not start from {scheme}://
-    if expr !~# '^[^:]\+://'
-      call s:norm_fragment(fri)
-    endif
-
     call fern#logger#debug('expr:', expr)
     call fern#logger#debug('fri:', fri)
+
+    " A promise which will be resolved once the viewer become ready
+    let waiter = fern#hook#promise('viewer:ready')
+
+    " Register callback to reveal node
+    let reveal = s:normalize_reveal(fri, reveal)
+    if reveal !=# ''
+      let waiter = waiter.then({ h -> fern#internal#viewer#reveal(h, reveal) })
+    endif
 
     let winid_saved = win_getid()
     if fri.authority =~# '\<drawer\>'
@@ -92,18 +91,16 @@ function! fern#internal#command#fern#command(mods, fargs) abort
             \ 'stay': stay ? win_getid() : 0,
             \})
     endif
+
     if stay
       call win_gotoid(winid_saved)
     endif
 
     if wait
-      let [_, err] = s:Promise.wait(
-            \ fern#hook#promise('viewer:ready'),
-            \ {
-            \   'interval': 100,
-            \   'timeout': 5000,
-            \ },
-            \)
+      let [_, err] = s:Promise.wait(waiter, {
+            \ 'interval': 100,
+            \ 'timeout': 5000,
+            \})
       if err isnot# v:null
         throw printf('[fern] Failed to wait: %s', err)
       endif
@@ -128,15 +125,15 @@ function! fern#internal#command#fern#complete(arglead, cmdline, cursorpos) abort
   return fern#internal#complete#url(a:arglead, a:cmdline, a:cursorpos)
 endfunction
 
-function! s:norm_fragment(fri) abort
-  if empty(a:fri.fragment)
-    return
+function! s:normalize_reveal(fri, reveal) abort
+  let reveal = expand(a:reveal)
+  if !fern#internal#filepath#is_absolute(reveal)
+    return reveal
   endif
-  " fragment is one of the following
-  " 1) An absolute path of fs (/ in Unix, \ in Windows)
-  " 2) A relative path of fs (/ in Unix, \ in Windows)
-  " 3) A relative path of URI (/ in all platform)
-  let root = fern#fri#to#path(fern#fri#parse(a:fri.path))
-  let reveal = fern#internal#filepath#to_slash(a:fri.fragment)
-  let a:fri.fragment = fern#internal#path#relative(reveal, root)
+  " reveal points a real filesystem
+  let fri = fern#fri#parse(a:fri.path)
+  let root = '/' . fri.path
+  let reveal = fern#internal#filepath#to_slash(reveal)
+  let reveal = fern#internal#path#relative(reveal, root)
+  return reveal
 endfunction

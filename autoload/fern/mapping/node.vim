@@ -83,24 +83,15 @@ function! s:map_collapse(helper) abort
 endfunction
 
 function! s:map_reveal(helper) abort
-  let node = a:helper.sync.get_cursor_node()
-  let path = node is# v:null
-        \ ? ''
-        \ : join(node.__key, '/') . '/'
-  let path = input('Reveal: ', path)
+  let path = input(
+        \ 'Reveal: ',
+        \ '',
+        \ printf('customlist,%s', get(funcref('s:reveal_complete'), 'name')),
+        \)
   if empty(path)
     return s:Promise.reject('Cancelled')
   endif
-  let key = split(path, '/')
-  let root = a:helper.sync.get_root_node()
-  let previous = a:helper.sync.get_cursor_node()
-  return a:helper.async.reveal_node(key)
-        \.then({ -> a:helper.async.redraw() })
-        \.then({ -> a:helper.sync.focus_node(
-        \   key,
-        \   { 'previous': previous },
-        \ )
-        \})
+  return fern#internal#viewer#reveal(a:helper, path)
 endfunction
 
 function! s:map_enter(helper) abort
@@ -113,4 +104,14 @@ endfunction
 
 function! s:map_leave(helper) abort
   return a:helper.async.leave_tree()
+endfunction
+
+function! s:reveal_complete(arglead, cmdline, cursorpos) abort
+  let helper = fern#helper#new()
+  let fri = fern#fri#parse(bufname('%'))
+  let scheme = helper.fern.scheme
+  let cmdline = fri.path
+  let arglead = printf('-reveal=%s', a:arglead)
+  let rs = fern#internal#complete#reveal(arglead, cmdline, a:cursorpos)
+  return map(rs, { -> matchstr(v:val, '-reveal=\zs.*') })
 endfunction

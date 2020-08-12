@@ -494,6 +494,14 @@ COMMAND							*fern-command*
 	only a project drawer style fern.
 	Note that the command can be followed by a '|' and another command.
 
+							*:FernReveal*
+:FernReveal {reveal} [-wait]				BUFFER LOCAL
+	Reveal {reveal} on a current fern viewer. Note that this command
+	exists only in a fern viewer buffer.
+	If "-wait" option is specified, the command wait synchronously until
+	the node specified has revealed.
+	Note that the command can be followed by a '|' and another command.
+
 -----------------------------------------------------------------------------
 FUNCTION						*fern-function*
 

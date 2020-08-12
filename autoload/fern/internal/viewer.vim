@@ -14,6 +14,16 @@ function! fern#internal#viewer#init() abort
         \.catch({ e -> s:Lambda.pass(e, s:notify(bufnr, e)) })
 endfunction
 
+function! fern#internal#viewer#reveal(helper, path) abort
+  let path = fern#internal#filepath#to_slash(a:path)
+  let reveal = split(path, '/')
+  let previous = a:helper.sync.get_cursor_node()
+  return s:Promise.resolve()
+        \.then({ -> a:helper.async.reveal_node(reveal) })
+        \.then({ -> a:helper.async.redraw() })
+        \.then({ -> a:helper.sync.focus_node(reveal) })
+endfunction
+
 function! s:open(bufname, options, resolve, reject) abort
   if fern#internal#buffer#open(a:bufname, a:options)
     call a:reject('Cancelled')
@@ -26,6 +36,11 @@ function! s:open(bufname, options, resolve, reject) abort
 endfunction
 
 function! s:init() abort
+  execute printf(
+        \ 'command! -buffer -bar -nargs=* -complete=customlist,%s FernReveal call s:reveal([<f-args>])',
+        \ get(funcref('s:reveal_complete'), 'name'),
+        \)
+
   setlocal buftype=nofile bufhidden=unload
   setlocal noswapfile nobuflisted nomodifiable
   setlocal signcolumn=yes
@@ -82,16 +97,12 @@ function! s:init() abort
     doautocmd <nomodeline> User FernSyntax
     call fern#internal#action#init()
 
-    let reveal = split(fri.fragment, '/')
     let Profile = fern#profile#start('fern#internal#viewer:init')
     return s:Promise.resolve()
           \.then({ -> helper.async.expand_node(root.__key) })
           \.finally({ -> Profile('expand') })
-          \.then({ -> helper.async.reveal_node(reveal) })
-          \.finally({ -> Profile('reveal') })
           \.then({ -> helper.async.redraw() })
           \.finally({ -> Profile('redraw') })
-          \.then({ -> helper.sync.focus_node(reveal) })
           \.finally({ -> Profile() })
           \.then({ -> fern#hook#emit('viewer:ready', helper) })
   catch
@@ -109,6 +120,58 @@ function! s:notify(bufnr, error) abort
       call notifier.reject([a:bufnr, a:error])
     endif
   endif
+endfunction
+
+function! s:cache_content(helper) abort
+  let bufnr = a:helper.bufnr
+  let content = getbufline(bufnr, 1, '$')
+  call setbufvar(bufnr, 'fern_viewer_cache_content', content)
+endfunction
+
+function! s:reveal(fargs) abort
+  try
+    let wait = fern#internal#args#pop(a:fargs, 'wait', v:false)
+    if len(a:fargs) isnot# 1
+          \ || type(wait) isnot# v:t_bool
+      throw 'Usage: FernReveal {reveal} [-wait]'
+    endif
+
+    " Does all options are handled?
+    call fern#internal#args#throw_if_dirty(a:fargs)
+
+    let expr = expand(a:fargs[0])
+    let helper = fern#helper#new()
+    let promise = fern#internal#viewer#reveal(helper, expr)
+
+    if wait
+      let [_, err] = s:Promise.wait(
+            \ promise,
+            \ {
+            \   'interval': 100,
+            \   'timeout': 5000,
+            \ },
+            \)
+      if err isnot# v:null
+        throw printf('[fern] Failed to wait: %s', err)
+      endif
+    endif
+  catch
+    echohl ErrorMsg
+    echomsg v:exception
+    echohl None
+    call fern#logger#debug(v:exception)
+    call fern#logger#debug(v:throwpoint)
+  endtry
+endfunction
+
+function! s:reveal_complete(arglead, cmdline, cursorpos) abort
+  let helper = fern#helper#new()
+  let fri = fern#fri#parse(bufname('%'))
+  let scheme = helper.fern.scheme
+  let cmdline = fri.path
+  let arglead = printf('-reveal=%s', a:arglead)
+  let rs = fern#internal#complete#reveal(arglead, cmdline, a:cursorpos)
+  return map(rs, { -> matchstr(v:val, '-reveal=\zs.*') })
 endfunction
 
 function! s:WinEnter() abort
@@ -129,11 +192,12 @@ function! s:BufReadCmd() abort
   call helper.fern.renderer.syntax()
   call fern#hook#emit('viewer:syntax', helper)
   doautocmd <nomodeline> User FernSyntax
+  setlocal modifiable
+  call setline(1, get(b:, 'fern_viewer_cache_content', []))
+  setlocal nomodifiable
+  call helper.sync.set_cursor(get(b:, 'fern_cursor', getcurpos()[1:2]))
   let root = helper.sync.get_root_node()
-  let cursor = get(b:, 'fern_cursor', getcurpos()[1:2])
   call s:Promise.resolve()
-        \.then({ -> helper.async.redraw() })
-        \.then({ -> helper.sync.set_cursor(cursor) })
         \.then({ -> helper.async.reload_node(root.__key) })
         \.then({ -> helper.async.redraw() })
         \.then({ -> fern#hook#emit('viewer:ready', helper) })
@@ -152,6 +216,9 @@ augroup fern-internal-viewer-internal
   autocmd User FernSyntax :
   autocmd User FernHighlight :
 augroup END
+
+" Cache content to accelerate rendering
+call fern#hook#add('viewer:redraw', { h -> s:cache_content(h) })
 
 " Deprecated:
 call fern#hook#add('viewer:highlight', { h -> fern#hook#emit('renderer:highlight', h) })
