@@ -77,7 +77,7 @@ function! s:auto_quit() abort
     return
   elseif keep
     " Add a new window to avoid being a last window
-    vertical botright new
+    silent! vertical botright new
     keepjumps wincmd p
     execute 'vertical resize' width
   else
