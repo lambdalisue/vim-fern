@@ -57,6 +57,7 @@ function! s:init() abort
     endif
 
     if !g:fern#disable_viewer_hide_cursor
+      autocmd BufEnter,WinEnter,CmdwinLeave,CmdlineLeave <buffer> setlocal cursorline
       autocmd BufEnter,WinEnter,CmdwinLeave,CmdlineLeave <buffer> call fern#internal#cursor#hide()
       autocmd BufLeave,WinLeave,CmdwinEnter,CmdlineEnter <buffer> call fern#internal#cursor#restore()
     endif
