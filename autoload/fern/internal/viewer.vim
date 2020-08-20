@@ -55,6 +55,11 @@ function! s:init() abort
     if !g:fern#disable_viewer_auto_duplication
       autocmd WinEnter <buffer> ++nested call s:WinEnter()
     endif
+
+    if !g:fern#disable_viewer_hide_cursor
+      autocmd BufEnter,WinEnter,CmdwinLeave,CmdlineLeave <buffer> call fern#internal#cursor#hide()
+      autocmd BufLeave,WinLeave,CmdwinEnter,CmdlineEnter <buffer> call fern#internal#cursor#restore()
+    endif
   augroup END
 
   " Add unique fragment to make each buffer uniq
