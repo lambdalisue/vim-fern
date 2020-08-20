@@ -15,13 +15,40 @@
 General purpose asynchronous tree viewer written in Pure Vim script.
 
 <p align="center">
-<img src="https://user-images.githubusercontent.com/546312/73183241-d89aa980-415d-11ea-876f-30bd4d80f0cd.png">
-<small><strong>Split windows</strong></small>
+<strong>Split windows (netrw style)</strong><br>
+<small>
+<a href="https://github.com/lambdalisue/nerdfont.vim" target="_blank">nerdfont.vim</a>
+/
+<a href="https://github.com/lambdalisue/glyph-palette.vim" target="_blank">glyph-palette.vim</a>
+/
+<a href="https://github.com/lambdalisue/fern-renderer-nerdfont.vim" target="_blank">fern-renderer-nerdfont.vim</a>
+/
+<a href="https://github.com/lambdalisue/fern-git-status.vim" target="_blank">fern-git-status.vim</a>
+</small>
+<img src="https://user-images.githubusercontent.com/546312/90719223-cdbc8780-e2ee-11ea-8a6e-ea837a194ffa.png">
 </p>
 <p align="center">
-<img src="https://user-images.githubusercontent.com/546312/73183310-f10ac400-415d-11ea-80c8-af1609294889.png">
-<small><strong>Project drawer</strong></small>
+<strong>Project drawer (NERDTree style)</strong><br>
+<small>
+<a href="https://github.com/lambdalisue/nerdfont.vim" target="_blank">nerdfont.vim</a>
+/
+<a href="https://github.com/lambdalisue/glyph-palette.vim" target="_blank">glyph-palette.vim</a>
+/
+<a href="https://github.com/lambdalisue/fern-renderer-nerdfont.vim" target="_blank">fern-renderer-nerdfont.vim</a>
+/
+<a href="https://github.com/lambdalisue/fern-git-status.vim" target="_blank">fern-git-status.vim</a>
+</small>
+<img src="https://user-images.githubusercontent.com/546312/90719227-ceedb480-e2ee-11ea-98c5-0b7cbcb1bb6a.png">
 </p>
+<p align="right">
+<small>
+See <a href="https://github.com/lambdalisue/fern.vim/wiki/Screenshots" target="_blank">Screenshots</a> for more screenshots.
+</small>
+</p>
+
+## Note
+
+- Neovim users **SHOULD** add [antoinemadec/FixCursorHold.nvim](https://github.com/antoinemadec/FixCursorHold.nvim) for now (See [#120](https://github.com/lambdalisue/fern.vim/issues/120))
 
 ## Concept
 
@@ -61,7 +88,7 @@ Or open fern on a current working directory with a current buffer focused by:
 :Fern . -reveal=%
 ```
 
-![](https://user-images.githubusercontent.com/546312/73183700-9aea5080-415e-11ea-8bca-e1dea78d24ca.png)
+![](https://user-images.githubusercontent.com/546312/90720134-f3e32700-e2f0-11ea-82f7-c86512ad5854.png)
 
 The following options are available for fern viewer.
 
@@ -70,9 +97,10 @@ The following options are available for fern viewer.
 | `-opener` | `edit`  | An opener to open the buffer. See `:help fern-opener` for detail.                   |
 | `-reveal` |         | Recursively expand branches and focus the node. See `:help fern-reveal` for detail. |
 | `-stay`   |         | Stay focus on the window where the command has called.                              |
+| `-wait`   |         | Wait synchronously until the fern viewer become ready.                              |
 
 ```
-:Fern {url} [-opener={opener}] [-reveal={reveal}] [-stay]
+:Fern {url} [-opener={opener}] [-reveal={reveal}] [-stay] [-wait]
 ```
 
 ### Command (Project drawer)
