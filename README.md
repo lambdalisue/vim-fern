@@ -16,7 +16,7 @@ General purpose asynchronous tree viewer written in Pure Vim script.
 
 <p align="center">
 <strong>Split windows (netrw style)</strong><br>
-<small>
+<sub>
 <a href="https://github.com/lambdalisue/nerdfont.vim" target="_blank">nerdfont.vim</a>
 /
 <a href="https://github.com/lambdalisue/glyph-palette.vim" target="_blank">glyph-palette.vim</a>
@@ -24,12 +24,12 @@ General purpose asynchronous tree viewer written in Pure Vim script.
 <a href="https://github.com/lambdalisue/fern-renderer-nerdfont.vim" target="_blank">fern-renderer-nerdfont.vim</a>
 /
 <a href="https://github.com/lambdalisue/fern-git-status.vim" target="_blank">fern-git-status.vim</a>
-</small>
+</sub>
 <img src="https://user-images.githubusercontent.com/546312/90719223-cdbc8780-e2ee-11ea-8a6e-ea837a194ffa.png">
 </p>
 <p align="center">
 <strong>Project drawer (NERDTree style)</strong><br>
-<small>
+<sub>
 <a href="https://github.com/lambdalisue/nerdfont.vim" target="_blank">nerdfont.vim</a>
 /
 <a href="https://github.com/lambdalisue/glyph-palette.vim" target="_blank">glyph-palette.vim</a>
@@ -37,13 +37,13 @@ General purpose asynchronous tree viewer written in Pure Vim script.
 <a href="https://github.com/lambdalisue/fern-renderer-nerdfont.vim" target="_blank">fern-renderer-nerdfont.vim</a>
 /
 <a href="https://github.com/lambdalisue/fern-git-status.vim" target="_blank">fern-git-status.vim</a>
-</small>
+</sub>
 <img src="https://user-images.githubusercontent.com/546312/90719227-ceedb480-e2ee-11ea-98c5-0b7cbcb1bb6a.png">
 </p>
 <p align="right">
-<small>
+<sub>
 See <a href="https://github.com/lambdalisue/fern.vim/wiki/Screenshots" target="_blank">Screenshots</a> for more screenshots.
-</small>
+</sub>
 </p>
 
 ## Note
