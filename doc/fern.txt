@@ -376,6 +376,10 @@ VARIABLE						*fern-variable*
 	The duplication is mainly occured when user execute |split| or
 	|vsplit| command to duplicate window.
 
+*g:fern#disable_viewer_hide_cursor*
+	Set 1 to disable viewer hide cursor. Note that Neovim prior to 0.5.0
+	cannot hide cursor thus the cursor is shown as a vertical bar instead.
+
 *g:fern#disable_drawer_auto_winfixwidth*
 	Set 1 to disable automatically enable 'winfixwidth' to drawer on
 	|BufEnter| autocmd.
