@@ -625,6 +625,31 @@ fern#logger#error({object}...)
 =============================================================================
 UTILITY						*fern-develop-utility*
 
+						*fern#action#call()*
+fern#action#call({name}[, {options}])
+	Call an action {name} of the current buffer.
+	The following attributes are available in {options}
+
+	"capture"	1 to enable capture mode which write output messages
+			into a new empty buffer instead
+	"verbose"	1 to execute action with 'verbose' (1) mode.
+
+						*fern#action#list()*
+fern#action#list([{conceal}])
+	Return a |List| of available actions. Each item of the list is tuple
+	like [{lhs}, {name}, {rhs}] where {lhs} is an actual mapping, {name}
+	is an action name, and {rhs} is a <Plug> mapping like:
+>
+	assert_equal(fern#action#list(), [
+	      \ ['a', 'choice', '<Plug>(fern-action-choice)'],
+	      \ ['.', 'repeat', '<Plug>(fern-action-repeat)'],
+	      \ ['?', 'help', '<Plug>(fern-action-help)'],
+	      \ ['', 'help:all', '<Plug>(fern-action-help:all)'],
+	      \])
+<
+	When {conceal} is truthy value, it remove items which contains ":" in
+	it's name and no actual mapping (like "help:all" in above example.)
+
 						*fern#hook#add()*
 fern#hook#add({name}, {callback}[, {options}])
 	Add the {callback} to the {name} hook.
