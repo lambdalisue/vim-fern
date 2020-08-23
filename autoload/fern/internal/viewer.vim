@@ -101,7 +101,7 @@ function! s:init() abort
     call helper.fern.renderer.syntax()
     call fern#hook#emit('viewer:syntax', helper)
     doautocmd <nomodeline> User FernSyntax
-    call fern#internal#action#init()
+    call fern#action#_init()
 
     let Profile = fern#profile#start('fern#internal#viewer:init')
     return s:Promise.resolve()
