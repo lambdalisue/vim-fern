@@ -131,14 +131,11 @@ function! s:encode(str, pattern) abort
 endfunction
 
 function! s:decode(str) abort
-  let str = a:str
-  let [hex, s, e] = matchstrpos(str, '%\zs[0-9a-fA-F]\{2}')
-  while !empty(hex)
-    let repl = nr2char(str2nr(hex, 16))
-    let str = substitute(str, '%' . hex, escape(repl, '&'), 'ig')
-    let [hex, s, e] = matchstrpos(str, '%\zs[0-9a-fA-F]\{2}', s + 1)
-  endwhile
-  return str
+  if type(a:str) !=# v:t_string
+    return a:str
+  endif
+  let Sub = { m -> nr2char(str2nr(m[1], 16)) }
+  return substitute(a:str, '%\([0-9a-fA-F]\{2}\)', Sub, 'g')
 endfunction
 
 function! s:split1(str, pattern) abort

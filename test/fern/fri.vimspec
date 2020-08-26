@@ -127,6 +127,30 @@ Describe fern#fri
             \}
       Assert Equals(fern#fri#parse(expr), want)
     End
+
+    It returns FRI for 'file:///foo%20bar%20baz'
+      let expr = 'file:///foo%20bar%20baz'
+      let want = {
+            \ 'scheme': 'file',
+            \ 'authority': '',
+            \ 'path': 'foo bar baz',
+            \ 'query': {},
+            \ 'fragment': '',
+            \}
+      Assert Equals(fern#fri#parse(expr), want)
+    End
+
+    It returns FRI for 'fri://qux/file:///foo%252520bar%252520baz'
+      let expr = 'fri://qux/file:///foo%252520bar%252520baz'
+      let want = {
+            \ 'scheme': 'fri',
+            \ 'authority': 'qux',
+            \ 'path': 'file:///foo%2520bar%2520baz',
+            \ 'query': {},
+            \ 'fragment': '',
+            \}
+      Assert Equals(fern#fri#parse(expr), want)
+    End
   End
 
   Describe #format()
@@ -200,6 +224,30 @@ Describe fern#fri
             \}
       Assert Equals(fern#fri#format(want), expr)
     End
+
+    It formats FRI to 'file:///foo%20bar%20baz'
+      let expr = 'file:///foo%20bar%20baz'
+      let want = {
+            \ 'scheme': 'file',
+            \ 'authority': '',
+            \ 'path': 'foo bar baz',
+            \ 'query': {},
+            \ 'fragment': '',
+            \}
+      Assert Equals(fern#fri#format(want), expr)
+    End
+
+    It formats FRI to 'fri://qux/file:///foo%252520bar%252520baz'
+      let expr = 'fri://qux/file:///foo%252520bar%252520baz'
+      let want = {
+            \ 'scheme': 'fri',
+            \ 'authority': 'qux',
+            \ 'path': 'file:///foo%2520bar%2520baz',
+            \ 'query': {},
+            \ 'fragment': '',
+            \}
+      Assert Equals(fern#fri#format(want), expr)
+    End
   End
 
   Describe #encode()
@@ -228,6 +276,10 @@ Describe fern#fri
       Assert Equals(fern#fri#encode('=', pattern), '%3D')
       Assert Equals(fern#fri#encode(' ', pattern), '%20')
     End
+
+    It encodes all percent character (%)
+      Assert Equals(fern#fri#encode('%%'), '%25%25')
+    End
   End
 
   Describe #decode()
@@ -255,6 +307,16 @@ Describe fern#fri
       Assert Equals(fern#fri#decode('%252523'), '%2523')
       Assert Equals(fern#fri#decode('%2523'), '%23')
       Assert Equals(fern#fri#decode('%23'), '#')
+    End
+
+    It decodes all percent character (%)
+      Assert Equals(fern#fri#decode('%23%23'), '##')
+    End
+
+    It decodes all percent character (%) only one depth
+      Assert Equals(fern#fri#decode('%252523%252523'), '%2523%2523')
+      Assert Equals(fern#fri#decode('%2523%2523'), '%23%23')
+      Assert Equals(fern#fri#decode('%23%23'), '##')
     End
   End
 End
