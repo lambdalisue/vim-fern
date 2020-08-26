@@ -22,7 +22,7 @@ function! fern#fri#parse(expr) abort
   endif
   let [authority, remains] = s:split1(remains, escape('/', s:PATTERN))
   if empty(remains)
-    let remaings = authority
+    let remains = authority
     let authority = ''
   endif
   let [path, remains] = s:split1(remains, escape(';', s:PATTERN))
