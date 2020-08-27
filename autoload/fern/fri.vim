@@ -74,7 +74,7 @@ function! s:parse_query(query) abort
   call map(terms, { _, v -> (split(v, '=', 1) + [v:true])[:1] })
   call map(terms, { _, v ->
         \ extend(obj, {
-        \   s:decode(v[0]): s:decode(v[1])
+        \   s:decode(v[0]): type(v[1]) is# v:t_string ? s:decode(v[1]) : v[1],
         \ })
         \})
   return obj
@@ -128,9 +128,6 @@ function! s:encode(str, pattern) abort
 endfunction
 
 function! s:decode(str) abort
-  if type(a:str) !=# v:t_string
-    return a:str
-  endif
   let Sub = { m -> nr2char(str2nr(m[1], 16)) }
   return substitute(a:str, '%\([0-9a-fA-F]\{2}\)', Sub, 'g')
 endfunction
