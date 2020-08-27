@@ -123,11 +123,8 @@ function! s:encode_fragment(pchar) abort
 endfunction
 
 function! s:encode(str, pattern) abort
-  let chars = map(
-        \ split(a:str, '\zs'),
-        \ { _, v -> v =~# a:pattern ? printf('%%%X', char2nr(v)) : v },
-        \)
-  return join(chars, '')
+  let Sub = { m -> printf('%%%X', char2nr(m[0])) }
+  return substitute(a:str, a:pattern, Sub, 'g')
 endfunction
 
 function! s:decode(str) abort
