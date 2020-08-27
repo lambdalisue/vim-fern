@@ -17,7 +17,11 @@ if has('nvim')
     endfunction
 
     function! s:restore() abort
-      set guicursor+=a:Cursor/lCursor
+      " NOTE:
+      " The default 'Cursor' highlight is 'xxx guifg=bg guibg=fg' but it
+      " does NOT work and seems ignored. Thus use 'TermCursor' instead to
+      " fix #177
+      set guicursor+=a:TermCursor/lCursor
       let &guicursor = s:guicursor_saved
     endfunction
 
