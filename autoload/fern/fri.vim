@@ -22,7 +22,7 @@ function! fern#fri#parse(expr) abort
   endif
   let [authority, remains] = s:split1(remains, escape('/', s:PATTERN))
   if empty(remains)
-    let remaings = authority
+    let remains = authority
     let authority = ''
   endif
   let [path, remains] = s:split1(remains, escape(';', s:PATTERN))
@@ -74,7 +74,7 @@ function! s:parse_query(query) abort
   call map(terms, { _, v -> (split(v, '=', 1) + [v:true])[:1] })
   call map(terms, { _, v ->
         \ extend(obj, {
-        \   s:decode(v[0]): s:decode(v[1])
+        \   s:decode(v[0]): type(v[1]) is# v:t_string ? s:decode(v[1]) : v[1],
         \ })
         \})
   return obj
@@ -123,22 +123,13 @@ function! s:encode_fragment(pchar) abort
 endfunction
 
 function! s:encode(str, pattern) abort
-  let chars = map(
-        \ split(a:str, '\zs'),
-        \ { _, v -> v =~# a:pattern ? printf('%%%X', char2nr(v)) : v },
-        \)
-  return join(chars, '')
+  let Sub = { m -> printf('%%%X', char2nr(m[0])) }
+  return substitute(a:str, a:pattern, Sub, 'g')
 endfunction
 
 function! s:decode(str) abort
-  let str = a:str
-  let [hex, s, e] = matchstrpos(str, '%\zs[0-9a-fA-F]\{2}')
-  while !empty(hex)
-    let repl = nr2char(str2nr(hex, 16))
-    let str = substitute(str, '%' . hex, escape(repl, '&'), 'ig')
-    let [hex, s, e] = matchstrpos(str, '%\zs[0-9a-fA-F]\{2}', s + 1)
-  endwhile
-  return str
+  let Sub = { m -> nr2char(str2nr(m[1], 16)) }
+  return substitute(a:str, '%\([0-9a-fA-F]\{2}\)', Sub, 'g')
 endfunction
 
 function! s:split1(str, pattern) abort
