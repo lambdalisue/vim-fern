@@ -38,16 +38,21 @@ function! s:lnum(index) abort
 endfunction
 
 function! s:syntax() abort
+  syntax match FernLeaf   /^.*[^/].*$/ transparent contains=FernLeafSymbol
+  syntax match FernBranch /^.*\/.*$/   transparent contains=FernBranchSymbol
+  syntax match FernRoot   /\%1l.*/       transparent contains=FernRootText
   execute printf(
-        \ 'syntax match FernRootSymbol /\%%1l%s/ nextgroup=FernRootText',
+        \ 'syntax match FernRootSymbol /%s/ contained nextgroup=FernRootText',
         \ escape(g:fern#renderer#default#root_symbol, s:ESCAPE_PATTERN),
         \)
   execute printf(
-        \ 'syntax match FernLeafSymbol /^\s*%s/ nextgroup=FernLeafText',
+        \ 'syntax match FernLeafSymbol /^\%%(%s\)*%s/ contained nextgroup=FernLeafText',
+        \ escape(g:fern#renderer#default#leading, s:ESCAPE_PATTERN),
         \ escape(g:fern#renderer#default#leaf_symbol, s:ESCAPE_PATTERN),
         \)
   execute printf(
-        \ 'syntax match FernBranchSymbol /^\s*\%%(%s\|%s\)/ nextgroup=FernBranchText',
+        \ 'syntax match FernBranchSymbol /^\%%(%s\)*\%%(%s\|%s\)/ contained nextgroup=FernBranchText',
+        \ escape(g:fern#renderer#default#leading, s:ESCAPE_PATTERN),
         \ escape(g:fern#renderer#default#collapsed_symbol, s:ESCAPE_PATTERN),
         \ escape(g:fern#renderer#default#expanded_symbol, s:ESCAPE_PATTERN),
         \)
@@ -79,7 +84,8 @@ function! s:render_node(node, base, options) abort
         \ : a:node.status is# s:STATUS_COLLAPSED
         \   ? a:options.collapsed_symbol
         \   : a:options.expanded_symbol
-  return leading . symbol . a:node.label . '' . a:node.badge
+  let suffix = a:node.status ? '/' : ''
+  return leading . symbol . a:node.label . suffix . '' . a:node.badge
 endfunction
 
 call s:Config.config(expand('<sfile>:p'), {
