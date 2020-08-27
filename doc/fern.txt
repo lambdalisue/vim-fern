@@ -273,12 +273,28 @@ Users can customize above appearance by the following variables.
 *g:fern#renderer#default#unmarked_symbol*
 	OBSOLETE(v1.6.0)~
 	No alternative feature is provided.
-
 See |FernHighlight| and |fern-highlight| to change pre-defeined |highlight|.
 
 Or create user custom renderer to change the appearance completely.
 See |fern-develop-renderer| for more details.
 
+Users can customize the label by the following functions.
+
+						*FernRendererCustomLabel()*
+FernRendererCustomLabel({node}, {is_root})
+	A global function which is called to determine a label of the {node}.
+	The {node} is a node instance (|fern-develop-node|) and {is_root} is
+	|Boolean| to indicate that the {node} is root node. 
+	For example, if you'd like to show an absolute path on the root node
+	on file:// scheme, define the following function in your vimrc:
+>
+	function! FernRendererCustomLabel(node, is_root) abort
+	  if a:is_root && has_key(a:node, '_path')
+	    return fnamemodify(a:node._path, ':~')
+	  endif
+	  return a:node.label
+	endfunction
+<
 
 =============================================================================
 INTERFACE						*fern-interface*

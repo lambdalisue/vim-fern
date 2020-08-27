@@ -76,7 +76,8 @@ endfunction
 function! s:render_node(node, base, options) abort
   let level = len(a:node.__key) - a:base
   if level is# 0
-    return a:options.root_symbol . a:node.label . '' . a:node.badge
+    let label = FernRendererCustomLabel(a:node, 1)
+    return a:options.root_symbol . label . '' . a:node.badge
   endif
   let leading = repeat(a:options.leading, level - 1)
   let symbol = a:node.status is# s:STATUS_NONE
@@ -85,7 +86,8 @@ function! s:render_node(node, base, options) abort
         \   ? a:options.collapsed_symbol
         \   : a:options.expanded_symbol
   let suffix = a:node.status ? '/' : ''
-  return leading . symbol . a:node.label . suffix . '' . a:node.badge
+  let label = FernRendererCustomLabel(a:node, 0)
+  return leading . symbol . label . suffix . '' . a:node.badge
 endfunction
 
 call s:Config.config(expand('<sfile>:p'), {
@@ -105,4 +107,10 @@ if exists('g:fern#renderer#default#marked_symbol')
 endif
 if exists('g:fern#renderer#default#unmarked_symbol')
   call fern#util#obsolete('g:fern#renderer#default#unmarked_symbol')
+endif
+
+if !exists('*FernRendererCustomLabel')
+  function FernRendererCustomLabel(node, is_root) abort
+    return a:node.label
+  endfunction
 endif
