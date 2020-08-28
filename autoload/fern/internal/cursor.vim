@@ -18,6 +18,7 @@ if has('nvim')
 
     function! s:restore() abort
       set guicursor+=a:Cursor/lCursor
+      sleep 1m
       let &guicursor = s:guicursor_saved
     endfunction
 
