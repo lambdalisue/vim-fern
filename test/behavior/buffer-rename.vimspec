@@ -19,8 +19,9 @@ Describe buffer-rename
     execute printf('edit %s', fnameescape(fern#internal#filepath#join([workdir, 'alpha'])))
     execute printf('Fern %s -wait', fnameescape(workdir))
     Assert Match(execute('ls'), '\<alpha\>')
-    call timer_start(0, { -> feedkeys("\<C-w>OMEGA\<CR>") })
-    execute "normal ggj\<Plug>(fern-action-move)\<Plug>(fern-wait)"
+    call test#feedkeys("\<C-w>OMEGA\<CR>")
+    call feedkeys("ggj\<Plug>(fern-action-move)")
+    call feedkeys("\<Plug>(fern-wait)", 'x')
     Assert Equals(getline(1, '$'), [
           \ printf('%s', fnamemodify(workdir, ':t')),
           \ '|  OMEGA',
@@ -35,8 +36,9 @@ Describe buffer-rename
     execute printf('edit %s', fnameescape(fern#internal#filepath#join([workdir, 'alpha'])))
     execute printf('Fern %s -wait', fnameescape(workdir))
     Assert Match(execute('ls'), '\<alpha\>')
-    call timer_start(0, { -> feedkeys("y\<CR>") })
-    execute "normal ggj\<Plug>(fern-action-remove)\<Plug>(fern-wait)"
+    call test#feedkeys("y\<CR>")
+    call feedkeys("ggj\<Plug>(fern-action-remove)")
+    call feedkeys("\<Plug>(fern-wait)", 'x')
     Assert Equals(getline(1, '$'), [
           \ printf('%s', fnamemodify(workdir, ':t')),
           \ '|  beta',
@@ -51,8 +53,9 @@ Describe buffer-rename
     call append(0, ["Hello World"])
     execute printf('Fern %s -wait', fnameescape(workdir))
     Assert Match(execute('ls'), '\<alpha\>')
-    call timer_start(0, { -> feedkeys("y\<CR>") })
-    execute "normal ggj\<Plug>(fern-action-remove)\<Plug>(fern-wait)"
+    call test#feedkeys("y\<CR>")
+    call feedkeys("ggj\<Plug>(fern-action-remove)")
+    call feedkeys("\<Plug>(fern-wait)", 'x')
     Assert Equals(getline(1, '$'), [
           \ printf('%s', fnamemodify(workdir, ':t')),
           \ '|  beta',
