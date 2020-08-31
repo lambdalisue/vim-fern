@@ -714,6 +714,51 @@ GLOBAL							*fern-mapping-global*
 	An alias to "mark:toggle" action. Users can overwrite this mapping to 
 	change the default behavior of "mark" action.
 
+*<Plug>(fern-action-mark-children:set:node)*
+	Set marks on child nodes of the cursor node.
+
+*<Plug>(fern-action-mark-children:unset:node)*
+	Unset marks on child nodes of the cursor node.
+
+*<Plug>(fern-action-mark-children:toggle:node)*
+	Toggle marks on child nodes of the cursor node.
+
+*<Plug>(fern-action-mark-children:set:leaf)*
+	Set marks on child leaf nodes of the cursor node.
+
+*<Plug>(fern-action-mark-children:unset:leaf)*
+	Unset marks on child leaf nodes of the cursor node.
+
+*<Plug>(fern-action-mark-children:toggle:leaf)*
+	Toggle marks on child leaf nodes of the cursor node.
+
+*<Plug>(fern-action-mark-children:set:branch)*
+	Set marks on child branch nodes of the cursor node.
+
+*<Plug>(fern-action-mark-children:unset:branch)*
+	Unset marks on child branch nodes of the cursor node.
+
+*<Plug>(fern-action-mark-children:toggle:branch)*
+	Toggle marks on child branch nodes of the cursor node.
+
+*<Plug>(fern-action-mark-children:set)*
+	An alias to "mark-children:set:node" action. Users can overwrite this
+	mapping to change the default behavior of "mark-children:set" action.
+
+*<Plug>(fern-action-mark-children:unset)*
+	An alias to "mark-children:unset:node" action. Users can overwrite
+	this mapping to change the default behavior of "mark-children:unset"
+	action.
+
+*<Plug>(fern-action-mark-children:toggle)*
+	An alias to "mark-children:toggle:node" action. Users can overwrite
+	this mapping to change the default behavior of "mark-children:toggle"
+	action.
+
+*<Plug>(fern-action-mark-children)*
+	An alias to "mark-children:toggle" action. Users can overwrite this
+	mapping to change the default behavior of "mark-children" action.
+
 *<Plug>(fern-action-mark-clear)*
 	DEPRECATED: Use |<Plug>(fern-action-mark:clear)| instead.
 
