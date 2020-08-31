@@ -21,6 +21,17 @@ function! fern#mapping#init(scheme) abort
   call fern#internal#scheme#mapping_init(a:scheme, disable_default_mappings)
 endfunction
 
+function! fern#mapping#deprecated(old, new) abort
+  call fern#util#deprecated(
+        \ printf('<Plug>(%s)', a:old),
+        \ printf('<Plug>(%s)', a:new),
+        \)
+  " Do NOT show the warning message more than once
+  silent execute printf('nmap <buffer> <Plug>(%s) <Plug>(%s)', a:old, a:new)
+  " Return new mapping
+  return printf("\<Plug>(%s)", a:new)
+endfunction
+
 call s:Config.config(expand('<sfile>:p'), {
       \ 'mappings': [
       \   'drawer',

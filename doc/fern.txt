@@ -665,17 +665,30 @@ GLOBAL							*fern-mapping-global*
 	The original window width will be restored once user leave the window.
 	It only works on a drawer style fern window.
 
-*<Plug>(fern-action-hidden-set)*
+*<Plug>(fern-action-hidden:set)*
 	Show hidden nodes. For example hidden nodes in file:// scheme is a
 	file or directory starts from '.' character.
 	
-*<Plug>(fern-action-hidden-unset)*
+*<Plug>(fern-action-hidden:unset)*
 	Hide hidden nodes. For example hidden nodes in file:// scheme is a
 	file or directory starts from '.' character.
 
-*<Plug>(fern-action-hidden-toggle)*
+*<Plug>(fern-action-hidden:toggle)*
 	Toggle hidden nodes. For example hidden nodes in file:// scheme is a
 	file or directory starts from '.' character.
+
+*<Plug>(fern-action-hidden)*
+	An alias to "hidden:toggle" action. Users can overwrite this mapping
+	to change the default behavior of "hidden" action.
+
+*<Plug>(fern-action-hidden-set)*
+	DEPRECATED: Use |<Plug>(fern-action-hidden:set)| instead.
+	
+*<Plug>(fern-action-hidden-unset)*
+	DEPRECATED: Use |<Plug>(fern-action-hidden:unset)| instead.
+
+*<Plug>(fern-action-hidden-toggle)*
+	DEPRECATED: Use |<Plug>(fern-action-hidden:toggle)| instead.
 
 *<Plug>(fern-action-include)*
 	Open a prompt to enter include filter. Users can type a |pattern| to
@@ -685,17 +698,33 @@ GLOBAL							*fern-mapping-global*
 	Open a prompt to enter exclude filter. Users can type a |pattern| to
 	filter nodes recursively.
 
-*<Plug>(fern-action-mark-clear)*
+*<Plug>(fern-action-mark:clear)*
 	Clear existing marks.
 
-*<Plug>(fern-action-mark-toggle)*
-	Toggle marks on cursor node(s).
-
-*<Plug>(fern-action-mark-set)*
+*<Plug>(fern-action-mark:set)*
 	Set marks on cursor node(s).
 
-*<Plug>(fern-action-mark-unset)*
+*<Plug>(fern-action-mark:unset)*
 	Unset marks on cursor node(s).
+
+*<Plug>(fern-action-mark:toggle)*
+	Toggle marks on cursor node(s).
+
+*<Plug>(fern-action-mark)*
+	An alias to "mark:toggle" action. Users can overwrite this mapping to 
+	change the default behavior of "mark" action.
+
+*<Plug>(fern-action-mark-clear)*
+	DEPRECATED: Use |<Plug>(fern-action-mark:clear)| instead.
+
+*<Plug>(fern-action-mark-set)*
+	DEPRECATED: Use |<Plug>(fern-action-mark:set)| instead.
+
+*<Plug>(fern-action-mark-unset)*
+	DEPRECATED: Use |<Plug>(fern-action-mark:unset)| instead.
+
+*<Plug>(fern-action-mark-toggle)*
+	DEPRECATED: Use |<Plug>(fern-action-mark:toggle)| instead.
 
 *<Plug>(fern-action-debug)*
 	Echo debug information of a cursor node.

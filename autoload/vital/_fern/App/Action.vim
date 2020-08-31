@@ -4,13 +4,15 @@
 function! s:_SID() abort
   return matchstr(expand('<sfile>'), '<SNR>\zs\d\+\ze__SID$')
 endfunction
-execute join(['function! vital#_fern#App#Action#import() abort', printf("return map({'list': '', 'get_prefix': '', 'init': '', 'call': '', 'set_prefix': ''}, \"vital#_fern#function('<SNR>%s_' . v:key)\")", s:_SID()), 'endfunction'], "\n")
+execute join(['function! vital#_fern#App#Action#import() abort', printf("return map({'list': '', 'get_prefix': '', 'get_hiddens': '', 'init': '', 'set_ignores': '', 'call': '', 'get_ignores': '', 'set_hiddens': '', 'set_prefix': ''}, \"vital#_fern#function('<SNR>%s_' . v:key)\")", s:_SID()), 'endfunction'], "\n")
 delfunction s:_SID
 " ___vital___
 let s:prefix = matchstr(
       \ fnamemodify(expand('<sfile>'), ':p:h:h:t'),
       \ '^\%(__\zs.*\ze__\|_\zs.*\)$',
       \)
+let s:hiddens = []
+let s:ignores = []
 
 function! s:get_prefix() abort
   return s:prefix
@@ -18,6 +20,22 @@ endfunction
 
 function! s:set_prefix(prefix) abort
   let s:prefix = a:prefix
+endfunction
+
+function! s:get_hiddens() abort
+  return copy(s:hiddens)
+endfunction
+
+function! s:set_hiddens(hiddens) abort
+  let s:hiddens = a:hiddens
+endfunction
+
+function! s:get_ignores() abort
+  return copy(s:ignores)
+endfunction
+
+function! s:set_ignores(ignores) abort
+  let s:ignores = a:ignores
 endfunction
 
 function! s:init() abort
@@ -107,8 +125,10 @@ function! s:list(...) abort
   call map(rs2, { _, v -> ['', v[2], v[0]] })
 
   let rs = uniq(sort(rs1 + rs2, Sort), Sort)
+  call filter(rs, { -> index(s:ignores, v:val[1]) is# -1 })
   if conceal
     call filter(rs, { -> v:val[1] !~# ':' || !empty(v:val[0]) })
+    call filter(rs, { -> index(s:hiddens, v:val[1]) is# -1 })
   endif
 
   return rs
@@ -199,10 +219,13 @@ function! s:_complete_choice(arglead, cmdline, cursorpos) abort
   endif
   let names = copy(b:{s:prefix}_action.actions)
   let names += ['capture', 'verbose']
+  call filter(names, { -> index(s:ignores, v:val) is# -1 })
   if empty(a:arglead)
     call filter(names, { -> v:val !~# ':' })
+    call filter(names, { -> index(s:hiddens, v:val) is# -1 })
   endif
-  return filter(names, { -> v:val =~# '^' . a:arglead })
+  call filter(names, { -> v:val =~# '^' . a:arglead })
+  return names
 endfunction
 
 function! s:_compare(i1, i2) abort
