@@ -1,0 +1,31 @@
+function! s:input() abort
+  try
+    call inputsave()
+    echo input("Hello")
+  finally
+    call inputrestore()
+  endtry
+endfunction
+
+Describe input/feedkeys technique
+  It accepts "feedkeys" technique to complete "input()"
+    call test#feedkeys("Hello World\<CR>")
+    let value = execute("echo input('This is a test prompt')")
+    Assert Equals(value, "\nHello World")
+  End
+
+  It accepts "feedkeys" technique to complete "input()" with "inputsave()/inputrestore()"
+    call test#feedkeys("Hello World\<CR>")
+    let value = execute('call s:input()')
+    Assert Equals(value, "\nHello World")
+  End
+
+  It accepts "feedkeys" technique to complete "input()" through mapping
+    nnoremap <buffer>
+          \ <Plug>(test-input)
+          \ :<C-u>call <SID>input()<CR>
+    call test#feedkeys("Hello World\<CR>")
+    let value = execute("normal \<Plug>(test-input)")
+    Assert Equals(value, "\nHello World")
+  End
+End

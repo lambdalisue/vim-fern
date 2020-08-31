@@ -1,0 +1,39 @@
+Describe test
+  Before all
+    function! Input() abort
+      try
+        call inputsave()
+        echo input("Hello")
+      finally
+        call inputrestore()
+      endtry
+    endfunction
+  End
+
+  After all
+    delfunction! Input
+  End
+
+  Describe #feedkeys()
+    It provides user inputs to input()
+      call test#feedkeys("Hello World\<CR>")
+      let value = execute("echo input('This is a test prompt')")
+      Assert Equals(value, "\nHello World")
+    End
+
+    It provides user inputs to inputsave()/input()/inputrestore()
+      call test#feedkeys("Hello World\<CR>")
+      let value = execute('call Input()')
+      Assert Equals(value, "\nHello World")
+    End
+
+    It provides user inputs to inputsave()/input()/inputrestore() through mappings
+      nnoremap <buffer>
+            \ <Plug>(test-input)
+            \ :<C-u>call Input()<CR>
+      call test#feedkeys("Hello World\<CR>")
+      let value = execute("normal \<Plug>(test-input)")
+      Assert Equals(value, "\nHello World")
+    End
+  End
+End
