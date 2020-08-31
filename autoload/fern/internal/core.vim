@@ -39,6 +39,7 @@ function! fern#internal#core#cancel(fern) abort
 endfunction
 
 function! fern#internal#core#update_nodes(fern, nodes) abort
+  call fern#hook#emit('core:update_nodes', a:nodes)
   let a:fern.nodes = a:nodes
   let include = a:fern.include
   let exclude = a:fern.exclude
@@ -59,6 +60,7 @@ function! fern#internal#core#update_nodes(fern, nodes) abort
         \.finally({ -> Profile('include') })
         \.then(s:AsyncLambda.filter_f(Exclude))
         \.finally({ -> Profile('exclude') })
+        \.then({ ns -> s:Lambda.pass(ns, fern#hook#emit('core:update_visible_nodes', ns)) })
         \.then({ ns -> s:Lambda.let(a:fern, 'visible_nodes', ns) })
         \.finally({ -> Profile('let') })
         \.then({ -> fern#internal#core#update_marks(a:fern, a:fern.marks) })
@@ -73,6 +75,7 @@ function! fern#internal#core#update_marks(fern, marks) abort
         \.finally({ -> Profile('key') })
         \.then({ ks -> s:AsyncLambda.filter(a:marks, { m -> index(ks, m) isnot# -1 }) })
         \.finally({ -> Profile('filter') })
+        \.then({ ms -> s:Lambda.pass(ms, fern#hook#emit('core:update_marks', ms)) })
         \.then({ ms -> s:Lambda.let(a:fern, 'marks', ms) })
         \.finally({ -> Profile() })
 endfunction

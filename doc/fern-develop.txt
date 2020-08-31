@@ -262,6 +262,30 @@ HOOK						*fern-develop-hook*
 
 Following hook will be emitted by |fern#hook#emit()| from fern itself.
 
+"core:update_nodes" ({nodes})
+	Called when the nodes are updated.
+	The {nodes} is a |List| of |fern-develop-node|.
+	Overwrite the instance to apply changes.
+
+"core:update_visible_nodes" ({nodes})
+	Called when the visible nodes are updated.
+	The {nodes} is a |List| of |fern-develop-node|.
+	Overwrite the instance to apply changes like:
+>
+	function! s:update_root(nodes) abort
+	  if empty(a:nodes)
+	    return
+	  endif
+	  let root = a:nodes[0]
+	  let root.label = get(root, '_path', root.label)
+	endfunction
+	call fern#hook#add('core:update_visible_nodes', funcref('s:update_root'))
+<
+"core:update_marks" ({marks})
+	Called when marks are updated.
+	The {marks} is a |List| of |String| which indicates the marked nodes.
+	Overwrite the instance to apply changes.
+
 "viewer:syntax" ({helper})
 	Called when fern viewer has registered the syntax.
 	The {helper} is a helper instance described in |fern-develop-helper|.
