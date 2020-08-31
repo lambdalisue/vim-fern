@@ -38,12 +38,6 @@ function! fern#mapping#open#init(disable_default_mappings) abort
         \   "\<Plug>(fern-action-expand)",
         \ )
 
-  " For backword compatibility
-  nmap <buffer><silent><expr> <Plug>(fern-open-or-enter)
-        \ <SID>deprecated('fern-open-or-enter', 'fern-action-open-or-enter')
-  nmap <buffer><silent><expr> <Plug>(fern-open-or-expand)
-        \ <SID>deprecated('fern-open-or-expand', 'fern-action-open-or-expand')
-
   " Alias map
   nmap <buffer><silent> <Plug>(fern-action-open:edit) <Plug>(fern-action-open:edit-or-error)
   nmap <buffer><silent> <Plug>(fern-action-open) <Plug>(fern-action-open:edit)
@@ -56,17 +50,12 @@ function! fern#mapping#open#init(disable_default_mappings) abort
     nmap <buffer><nowait> E <Plug>(fern-action-open:side)
     nmap <buffer><nowait> t <Plug>(fern-action-open:tabedit)
   endif
-endfunction
 
-function! s:deprecated(old, new) abort
-  call fern#util#deprecated(
-        \ printf('<Plug>(%s)', a:old),
-        \ printf('<Plug>(%s)', a:new),
-        \)
-  " Do NOT show the warning message more than once
-  silent execute printf('nmap <buffer> <Plug>(%s) <Plug>(%s)', a:old, a:new)
-  " Return new mapping
-  return printf("\<Plug>(%s)", a:new)
+  " DEPRECATED:
+  nmap <buffer><silent><expr> <Plug>(fern-open-or-enter)
+        \ fern#mapping#deprecated('fern-open-or-enter', 'fern-action-open-or-enter')
+  nmap <buffer><silent><expr> <Plug>(fern-open-or-expand)
+        \ fern#mapping#deprecated('fern-open-or-expand', 'fern-action-open-or-expand')
 endfunction
 
 function! s:call(name, ...) abort
