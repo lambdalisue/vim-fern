@@ -277,7 +277,9 @@ Following hook will be emitted by |fern#hook#emit()| from fern itself.
 	    return
 	  endif
 	  let root = a:nodes[0]
-	  let root.label = get(root, '_path', root.label)
+	  let root.label = has_key(root, '_path')
+	        \ ? fnamemodify(root._path, ':~')
+	        \ : root.label
 	endfunction
 	call fern#hook#add('core:update_visible_nodes', funcref('s:update_root'))
 <
