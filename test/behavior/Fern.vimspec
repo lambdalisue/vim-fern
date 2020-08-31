@@ -26,9 +26,9 @@ Describe Fern
       Assert Equals(winnr('$'), 1)
       Assert Equals(getline(1, '$'), [
             \ 'root',
-            \ '|+ deep',
-            \ '|+ heavy',
-            \ '|+ shallow',
+            \ '|+ deep/',
+            \ '|+ heavy/',
+            \ '|+ shallow/',
             \ '|  leaf',
             \])
     End
@@ -37,12 +37,12 @@ Describe Fern
       Fern debug:/// -reveal=deep/alpha/beta -wait
       Assert Equals(getline(1, '$'), [
             \ 'root',
-            \ '|- deep',
-            \ ' |- alpha',
-            \ '  |- beta',
+            \ '|- deep/',
+            \ ' |- alpha/',
+            \ '  |- beta/',
             \ '   |  gamma',
-            \ '|+ heavy',
-            \ '|+ shallow',
+            \ '|+ heavy/',
+            \ '|+ shallow/',
             \ '|  leaf',
             \])
     End
@@ -51,11 +51,11 @@ Describe Fern
       Fern debug:/// -reveal=deep/alpha/zeta -wait
       Assert Equals(getline(1, '$'), [
             \ 'root',
-            \ '|- deep',
-            \ ' |- alpha',
-            \ '  |+ beta',
-            \ '|+ heavy',
-            \ '|+ shallow',
+            \ '|- deep/',
+            \ ' |- alpha/',
+            \ '  |+ beta/',
+            \ '|+ heavy/',
+            \ '|+ shallow/',
             \ '|  leaf',
             \])
     End
@@ -66,8 +66,8 @@ Describe Fern
       execute printf('Fern %s -wait', fnameescape(workdir))
       Assert Equals(winnr('$'), 1)
       Assert Equals(getline(2, '$'), [
-            \ '|+ deep',
-            \ '|+ shallow',
+            \ '|+ deep/',
+            \ '|+ shallow/',
             \ '|  leaf',
             \])
     End
@@ -76,11 +76,11 @@ Describe Fern
       execute printf('Fern %s -reveal=deep/alpha/beta -wait', fnameescape(workdir))
       Assert Equals(winnr('$'), 1)
       Assert Equals(getline(2, '$'), [
-            \ '|- deep',
-            \ ' |- alpha',
-            \ '  |- beta',
+            \ '|- deep/',
+            \ ' |- alpha/',
+            \ '  |- beta/',
             \ '   |  gamma',
-            \ '|+ shallow',
+            \ '|+ shallow/',
             \ '|  leaf',
             \])
     End
@@ -93,11 +93,11 @@ Describe Fern
             \)
       Assert Equals(winnr('$'), 1)
       Assert Equals(getline(2, '$'), [
-            \ '|- deep',
-            \ ' |- alpha',
-            \ '  |- beta',
+            \ '|- deep/',
+            \ ' |- alpha/',
+            \ '  |- beta/',
             \ '   |  gamma',
-            \ '|+ shallow',
+            \ '|+ shallow/',
             \ '|  leaf',
             \])
     End
@@ -110,11 +110,11 @@ Describe Fern
             \)
       Assert Equals(winnr('$'), 1)
       Assert Equals(getline(2, '$'), [
-            \ '|- deep',
-            \ ' |- alpha',
-            \ '  |- beta',
+            \ '|- deep/',
+            \ ' |- alpha/',
+            \ '  |- beta/',
             \ '   |  gamma',
-            \ '|+ shallow',
+            \ '|+ shallow/',
             \ '|  leaf',
             \])
     End

@@ -31,35 +31,35 @@ Describe special-characters
     endif
     execute printf('Fern %s -wait', fnameescape(Join([workdir, ';'])))
     Assert Equals(getline(2, '$'), [
-          \ '|+ hello',
+          \ '|+ hello/',
           \])
   End
 
   It Fern {workdir}/# opens the directory
     execute printf('Fern %s -wait', fnameescape(Join([workdir, '#'])))
     Assert Equals(getline(2, '$'), [
-          \ '|+ hello',
+          \ '|+ hello/',
           \])
   End
 
   It Fern {workdir}/$ opens the directory
     execute printf('Fern %s -wait', fnameescape(Join([workdir, '$'])))
     Assert Equals(getline(2, '$'), [
-          \ '|+ hello',
+          \ '|+ hello/',
           \])
   End
 
   It Fern {workdir}/% opens the directory
     execute printf('Fern %s -wait', fnameescape(Join([workdir, '%'])))
     Assert Equals(getline(2, '$'), [
-          \ '|+ hello',
+          \ '|+ hello/',
           \])
   End
 
   It Fern {workdir}/%20 opens the directory
     execute printf('Fern %s -wait', fnameescape(Join([workdir, '%20'])))
     Assert Equals(getline(2, '$'), [
-          \ '|+ hello',
+          \ '|+ hello/',
           \])
   End
 End
