@@ -1,15 +1,26 @@
 function! fern#mapping#filter#init(disable_default_mappings) abort
-  nnoremap <buffer><silent> <Plug>(fern-action-hidden-set)    :<C-u>call <SID>call('hidden_set')<CR>
-  nnoremap <buffer><silent> <Plug>(fern-action-hidden-unset)  :<C-u>call <SID>call('hidden_unset')<CR>
-  nnoremap <buffer><silent> <Plug>(fern-action-hidden-toggle) :<C-u>call <SID>call('hidden_toggle')<CR>
+  nnoremap <buffer><silent> <Plug>(fern-action-hidden:set)    :<C-u>call <SID>call('hidden_set')<CR>
+  nnoremap <buffer><silent> <Plug>(fern-action-hidden:unset)  :<C-u>call <SID>call('hidden_unset')<CR>
+  nnoremap <buffer><silent> <Plug>(fern-action-hidden:toggle) :<C-u>call <SID>call('hidden_toggle')<CR>
   nnoremap <buffer><silent> <Plug>(fern-action-include)     :<C-u>call <SID>call('include')<CR>
   nnoremap <buffer><silent> <Plug>(fern-action-exclude)     :<C-u>call <SID>call('exclude')<CR>
 
+  " Alias
+  nmap <buffer> <Plug>(fern-action-hidden) <Plug>(fern-action-hidden:toggle)
+
   if !a:disable_default_mappings
-    nmap <buffer><nowait> !  <Plug>(fern-action-hidden-toggle)
+    nmap <buffer><nowait> !  <Plug>(fern-action-hidden)
     nmap <buffer><nowait> fi <Plug>(fern-action-include)
     nmap <buffer><nowait> fe <Plug>(fern-action-exclude)
   endif
+
+  " DEPRECATED:
+  nmap <buffer><silent><expr> <Plug>(fern-action-hidden-set)
+        \ fern#mapping#deprecated('fern-action-hidden-set', 'fern-action-hidden:set')
+  nmap <buffer><silent><expr> <Plug>(fern-action-hidden-unset)
+        \ fern#mapping#deprecated('fern-action-hidden-unset', 'fern-action-hidden:unset')
+  nmap <buffer><silent><expr> <Plug>(fern-action-hidden-toggle)
+        \ fern#mapping#deprecated('fern-action-hidden-toggle', 'fern-action-hidden:toggle')
 endfunction
 
 function! s:call(name, ...) abort
