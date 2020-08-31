@@ -34,3 +34,6 @@ for s:runtimepath in split(&runtimepath, ',')
   call themis#log('  ' . s:runtimepath)
 endfor
 call themis#log('-----------------------------------------------------------')
+
+" Add test utilities
+set runtimepath+=./test/util

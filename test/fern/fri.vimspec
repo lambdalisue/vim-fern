@@ -280,11 +280,6 @@ Describe fern#fri
     It encodes all percent character (%)
       Assert Equals(fern#fri#encode('%%'), '%25%25')
     End
-
-    It encodes not a string then returns a string
-      Assert Same(fern#fri#encode(v:true), 'v:true')
-      Assert Same(fern#fri#encode(42), '42')
-    End
   End
 
   Describe #decode()
@@ -322,11 +317,6 @@ Describe fern#fri
       Assert Equals(fern#fri#decode('%252523%252523'), '%2523%2523')
       Assert Equals(fern#fri#decode('%2523%2523'), '%23%23')
       Assert Equals(fern#fri#decode('%23%23'), '##')
-    End
-
-    It decodes not a string then returns a string
-      Assert Same(fern#fri#decode(v:true), 'v:true')
-      Assert Same(fern#fri#decode(42), '42')
     End
   End
 End
