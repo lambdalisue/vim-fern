@@ -47,7 +47,7 @@ function! s:async_get_child_nodes(key) abort dict
   if empty(node)
     return s:Promise.reject(printf('failed to find a node %s', a:key))
   endif
-  let Profile = fern#profile#start('fern#helper:helper.async.get_children')
+  let Profile = fern#profile#start('fern#helper:helper.async.get_child_nodes')
   return s:Promise.resolve()
         \.then({ -> fern#internal#node#children(
         \   node,
