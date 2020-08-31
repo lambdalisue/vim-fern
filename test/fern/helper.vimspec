@@ -38,6 +38,7 @@ Describe fern#helper
           \ 'sleep',
           \ 'redraw',
           \ 'remark',
+          \ 'get_child_nodes',
           \ 'set_mark',
           \ 'set_hidden',
           \ 'set_include',

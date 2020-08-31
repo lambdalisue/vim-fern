@@ -40,6 +40,25 @@ function! s:async_remark() abort dict
 endfunction
 let s:async.remark = funcref('s:async_remark')
 
+function! s:async_get_child_nodes(key) abort dict
+  let helper = self.helper
+  let fern = helper.fern
+  let node = fern#internal#node#find(a:key, fern.nodes)
+  if empty(node)
+    return s:Promise.reject(printf('failed to find a node %s', a:key))
+  endif
+  let Profile = fern#profile#start('fern#helper:helper.async.get_child_nodes')
+  return s:Promise.resolve()
+        \.then({ -> fern#internal#node#children(
+        \   node,
+        \   fern.provider,
+        \   fern.source.token,
+        \ )
+        \})
+        \.finally({ -> Profile() })
+endfunction
+let s:async.get_child_nodes = funcref('s:async_get_child_nodes')
+
 function! s:async_set_mark(key, value) abort dict
   let helper = self.helper
   let fern = helper.fern
