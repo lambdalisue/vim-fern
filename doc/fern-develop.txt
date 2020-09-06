@@ -445,6 +445,10 @@ Following methods are executed asynchronously and return a promise.
 .async.remark()
 	Return a promise to remark the content.
 
+			*fern-develop-helper.async.get_child_nodes()*
+.async.get_child_nodes({key})
+	Return a promise which will resolves to child nodes of the {key} node.
+
 			*fern-develop-helper.async.set_mark()*
 .async.set_mark({key}, {value})
 	Return a promise to set mark to a node identified by the {key}.
