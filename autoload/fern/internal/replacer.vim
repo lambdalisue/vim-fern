@@ -19,7 +19,6 @@ function! s:executor(factory, options, resolve, reject) abort
         \ 'locator': a:options.is_drawer,
         \ 'keepalt': !a:options.is_drawer && g:fern#keepalt_on_edit,
         \ 'keepjumps': !a:options.is_drawer && g:fern#keepjumps_on_edit,
-        \ 'mods': 'noautocmd',
         \})
 
   setlocal buftype=acwrite bufhidden=wipe
