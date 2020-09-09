@@ -21,10 +21,20 @@ function! s:call(name, ...) abort
 endfunction
 
 function! s:map_cd_root(helper, command) abort
+  if a:command ==# 'lcd'
+    if fern#internal#window#select()
+      return s:Promise.resolve()
+    endif
+  endif
   return s:cd(a:helper.sync.get_root_node(), a:helper, a:command)
 endfunction
 
 function! s:map_cd_cursor(helper, command) abort
+  if a:command ==# 'lcd'
+    if fern#internal#window#select()
+      return s:Promise.resolve()
+    endif
+  endif
   return s:cd(a:helper.sync.get_cursor_node(), a:helper, a:command)
 endfunction
 
