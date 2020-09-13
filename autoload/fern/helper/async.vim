@@ -14,7 +14,7 @@ endfunction
 let s:async.sleep = funcref('s:async_sleep')
 
 function! s:async_redraw() abort dict
-  let Profile = fern#profile#start('fern#helper:helper.async.redraw')
+  let l:Profile = fern#profile#start('fern#helper:helper.async.redraw')
   let helper = self.helper
   let fern = helper.fern
   return s:Promise.resolve()
@@ -27,7 +27,7 @@ endfunction
 let s:async.redraw = funcref('s:async_redraw')
 
 function! s:async_remark() abort dict
-  let Profile = fern#profile#start('fern#helper:helper.async.remark')
+  let l:Profile = fern#profile#start('fern#helper:helper.async.remark')
   let helper = self.helper
   let fern = helper.fern
   let marks = fern.marks
@@ -47,7 +47,7 @@ function! s:async_get_child_nodes(key) abort dict
   if empty(node)
     return s:Promise.reject(printf('failed to find a node %s', a:key))
   endif
-  let Profile = fern#profile#start('fern#helper:helper.async.get_child_nodes')
+  let l:Profile = fern#profile#start('fern#helper:helper.async.get_child_nodes')
   return s:Promise.resolve()
         \.then({ -> fern#internal#node#children(
         \   node,
@@ -109,7 +109,7 @@ endfunction
 let s:async.set_exclude = funcref('s:async_set_exclude')
 
 function! s:async_update_nodes(nodes) abort dict
-  let Profile = fern#profile#start('fern#helper:helper.async.update_nodes')
+  let l:Profile = fern#profile#start('fern#helper:helper.async.update_nodes')
   let helper = self.helper
   let fern = helper.fern
   return helper.sync.save_cursor()
@@ -120,7 +120,7 @@ endfunction
 let s:async.update_nodes = funcref('s:async_update_nodes')
 
 function! s:async_update_marks(marks) abort dict
-  let Profile = fern#profile#start('fern#helper:helper.async.update_marks')
+  let l:Profile = fern#profile#start('fern#helper:helper.async.update_marks')
   let helper = self.helper
   let fern = helper.fern
   return fern#internal#core#update_marks(fern, a:marks)
@@ -141,7 +141,7 @@ function! s:async_expand_node(key) abort dict
     " To improve UX, reload instead
     return self.reload_node(node.__key)
   endif
-  let Profile = fern#profile#start('fern#helper:helper.async.expand_node')
+  let l:Profile = fern#profile#start('fern#helper:helper.async.expand_node')
   return s:Promise.resolve()
         \.then({ -> fern#internal#node#expand(
         \   node,
@@ -169,7 +169,7 @@ function! s:async_collapse_node(key) abort dict
     " To improve UX, collapse a owner node instead
     return self.collapse_node(node.__owner.__key)
   endif
-  let Profile = fern#profile#start('fern#helper:helper.async.collapse_node')
+  let l:Profile = fern#profile#start('fern#helper:helper.async.collapse_node')
   return s:Promise.resolve()
         \.then({ -> fern#internal#node#collapse(
         \   node,
@@ -191,7 +191,7 @@ function! s:async_reload_node(key) abort dict
   if empty(node)
     return s:Promise.reject(printf('failed to find a node %s', a:key))
   endif
-  let Profile = fern#profile#start('fern#helper:helper.async.reload_node')
+  let l:Profile = fern#profile#start('fern#helper:helper.async.reload_node')
   return s:Promise.resolve()
         \.then({ -> fern#internal#node#reload(
         \   node,
@@ -209,7 +209,7 @@ let s:async.reload_node = funcref('s:async_reload_node')
 function! s:async_reveal_node(key) abort dict
   let helper = self.helper
   let fern = helper.fern
-  let Profile = fern#profile#start('fern#helper:helper.async.reveal_node')
+  let l:Profile = fern#profile#start('fern#helper:helper.async.reveal_node')
   return s:Promise.resolve()
         \.then({ -> fern#internal#node#reveal(
         \   a:key,
@@ -300,7 +300,7 @@ function! s:async_collapse_modified_nodes(nodes) abort dict
           \.then({ ns -> self.update_nodes(ns) })
     call add(ps, p)
   endfor
-  let Profile = fern#profile#start('fern#helper:helper.async.collapse_modified_nodes')
+  let l:Profile = fern#profile#start('fern#helper:helper.async.collapse_modified_nodes')
   return s:Promise.all(ps)
         \.finally({ -> Profile() })
 endfunction

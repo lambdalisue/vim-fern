@@ -7,9 +7,9 @@ function! fern#internal#rename_solver#solve(pairs, ...) abort
         \ 'isdirectory': { p -> isdirectory(p) },
         \}, a:0 ? a:1 : {},
         \)
-  let Exist = options.exist
-  let Tempname = options.tempname
-  let IsDirectory = options.isdirectory
+  let l:Exist = options.exist
+  let l:Tempname = options.tempname
+  let l:IsDirectory = options.isdirectory
   " Sort by 'dst' depth
   let pairs = sort(copy(a:pairs), funcref('s:compare'))
   " Build steps from given pairs

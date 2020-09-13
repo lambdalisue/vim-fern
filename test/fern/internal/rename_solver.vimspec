@@ -1,8 +1,8 @@
 Describe fern#internal#rename_solver
   Before all
-    let Exist = { -> 0 }
-    let Tempname = { p -> '@temp/' . p }
-    let IsDirectory = { -> 1 }
+    let l:Exist = { -> 0 }
+    let l:Tempname = { p -> '@temp/' . p }
+    let l:IsDirectory = { -> 1 }
   End
 
   Describe #solve()

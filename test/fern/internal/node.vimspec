@@ -5,7 +5,7 @@ Describe fern#internal#node
     let CancellationToken = vital#fern#import('Async.CancellationToken')
     let token = CancellationToken.none
     let provider = fern#scheme#debug#provider#new()
-    let Comparator = fern#comparator#default#new()
+    let l:Comparator = fern#comparator#default#new()
   End
 
   Describe #debug()

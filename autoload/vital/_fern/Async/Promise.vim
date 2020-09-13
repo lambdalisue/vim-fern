@@ -287,7 +287,7 @@ function! s:_chain(promise_factories, results) abort
   if len(a:promise_factories) is# 0
     return s:resolve(a:results)
   endif
-  let Factory = remove(a:promise_factories, 0)
+  let l:Factory = remove(a:promise_factories, 0)
   try
     return Factory()
           \.then({ v -> add(a:results, v) })

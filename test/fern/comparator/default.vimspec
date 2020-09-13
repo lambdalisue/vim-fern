@@ -6,7 +6,7 @@ Describe fern#comparator#default
   Describe comparator instance
     Before
       let comparator = fern#comparator#default#new()
-      let Compare = comparator.compare
+      let l:Compare = comparator.compare
     End
 
     Describe .compare()

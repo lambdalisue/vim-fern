@@ -94,19 +94,19 @@ function! s:call(name, ...) abort
     throw printf('no action %s found in the buffer', a:name)
   endif
   let b:{s:prefix}_action.previous = a:name
-  let Fn = funcref('s:_call', [a:name])
+  let l:Fn = funcref('s:_call', [a:name])
   if options.verbose
-    let Fn = funcref('s:_verbose', [Fn])
+    let l:Fn = funcref('s:_verbose', [Fn])
   endif
   if options.capture
-    let Fn = funcref('s:_capture', [Fn])
+    let l:Fn = funcref('s:_capture', [Fn])
   endif
   call Fn()
 endfunction
 
 function! s:list(...) abort
   let conceal = a:0 ? a:1 : v:true
-  let Sort = { a, b -> s:_compare(a[1], b[1]) }
+  let l:Sort = { a, b -> s:_compare(a[1], b[1]) }
   let rs = split(execute('nmap'), '\n')
   call map(rs, { _, v -> v[3:] })
   call map(rs, { _, v -> matchlist(v, '^\([^ ]\+\)\s*\*\?@\?\(.*\)$')[1:2] })
@@ -195,7 +195,7 @@ function! s:_parse_expr(expr) abort
   endif
   let terms = split(a:expr)
   let name = remove(terms, -1)
-  let Has = { ns, n -> len(filter(copy(ns), { -> v:val ==# n })) }
+  let l:Has = { ns, n -> len(filter(copy(ns), { -> v:val ==# n })) }
   return {
         \ 'name': name,
         \ 'capture': Has(terms, 'capture'),

@@ -42,16 +42,16 @@ function! fern#internal#core#update_nodes(fern, nodes) abort
   let a:fern.nodes = a:nodes
   let include = a:fern.include
   let exclude = a:fern.exclude
-  let Hidden = a:fern.hidden
+  let l:Hidden = a:fern.hidden
        \ ? { -> 1 }
        \ : { n -> n.status is# s:STATUS_EXPANDED || !n.hidden }
-  let Include = empty(include)
+  let l:Include = empty(include)
        \ ? { -> 1 }
        \ : { n -> n.status is# s:STATUS_EXPANDED || n.label =~ include }
-  let Exclude  = empty(exclude)
+  let l:Exclude  = empty(exclude)
        \ ? { -> 1 }
        \ : { n -> n.status is# s:STATUS_EXPANDED || n.label !~ exclude }
-  let Profile = fern#profile#start('fern#internal#core#update_nodes')
+  let l:Profile = fern#profile#start('fern#internal#core#update_nodes')
   return s:Promise.resolve(a:fern.nodes)
         \.then(s:AsyncLambda.filter_f(Hidden))
         \.finally({ -> Profile('hidden') })
@@ -66,7 +66,7 @@ function! fern#internal#core#update_nodes(fern, nodes) abort
 endfunction
 
 function! fern#internal#core#update_marks(fern, marks) abort
-  let Profile = fern#profile#start('fern#internal#core#update_marks')
+  let l:Profile = fern#profile#start('fern#internal#core#update_marks')
   return s:Promise.resolve(a:fern.visible_nodes)
         \.finally({ -> Profile('resolve') })
         \.then(s:AsyncLambda.map_f({ n -> n.__key }))
@@ -79,7 +79,7 @@ endfunction
 
 function! s:get_renderer(name) abort
   try
-    let Renderer = get(g:fern#renderers, a:name, s:default_renderer)
+    let l:Renderer = get(g:fern#renderers, a:name, s:default_renderer)
     return Renderer()
   catch
     call fern#logger#error('fern#internal#core:get_renderer', v:exception)
@@ -90,7 +90,7 @@ endfunction
 
 function! s:get_comparator(name) abort
   try
-    let Comparator = get(g:fern#comparators, a:name, s:default_comparator)
+    let l:Comparator = get(g:fern#comparators, a:name, s:default_comparator)
     return Comparator()
   catch
     call fern#logger#error('fern#internal#core:get_comparator', v:exception)

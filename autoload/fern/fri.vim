@@ -123,12 +123,12 @@ function! s:encode_fragment(pchar) abort
 endfunction
 
 function! s:encode(str, pattern) abort
-  let Sub = { m -> printf('%%%X', char2nr(m[0])) }
+  let l:Sub = { m -> printf('%%%X', char2nr(m[0])) }
   return substitute(a:str, a:pattern, Sub, 'g')
 endfunction
 
 function! s:decode(str) abort
-  let Sub = { m -> nr2char(str2nr(m[1], 16)) }
+  let l:Sub = { m -> nr2char(str2nr(m[1], 16)) }
   return substitute(a:str, '%\([0-9a-fA-F]\{2}\)', Sub, 'g')
 endfunction
 

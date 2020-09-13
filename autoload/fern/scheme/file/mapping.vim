@@ -43,7 +43,7 @@ endfunction
 
 function! s:map_open_system(helper) abort
   let node = a:helper.sync.get_cursor_node()
-  let Done = a:helper.sync.process_node(node)
+  let l:Done = a:helper.sync.process_node(node)
   return fern#scheme#file#shutil#open(node._path, a:helper.fern.source.token)
         \.then({ -> a:helper.sync.echo(printf('%s has opened', node._path)) })
         \.finally({ -> Done() })

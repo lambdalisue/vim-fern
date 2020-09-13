@@ -414,7 +414,7 @@ Following methods are executed synchronously.
 >
 	function! s:map_slow_operation(helper) abort
 	  let node = a:helper.sync.get_cursor_node()
-	  let Done = a:helper.sync.process_node(node)
+	  let l:Done = a:helper.sync.process_node(node)
 	  return s:slow_operation(node).finally({ -> Done() })
 	endfunction
 <
