@@ -14,7 +14,7 @@ Describe fern#internal#window
       new foo3
       new foo4
       new foo5
-      let Predicator = { n -> bufname(winbufnr(n)) ==# 'foo3' }
+      let l:Predicator = { n -> bufname(winbufnr(n)) ==# 'foo3' }
       let winnr = fern#internal#window#find(Predicator)
       Assert Equals(bufname(winbufnr(winnr)), 'foo3')
     End

@@ -97,7 +97,7 @@ function! s:BufWriteCmd() abort
     for Modifier in b:fern_replacer_modifiers
       let result = Modifier(result)
     endfor
-    let Resolve = b:fern_replacer_resolve
+    let l:Resolve = b:fern_replacer_resolve
     set nomodified
     close
     call Resolve(result)

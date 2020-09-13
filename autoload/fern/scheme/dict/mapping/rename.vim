@@ -39,7 +39,7 @@ function! s:map_rename(helper, opener) abort
   let root = a:helper.sync.get_root_node()
   let nodes = a:helper.sync.get_selected_nodes()
   let tree = a:helper.fern.provider._tree
-  let Factory = { -> map(copy(nodes), { -> v:val._path }) }
+  let l:Factory = { -> map(copy(nodes), { -> v:val._path }) }
   let solver_options = {
         \ 'exist': { v -> fern#scheme#dict#tree#exists(tree, v) },
         \ 'tempname': { _ -> fern#scheme#dict#tree#tempname(tree) },

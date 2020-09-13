@@ -38,7 +38,7 @@ endfunction
 function! s:map_rename(helper, opener) abort
   let root = a:helper.sync.get_root_node()
   let nodes = a:helper.sync.get_selected_nodes()
-  let Factory = { -> map(copy(nodes), { -> v:val._path }) }
+  let l:Factory = { -> map(copy(nodes), { -> v:val._path }) }
   let options = {
         \ 'opener': a:opener,
         \ 'cursor': [1, len(root._path) + 1],

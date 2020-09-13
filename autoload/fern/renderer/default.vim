@@ -24,7 +24,7 @@ function! s:render(nodes) abort
         \ 'collapsed_symbol': g:fern#renderer#default#collapsed_symbol,
         \}
   let base = len(a:nodes[0].__key)
-  let Profile = fern#profile#start('fern#renderer#default#s:render')
+  let l:Profile = fern#profile#start('fern#renderer#default#s:render')
   return s:AsyncLambda.map(copy(a:nodes), { v, -> s:render_node(v, base, options) })
         \.finally({ -> Profile() })
 endfunction

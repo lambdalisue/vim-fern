@@ -103,7 +103,7 @@ function! s:init() abort
     doautocmd <nomodeline> User FernSyntax
     call fern#action#_init()
 
-    let Profile = fern#profile#start('fern#internal#viewer:init')
+    let l:Profile = fern#profile#start('fern#internal#viewer:init')
     return s:Promise.resolve()
           \.then({ -> helper.async.expand_node(root.__key) })
           \.finally({ -> Profile('expand') })

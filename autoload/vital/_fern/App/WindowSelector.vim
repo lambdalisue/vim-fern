@@ -29,7 +29,7 @@ function! s:select(winnrs, ...) abort
           \ range(length + 1),
           \ { _, v -> get(scs, v, string(v)) },
           \)
-    let S = funcref('s:_statusline', [
+    let l:S = funcref('s:_statusline', [
           \ options.statusline_hl,
           \ options.indicator_hl,
           \])

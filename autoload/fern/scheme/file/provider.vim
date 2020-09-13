@@ -58,7 +58,7 @@ function! s:provider_get_children(node, ...) abort
   if a:node.status is# 0
     return s:Promise.reject('no children exists for %s', a:node._path)
   endif
-  let Profile = fern#profile#start('fern#scheme#file#provider:provider_get_children')
+  let l:Profile = fern#profile#start('fern#scheme#file#provider:provider_get_children')
   return s:children(a:node._path, token)
         \.then(s:AsyncLambda.map_f({ v -> s:safe(funcref('s:node', [v])) }))
         \.then(s:AsyncLambda.filter_f({ v -> !empty(v) }))
