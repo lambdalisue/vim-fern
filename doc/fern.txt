@@ -429,6 +429,11 @@ VARIABLE						*fern-variable*
 	Note that users must restart Vim to apply changes.
 	Default: "*"
 
+*g:fern#scheme#file#show_absolute_path_on_root_label*
+	A |Boolean| to show an absolute path of the root node of "file" scheme
+	as a label of the node.
+	Default: 0
+
 -----------------------------------------------------------------------------
 COMMAND							*fern-command*
 

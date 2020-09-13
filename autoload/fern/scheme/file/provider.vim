@@ -31,7 +31,11 @@ function! s:provider_get_root(uri) abort
   if s:is_windows && path ==# ''
     return s:windows_drive_root
   endif
-  return s:node(path)
+  let root = s:node(path)
+  if g:fern#scheme#file#show_absolute_path_on_root_label
+    let root.label = fnamemodify(root._path, ':~')
+  endif
+  return root
 endfunction
 
 function! s:provider_get_parent(node, ...) abort
