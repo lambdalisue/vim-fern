@@ -26,6 +26,9 @@ function! fern#internal#drawer#init() abort
     autocmd BufEnter <buffer> call s:auto_resize(v:false)
     autocmd BufLeave <buffer> call s:auto_resize(v:false)
     autocmd BufEnter <buffer> call s:auto_winfixwidth(v:false)
+    if !g:fern#disable_drawer_auto_restore_focus
+      autocmd WinLeave <buffer> call s:auto_restore_focus_pre()
+    endif
   augroup END
 
   call s:auto_resize(v:true)
@@ -85,3 +88,27 @@ function! s:auto_quit() abort
     quit
   endif
 endfunction
+
+function! s:auto_restore_focus_pre() abort
+  let s:restore_focus = {
+        \ 'nwin': winnr('$'),
+        \ 'prev': win_getid(winnr('#')),
+        \}
+endfunction
+
+function! s:auto_restore_focus() abort
+  if !exists('s:restore_focus')
+    return
+  endif
+  if s:restore_focus.nwin > winnr('$')
+    call win_gotoid(s:restore_focus.prev)
+  endif
+  silent! unlet! s:restore_focus
+endfunction
+
+if !g:fern#disable_drawer_auto_restore_focus
+  augroup fern_internal_drawer_internal
+    autocmd!
+    autocmd WinEnter * ++nested call s:auto_restore_focus()
+  augroup END
+endif
