@@ -1,3 +1,6 @@
+let s:Lambda = vital#fern#import('Lambda')
+let s:auto_quit_enabled = 0
+
 function! fern#internal#drawer#open(fri, ...) abort
   let options = extend({
         \ 'toggle': 0,
@@ -66,8 +69,13 @@ function! s:auto_resize(force) abort
   execute 'vertical resize' width
 endfunction
 
+function! s:auto_quit_pre() abort
+  let s:auto_quit_enabled = 1
+  call timer_start(0, { -> s:Lambda.let(s:, 'auto_quit_enabled', 0)})
+endfunction
+
 function! s:auto_quit() abort
-  if g:fern#disable_drawer_auto_quit
+  if g:fern#disable_drawer_auto_quit || !s:auto_quit_enabled
     return
   endif
   let fri = fern#fri#parse(bufname('%'))
@@ -118,5 +126,6 @@ endfunction
 
 augroup fern_internal_drawer
   autocmd!
+  autocmd QuitPre  * call s:auto_quit_pre()
   autocmd WinEnter * ++nested call s:auto_restore_focus()
 augroup END
