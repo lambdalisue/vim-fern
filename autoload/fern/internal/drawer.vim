@@ -1,3 +1,6 @@
+let s:Lambda = vital#fern#import('Lambda')
+let s:auto_quit_enabled = 0
+
 function! fern#internal#drawer#open(fri, ...) abort
   let options = extend({
         \ 'toggle': 0,
@@ -20,15 +23,13 @@ function! fern#internal#drawer#init() abort
     return
   endif
 
-  augroup fern_drawer_internal
+  augroup fern_internal_drawer_init
     autocmd! * <buffer>
     autocmd BufEnter <buffer> call s:auto_quit()
     autocmd BufEnter <buffer> call s:auto_resize(v:false)
     autocmd BufLeave <buffer> call s:auto_resize(v:false)
     autocmd BufEnter <buffer> call s:auto_winfixwidth(v:false)
-    if !g:fern#disable_drawer_auto_restore_focus
-      autocmd WinLeave <buffer> call s:auto_restore_focus_pre()
-    endif
+    autocmd WinLeave <buffer> call s:auto_restore_focus_pre()
   augroup END
 
   call s:auto_resize(v:true)
@@ -68,8 +69,13 @@ function! s:auto_resize(force) abort
   execute 'vertical resize' width
 endfunction
 
+function! s:auto_quit_pre() abort
+  let s:auto_quit_enabled = 1
+  call timer_start(0, { -> s:Lambda.let(s:, 'auto_quit_enabled', 0)})
+endfunction
+
 function! s:auto_quit() abort
-  if g:fern#disable_drawer_auto_quit
+  if g:fern#disable_drawer_auto_quit || !s:auto_quit_enabled
     return
   endif
   let fri = fern#fri#parse(bufname('%'))
@@ -80,13 +86,24 @@ function! s:auto_quit() abort
     return
   elseif keep
     " Add a new window to avoid being a last window
-    silent! vertical botright new
-    keepjumps wincmd p
-    execute 'vertical resize' width
+    let winid = win_getid()
+    if has('nvim')
+      call s:auto_quit_post(winid, width)
+    else
+      " Use timer to avoid E242 in Vim
+      call timer_start(0, { -> s:auto_quit_post(winid, width) })
+    endif
   else
     " This window is a last window of a current tabpage
     quit
   endif
+endfunction
+
+function! s:auto_quit_post(winid, width) abort
+  keepjumps call win_gotoid(a:winid)
+  silent! vertical botright new
+  keepjumps call win_gotoid(a:winid)
+  execute 'vertical resize' a:width
 endfunction
 
 function! s:auto_restore_focus_pre() abort
@@ -97,7 +114,8 @@ function! s:auto_restore_focus_pre() abort
 endfunction
 
 function! s:auto_restore_focus() abort
-  if !exists('s:restore_focus')
+  if g:fern#disable_drawer_auto_restore_focus
+        \ || !exists('s:restore_focus')
     return
   endif
   if s:restore_focus.nwin > winnr('$')
@@ -106,9 +124,8 @@ function! s:auto_restore_focus() abort
   silent! unlet! s:restore_focus
 endfunction
 
-if !g:fern#disable_drawer_auto_restore_focus
-  augroup fern_internal_drawer_internal
-    autocmd!
-    autocmd WinEnter * ++nested call s:auto_restore_focus()
-  augroup END
-endif
+augroup fern_internal_drawer
+  autocmd!
+  autocmd QuitPre  * call s:auto_quit_pre()
+  autocmd WinEnter * ++nested call s:auto_restore_focus()
+augroup END
