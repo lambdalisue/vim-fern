@@ -1,0 +1,30 @@
+Describe drawer-auto-quit
+  After all
+    %bwipeout!
+    let g:fern#disable_drawer_auto_quit = 0
+  End
+
+  Before
+    %bwipeout!
+    let g:fern#disable_drawer_auto_quit = 0
+  End
+
+  Describe keep
+    It automatically create a new buffer to keep the number of windows on 'quit'
+      Fern . -drawer -keep -stay
+      Assert Equals(winnr('$'), 2)
+      quit
+      sleep 1m
+      Assert Equals(winnr('$'), 2)
+    End
+
+    It does nothing when g:fern#disable_drawer_auto_quit = 1
+      let g:fern#disable_drawer_auto_quit = 1
+      Fern . -drawer -keep -stay
+      Assert Equals(winnr('$'), 2)
+      quit
+      sleep 1m
+      Assert Equals(winnr('$'), 1)
+    End
+  End
+End
