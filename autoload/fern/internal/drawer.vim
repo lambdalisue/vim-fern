@@ -78,13 +78,24 @@ function! s:auto_quit() abort
     return
   elseif keep
     " Add a new window to avoid being a last window
-    silent! vertical botright new
-    keepjumps wincmd p
-    execute 'vertical resize' width
+    let winid = win_getid()
+    if has('nvim')
+      call s:auto_quit_post(winid, width)
+    else
+      " Use timer to avoid E242 in Vim
+      call timer_start(0, { -> s:auto_quit_post(winid, width) })
+    endif
   else
     " This window is a last window of a current tabpage
     quit
   endif
+endfunction
+
+function! s:auto_quit_post(winid, width) abort
+  keepjumps call win_gotoid(a:winid)
+  silent! vertical botright new
+  keepjumps call win_gotoid(a:winid)
+  execute 'vertical resize' a:width
 endfunction
 
 function! s:auto_restore_focus_pre() abort
