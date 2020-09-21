@@ -20,15 +20,13 @@ function! fern#internal#drawer#init() abort
     return
   endif
 
-  augroup fern_drawer_internal
+  augroup fern_internal_drawer_init
     autocmd! * <buffer>
     autocmd BufEnter <buffer> call s:auto_quit()
     autocmd BufEnter <buffer> call s:auto_resize(v:false)
     autocmd BufLeave <buffer> call s:auto_resize(v:false)
     autocmd BufEnter <buffer> call s:auto_winfixwidth(v:false)
-    if !g:fern#disable_drawer_auto_restore_focus
-      autocmd WinLeave <buffer> call s:auto_restore_focus_pre()
-    endif
+    autocmd WinLeave <buffer> call s:auto_restore_focus_pre()
   augroup END
 
   call s:auto_resize(v:true)
@@ -97,7 +95,8 @@ function! s:auto_restore_focus_pre() abort
 endfunction
 
 function! s:auto_restore_focus() abort
-  if !exists('s:restore_focus')
+  if g:fern#disable_drawer_auto_restore_focus
+        \ || !exists('s:restore_focus')
     return
   endif
   if s:restore_focus.nwin > winnr('$')
@@ -106,9 +105,7 @@ function! s:auto_restore_focus() abort
   silent! unlet! s:restore_focus
 endfunction
 
-if !g:fern#disable_drawer_auto_restore_focus
-  augroup fern_internal_drawer_internal
-    autocmd!
-    autocmd WinEnter * ++nested call s:auto_restore_focus()
-  augroup END
-endif
+augroup fern_internal_drawer
+  autocmd!
+  autocmd WinEnter * ++nested call s:auto_restore_focus()
+augroup END
