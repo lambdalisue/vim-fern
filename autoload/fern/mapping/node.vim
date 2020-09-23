@@ -1,10 +1,12 @@
 let s:Promise = vital#fern#import('Async.Promise')
+let s:Lambda = vital#fern#import('Lambda')
 
 function! fern#mapping#node#init(disable_default_mappings) abort
   nnoremap <buffer><silent> <Plug>(fern-action-debug)         :<C-u>call <SID>call('debug')<CR>
   nnoremap <buffer><silent> <Plug>(fern-action-reload:all)    :<C-u>call <SID>call('reload_all')<CR>
   nnoremap <buffer><silent> <Plug>(fern-action-reload:cursor) :<C-u>call <SID>call('reload_cursor')<CR>
-  nnoremap <buffer><silent> <Plug>(fern-action-expand)        :<C-u>call <SID>call('expand')<CR>
+  nnoremap <buffer><silent> <Plug>(fern-action-expand:stay)   :<C-u>call <SID>call('expand_stay')<CR>
+  nnoremap <buffer><silent> <Plug>(fern-action-expand:in)     :<C-u>call <SID>call('expand_in')<CR>
   nnoremap <buffer><silent> <Plug>(fern-action-collapse)      :<C-u>call <SID>call('collapse')<CR>
   nnoremap <buffer><silent> <Plug>(fern-action-reveal)        :<C-u>call <SID>call('reveal')<CR>
 
@@ -12,6 +14,7 @@ function! fern#mapping#node#init(disable_default_mappings) abort
   nnoremap <buffer><silent> <Plug>(fern-action-leave)         :<C-u>call <SID>call('leave')<CR>
 
   nmap <buffer> <Plug>(fern-action-reload) <Plug>(fern-action-reload:all)
+  nmap <buffer> <Plug>(fern-action-expand) <Plug>(fern-action-expand:in)
 
   if !a:disable_default_mappings
     nmap <buffer><nowait> <F5> <Plug>(fern-action-reload)
@@ -52,7 +55,7 @@ function! s:map_reload_cursor(helper) abort
         \.then({ -> a:helper.async.redraw() })
 endfunction
 
-function! s:map_expand(helper) abort
+function! s:map_expand_stay(helper) abort
   let node = a:helper.sync.get_cursor_node()
   if node is# v:null
     return s:Promise.reject('no node found on a cursor line')
@@ -62,7 +65,25 @@ function! s:map_expand(helper) abort
         \.then({ -> a:helper.async.redraw() })
         \.then({ -> a:helper.sync.focus_node(
         \   node.__key,
-        \   { 'previous': previous, 'offset': 1 },
+        \   { 'previous': previous },
+        \ )
+        \})
+endfunction
+
+function! s:map_expand_in(helper) abort
+  let node = a:helper.sync.get_cursor_node()
+  if node is# v:null
+    return s:Promise.reject('no node found on a cursor line')
+  endif
+  let previous = a:helper.sync.get_cursor_node()
+  let ns = {}
+  return a:helper.async.expand_node(node.__key)
+        \.then({ -> a:helper.async.get_child_nodes(node.__key) })
+        \.then({ c -> s:Lambda.let(ns, 'offset', len(c) > 0) })
+        \.then({ -> a:helper.async.redraw() })
+        \.then({ -> a:helper.sync.focus_node(
+        \   node.__key,
+        \   { 'previous': previous, 'offset': ns.offset },
         \ )
         \})
 endfunction
