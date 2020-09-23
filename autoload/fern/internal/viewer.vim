@@ -89,7 +89,6 @@ function! s:init() abort
     let helper = fern#helper#new()
     let root = helper.sync.get_root_node()
 
-    call fern#mapping#init(scheme)
     call fern#internal#drawer#init()
     call fern#internal#spinner#start()
     call helper.fern.renderer.highlight()
@@ -98,6 +97,7 @@ function! s:init() abort
 
     " now the buffer is ready so set filetype to emit FileType
     setlocal filetype=fern
+    call fern#mapping#init(scheme)
     call helper.fern.renderer.syntax()
     call fern#hook#emit('viewer:syntax', helper)
     doautocmd <nomodeline> User FernSyntax

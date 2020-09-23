@@ -13,9 +13,9 @@ function! fern#scheme#file#mapping#clipboard#init(disable_default_mappings) abor
   nnoremap <buffer><silent> <Plug>(fern-action-clipboard-clear) :<C-u>call <SID>call('clipboard_clear')<CR>
 
   if !a:disable_default_mappings
-    nmap <buffer><nowait> C <Plug>(fern-action-clipboard-copy)
-    nmap <buffer><nowait> M <Plug>(fern-action-clipboard-move)
-    nmap <buffer><nowait> P <Plug>(fern-action-clipboard-paste)
+    call fern#mapping#nmap('C', '<Plug>(fern-action-clipboard-copy)')
+    call fern#mapping#nmap('M', '<Plug>(fern-action-clipboard-move)')
+    call fern#mapping#nmap('P', '<Plug>(fern-action-clipboard-paste)')
   endif
 endfunction
 

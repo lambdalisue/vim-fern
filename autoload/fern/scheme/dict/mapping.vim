@@ -10,12 +10,12 @@ function! fern#scheme#dict#mapping#init(disable_default_mappings) abort
   nnoremap <buffer><silent> <Plug>(fern-action-edit-leaf)  :<C-u>call <SID>call('edit_leaf')<CR>
 
   if !a:disable_default_mappings
-    nmap <buffer><nowait> N <Plug>(fern-action-new-leaf)
-    nmap <buffer><nowait> K <Plug>(fern-action-new-branch)
-    nmap <buffer><nowait> c <Plug>(fern-action-copy)
-    nmap <buffer><nowait> m <Plug>(fern-action-move)
-    nmap <buffer><nowait> D <Plug>(fern-action-remove)
-    nmap <buffer><nowait> e <Plug>(fern-action-edit-leaf)
+    call fern#mapping#nmap('N', '<Plug>(fern-action-new-leaf)')
+    call fern#mapping#nmap('K', '<Plug>(fern-action-new-branch)')
+    call fern#mapping#nmap('c', '<Plug>(fern-action-copy)')
+    call fern#mapping#nmap('m', '<Plug>(fern-action-move)')
+    call fern#mapping#nmap('D', '<Plug>(fern-action-remove)')
+    call fern#mapping#nmap('e', '<Plug>(fern-action-edit-leaf)')
   endif
 endfunction
 
