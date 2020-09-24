@@ -411,8 +411,43 @@ VARIABLE						*fern-variable*
 	Default: 0 
 
 *g:fern#disable_drawer_auto_quit*
-	Set 1 to disable automatic Vim quit when there is only drawer.
-	Default: 0 
+	DEPRECATED: Use |g:fern#disable_drawer_smart_quit| instead.
+
+*g:fern#disable_drawer_smart_quit*
+	Set 1 to disable smart quit behavior when there are only two buffer
+	remains (one is for the drawer styled fern window.)
+	The smart quit behavior is something like below (assume that #
+	indicate the cursor position.)
+>
+	g:fern#disable_drawer_smart_quit = 0
+
+	:Fern . -drawer -stay		+--+---------------+
+					|FE|#              |
+					|RN|               |
+					+--+---------------+
+	:q				Quit vim
+
+	:Fern . -drawer -stay -keep	+--+---------------+
+					|FE|#              |
+					|RN|               |
+					+--+---------------+
+	:q				+------------------+
+					|FE|# (new buffer) |
+					|RN|               |
+					+------------------+
+
+	g:fern#disable_drawer_smart_quit = 1
+
+	:Fern . -drawer -stay		+--+---------------+
+					|FE|#              |
+					|RN|               |
+					+--+---------------+
+	:q				+------------------+
+					|FE                |
+					|RN                |
+					+------------------+
+<
+	Default: 0
 
 *g:fern#disable_drawer_auto_restore_focus*
 	Set 1 to disable automatic focus restore on drawer close.
