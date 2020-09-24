@@ -1,4 +1,4 @@
-  let s:Promise = vital#fern#import('Async.Promise')
+let s:Promise = vital#fern#import('Async.Promise')
 
 function! fern#util#sleep(ms) abort
   return s:Promise.new({ resolve -> timer_start(a:ms, { -> resolve() }) })
