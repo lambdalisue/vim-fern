@@ -8,10 +8,14 @@ function! fern#internal#viewer#open(fri, options) abort
 endfunction
 
 function! fern#internal#viewer#init() abort
-  let bufnr = bufnr('%')
-  return s:init()
-        \.then({ -> s:notify(bufnr, v:null) })
-        \.catch({ e -> s:Lambda.pass(e, s:notify(bufnr, e)) })
+  try
+    let bufnr = bufnr('%')
+    return s:init()
+          \.then({ -> s:notify(bufnr, v:null) })
+          \.catch({ e -> s:Lambda.pass(s:Promise.reject(e), s:notify(bufnr, e)) })
+  catch
+    return s:Promise.reject(v:exception)
+  endtry
 endfunction
 
 function! fern#internal#viewer#reveal(helper, path) abort
