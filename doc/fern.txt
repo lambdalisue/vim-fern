@@ -796,8 +796,21 @@ GLOBAL							*fern-mapping-global*
 	      \ <Plug>(fern-action-reload)
 	      \ <Plug>(fern-action-reload:cursor)
 <
+*<Plug>(fern-action-expand:stay)*
+	Expand on a cursor node and stay the cursor on the node.
+
+*<Plug>(fern-action-expand:in)*
+	Expand on a cursor node and get in the cursor node (move on the first
+	child node of the cursor node.)
+
 *<Plug>(fern-action-expand)*
-	Expand on a cursor node.
+	An alias to "expand:in" action. Users can overwrite this mapping to
+	change the default behavior of "expand" action like:
+>
+	nmap <buffer> 
+	      \ <Plug>(fern-action-expand)
+	      \ <Plug>(fern-action-expand:stay)
+<
 
 *<Plug>(fern-action-collapse)*
 	Collapse on a cursor node.
