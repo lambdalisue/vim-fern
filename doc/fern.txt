@@ -904,6 +904,21 @@ GLOBAL							*fern-mapping-global*
 *<Plug>(fern-action-redraw)*
 	Redraw tree.
 
+*<Plug>(fern-action-yank:label)*
+*<Plug>(fern-action-yank:badge)*
+*<Plug>(fern-action-yank:bufname)*
+	Yank the node label, badge, or bufname.
+
+*<Plug>(fern-action-yank)*
+	An alias to "yank:bufname" action. Users can overwrite this mapping to
+	change the default behavior of "yank" action like:
+>
+	nmap <buffer> 
+	      \ <Plug>(fern-action-yank)
+	      \ <Plug>(fern-action-yank:label)
+<
+	Note that this mapping is overwritten in FILE scheme.
+
 *<Plug>(fern-wait)*
 	Wait until the fern buffer become ready which would opened just before 
 	this mapping. This is required while fern buffers are loaded 
@@ -1056,6 +1071,10 @@ The following mappings/actions are only available on file:// scheme.
 *<Plug>(fern-action-terminal)*
 	Open terminal window(s) on or on parent of a cursor node or marked 
 	nodes in similar manners of global "open" actions.
+
+*<Plug>(fern-action-yank:path)*
+	Yank the node path. In FILE scheme, |<Plug>(fern-action-yank)| is
+	aliased to this mapping.
 
 -----------------------------------------------------------------------------
 DICT							*fern-mapping-dict*
