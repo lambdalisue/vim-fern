@@ -5,7 +5,7 @@ function! fern#mapping#drawer#init(disable_default_mappings) abort
   nmap <buffer> <Plug>(fern-action-zoom) <Plug>(fern-action-zoom:half)
 
   if !a:disable_default_mappings
-    nmap <buffer><nowait> z <Plug>(fern-action-zoom)
+    call fern#mapping#nmap('z', '<Plug>(fern-action-zoom)')
   endif
 endfunction
 

@@ -24,7 +24,7 @@ function! fern#scheme#file#mapping#rename#init(disable_default_mappings) abort
   nmap <buffer><silent> <Plug>(fern-action-rename) <Plug>(fern-action-rename:split)
 
   if !a:disable_default_mappings
-    nmap <buffer><nowait> R <Plug>(fern-action-rename)
+    call fern#mapping#nmap('R', '<Plug>(fern-action-rename)')
   endif
 endfunction
 

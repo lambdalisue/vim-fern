@@ -9,9 +9,9 @@ function! fern#mapping#filter#init(disable_default_mappings) abort
   nmap <buffer> <Plug>(fern-action-hidden) <Plug>(fern-action-hidden:toggle)
 
   if !a:disable_default_mappings
-    nmap <buffer><nowait> !  <Plug>(fern-action-hidden)
-    nmap <buffer><nowait> fi <Plug>(fern-action-include)
-    nmap <buffer><nowait> fe <Plug>(fern-action-exclude)
+    call fern#mapping#nmap('!', '<Plug>(fern-action-hidden)')
+    call fern#mapping#nmap('fi', '<Plug>(fern-action-include)')
+    call fern#mapping#nmap('fe', '<Plug>(fern-action-exclude)')
   endif
 
   " DEPRECATED:

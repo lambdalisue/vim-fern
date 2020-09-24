@@ -366,6 +366,9 @@ VARIABLE						*fern-variable*
 
 *g:fern#disable_default_mappings*
 	Set 1 to disable default mappings
+	Note that each default mappings are defined when |hasmapto()| returns
+	0, mean that defining an alternative mapping avoid corresponding
+	default mappings. See |fern-mapping| for detail.
 	Note that this variable does not affect mappings for actions.
 	See |fern-action-mappings| for more detail.
 	Default: 0
@@ -687,6 +690,17 @@ FernWindowSelectStatusLine		*hl-FernWindowSelectStatusLine*
 
 =============================================================================
 MAPPING							*fern-mapping*
+
+All built-in mappings are defined after |FileType| |autocmd| if |hasmapto()| of
+the corresponding mapping return 0. So users simply define alternative mappings
+to disable the default mappings in |FileType| autocmd like:
+>
+	" The following disable default 'E' which is mapped to
+	" <Plug>(fern-action-open:side) in default by defining
+	" an alternative mapping 'v'
+	nmap <buffer><nowait> v <Plug>(fern-action-open:side)
+<
+Or use |g:fern#disable_default_mappings| to disable all default mappings.
 
 As described in |fern-action|, some mappings in fern are used as action.
 See |fern-action| for more detail.

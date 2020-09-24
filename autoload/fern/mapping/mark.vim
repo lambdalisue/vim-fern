@@ -14,10 +14,8 @@ function! fern#mapping#mark#init(disable_default_mappings) abort
   vmap <buffer> <Plug>(fern-action-mark) <Plug>(fern-action-mark:toggle)
 
   if !a:disable_default_mappings
-    nmap <buffer><nowait> <C-j> <Plug>(fern-action-mark)j
-    nmap <buffer><nowait> <C-k> k<Plug>(fern-action-mark)
-    nmap <buffer><nowait> -     <Plug>(fern-action-mark)
-    vmap <buffer><nowait> -     <Plug>(fern-action-mark)
+    call fern#mapping#nmap('-', '<Plug>(fern-action-mark)')
+    call fern#mapping#vmap('-', '<Plug>(fern-action-mark)')
   endif
 
   " DEPRECATED:

@@ -26,18 +26,5 @@ Describe drawer-auto-quit
       sleep 1m
       Assert Equals(winnr('$'), 1)
     End
-
-    It does nothing on 'bdelete'
-      " NOTE:
-      " The following two edit is required to prevent unconsistent
-      " behaviro of bdelete in Vim
-      edit foo
-      edit bar
-      Fern . -drawer -keep -stay
-      Assert Equals(winnr('$'), 2)
-      bdelete
-      sleep 1m
-      Assert Equals(winnr('$'), 1)
-    End
   End
 End
