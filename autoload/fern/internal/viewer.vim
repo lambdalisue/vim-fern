@@ -8,10 +8,14 @@ function! fern#internal#viewer#open(fri, options) abort
 endfunction
 
 function! fern#internal#viewer#init() abort
-  let bufnr = bufnr('%')
-  return s:init()
-        \.then({ -> s:notify(bufnr, v:null) })
-        \.catch({ e -> s:Lambda.pass(e, s:notify(bufnr, e)) })
+  try
+    let bufnr = bufnr('%')
+    return s:init()
+          \.then({ -> s:notify(bufnr, v:null) })
+          \.catch({ e -> s:Lambda.pass(s:Promise.reject(e), s:notify(bufnr, e)) })
+  catch
+    return s:Promise.reject(v:exception)
+  endtry
 endfunction
 
 function! fern#internal#viewer#reveal(helper, path) abort
@@ -89,6 +93,7 @@ function! s:init() abort
     let helper = fern#helper#new()
     let root = helper.sync.get_root_node()
 
+    call fern#mapping#init(scheme)
     call fern#internal#drawer#init()
     call fern#internal#spinner#start()
     call helper.fern.renderer.highlight()
@@ -97,7 +102,6 @@ function! s:init() abort
 
     " now the buffer is ready so set filetype to emit FileType
     setlocal filetype=fern
-    call fern#mapping#init(scheme)
     call helper.fern.renderer.syntax()
     call fern#hook#emit('viewer:syntax', helper)
     doautocmd <nomodeline> User FernSyntax

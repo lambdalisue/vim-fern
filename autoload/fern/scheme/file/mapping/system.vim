@@ -4,7 +4,7 @@ function! fern#scheme#file#mapping#system#init(disable_default_mappings) abort
   nnoremap <buffer><silent> <Plug>(fern-action-open:system) :<C-u>call <SID>call('open_system')<CR>
 
   if !a:disable_default_mappings
-    call fern#mapping#nmap('x', '<Plug>(fern-action-open:system)')
+    nmap <buffer><nowait> x <Plug>(fern-action-open:system)
   endif
 endfunction
 

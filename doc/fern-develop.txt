@@ -188,20 +188,6 @@ like:
 	A |List| of globally available mapping names. 
 	A target mapping MUST exist under "fern#mapping#" namespace.
 
-Use the following functions to define default mappings
-
-					*fern#mapping#nmap()*
-					*fern#mapping#vmap()*
-fern#mapping#nmap({lhs}, {rhs})
-fern#mapping#vmap({lhs}, {rhs})
-	Define nmap/vmap from {lhs} to {rhs} when |hasmapto()| of {rhs}
-	returns 0 thus users can define an alternative mapping for {rhs}.
-	It defines mappings with |map-<buffer>| and |map-<nowait>|.
-
-	Example:
->
-	call fern#mapping#nmap('l', '<Plug>(fern-action-open-or-expand)')
-<
 
 =============================================================================
 SCHEME						*fern-develop-scheme*

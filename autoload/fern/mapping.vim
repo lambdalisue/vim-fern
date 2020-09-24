@@ -32,20 +32,6 @@ function! fern#mapping#deprecated(old, new) abort
   return printf("\<Plug>(%s)", a:new)
 endfunction
 
-function! fern#mapping#nmap(lhs, rhs) abort
-  if hasmapto(a:rhs, 'n')
-    return
-  endif
-  execute printf('nmap <buffer><nowait> %s %s', a:lhs, a:rhs)
-endfunction
-
-function! fern#mapping#vmap(lhs, rhs) abort
-  if hasmapto(a:rhs, 'v')
-    return
-  endif
-  execute printf('vmap <buffer><nowait> %s %s', a:lhs, a:rhs)
-endfunction
-
 call s:Config.config(expand('<sfile>:p'), {
       \ 'mappings': [
       \   'drawer',
