@@ -17,12 +17,14 @@ function! fern#mapping#node#init(disable_default_mappings) abort
   nmap <buffer> <Plug>(fern-action-expand) <Plug>(fern-action-expand:in)
 
   if !a:disable_default_mappings
-    call fern#mapping#nmap('<F5>', '<Plug>(fern-action-reload)')
-    call fern#mapping#nmap('<Return>', '<Plug>(fern-action-enter)')
-    call fern#mapping#nmap('<Backspace>', '<Plug>(fern-action-leave)')
-    call fern#mapping#nmap('l', '<Plug>(fern-action-expand)')
-    call fern#mapping#nmap('h', '<Plug>(fern-action-collapse)')
-    call fern#mapping#nmap('i', '<Plug>(fern-action-reveal)')
+    nmap <buffer><nowait> <F5> <Plug>(fern-action-reload)
+    nmap <buffer><nowait> <C-m> <Plug>(fern-action-enter)
+    nmap <buffer><nowait> <C-h> <Plug>(fern-action-leave)
+    nmap <buffer><nowait> l <Plug>(fern-action-expand)
+    nmap <buffer><nowait> h <Plug>(fern-action-collapse)
+    nmap <buffer><nowait> i <Plug>(fern-action-reveal)
+    nmap <buffer><nowait> <Return> <C-m>
+    nmap <buffer><nowait> <Backspace> <C-h>
   endif
 endfunction
 

@@ -43,12 +43,12 @@ function! fern#mapping#open#init(disable_default_mappings) abort
   nmap <buffer><silent> <Plug>(fern-action-open) <Plug>(fern-action-open:edit)
 
   if !a:disable_default_mappings
-    call fern#mapping#nmap('<Return>', '<Plug>(fern-action-open-or-enter)')
-    call fern#mapping#nmap('l', '<Plug>(fern-action-open-or-expand)')
-    call fern#mapping#nmap('s', '<Plug>(fern-action-open:select)')
-    call fern#mapping#nmap('e', '<Plug>(fern-action-open)')
-    call fern#mapping#nmap('E', '<Plug>(fern-action-open:side)')
-    call fern#mapping#nmap('t', '<Plug>(fern-action-open:tabedit)')
+    nmap <buffer><nowait> <C-m> <Plug>(fern-action-open-or-enter)
+    nmap <buffer><nowait> l <Plug>(fern-action-open-or-expand)
+    nmap <buffer><nowait> s <Plug>(fern-action-open:select)
+    nmap <buffer><nowait> e <Plug>(fern-action-open)
+    nmap <buffer><nowait> E <Plug>(fern-action-open:side)
+    nmap <buffer><nowait> t <Plug>(fern-action-open:tabedit)
   endif
 
   " DEPRECATED:

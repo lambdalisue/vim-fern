@@ -6,7 +6,7 @@ function! fern#mapping#yank#init(disable_default_mappings) abort
   nmap <buffer> <Plug>(fern-action-yank) <Plug>(fern-action-yank:bufname)
 
   if !a:disable_default_mappings
-    call fern#mapping#nmap('y', '<Plug>(fern-action-yank)')
+    nmap <buffer><nowait> y <Plug>(fern-action-yank)
   endif
 endfunction
 
