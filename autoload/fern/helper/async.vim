@@ -17,8 +17,10 @@ function! s:async_redraw() abort dict
   let l:Profile = fern#profile#start('fern#helper:helper.async.redraw')
   let helper = self.helper
   let fern = helper.fern
+  let prefix = !g:fern#disable_viewer_smart_cursor && g:fern#smart_cursor ==# 'stick' ? ' ' : ''
   return s:Promise.resolve()
         \.then({ -> fern.renderer.render(fern.visible_nodes) })
+        \.then({ v -> map(v, { -> prefix . v:val }) })
         \.then({ v -> fern#internal#buffer#replace(helper.bufnr, v) })
         \.then({ -> helper.async.remark() })
         \.then({ -> fern#hook#emit('viewer:redraw', helper) })
