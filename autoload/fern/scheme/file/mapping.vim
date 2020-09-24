@@ -233,4 +233,5 @@ let g:fern#scheme#file#mapping#mappings = get(g:, 'fern#scheme#file#mapping#mapp
       \ 'rename',
       \ 'system',
       \ 'terminal',
+      \ 'yank',
       \])
