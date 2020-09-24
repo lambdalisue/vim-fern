@@ -33,7 +33,7 @@ function! s:provider_get_root(tree, url) abort
         \ '_uri': url,
         \}
   if node.status
-    let node.bufname = 'debug://' . url
+    let node.bufname = 'fern:///debug://' . url
   endif
   return node
 endfunction

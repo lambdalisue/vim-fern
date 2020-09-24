@@ -96,7 +96,7 @@ call s:Config.config(expand('<sfile>:p'), {
       \ 'expanded_symbol': '|- ',
       \})
 
-" Obsolete warnings
+" OBSOLETE:
 if exists('g:fern#renderer#default#marked_symbol')
   call fern#util#obsolete(
         \ 'g:fern#renderer#default#marked_symbol',

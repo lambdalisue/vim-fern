@@ -24,14 +24,15 @@ call s:Config.config(expand('<sfile>:p'), {
       \ 'logfile': v:null,
       \ 'loglevel': g:fern#INFO,
       \ 'opener': 'edit',
+      \ 'smart_cursor': 'stick',
       \ 'keepalt_on_edit': 0,
       \ 'keepjumps_on_edit': 0,
       \ 'disable_default_mappings': 0,
       \ 'disable_viewer_auto_duplication': 0,
-      \ 'disable_viewer_hide_cursor': 0,
+      \ 'disable_viewer_smart_cursor': 0,
       \ 'disable_drawer_auto_winfixwidth': 0,
       \ 'disable_drawer_auto_resize': 0,
-      \ 'disable_drawer_auto_quit': 0,
+      \ 'disable_drawer_smart_quit': get(g:, 'disable_drawer_auto_quit', 0),
       \ 'disable_drawer_auto_restore_focus': 0,
       \ 'default_hidden': 0,
       \ 'default_include': '',
@@ -55,3 +56,15 @@ function! fern#version() abort
   let r = system(printf('git -C %s describe --tags --always --dirty', s:root))
   echo printf('[fern] %s', r)
 endfunction
+
+" DEPRECATED:
+if exists('g:fern#disable_viewer_hide_cursor')
+  " Now the cursor is NOT hidden by default thus just warn users
+  call fern#util#deprecated('g:fern#disable_viewer_hide_cursor')
+endif
+if exists('g:fern#disable_drawer_auto_quit')
+  call fern#util#deprecated(
+        \ 'g:fern#disable_drawer_auto_quit',
+        \ 'g:fern#disable_drawer_smart_quit',
+        \)
+endif

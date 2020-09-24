@@ -1,5 +1,14 @@
-let s:Lambda = vital#fern#import('Lambda')
-let s:auto_quit_enabled = 0
+function! fern#internal#drawer#is_drawer(...) abort
+  let bufname = a:0 ? a:1 : bufname('%')
+  let fri = fern#fri#parse(bufname)
+  return fri.scheme ==# 'fern' && fri.authority =~# '\<drawer\>'
+endfunction
+
+function! fern#internal#drawer#resize() abort
+  let fri = fern#fri#parse(bufname('%'))
+  let width = str2nr(get(fri.query, 'width', string(g:fern#drawer_width)))
+  execute 'vertical resize' width
+endfunction
 
 function! fern#internal#drawer#open(fri, ...) abort
   let options = extend({
@@ -23,23 +32,12 @@ function! fern#internal#drawer#init() abort
     return
   endif
 
-  augroup fern_internal_drawer_init
-    autocmd! * <buffer>
-    autocmd BufEnter <buffer> call s:auto_quit()
-    autocmd BufEnter <buffer> call s:auto_resize(v:false)
-    autocmd BufLeave <buffer> call s:auto_resize(v:false)
-    autocmd BufEnter <buffer> call s:auto_winfixwidth(v:false)
-    autocmd WinLeave <buffer> call s:auto_restore_focus_pre()
-  augroup END
-
-  call s:auto_resize(v:true)
-  call s:auto_winfixwidth(v:true)
-endfunction
-
-function! fern#internal#drawer#is_drawer(...) abort
-  let bufname = a:0 ? a:1 : bufname('%')
-  let fri = fern#fri#parse(bufname)
-  return fri.scheme ==# 'fern' && fri.authority =~# '\<drawer\>'
+  call fern#internal#drawer#auto_resize#init()
+  call fern#internal#drawer#auto_winfixwidth#init()
+  call fern#internal#drawer#auto_restore_focus#init()
+  call fern#internal#drawer#smart_quit#init()
+  call fern#internal#drawer#resize()
+  setlocal winfixwidth
 endfunction
 
 function! s:focus_next() abort
@@ -52,80 +50,3 @@ function! s:focus_next() abort
   noautocmd call win_gotoid(win_getid(winnr))
   return 1
 endfunction
-
-function! s:auto_winfixwidth(force) abort
-  if !a:force && g:fern#disable_drawer_auto_winfixwidth
-    return
-  endif
-  setlocal winfixwidth
-endfunction
-
-function! s:auto_resize(force) abort
-  if !a:force && g:fern#disable_drawer_auto_resize
-    return
-  endif
-  let fri = fern#fri#parse(bufname('%'))
-  let width = str2nr(get(fri.query, 'width', string(g:fern#drawer_width)))
-  execute 'vertical resize' width
-endfunction
-
-function! s:auto_quit_pre() abort
-  let s:auto_quit_enabled = 1
-  call timer_start(0, { -> s:Lambda.let(s:, 'auto_quit_enabled', 0)})
-endfunction
-
-function! s:auto_quit() abort
-  if g:fern#disable_drawer_auto_quit || !s:auto_quit_enabled
-    return
-  endif
-  let fri = fern#fri#parse(bufname('%'))
-  let keep = get(fri.query, 'keep', g:fern#drawer_keep)
-  let width = str2nr(get(fri.query, 'width', string(g:fern#drawer_width)))
-  if winnr('$') isnot# 1
-    " Not a last window
-    return
-  elseif keep
-    " Add a new window to avoid being a last window
-    let winid = win_getid()
-    if has('nvim')
-      call s:auto_quit_post(winid, width)
-    else
-      " Use timer to avoid E242 in Vim
-      call timer_start(0, { -> s:auto_quit_post(winid, width) })
-    endif
-  else
-    " This window is a last window of a current tabpage
-    quit
-  endif
-endfunction
-
-function! s:auto_quit_post(winid, width) abort
-  keepjumps call win_gotoid(a:winid)
-  silent! vertical botright new
-  keepjumps call win_gotoid(a:winid)
-  execute 'vertical resize' a:width
-endfunction
-
-function! s:auto_restore_focus_pre() abort
-  let s:restore_focus = {
-        \ 'nwin': winnr('$'),
-        \ 'prev': win_getid(winnr('#')),
-        \}
-endfunction
-
-function! s:auto_restore_focus() abort
-  if g:fern#disable_drawer_auto_restore_focus
-        \ || !exists('s:restore_focus')
-    return
-  endif
-  if s:restore_focus.nwin > winnr('$')
-    call win_gotoid(s:restore_focus.prev)
-  endif
-  silent! unlet! s:restore_focus
-endfunction
-
-augroup fern_internal_drawer
-  autocmd!
-  autocmd QuitPre  * call s:auto_quit_pre()
-  autocmd WinEnter * ++nested call s:auto_restore_focus()
-augroup END
