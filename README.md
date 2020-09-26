@@ -7,12 +7,9 @@
 [![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Doc](https://img.shields.io/badge/doc-%3Ah%20fern-orange.svg)](doc/fern.txt)
 [![Doc (dev)](https://img.shields.io/badge/doc-%3Ah%20fern--develop-orange.svg)](doc/fern-develop.txt)
-
 [![reviewdog](https://github.com/lambdalisue/fern.vim/workflows/reviewdog/badge.svg)](https://github.com/lambdalisue/fern.vim/actions?query=workflow%3Areviewdog)
 [![vim](https://github.com/lambdalisue/fern.vim/workflows/vim/badge.svg)](https://github.com/lambdalisue/fern.vim/actions?query=workflow%3Avim)
 [![neovim](https://github.com/lambdalisue/fern.vim/workflows/neovim/badge.svg)](https://github.com/lambdalisue/fern.vim/actions?query=workflow%3Aneovim)
-
-General purpose asynchronous tree viewer written in Pure Vim script.
 
 <p align="center">
 <strong>Split windows (netrw style)</strong><br>
@@ -46,9 +43,15 @@ See <a href="https://github.com/lambdalisue/fern.vim/wiki/Screenshots" target="_
 </sup>
 </p>
 
-## Note
+Fern ([furn](https://www.youtube.com/watch?v=SSYgr-_69mg)) is a general purpose asynchronous tree viewer written in pure Vim script.
 
-- Neovim users **SHOULD** add [antoinemadec/FixCursorHold.nvim](https://github.com/antoinemadec/FixCursorHold.nvim) for now (See [#120](https://github.com/lambdalisue/fern.vim/issues/120))
+---
+
+<p align="center">
+  <strong><a href="https://github.com/topics/fern-vim-plugin">Find fern plugins</a></strong>
+</p>
+
+---
 
 ## Concept
 
@@ -63,6 +66,8 @@ See <a href="https://github.com/lambdalisue/fern.vim/wiki/Screenshots" target="_
 ## Installation
 
 fern.vim has no extra dependencies so use your favorite Vim plugin manager or see [How to install](https://github.com/lambdalisue/fern.vim/wiki#how-to-install) page for detail.
+
+- Neovim users **SHOULD** add [antoinemadec/FixCursorHold.nvim](https://github.com/antoinemadec/FixCursorHold.nvim) for now (See [#120](https://github.com/lambdalisue/fern.vim/issues/120))
 
 ## Usage
 
@@ -124,7 +129,7 @@ Note that addtional to the all options available for _split windows_ style, _pro
 | `-toggle` |         | Close existing project drawer rather than focus                  |
 
 ```
-:Fern {url} -drawer [-opener={opener}] [-reveal={reveal}] [-stay] [-width=30] [-keep] [-toggle]
+:Fern {url} -drawer [-opener={opener}] [-reveal={reveal}] [-stay] [-wait] [-width=30] [-keep] [-toggle]
 ```
 
 [*split windows style*]: http://vimcasts.org/blog/2013/01/oil-and-vinegar-split-windows-and-project-drawer/
@@ -156,6 +161,41 @@ This feature is strongly inspired by [shougo/vimfiler.vim][].
 
 [shougo/vimfiler.vim]: https://github.com/Shougo/vimfiler.vim
 
+# Plugins
+
+## Users
+
+Most of functionalities are provided as plugins in fern.
+So click below or visit [Plugins](https://github.com/lambdalisue/fern.vim/wiki/Plugins) page to find fern plugins to satisfy your wants.
+
+---
+
+<p align="center">
+  <strong><a href="https://github.com/topics/fern-vim-plugin">Find fern plugins</a></strong>
+</p>
+
+---
+
+For example, following features are provided as official plugins
+
+- Netrw hijack (Use fern as a default file explorer)
+- [Nerd Fonts](https://www.nerdfonts.com/) integration
+- Git integration (show status, touch index, ...)
+- Bookmark feature
+
+And lot more!
+
+## Developers
+
+Please add `fern-vim-plugin` topic to your fern plugin. The topic is used to list up 3rd party fern plugins.
+![](https://user-images.githubusercontent.com/546312/94343538-d160ce00-0053-11eb-9ec6-0dd2a4c3f4b0.png)
+
+Then please add a following badge to indicate that your plugin is for fern.
+
+```
+[![fern plugin](https://img.shields.io/badge/🌿%20fern-plugin-yellowgreen)](https://github.com/lambdalisue/fern.vim)
+```
+
 ## Customize
 
 Use `FileType fern` autocmd to execute initialization scripts for fern buffer like:
@@ -175,29 +215,7 @@ augroup END
 The `FileType` autocmd will be invoked AFTER a fern buffer has initialized but BEFORE contents of a buffer become ready.
 So avoid accessing actual contents in the above function.
 
-See [Wiki](https://github.com/lambdalisue/fern.vim/wiki) pages to find tips, or write pages to share your tips ;-)
-
-# Plugins
-
-Fern supports the following types of plugins:
-
-| Type            | Description                                                                                                                                                                                                   |
-| --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Renderer        | Renderer is used to display a tree in a fern buffer. Changing it affect the visual looks of fern.<br>e.g. [lambdalisue/fern-renderer-nerdfont.vim](https://github.com/lambdalisue/fern-renderer-nerdfont.vim) |
-| Comparator      | Comparator is used to compare nodes. Changing it affect the order of nodes in a tree.<br>e.g. [lambdalisue/fern-comparator-lexical.vim](https://github.com/lambdalisue/fern-comparator-lexical.vim)           |
-| Mapping         | Mapping is used to provide extra mappings. Adding it to provide extra mappings.<br>e.g. [lambdalisue/fern-mapping-project-top.vim](https://github.com/lambdalisue/fern-mapping-project-top.vim)               |
-| Scheme provider | Scheme provider is used to generate a tree from URI. Adding it to support extra scheme.<br>e.g. [lambdalisue/fern-bookmark.vim](https://github.com/lambdalisue/fern-bookmark.vim)                             |
-| Scheme mapping  | Scheme mapping is used to provide scheme sepcific mappings. Adding it to provide extra scheme mappings.<br>e.g. [lambdalisue/fern-bookmark.vim](https://github.com/lambdalisue/fern-bookmark.vim)             |
-
-Please add a following badge to indicate that your plugin is for fern.
-
-[![fern plugin](https://img.shields.io/badge/🌿%20fern-plugin-yellowgreen)](https://github.com/lambdalisue/fern.vim)
-
-```
-[![fern plugin](https://img.shields.io/badge/🌿%20fern-plugin-yellowgreen)](https://github.com/lambdalisue/fern.vim)
-```
-
-See [Wiki](https://github.com/lambdalisue/fern.vim/wiki) pages to find more 3rd-party plugins or share yours ;-)
+See [Tips](https://github.com/lambdalisue/fern.vim/wiki/Tips) pages to find tips, or write pages to share your tips ;-)
 
 # Contribution
 
