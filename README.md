@@ -48,7 +48,7 @@ Fern ([furn](https://www.youtube.com/watch?v=SSYgr-_69mg)) is a general purpose 
 ---
 
 <p align="center">
-  <strong><a href="https://github.com/topics/fern-vim-plugin">Find fern plugins</a></strong>
+  <strong>🔍 <a href="https://github.com/topics/fern-vim-plugin">Click this to find fern plugins</a> 🔍</strong>
 </p>
 
 ---
@@ -166,15 +166,7 @@ This feature is strongly inspired by [shougo/vimfiler.vim][].
 ## Users
 
 Most of functionalities are provided as plugins in fern.
-So click below or visit [Plugins](https://github.com/lambdalisue/fern.vim/wiki/Plugins) page to find fern plugins to satisfy your wants.
-
----
-
-<p align="center">
-  <strong><a href="https://github.com/topics/fern-vim-plugin">Find fern plugins</a></strong>
-</p>
-
----
+So visit [Github topics of `fern-vim-plugin`](https://github.com/topics/fern-vim-plugin) or [Plugins](https://github.com/lambdalisue/fern.vim/wiki/Plugins) page to find fern plugins to satisfy your wants.
 
 For example, following features are provided as official plugins
 
