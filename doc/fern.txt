@@ -8,6 +8,7 @@ CONTENTS						*fern-contents*
 
 INTRODUCTION				|fern-introduction|
   FEATURES				|fern-features|
+  PLUGINS				|fern-plugins|
 USAGE					|fern-usage|
   ACTION				|fern-action|
   CUSTOM				|fern-custom|
@@ -95,6 +96,23 @@ System trash-bin support ("file" scheme)~
 	(macOS), and 3rd party applications (Linux). Any files/directories 
 	deleted by "trash" action are sent to system trash-bin rather than 
 	actual delete.
+
+-----------------------------------------------------------------------------
+PLUGINS							*fern-plugins*
+
+Most of functionalities are provided as plugins in fern.
+So visit the following URL to find fern plugins.
+
+https://github.com/topics/fern-vim-plugin
+
+For example, following features are provided as official plugins
+
+- Netrw hijack (Use fern as a default file explorer)
+- Nerd Fonts integration (https://www.nerdfonts.com/)
+- Git integration (show status, touch index, ...)
+- Bookmark feature
+
+And lot more!
 
 
 =============================================================================
