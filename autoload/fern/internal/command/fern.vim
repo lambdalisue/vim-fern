@@ -127,7 +127,7 @@ endfunction
 
 function! s:normalize_reveal(fri, reveal) abort
   let reveal = fern#util#expand(a:reveal)
-  if !fern#internal#filepath#is_absolute(reveal)
+  if empty(reveal) || !fern#internal#filepath#is_absolute(reveal)
     return reveal
   endif
   " reveal points a real filesystem
