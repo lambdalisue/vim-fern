@@ -76,7 +76,7 @@ function! s:map_open(helper, opener) abort
     let is_drawer = a:helper.sync.is_drawer()
     for node in nodes
       noautocmd call win_gotoid(winid)
-      call fern#internal#buffer#open(expand(node.bufname), {
+      call fern#internal#buffer#open(node.bufname, {
             \ 'opener': a:opener,
             \ 'locator': is_drawer,
             \ 'keepalt': !is_drawer && g:fern#keepalt_on_edit,
