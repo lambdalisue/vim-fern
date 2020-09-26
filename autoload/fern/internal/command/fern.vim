@@ -46,11 +46,11 @@ function! fern#internal#command#fern#command(mods, fargs) abort
       let opener = s:drawer_opener
     endif
 
-    let expr = expand(a:fargs[0])
+    let expr = fern#util#expand(a:fargs[0])
     let path = fern#fri#format(
           \ expr =~# '^[^:]\+://'
           \   ? fern#fri#parse(expr)
-          \   : fern#fri#from#filepath(fnamemodify(expand(expr), ':p'))
+          \   : fern#fri#from#filepath(fnamemodify(expr, ':p'))
           \)
     " Build FRI for fern buffer from argument
     let fri = fern#fri#new({
@@ -126,7 +126,7 @@ function! fern#internal#command#fern#complete(arglead, cmdline, cursorpos) abort
 endfunction
 
 function! s:normalize_reveal(fri, reveal) abort
-  let reveal = expand(a:reveal)
+  let reveal = fern#util#expand(a:reveal)
   if !fern#internal#filepath#is_absolute(reveal)
     return reveal
   endif
