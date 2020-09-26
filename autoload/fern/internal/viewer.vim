@@ -131,7 +131,7 @@ function! s:reveal(fargs) abort
     " Does all options are handled?
     call fern#internal#args#throw_if_dirty(a:fargs)
 
-    let expr = expand(a:fargs[0])
+    let expr = fern#util#expand(a:fargs[0])
     let helper = fern#helper#new()
     let promise = fern#internal#viewer#reveal(helper, expr)
 

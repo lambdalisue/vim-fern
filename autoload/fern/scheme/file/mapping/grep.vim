@@ -32,7 +32,7 @@ endfunction
 
 function! s:grepargs(args) abort
   let args = fern#internal#args#split(g:fern#scheme#file#mapping#grep#grepprg)
-  let args = map(args, { _, v -> v =~# '^[%#]\%(:.*\)\?$' ? expand(v) : v })
+  let args = map(args, { _, v -> v =~# '^[%#]\%(:.*\)\?$' ? fern#util#expand(v) : v })
   let index = index(args, '$*')
   return index is# -1
         \ ? args + a:args

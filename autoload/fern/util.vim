@@ -35,3 +35,21 @@ function! fern#util#obsolete(name, ...) abort
           \)
   endif
 endfunction
+
+" Apply workaround to expand() issue of completeslash on Windows
+" See https://github.com/lambdalisue/fern.vim/issues/226
+if exists('+completeslash')
+  function! fern#util#expand(expr) abort
+    let completeslash_saved = &completeslash
+    try
+      set completeslash&
+      return expand(a:expr)
+    finally
+      let &completeslash = completeslash_saved
+    endtry
+  endfunction
+else
+  function! fern#util#expand(expr) abort
+    return expand(a:expr)
+  endfunction
+endif
