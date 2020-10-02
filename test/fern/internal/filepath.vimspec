@@ -154,6 +154,39 @@ Describe fern#internal#filepath
       End
     End
 
+    Describe #is_unc_compat()
+      It returns 0
+        Assert False(fern#internal#filepath#is_unc_compat())
+      End
+    End
+
+    Describe #is_uncpath()
+      It returns 0 for '/'
+        let path = '/'
+        Assert False(fern#internal#filepath#is_uncpath(path))
+      End
+
+      It returns 0 for ''
+        let path = ''
+        Assert False(fern#internal#filepath#is_uncpath(path))
+      End
+
+      It returns 0 for '/usr/local'
+        let path = '/usr/local'
+        Assert False(fern#internal#filepath#is_uncpath(path))
+      End
+
+      It returns 0 for '\\localhost'
+        let path = '\\localhost'
+        Assert False(fern#internal#filepath#is_uncpath(path))
+      End
+
+      It returns 0 for '\\localhost\C$'
+        let path = '\\localhost\C$'
+        Assert False(fern#internal#filepath#is_uncpath(path))
+      End
+    End
+
     Describe #is_absolute()
       It returns 1 for '/usr/local'
         Assert True(fern#internal#filepath#is_absolute('/usr/local'))
@@ -322,6 +355,16 @@ Describe fern#internal#filepath
         let path = 'C:\Windows\System32'
         Assert False(fern#internal#filepath#is_root(path))
       End
+
+      It returns 0 for '\\localhost'
+        let path = '\\localhost'
+        Assert False(fern#internal#filepath#is_root(path))
+      End
+
+      It returns 0 for '\\localhost\C$'
+        let path = '\\localhost\C$'
+        Assert False(fern#internal#filepath#is_root(path))
+      End
     End
 
     Describe #is_drive_root()
@@ -338,6 +381,49 @@ Describe fern#internal#filepath
       It returns 0 for 'C:\Windows\System32'
         let path = 'C:\Windows\System32'
         Assert False(fern#internal#filepath#is_drive_root(path))
+      End
+
+      It returns 0 for '\\localhost'
+        let path = '\\localhost'
+        Assert False(fern#internal#filepath#is_drive_root(path))
+      End
+
+      It returns 0 for '\\localhost\C$'
+        let path = '\\localhost\C$'
+        Assert False(fern#internal#filepath#is_drive_root(path))
+      End
+    End
+
+    Describe #is_unc_compat()
+      It returns 1
+        Assert True(fern#internal#filepath#is_unc_compat())
+      End
+    End
+
+    Describe #is_uncpath()
+      It returns 0 for 'C:\'
+        let path = 'C:\'
+        Assert False(fern#internal#filepath#is_uncpath(path))
+      End
+
+      It returns 0 for ''
+        let path = ''
+        Assert False(fern#internal#filepath#is_uncpath(path))
+      End
+
+      It returns 0 for 'C:\Windows\System32'
+        let path = 'C:\Windows\System32'
+        Assert False(fern#internal#filepath#is_uncpath(path))
+      End
+
+      It returns 1 for '\\localhost'
+        let path = '\\localhost'
+        Assert True(fern#internal#filepath#is_uncpath(path))
+      End
+
+      It returns 1 for '\\localhost\C$'
+        let path = '\\localhost\C$'
+        Assert True(fern#internal#filepath#is_uncpath(path))
       End
     End
 
@@ -360,6 +446,16 @@ Describe fern#internal#filepath
 
       It returns 0 for 'Windows'
         Assert False(fern#internal#filepath#is_absolute('Windows'))
+      End
+
+      It returns 1 for '\\localhost'
+        let path = '\\localhost'
+        Assert True(fern#internal#filepath#is_absolute(path))
+      End
+
+      It returns 1 for '\\localhost\C$'
+        let path = '\\localhost\C$'
+        Assert True(fern#internal#filepath#is_absolute(path))
       End
     End
 

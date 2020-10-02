@@ -166,6 +166,30 @@ Describe fern#fri#from
               \}
         Assert Equals(fern#fri#from#filepath(expr), want)
       End
+
+      It returns FRI from \\localhost
+        let expr = '\\localhost'
+        let want = {
+              \ 'scheme': 'file',
+              \ 'authority': 'localhost',
+              \ 'path': '',
+              \ 'query': {},
+              \ 'fragment': '',
+              \}
+        Assert Equals(fern#fri#from#uncpath(expr), want)
+      End
+
+      It returns FRI from \\localhost\C$\foo\bar
+        let expr = '\\localhost\C$\foo\bar'
+        let want = {
+              \ 'scheme': 'file',
+              \ 'authority': 'localhost',
+              \ 'path': 'C$/foo/bar',
+              \ 'query': {},
+              \ 'fragment': '',
+              \}
+        Assert Equals(fern#fri#from#uncpath(expr), want)
+      End
     End
 
     Context Unix
@@ -259,6 +283,88 @@ Describe fern#fri#from
               \ 'fragment': '',
               \}
         Assert Equals(fern#fri#from#filepath(expr), want)
+      End
+
+      It throws an error if the path is an UNC path (\\localhost\foo\bar)
+        Throws /The "path" must be an absolute path/ fern#fri#from#filepath('\\localhost\foo\bar')
+      End
+    End
+  End
+
+  Describe #uncpath()
+    Context Windows
+      Before
+        let g:fern#internal#filepath#is_windows = 1
+      End
+
+      It throws an error if the path is not an UNC path
+        Throws /The "path" must be an UNC path/ fern#fri#from#uncpath('C:\foo\bar')
+      End
+
+      It returns FRI from \\localhost
+        let expr = '\\localhost'
+        let want = {
+              \ 'scheme': 'file',
+              \ 'authority': 'localhost',
+              \ 'path': '',
+              \ 'query': {},
+              \ 'fragment': '',
+              \}
+        Assert Equals(fern#fri#from#uncpath(expr), want)
+      End
+
+      It returns FRI from \\localhost\C$\foo\bar
+        let expr = '\\localhost\C$\foo\bar'
+        let want = {
+              \ 'scheme': 'file',
+              \ 'authority': 'localhost',
+              \ 'path': 'C$/foo/bar',
+              \ 'query': {},
+              \ 'fragment': '',
+              \}
+        Assert Equals(fern#fri#from#uncpath(expr), want)
+      End
+
+      It returns FRI from \\localhost\C$\foo\bar#a&b=c
+        let expr = '\\localhost\C$\foo\bar#a&b=c'
+        let want = {
+              \ 'scheme': 'file',
+              \ 'authority': 'localhost',
+              \ 'path': 'C$/foo/bar%23a&b=c',
+              \ 'query': {},
+              \ 'fragment': '',
+              \}
+        Assert Equals(fern#fri#from#uncpath(expr), want)
+      End
+
+      It returns FRI from \\localhost\C$\foo\bar#foo\bar\hoge
+        let expr = '\\localhost\C$\foo\bar#foo\bar\hoge'
+        let want = {
+              \ 'scheme': 'file',
+              \ 'authority': 'localhost',
+              \ 'path': 'C$/foo/bar%23foo/bar/hoge',
+              \ 'query': {},
+              \ 'fragment': '',
+              \}
+        Assert Equals(fern#fri#from#uncpath(expr), want)
+      End
+    End
+
+    Context Unix
+      Before
+        let g:fern#internal#filepath#is_windows = 0
+      End
+
+      It throws an error if the path is not an UNC path
+        Throws /The "path" must be an UNC path/ fern#fri#from#uncpath('/foo/bar')
+      End
+
+      It throws an error if the path is an UNC like path (//localhost/foo/bar)
+        Throws /The "path" must be an UNC path/ fern#fri#from#uncpath('//localhost/foo/bar')
+      End
+
+      It throws an error if the path is an UNC path (\\localhost\foo\bar)
+        Throws /The "path" must be an UNC path/ fern#fri#from#uncpath('\\localhost\foo\bar')
       End
     End
   End

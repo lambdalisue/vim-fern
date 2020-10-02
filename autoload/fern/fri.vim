@@ -12,26 +12,28 @@ function! fern#fri#new(partial) abort
 endfunction
 
 function! fern#fri#parse(expr) abort
-  let remains = a:expr =~# '^fern:'
+  let is_fern = a:expr =~# '^fern:'
+  let remains = is_fern
         \ ? matchstr(a:expr, '.\{-}\ze\$\?$')
         \ : a:expr
   let [scheme, remains] = s:split1(remains, escape('://', s:PATTERN))
-  if empty(remains)
+  if remains is# v:null
     let remains = scheme
     let scheme = ''
   endif
   let [authority, remains] = s:split1(remains, escape('/', s:PATTERN))
-  if empty(remains)
+  if remains is# v:null
     let remains = authority
     let authority = ''
   endif
   let [path, remains] = s:split1(remains, escape(';', s:PATTERN))
-  if empty(remains)
+  if remains is# v:null
     let query = ''
-    let [path, fragment] = s:split1(path, escape('#', s:PATTERN))
+    let [path, remains] = s:split1(path, escape('#', s:PATTERN))
   else
-    let [query, fragment] = s:split1(remains, escape('#', s:PATTERN))
+    let [query, remains] = s:split1(remains, escape('#', s:PATTERN))
   endif
+  let fragment = remains isnot# v:null ? remains : ''
   return {
         \ 'scheme': scheme,
         \ 'authority': s:decode(authority),
@@ -135,7 +137,7 @@ endfunction
 function! s:split1(str, pattern) abort
   let [_, s, e] = matchstrpos(a:str, a:pattern)
   if s is# -1
-    return [a:str, '']
+    return [a:str, v:null]
   elseif s is# 0
     return ['', a:str[e :]]
   endif

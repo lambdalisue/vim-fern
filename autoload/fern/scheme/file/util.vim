@@ -63,4 +63,14 @@ if s:is_windows
           \.then(s:AsyncLambda.map_f({ v -> v:val[:1] . '\' }))
           \.finally({ -> Profile() })
   endfunction
+
+  function! fern#scheme#file#util#list_shares(token, host) abort
+    let l:Profile = fern#profile#start('fern#scheme#file#util#list_shares')
+    return s:Process.start(['wmic', printf('/node:%s', a:host), 'share', 'get', 'name'], { 'token': a:token, 'reject_on_failure': 1 })
+          \.catch({ v -> s:Promise.reject(join(v.stderr, "\n")) })
+          \.then({ v -> v.stdout })
+          \.then(s:AsyncLambda.filter_f({ v, i -> i > 0 && v =~# '^\w' }))
+          \.then(s:AsyncLambda.map_f({ v -> substitute(v, ' .*$', '', '') }))
+          \.finally({ -> Profile() })
+  endfunction
 endif

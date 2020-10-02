@@ -30,6 +30,14 @@ function! fern#internal#filepath#is_absolute(path) abort
         \ : s:is_absolute_unix(a:path)
 endfunction
 
+function! fern#internal#filepath#is_unc_compat() abort
+  return g:fern#internal#filepath#is_windows
+endfunction
+
+function! fern#internal#filepath#is_uncpath(path) abort
+  return g:fern#internal#filepath#is_windows && s:is_uncpath(a:path)
+endfunction
+
 function! fern#internal#filepath#join(paths) abort
   let paths = map(
         \ copy(a:paths),
@@ -59,8 +67,12 @@ function! s:from_slash_windows(path) abort
   return path[:2] =~# '^\w:$' ? path . '\' : path
 endfunction
 
+function! s:is_uncpath(path) abort
+  return a:path =~# '^\\\\[^\\]\+'
+endfunction
+
 function! s:is_absolute_windows(path) abort
-  return a:path ==# '' || a:path[:2] =~# '^\w:\\$'
+  return a:path ==# '' || a:path[:2] =~# '^\w:\\$' || s:is_uncpath(a:path)
 endfunction
 
 function! s:is_absolute_unix(path) abort

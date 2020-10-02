@@ -28,8 +28,14 @@ function! s:provider_get_root(uri) abort
   let fri = fern#fri#parse(a:uri)
   call fern#logger#debug('file:get_root:fri', fri)
   let path = fern#fri#to#filepath(fri)
+  call fern#logger#debug('file:get_root:filepath', path)
   if s:is_windows && path ==# ''
     return s:windows_drive_root
+  elseif s:is_windows && fern#internal#filepath#is_uncpath(path)
+    let unc = fern#fri#from#uncpath(path)
+    if unc.path ==# ''
+      return s:windows_share_root(unc.authority)
+    endif
   endif
   let root = s:node(path)
   if g:fern#scheme#file#show_absolute_path_on_root_label
@@ -39,24 +45,44 @@ function! s:provider_get_root(uri) abort
 endfunction
 
 function! s:provider_get_parent(node, ...) abort
+  call fern#logger#debug('file:get_parent: node=', a:node)
   if fern#internal#filepath#is_root(a:node._path)
     return s:Promise.reject('no parent node exists for the root')
   elseif s:is_windows && fern#internal#filepath#is_drive_root(a:node._path)
     return s:Promise.resolve(s:windows_drive_root)
   endif
   try
-    let path = fern#internal#filepath#to_slash(a:node._path)
-    let parent = fern#internal#path#dirname(path)
-    let parent = fern#internal#filepath#from_slash(parent)
+    if s:is_windows && fern#internal#filepath#is_uncpath(a:node._path)
+      let unc = fern#fri#from#uncpath(a:node._path)
+      let unc.path = s:filepath_get_parent(unc.path)
+      if unc.path ==# ''
+        return s:Promise.resolve(s:windows_share_root(unc.authority))
+      endif
+      let parent = fern#fri#to#uncpath(unc)
+    else
+      let parent = s:filepath_get_parent(a:node._path)
+    endif
     return s:Promise.resolve(s:node(parent))
   catch
     return s:Promise.reject(v:exception)
   endtry
 endfunction
 
+function! s:filepath_get_parent(path) abort
+  let path = fern#internal#filepath#to_slash(a:path)
+  let parent = fern#internal#path#dirname(path)
+  return fern#internal#filepath#from_slash(parent)
+endfunction
+
 function! s:provider_get_children(node, ...) abort
+  call fern#logger#debug('file:get_children: node=', a:node)
   if s:is_windows && a:node._path ==# ''
     return s:windows_drive_nodes
+  elseif s:is_windows && fern#internal#filepath#is_uncpath(a:node._path)
+    let unc = fern#fri#from#uncpath(a:node._path)
+    if unc.path ==# ''
+      return s:windows_share_nodes(unc.authority)
+    endif
   endif
   let token = a:0 ? a:1 : s:CancellationToken.none
   if a:node.status is# 0
@@ -109,6 +135,31 @@ if s:is_windows
   let s:windows_drive_nodes = fern#scheme#file#util#list_drives(s:CancellationToken.none)
           \.then(s:AsyncLambda.map_f({ v -> s:safe(funcref('s:node', [v . '\'])) }))
           \.then(s:AsyncLambda.filter_f({ v -> !empty(v) }))
+
+  function! s:windows_share_root(authority) abort
+    let unc = fern#fri#new({'scheme': 'file', 'authority': a:authority})
+    let fri = fern#fri#new({'scheme': 'fern', 'path': fern#fri#format(unc) })
+    return {
+          \ 'name': a:authority,
+          \ 'label': '\\' . a:authority,
+          \ 'status': 1,
+          \ 'hidden': 0,
+          \ 'bufname': fern#fri#format(fri),
+          \ '_path': fern#fri#to#uncpath(unc),
+          \}
+  endfunction
+
+  function! s:windows_share_nodes(authority) abort
+    if a:authority ==# '.'
+      return s:windows_drive_nodes
+    endif
+    let unc = fern#fri#new({'scheme': 'file', 'authority': a:authority})
+    return fern#scheme#file#util#list_shares(s:CancellationToken.none, a:authority)
+          \.then(s:AsyncLambda.map_f({ v -> s:safe({ ->
+          \   s:node(fern#fri#to#uncpath(extend(deepcopy(unc), {'path': v})))
+          \ }) }))
+          \.then(s:AsyncLambda.filter_f({ v -> !empty(v) }))
+  endfunction
 endif
 
 " NOTE:
