@@ -71,7 +71,7 @@ function! fern#internal#command#fern#command(mods, fargs) abort
     let waiter = fern#hook#promise('viewer:ready')
 
     " Register callback to reveal node
-    let reveal = s:normalize_reveal(fri, reveal)
+    let reveal = fern#internal#command#reveal#normalize(fri, reveal)
     if reveal !=# ''
       let waiter = waiter.then({ h -> fern#internal#viewer#reveal(h, reveal) })
     endif
@@ -123,17 +123,4 @@ function! fern#internal#command#fern#complete(arglead, cmdline, cursorpos) abort
     return fern#internal#complete#options(a:arglead, a:cmdline, a:cursorpos)
   endif
   return fern#internal#complete#url(a:arglead, a:cmdline, a:cursorpos)
-endfunction
-
-function! s:normalize_reveal(fri, reveal) abort
-  let reveal = fern#util#expand(a:reveal)
-  if empty(reveal) || !fern#internal#filepath#is_absolute(reveal)
-    return reveal
-  endif
-  " reveal points a real filesystem
-  let fri = fern#fri#parse(a:fri.path)
-  let root = '/' . fri.path
-  let reveal = fern#internal#filepath#to_slash(reveal)
-  let reveal = fern#internal#path#relative(reveal, root)
-  return reveal
 endfunction

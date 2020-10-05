@@ -40,10 +40,10 @@ function! s:open(bufname, options, resolve, reject) abort
 endfunction
 
 function! s:init() abort
-  execute printf(
-        \ 'command! -buffer -bar -nargs=* -complete=customlist,%s FernReveal call s:reveal([<f-args>])',
-        \ get(funcref('s:reveal_complete'), 'name'),
-        \)
+  command! -buffer -bar -nargs=*
+        \ -complete=customlist,fern#internal#command#reveal#complete
+        \ FernReveal
+        \ call fern#internal#command#reveal#command(<q-mods>, [<f-args>])
 
   setlocal buftype=nofile bufhidden=unload
   setlocal noswapfile nobuflisted nomodifiable
@@ -118,52 +118,6 @@ function! s:notify(bufnr, error) abort
       call notifier.reject([a:bufnr, a:error])
     endif
   endif
-endfunction
-
-function! s:reveal(fargs) abort
-  try
-    let wait = fern#internal#args#pop(a:fargs, 'wait', v:false)
-    if len(a:fargs) isnot# 1
-          \ || type(wait) isnot# v:t_bool
-      throw 'Usage: FernReveal {reveal} [-wait]'
-    endif
-
-    " Does all options are handled?
-    call fern#internal#args#throw_if_dirty(a:fargs)
-
-    let expr = fern#util#expand(a:fargs[0])
-    let helper = fern#helper#new()
-    let promise = fern#internal#viewer#reveal(helper, expr)
-
-    if wait
-      let [_, err] = s:Promise.wait(
-            \ promise,
-            \ {
-            \   'interval': 100,
-            \   'timeout': 5000,
-            \ },
-            \)
-      if err isnot# v:null
-        throw printf('[fern] Failed to wait: %s', err)
-      endif
-    endif
-  catch
-    echohl ErrorMsg
-    echomsg v:exception
-    echohl None
-    call fern#logger#debug(v:exception)
-    call fern#logger#debug(v:throwpoint)
-  endtry
-endfunction
-
-function! s:reveal_complete(arglead, cmdline, cursorpos) abort
-  let helper = fern#helper#new()
-  let fri = fern#fri#parse(bufname('%'))
-  let scheme = helper.fern.scheme
-  let cmdline = fri.path
-  let arglead = printf('-reveal=%s', a:arglead)
-  let rs = fern#internal#complete#reveal(arglead, cmdline, a:cursorpos)
-  return map(rs, { -> matchstr(v:val, '-reveal=\zs.*') })
 endfunction
 
 function! s:BufReadCmd() abort
