@@ -1,3 +1,5 @@
+scriptencoding utf-8
+
 let s:Config = vital#fern#import('Config')
 let s:Spinner = vital#fern#import('App.Spinner')
 
@@ -57,6 +59,8 @@ function! s:define_signs() abort
 endfunction
 
 call s:Config.config(expand('<sfile>:p'), {
-      \ 'frames': has('win32') ? s:Spinner.flip : s:Spinner.dots,
+      \ 'frames': !has('win32') && '⠋' =~# '^[[:print:]]$'
+      \   ? s:Spinner.dots
+      \   : s:Spinner.flip,
       \})
 call s:define_signs()
