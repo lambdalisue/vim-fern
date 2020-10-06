@@ -25,11 +25,13 @@ let s:options = {
       \   '-reveal=',
       \   '-stay',
       \   '-toggle',
+      \   '-wait',
       \   '-width=',
       \ ],
-      \ 'FernFocus': [
+      \ 'FernDo': [
       \   '-drawer',
-      \ ]
+      \   '-stay',
+      \ ],
       \}
 
 function! fern#internal#complete#opener(arglead, cmdline, cursorpos) abort
