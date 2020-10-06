@@ -38,13 +38,13 @@ let s:options = {
       \}
 
 function! fern#internal#complete#opener(arglead, cmdline, cursorpos) abort
-  let pattern = '^' . a:arglead
+  let pattern = '\V\^' . escape(a:arglead, '\\')
   let candidates = map(copy(s:openers), { _, v -> printf('-opener=%s', v) })
   return filter(candidates, { _, v -> v =~# pattern })
 endfunction
 
 function! fern#internal#complete#options(arglead, cmdline, cursorpos) abort
-  let pattern = '^' . a:arglead
+  let pattern = '\V\^' . escape(a:arglead, '\\')
   let command = matchstr(a:cmdline, '^\w\+')
   let candidates = get(s:options, command, [])
   return filter(copy(candidates), { _, v -> v =~# pattern })
