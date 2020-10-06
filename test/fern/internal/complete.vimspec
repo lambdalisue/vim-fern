@@ -301,6 +301,68 @@ Describe fern#internal#complete
       let got = fern#internal#complete#url(arglead, cmdline, cursorpos)
       Assert Equals(got, want)
     End
+
+    Context Windows UNC path
+      Before
+        if !has('win32')
+          Skip because only for Windows
+        endif
+        let unc_test_dir = '\\localhost\' . substitute(test_dir, '^\w\zs:', '$', '')
+        if getftype(unc_test_dir) !=# 'dir'
+          Skip because UNC path is unavailable
+        endif
+        if empty(getcompletion(unc_test_dir, 'dir'))
+          Skip because getcompletion() can not detect UNC path
+        endif
+      End
+
+      It returns directories with UNC path
+        execute 'cd' fnameescape(other_dir)
+        let path = unc_test_dir . '\'
+        let arglead = path
+        let cmdline = 'Fern ' . path
+        let cursorpos = strlen(cmdline)
+        let want = map(['bar', 'baz', 'foo'], { -> path . v:val . '\' })
+        let got = fern#internal#complete#url(arglead, cmdline, cursorpos)
+        Assert Equals(got, want)
+      End
+
+      It returns shares in the host with UNC path
+        let unc_share = matchstr(unc_test_dir, '^\\\\localhost\\\w$\\')
+        let path = '\\localhost\'
+        let arglead = path
+        let cmdline = 'Fern ' . path
+        let cursorpos = strlen(cmdline)
+        let contains = unc_share
+        let got = fern#internal#complete#url(arglead, cmdline, cursorpos)
+        Assert IsList(got)
+        Assert True(index(got, contains) >= 0, printf('but %s do not contains %s', got, string(contains)))
+      End
+
+      It returns directories in the file scheme URL with UNC path
+        execute 'cd' fnameescape(other_dir)
+        let url = fern#fri#format(fern#fri#from#uncpath(unc_test_dir)) . '/'
+        let arglead = url
+        let cmdline = 'Fern ' . url
+        let cursorpos = strlen(cmdline)
+        let want = map(['bar', 'baz', 'foo'], { -> url . v:val })
+        let got = fern#internal#complete#url(arglead, cmdline, cursorpos)
+        Assert Equals(got, want)
+      End
+
+      It returns shares in the host with the file scheme URL with UNC path
+        let unc_share = matchstr(unc_test_dir, '^\\\\localhost\\\w$\\')
+        let unc_share_url = fern#fri#format(fern#fri#from#uncpath(unc_share))
+        let url = fern#fri#format(fern#fri#from#uncpath('\\localhost\'))
+        let arglead = url
+        let cmdline = 'Fern ' . url
+        let cursorpos = strlen(cmdline)
+        let contains = unc_share_url
+        let got = fern#internal#complete#url(arglead, cmdline, cursorpos)
+        Assert IsList(got)
+        Assert True(index(got, contains) >= 0, printf('but %s do not contains %s', got, string(contains)))
+      End
+    End
   End
 
   Describe #reveal()
@@ -449,6 +511,68 @@ Describe fern#internal#complete
       let want = []
       let got = fern#internal#complete#reveal(arglead, cmdline, cursorpos)
       Assert Equals(got, want)
+    End
+
+    Context Windows UNC path
+      Before
+        if !has('win32')
+          Skip because only for Windows
+        endif
+        let unc_test_dir = '\\localhost\' . substitute(test_dir, '^\w\zs:', '$', '')
+        if getftype(unc_test_dir) !=# 'dir'
+          Skip because UNC path is unavailable
+        endif
+        if empty(getcompletion(unc_test_dir, 'dir'))
+          Skip because getcompletion() can not detect UNC path
+        endif
+      End
+
+      It returns files and directories if reveal path is empty
+        execute 'cd' fnameescape(other_dir)
+        let base = unc_test_dir
+        let arglead = '-reveal='
+        let cmdline = printf('Fern %s %s', fnameescape(base), arglead)
+        let cursorpos = strlen(cmdline)
+        let want = map(['bar', 'baz', 'foo', 'qux'], { -> arglead . v:val })
+        let got = fern#internal#complete#reveal(arglead, cmdline, cursorpos)
+        Assert Equals(got, want)
+      End
+
+      It returns files and directories if reveal path is directory
+        execute 'cd' fnameescape(other_dir)
+        let base = fnamemodify(unc_test_dir, ':h')
+        let path = fnamemodify(unc_test_dir, ':t') . pathsep
+        let arglead = '-reveal=' . fnameescape(path)
+        let cmdline = printf('Fern %s %s', fnameescape(base), arglead)
+        let cursorpos = strlen(cmdline)
+        let want = map(['bar', 'baz', 'foo', 'qux'], { -> arglead . v:val })
+        let got = fern#internal#complete#reveal(arglead, cmdline, cursorpos)
+        Assert Equals(got, want)
+      End
+
+      It returns directories in the file scheme URL if reveal path is empty
+        execute 'cd' fnameescape(other_dir)
+        let base_url = fern#fri#format(fern#fri#from#uncpath(unc_test_dir)) . '/'
+        let arglead = '-reveal='
+        let cmdline = printf('Fern %s %s', base_url, arglead)
+        let cursorpos = strlen(cmdline)
+        let want = map(['bar', 'baz', 'foo', 'qux'], { -> arglead . v:val })
+        let got = fern#internal#complete#reveal(arglead, cmdline, cursorpos)
+        Assert Equals(got, want)
+      End
+
+      It returns directories in the file scheme URL if reveal path is directory
+        execute 'cd' fnameescape(other_dir)
+        let base = fnamemodify(unc_test_dir, ':h')
+        let base_url = fern#fri#format(fern#fri#from#uncpath(base)) . '/'
+        let path = fnamemodify(unc_test_dir, ':t') . '/'
+        let arglead = '-reveal=' . path
+        let cmdline = printf('Fern %s %s', base_url, arglead)
+        let cursorpos = strlen(cmdline)
+        let want = map(['bar', 'baz', 'foo', 'qux'], { -> arglead . v:val })
+        let got = fern#internal#complete#reveal(arglead, cmdline, cursorpos)
+        Assert Equals(got, want)
+      End
     End
   End
 End
