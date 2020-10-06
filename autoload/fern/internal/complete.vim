@@ -32,6 +32,9 @@ let s:options = {
       \   '-drawer',
       \   '-stay',
       \ ],
+      \ 'FernReveal': [
+      \   '-wait',
+      \ ],
       \}
 
 function! fern#internal#complete#opener(arglead, cmdline, cursorpos) abort

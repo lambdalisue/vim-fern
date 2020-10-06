@@ -38,6 +38,9 @@ function! fern#internal#command#reveal#command(modes, fargs) abort
 endfunction
 
 function! fern#internal#command#reveal#complete(arglead, cmdline, cursorpos) abort
+  if a:arglead =~# '^-'
+    return fern#internal#complete#options(a:arglead, a:cmdline, a:cursorpos)
+  endif
   let helper = fern#helper#new()
   let fri = fern#fri#parse(bufname('%'))
   let scheme = helper.fern.scheme
