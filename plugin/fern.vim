@@ -7,12 +7,12 @@ let g:fern_loaded = 1 " Obsolete: For backward compatibility
 command! -bar -nargs=*
       \ -complete=customlist,fern#internal#command#fern#complete
       \ Fern
-      \ call fern#internal#command#fern#command(<q-mods>, [<f-args>])
+      \ call fern#internal#command#fern#command(<q-mods>, <q-args>)
 
 command! -bar -nargs=*
       \ -complete=customlist,fern#internal#command#do#complete
       \ FernDo
-      \ call fern#internal#command#do#command(<q-mods>, [<f-args>])
+      \ call fern#internal#command#do#command(<q-mods>, <q-args>)
 
 function! s:BufReadCmd() abort
   if exists('b:fern')

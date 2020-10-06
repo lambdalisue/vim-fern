@@ -1,25 +1,26 @@
 let s:Promise = vital#fern#import('Async.Promise')
 let s:drawer_opener = 'topleft vsplit'
 
-function! fern#internal#command#fern#command(mods, fargs) abort
+function! fern#internal#command#fern#command(mods, qargs) abort
   try
-    let stay = fern#internal#args#pop(a:fargs, 'stay', v:false)
-    let wait = fern#internal#args#pop(a:fargs, 'wait', v:false)
-    let reveal = fern#internal#args#pop(a:fargs, 'reveal', '')
-    let drawer = fern#internal#args#pop(a:fargs, 'drawer', v:false)
+    let fargs = fern#internal#args#split(a:qargs)
+    let stay = fern#internal#args#pop(fargs, 'stay', v:false)
+    let wait = fern#internal#args#pop(fargs, 'wait', v:false)
+    let reveal = fern#internal#args#pop(fargs, 'reveal', '')
+    let drawer = fern#internal#args#pop(fargs, 'drawer', v:false)
     if drawer
       let opener = s:drawer_opener
-      let width = fern#internal#args#pop(a:fargs, 'width', '')
-      let keep = fern#internal#args#pop(a:fargs, 'keep', v:false)
-      let toggle = fern#internal#args#pop(a:fargs, 'toggle', v:false)
+      let width = fern#internal#args#pop(fargs, 'width', '')
+      let keep = fern#internal#args#pop(fargs, 'keep', v:false)
+      let toggle = fern#internal#args#pop(fargs, 'toggle', v:false)
     else
-      let opener = fern#internal#args#pop(a:fargs, 'opener', g:fern#opener)
+      let opener = fern#internal#args#pop(fargs, 'opener', g:fern#opener)
       let width = ''
       let keep = v:false
       let toggle = v:false
     endif
 
-    if len(a:fargs) isnot# 1
+    if len(fargs) isnot# 1
           \ || type(stay) isnot# v:t_bool
           \ || type(wait) isnot# v:t_bool
           \ || type(reveal) isnot# v:t_string
@@ -36,7 +37,7 @@ function! fern#internal#command#fern#command(mods, fargs) abort
     endif
 
     " Does all options are handled?
-    call fern#internal#args#throw_if_dirty(a:fargs)
+    call fern#internal#args#throw_if_dirty(fargs)
 
     " Force project drawer style when
     " - The current buffer is project drawer style fern
@@ -46,7 +47,7 @@ function! fern#internal#command#fern#command(mods, fargs) abort
       let opener = s:drawer_opener
     endif
 
-    let expr = fern#util#expand(a:fargs[0])
+    let expr = fern#util#expand(fargs[0])
     let path = fern#fri#format(
           \ expr =~# '^[^:]\+://'
           \   ? fern#fri#parse(expr)
