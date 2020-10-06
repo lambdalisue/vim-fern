@@ -72,6 +72,17 @@ Describe fern#internal#complete
       let got = fern#internal#complete#opener(arglead, cmdline, cursorpos)
       Assert Equals(got, want)
     End
+
+    It returns no openers, if arglead is invalid
+      let invalid_argleads = ['opener=', '^', '$', '.', '[o]']
+      for arglead in invalid_argleads
+        let cmdline = 'Fern ' . arglead
+        let cursorpos = strlen(cmdline)
+        let want = []
+        let got = fern#internal#complete#opener(arglead, cmdline, cursorpos)
+        Assert Equals(got, want, 'arglead pattern: ' . string(arglead))
+      endfor
+    End
   End
 
   Describe #options()
@@ -135,6 +146,17 @@ Describe fern#internal#complete
       let want = []
       let got = fern#internal#complete#options(arglead, cmdline, cursorpos)
       Assert Equals(got, want)
+    End
+
+    It returns no options, if arglead is invalid
+      let invalid_argleads = ['opener', '^', '$', '.', '[o]']
+      for arglead in invalid_argleads
+        let cmdline = 'Fern ' . arglead
+        let cursorpos = strlen(cmdline)
+        let want = []
+        let got = fern#internal#complete#options(arglead, cmdline, cursorpos)
+        Assert Equals(got, want, 'arglead pattern: ' . string(arglead))
+      endfor
     End
   End
 End
