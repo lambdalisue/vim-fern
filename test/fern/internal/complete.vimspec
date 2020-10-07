@@ -1,4 +1,36 @@
 Describe fern#internal#complete
+  Before all
+    if exists('+shellslash')
+      let [saved_shellslash, &shellslash] = [&shellslash, 0]
+    endif
+    let pathsep = fnamemodify('.', ':p')[-1 :]
+    let saved_dir = getcwd()
+    let temp_dir = fnamemodify(tempname(), ':p')
+    let test_dir = fnamemodify(temp_dir . pathsep . 'test', ':p')
+    let other_dir = fnamemodify(temp_dir . pathsep . 'other', ':p')
+    call mkdir(test_dir, 'p')
+    call mkdir(other_dir, 'p')
+    execute 'cd' fnameescape(test_dir)
+    call map(['foo', 'bar', 'baz'], { -> mkdir(v:val) })
+    call writefile([], 'qux')
+  End
+
+  After all
+    execute 'cd' fnameescape(saved_dir)
+    call delete(temp_dir, 'rf')
+    if exists('+shellslash')
+      let &shellslash = saved_shellslash
+    endif
+  End
+
+  Before
+    execute 'cd' fnameescape(test_dir)
+  End
+
+  After
+    execute 'cd' fnameescape(saved_dir)
+  End
+
   Describe #opener()
     It returns all openers
       let arglead = '-opener='
@@ -157,6 +189,266 @@ Describe fern#internal#complete
         let got = fern#internal#complete#options(arglead, cmdline, cursorpos)
         Assert Equals(got, want, 'arglead pattern: ' . string(arglead))
       endfor
+    End
+  End
+
+  Describe #url()
+    It returns directories within the current directory
+      let arglead = ''
+      let cmdline = 'Fern '
+      let cursorpos = strlen(cmdline)
+      let want = map(['bar', 'baz', 'foo'], { -> v:val . pathsep })
+      let got = fern#internal#complete#url(arglead, cmdline, cursorpos)
+      Assert Equals(got, want)
+    End
+
+    It returns directories within an absolute directory
+      let path = test_dir . pathsep
+      let arglead = path
+      let cmdline = 'Fern ' . path
+      let cursorpos = strlen(cmdline)
+      let want = map(['bar', 'baz', 'foo'], { -> path . v:val . pathsep })
+      let got = fern#internal#complete#url(arglead, cmdline, cursorpos)
+      Assert Equals(got, want)
+    End
+
+    It returns directories within a relative directory
+      execute 'cd' fnameescape('..')
+      let path = fnamemodify(test_dir, ':t') . pathsep
+      let arglead = path
+      let cmdline = 'Fern ' . path
+      let cursorpos = strlen(cmdline)
+      let want = map(['bar', 'baz', 'foo'], { -> path . v:val . pathsep })
+      let got = fern#internal#complete#url(arglead, cmdline, cursorpos)
+      Assert Equals(got, want)
+    End
+
+    It returns directories within a parent directory
+      execute 'cd' fnameescape('foo')
+      let path = '..' . pathsep
+      let arglead = path
+      let cmdline = 'Fern ' . path
+      let cursorpos = strlen(cmdline)
+      let want = map(['bar', 'baz', 'foo'], { -> path . v:val . pathsep })
+      let got = fern#internal#complete#url(arglead, cmdline, cursorpos)
+      Assert Equals(got, want)
+    End
+
+    It returns only a directory with exact name matches
+      let arglead = 'foo'
+      let cmdline = 'Fern foo'
+      let cursorpos = strlen(cmdline)
+      let want = map(['foo'], { -> v:val . pathsep })
+      let got = fern#internal#complete#url(arglead, cmdline, cursorpos)
+      Assert Equals(got, want)
+    End
+
+    It returns only directories with matching names
+      let arglead = 'ba'
+      let cmdline = 'Fern ba'
+      let cursorpos = strlen(cmdline)
+      let want = map(['bar', 'baz'], { -> v:val . pathsep })
+      let got = fern#internal#complete#url(arglead, cmdline, cursorpos)
+      Assert Equals(got, want)
+    End
+
+    It returns no directories if no sub-directories
+      let arglead = 'foo' . pathsep
+      let cmdline = 'Fern foo' . pathsep
+      let cursorpos = strlen(cmdline)
+      let want = []
+      let got = fern#internal#complete#url(arglead, cmdline, cursorpos)
+      Assert Equals(got, want)
+    End
+
+    It returns no directories if the specified path does not exist
+      let arglead = 'foobar' . pathsep
+      let cmdline = 'Fern foobar' . pathsep
+      let cursorpos = strlen(cmdline)
+      let want = []
+      let got = fern#internal#complete#url(arglead, cmdline, cursorpos)
+      Assert Equals(got, want)
+    End
+
+    It returns no directories if the specified path is not a directory
+      let arglead = 'qux' . pathsep
+      let cmdline = 'Fern qux' . pathsep
+      let cursorpos = strlen(cmdline)
+      let want = []
+      let got = fern#internal#complete#url(arglead, cmdline, cursorpos)
+      Assert Equals(got, want)
+    End
+
+    It returns directories in the file scheme URL
+      execute 'cd' fnameescape(other_dir)
+      let url = fern#fri#format(fern#fri#from#filepath(test_dir)) . '/'
+      let arglead = url
+      let cmdline = 'Fern ' . url
+      let cursorpos = strlen(cmdline)
+      let want = map(['bar', 'baz', 'foo'], { -> url . v:val })
+      let got = fern#internal#complete#url(arglead, cmdline, cursorpos)
+      Assert Equals(got, want)
+    End
+
+    It returns only scheme URL if the specified URL has invalid scheme
+      execute 'cd' fnameescape(other_dir)
+      let fri = extend(fern#fri#from#filepath(test_dir), {'scheme': 'xxx'})
+      let url = fern#fri#format(fri) . '/'
+      let arglead = url
+      let cmdline = 'Fern ' . url
+      let cursorpos = strlen(cmdline)
+      let want = ['xxx:///']
+      let got = fern#internal#complete#url(arglead, cmdline, cursorpos)
+      Assert Equals(got, want)
+    End
+  End
+
+  Describe #reveal()
+    It returns files and directories within the current directory if no base path
+      let arglead = '-reveal='
+      let cmdline = printf('Fern %s', arglead)
+      let cursorpos = strlen(cmdline)
+      let want = map(['bar', 'baz', 'foo', 'qux'], { -> arglead . v:val })
+      let got = fern#internal#complete#reveal(arglead, cmdline, cursorpos)
+      Assert Equals(got, want)
+    End
+
+    It returns files and directories within the absolute base path
+      execute 'cd' fnameescape(other_dir)
+      let arglead = '-reveal='
+      let cmdline = printf('Fern %s %s', test_dir, arglead)
+      let cursorpos = strlen(cmdline)
+      let want = map(['bar', 'baz', 'foo', 'qux'], { -> arglead . v:val })
+      let got = fern#internal#complete#reveal(arglead, cmdline, cursorpos)
+      Assert Equals(got, want)
+    End
+
+    It returns files and directories within the relative base path
+      execute 'cd' fnameescape('..')
+      let base = fnamemodify(test_dir, ':t')
+      let arglead = '-reveal='
+      let cmdline = printf('Fern %s %s', fnameescape(base), arglead)
+      let cursorpos = strlen(cmdline)
+      let want = map(['bar', 'baz', 'foo', 'qux'], { -> arglead . v:val })
+      let got = fern#internal#complete#reveal(arglead, cmdline, cursorpos)
+      Assert Equals(got, want)
+    End
+
+    It returns files and directories within a relative directory
+      execute 'cd' fnameescape(other_dir)
+      let base = fnamemodify(test_dir, ':h')
+      let arglead = fnameescape('-reveal=' . fnamemodify(test_dir, ':t') . pathsep)
+      let cmdline = printf('Fern %s %s', fnameescape(base), arglead)
+      let cursorpos = strlen(cmdline)
+      let want = map(['bar', 'baz', 'foo', 'qux'], { -> arglead . v:val })
+      let got = fern#internal#complete#reveal(arglead, cmdline, cursorpos)
+      Assert Equals(got, want)
+    End
+
+    It returns files and directories within an absolute directory (ignore base path)
+      execute 'cd' fnameescape(other_dir)
+      let base = fnamemodify(test_dir, ':h')
+      let arglead = fnameescape('-reveal=' . test_dir . pathsep)
+      let cmdline = printf('Fern %s %s', fnameescape(base), arglead)
+      let cursorpos = strlen(cmdline)
+      let want = map(['bar', 'baz', 'foo', 'qux'], { -> arglead . v:val })
+      let got = fern#internal#complete#reveal(arglead, cmdline, cursorpos)
+      Assert Equals(got, want)
+    End
+
+    It returns files and directories within a parent directory (relative paths are normalized)
+      execute 'cd' fnameescape(other_dir)
+      let base = test_dir . pathsep . 'foo'
+      let arglead = '-reveal=..' . pathsep
+      let cmdline = printf('Fern %s %s', fnameescape(base), arglead)
+      let cursorpos = strlen(cmdline)
+      let want = [
+            \ '-reveal=..' . pathsep . 'bar',
+            \ '-reveal=..' . pathsep . 'baz',
+            \ '-reveal=',
+            \ '-reveal=..' . pathsep . 'qux',
+            \]
+      let got = fern#internal#complete#reveal(arglead, cmdline, cursorpos)
+      Assert Equals(got, want)
+    End
+
+    It returns only a file or directory with exact name matches
+      let arglead = '-reveal=foo'
+      let cmdline = 'Fern . ' . arglead
+      let cursorpos = strlen(cmdline)
+      let want = ['-reveal=foo']
+      let got = fern#internal#complete#reveal(arglead, cmdline, cursorpos)
+      Assert Equals(got, want)
+    End
+
+    It returns only files or directories with matching names
+      let arglead = '-reveal=ba'
+      let cmdline = 'Fern . ' . arglead
+      let cursorpos = strlen(cmdline)
+      let want = ['-reveal=bar', '-reveal=baz']
+      let got = fern#internal#complete#reveal(arglead, cmdline, cursorpos)
+      Assert Equals(got, want)
+    End
+
+    It returns no files or directories if no sub-directories
+      let arglead = '-reveal=foo' . pathsep
+      let cmdline = 'Fern . ' . arglead
+      let cursorpos = strlen(cmdline)
+      let want = []
+      let got = fern#internal#complete#reveal(arglead, cmdline, cursorpos)
+      Assert Equals(got, want)
+    End
+
+    It returns no files or directories if the specified path does not exist
+      let arglead = '-reveal=foobar' . pathsep
+      let cmdline = 'Fern . ' . arglead
+      let cursorpos = strlen(cmdline)
+      let want = []
+      let got = fern#internal#complete#reveal(arglead, cmdline, cursorpos)
+      Assert Equals(got, want)
+    End
+
+    It returns no files or directories if the specified path is not a directory
+      let arglead = '-reveal=qux' . pathsep
+      let cmdline = 'Fern . ' . arglead
+      let cursorpos = strlen(cmdline)
+      let want = []
+      let got = fern#internal#complete#reveal(arglead, cmdline, cursorpos)
+      Assert Equals(got, want)
+    End
+
+    It returns files and directories in the file scheme URL
+      execute 'cd' fnameescape(other_dir)
+      let base_url = fern#fri#format(fern#fri#from#filepath(test_dir)) . '/'
+      let arglead = '-reveal='
+      let cmdline = printf('Fern %s %s', base_url, arglead)
+      let cursorpos = strlen(cmdline)
+      let want = map(['bar', 'baz', 'foo', 'qux'], { -> arglead . v:val })
+      let got = fern#internal#complete#reveal(arglead, cmdline, cursorpos)
+      Assert Equals(got, want)
+    End
+
+    It returns files and directories within a relative path of the file scheme URL
+      let base = fnamemodify(test_dir, ':h:p')
+      let base_url = fern#fri#format(fern#fri#from#filepath(base)) . '/'
+      let arglead = '-reveal=' . fnamemodify(test_dir, ':t') . '/'
+      let cmdline = printf('Fern %s %s', base_url, arglead)
+      let cursorpos = strlen(cmdline)
+      let want = map(['bar', 'baz', 'foo', 'qux'], { -> arglead . v:val })
+      let got = fern#internal#complete#reveal(arglead, cmdline, cursorpos)
+      Assert Equals(got, want)
+    End
+
+    It returns no directories if the base URL has invalid scheme
+      execute 'cd' fnameescape(other_dir)
+      let fri = extend(fern#fri#from#filepath(test_dir), {'scheme': 'xxx'})
+      let base_url = fern#fri#format(fri) . '/'
+      let arglead = '-reveal='
+      let cmdline = printf('Fern %s %s', base_url, arglead)
+      let cursorpos = strlen(cmdline)
+      let want = []
+      let got = fern#internal#complete#reveal(arglead, cmdline, cursorpos)
+      Assert Equals(got, want)
     End
   End
 End
