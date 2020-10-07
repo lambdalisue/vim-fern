@@ -1,3 +1,5 @@
+let s:ESCAPE_PATTERN = '^$~.*[]\'
+
 let s:openers = [
       \ 'select',
       \ 'edit',
@@ -25,21 +27,26 @@ let s:options = {
       \   '-reveal=',
       \   '-stay',
       \   '-toggle',
+      \   '-wait',
       \   '-width=',
       \ ],
-      \ 'FernFocus': [
+      \ 'FernDo': [
       \   '-drawer',
-      \ ]
+      \   '-stay',
+      \ ],
+      \ 'FernReveal': [
+      \   '-wait',
+      \ ],
       \}
 
 function! fern#internal#complete#opener(arglead, cmdline, cursorpos) abort
-  let pattern = '^' . a:arglead
+  let pattern = '^' . escape(a:arglead, s:ESCAPE_PATTERN)
   let candidates = map(copy(s:openers), { _, v -> printf('-opener=%s', v) })
   return filter(candidates, { _, v -> v =~# pattern })
 endfunction
 
 function! fern#internal#complete#options(arglead, cmdline, cursorpos) abort
-  let pattern = '^' . a:arglead
+  let pattern = '^' . escape(a:arglead, s:ESCAPE_PATTERN)
   let command = matchstr(a:cmdline, '^\w\+')
   let candidates = get(s:options, command, [])
   return filter(copy(candidates), { _, v -> v =~# pattern })

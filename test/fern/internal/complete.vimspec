@@ -1,0 +1,162 @@
+Describe fern#internal#complete
+  Describe #opener()
+    It returns all openers
+      let arglead = '-opener='
+      let cmdline = 'Fern -opener='
+      let cursorpos = strlen(cmdline)
+      let want = [
+            \ '-opener=select',
+            \ '-opener=edit',
+            \ '-opener=edit/split',
+            \ '-opener=edit/vsplit',
+            \ '-opener=edit/tabedit',
+            \ '-opener=split',
+            \ '-opener=vsplit',
+            \ '-opener=tabedit',
+            \ '-opener=leftabove\ split',
+            \ '-opener=leftabove\ vsplit',
+            \ '-opener=rightbelow\ split',
+            \ '-opener=rightbelow\ vsplit',
+            \ '-opener=topleft\ split',
+            \ '-opener=topleft\ vsplit',
+            \ '-opener=botright\ split',
+            \ '-opener=botright\ vsplit',
+            \]
+      let got = fern#internal#complete#opener(arglead, cmdline, cursorpos)
+      Assert Equals(got, want)
+    End
+
+    It returns openers whose name starts with 'e'
+      let arglead = '-opener=e'
+      let cmdline = 'Fern -opener=e'
+      let cursorpos = strlen(cmdline)
+      let want = [
+            \ '-opener=edit',
+            \ '-opener=edit/split',
+            \ '-opener=edit/vsplit',
+            \ '-opener=edit/tabedit',
+            \]
+      let got = fern#internal#complete#opener(arglead, cmdline, cursorpos)
+      Assert Equals(got, want)
+    End
+
+    It returns openers whose name ends with backslash
+      let arglead = '-opener=leftabove\'
+      let cmdline = 'Fern -opener=leftabove\'
+      let cursorpos = strlen(cmdline)
+      let want = [
+            \ '-opener=leftabove\ split',
+            \ '-opener=leftabove\ vsplit',
+            \]
+      let got = fern#internal#complete#opener(arglead, cmdline, cursorpos)
+      Assert Equals(got, want)
+    End
+
+    It returns openers whose name ends with space
+      let arglead = '-opener=leftabove\ '
+      let cmdline = 'Fern -opener=leftabove\ '
+      let cursorpos = strlen(cmdline)
+      let want = [
+            \ '-opener=leftabove\ split',
+            \ '-opener=leftabove\ vsplit',
+            \]
+      let got = fern#internal#complete#opener(arglead, cmdline, cursorpos)
+      Assert Equals(got, want)
+    End
+
+    It returns no openers, if opener is unknown
+      let arglead = '-opener=x'
+      let cmdline = 'Fern -opener=x'
+      let cursorpos = strlen(cmdline)
+      let want = []
+      let got = fern#internal#complete#opener(arglead, cmdline, cursorpos)
+      Assert Equals(got, want)
+    End
+
+    It returns no openers, if arglead is invalid
+      let invalid_argleads = ['opener=', '^', '$', '.', '[o]']
+      for arglead in invalid_argleads
+        let cmdline = 'Fern ' . arglead
+        let cursorpos = strlen(cmdline)
+        let want = []
+        let got = fern#internal#complete#opener(arglead, cmdline, cursorpos)
+        Assert Equals(got, want, 'arglead pattern: ' . string(arglead))
+      endfor
+    End
+  End
+
+  Describe #options()
+    It returns all options of ':Fern'
+      let arglead = '-'
+      let cmdline = 'Fern -'
+      let cursorpos = strlen(cmdline)
+      let want = [
+            \ '-drawer',
+            \ '-keep',
+            \ '-opener=',
+            \ '-reveal=',
+            \ '-stay',
+            \ '-toggle',
+            \ '-wait',
+            \ '-width=',
+            \]
+      let got = fern#internal#complete#options(arglead, cmdline, cursorpos)
+      Assert Equals(got, want)
+    End
+
+    It returns all options of ':FernDo'
+      let arglead = '-'
+      let cmdline = 'FernDo -'
+      let cursorpos = strlen(cmdline)
+      let want = [
+            \ '-drawer',
+            \ '-stay',
+            \]
+      let got = fern#internal#complete#options(arglead, cmdline, cursorpos)
+      Assert Equals(got, want)
+    End
+
+    It returns all options of ':FernReveal'
+      let arglead = '-'
+      let cmdline = 'FernReveal -'
+      let cursorpos = strlen(cmdline)
+      let want = [
+            \ '-wait',
+            \]
+      let got = fern#internal#complete#options(arglead, cmdline, cursorpos)
+      Assert Equals(got, want)
+    End
+
+    It returns options of ':Fern' whose name starts with 'w'
+      let arglead = '-w'
+      let cmdline = 'Fern -w'
+      let cursorpos = strlen(cmdline)
+      let want = [
+            \ '-wait',
+            \ '-width=',
+            \]
+      let got = fern#internal#complete#options(arglead, cmdline, cursorpos)
+      Assert Equals(got, want)
+    End
+
+    It returns no options, if arglead is unknown
+      let arglead = '-xxx'
+      let cmdline = 'Fern -xxx'
+      let cursorpos = strlen(cmdline)
+      let want = []
+      let got = fern#internal#complete#options(arglead, cmdline, cursorpos)
+      Assert Equals(got, want)
+    End
+
+    It returns no options, if arglead is invalid
+      let invalid_argleads = ['opener', '^', '$', '.', '[o]']
+      for arglead in invalid_argleads
+        let cmdline = 'Fern ' . arglead
+        let cursorpos = strlen(cmdline)
+        let want = []
+        let got = fern#internal#complete#options(arglead, cmdline, cursorpos)
+        Assert Equals(got, want, 'arglead pattern: ' . string(arglead))
+      endfor
+    End
+  End
+End
