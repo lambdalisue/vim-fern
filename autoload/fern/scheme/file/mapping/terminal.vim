@@ -46,10 +46,13 @@ function! s:map_terminal(helper, opener) abort
   try
     for node in nodes
       call win_gotoid(winid)
-      call fern#internal#buffer#open('', {
-            \ 'opener': a:opener,
-            \ 'locator': a:helper.sync.is_drawer(),
-            \})
+      try
+        call fern#internal#buffer#open('', {
+              \ 'opener': a:opener,
+              \ 'locator': a:helper.sync.is_drawer(),
+              \})
+      catch /^Vim\%((\a\+)\)\=:E32:/
+      endtry
       enew | call s:term(node._path)
     endfor
     return a:helper.async.update_marks([])
