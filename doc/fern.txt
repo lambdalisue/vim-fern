@@ -888,7 +888,7 @@ GLOBAL							*fern-mapping-global*
 
 *<Plug>(fern-action-open:select)*
 	Open a cursor node or marked nodes through "window selector"
-	(|fern-glofern-glossary-window-selector|.)
+	(|fern-glossary-window-selector|.)
 
 *<Plug>(fern-action-open:split)*
 *<Plug>(fern-action-open:vsplit)*
