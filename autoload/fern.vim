@@ -27,6 +27,8 @@ call s:Config.config(expand('<sfile>:p'), {
       \ 'smart_cursor': 'stick',
       \ 'keepalt_on_edit': 0,
       \ 'keepjumps_on_edit': 0,
+      \ 'disable_auto_buffer_delete': 0,
+      \ 'disable_auto_buffer_rename': 0,
       \ 'disable_default_mappings': 0,
       \ 'disable_viewer_auto_duplication': 0,
       \ 'disable_viewer_smart_cursor': 0,
