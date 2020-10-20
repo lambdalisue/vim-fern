@@ -542,6 +542,14 @@ VARIABLE						*fern-variable*
 	as a label of the node.
 	Default: 0
 
+*g:fern#disable_auto_buffer_delete*
+	A |Number| value that specifies whether to synchronize file removes to the buffer
+	Default: 0
+
+*g:fern#disable_auto_buffer_rename*
+	A |Number| value that specifies whether to synchronize file renames to the buffer
+	Default: 0
+
 -----------------------------------------------------------------------------
 COMMAND							*fern-command*
 

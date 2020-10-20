@@ -123,7 +123,7 @@ function! s:map_move(helper) abort
   endfor
   let root = a:helper.sync.get_root_node()
   return s:Promise.all(ps)
-        \.then({ -> fern#internal#buffer#renames(bufutil_pairs) })
+        \.then({ -> s:auto_buffer_rename(bufutil_pairs) })
         \.then({ -> a:helper.async.collapse_modified_nodes(nodes) })
         \.then({ -> a:helper.async.reload_node(root.__key) })
         \.then({ -> a:helper.async.redraw() })
@@ -155,7 +155,7 @@ function! s:map_trash(helper) abort
   endfor
   let root = a:helper.sync.get_root_node()
   return s:Promise.all(ps)
-        \.then({ -> fern#internal#buffer#removes(bufutil_paths) })
+        \.then({ -> s:auto_buffer_delete(bufutil_paths) })
         \.then({ -> a:helper.async.collapse_modified_nodes(nodes) })
         \.then({ -> a:helper.async.reload_node(root.__key) })
         \.then({ -> a:helper.async.redraw() })
@@ -224,6 +224,18 @@ function! s:new_dir(helper, name) abort
         \.then({ -> a:helper.async.reveal_node(key) })
         \.then({ -> a:helper.async.redraw() })
         \.then({ -> a:helper.sync.focus_node(key, { 'previous': previous }) })
+endfunction
+
+function! s:auto_buffer_rename(bufutil_pairs) abort
+  if !g:fern#disable_auto_buffer_rename
+    call fern#internal#buffer#renames(a:bufutil_pairs)
+  endif
+endfunction
+
+function! s:auto_buffer_delete(bufutil_paths) abort
+  if !g:fern#disable_auto_buffer_delete
+    call fern#internal#buffer#removes(a:bufutil_paths)
+  endif
 endfunction
 
 let g:fern#scheme#file#mapping#mappings = get(g:, 'fern#scheme#file#mapping#mappings', [
