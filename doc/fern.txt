@@ -405,6 +405,12 @@ VARIABLE						*fern-variable*
 	See |fern-action-mappings| for more detail.
 	Default: 0
 
+*g:fern#disable_viewer_spinner*
+	Set 1 to disable viewer spinner shown on a sign column.
+	Note that the default value will be 1 if CUI Vim is running on
+	Windows. See https://github.com/lambdalisue/fern.vim/issues/256 for
+	detail.
+
 *g:fern#disable_viewer_auto_duplication*
 	Set 1 to disable viewer auto duplication on |WinEnter| autocmd.
 	The duplication is mainly occured when user execute |split| or
