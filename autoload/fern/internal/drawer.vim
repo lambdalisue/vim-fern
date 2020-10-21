@@ -24,6 +24,8 @@ function! fern#internal#drawer#open(fri, ...) abort
       let options.opener = 'edit'
     endif
   endif
+  " Force 'keepalt' to fix #249
+  let options.mods = join(['keepalt', get(options, 'mods', '')])
   return fern#internal#viewer#open(a:fri, options)
 endfunction
 
