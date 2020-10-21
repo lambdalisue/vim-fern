@@ -86,7 +86,9 @@ function! s:init() abort
 
   call fern#mapping#init(scheme)
   call fern#internal#drawer#init()
-  call fern#internal#spinner#start()
+  if !g:fern#disable_viewer_spinner
+    call fern#internal#spinner#start()
+  endif
   call helper.fern.renderer.highlight()
   call fern#hook#emit('viewer:highlight', helper)
   doautocmd <nomodeline> User FernHighlight
