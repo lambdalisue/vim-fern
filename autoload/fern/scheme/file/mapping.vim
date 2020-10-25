@@ -187,7 +187,7 @@ function! s:map_remove(helper) abort
   endfor
   let root = a:helper.sync.get_root_node()
   return s:Promise.all(ps)
-        \.then({ -> fern#internal#buffer#removes(bufutil_paths) })
+        \.then({ -> s:auto_buffer_delete(bufutil_paths) })
         \.then({ -> a:helper.async.collapse_modified_nodes(nodes) })
         \.then({ -> a:helper.async.reload_node(root.__key) })
         \.then({ -> a:helper.async.redraw() })
