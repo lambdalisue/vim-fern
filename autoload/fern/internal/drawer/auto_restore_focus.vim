@@ -14,6 +14,7 @@ endfunction
 function! s:auto_restore_focus_pre() abort
   let s:info = {
         \ 'nwin': winnr('$'),
+        \ 'tabpage': tabpagenr(),
         \ 'prev': win_getid(winnr('#')),
         \}
   call timer_start(0, { -> extend(s:, {'info': v:null}) })
@@ -23,7 +24,7 @@ function! s:auto_restore_focus() abort
   if s:info is# v:null
     return
   endif
-  if s:info.nwin > winnr('$')
+  if s:info.tabpage is# tabpagenr() && s:info.nwin > winnr('$')
     call win_gotoid(s:info.prev)
   endif
   let s:info = v:null
