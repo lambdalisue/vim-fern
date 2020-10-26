@@ -507,6 +507,11 @@ VARIABLE						*fern-variable*
 <
 	Default: 0 
 
+*g:fern#disable_drawer_distinguish_tabpage*
+	Set 1 to disable the feature to distinguish tabpages on drawer style.
+
+	Default: 0 
+
 *g:fern#default_hidden*
 	Set 1 to enter hidden mode (show hidden files) in default.
 	Default: 0

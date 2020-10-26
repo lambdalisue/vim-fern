@@ -57,13 +57,11 @@ function! fern#internal#command#fern#command(mods, fargs) abort
           \ 'scheme': 'fern',
           \ 'path': path,
           \})
-    let fri.authority = drawer
-          \ ? printf('drawer:%d', tabpagenr())
-          \ : ''
-    let fri.query = extend(fri.query, {
-          \ 'width': width,
-          \ 'keep': keep,
-          \})
+    if drawer
+      let fri.authority = g:fern#disable_drawer_distinguish_tabpage
+            \ ? 'drawer'
+            \ : printf('drawer:%d', tabpagenr())
+    endif
     call fern#logger#debug('expr:', expr)
     call fern#logger#debug('fri:', fri)
 

@@ -37,6 +37,7 @@ call s:Config.config(expand('<sfile>:p'), {
       \ 'disable_drawer_auto_resize': 0,
       \ 'disable_drawer_smart_quit': get(g:, 'disable_drawer_auto_quit', 0),
       \ 'disable_drawer_auto_restore_focus': 0,
+      \ 'disable_drawer_distinguish_tabpage': 0,
       \ 'default_hidden': 0,
       \ 'default_include': '',
       \ 'default_exclude': '',

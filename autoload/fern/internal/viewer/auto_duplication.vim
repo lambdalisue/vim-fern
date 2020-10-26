@@ -1,6 +1,8 @@
 function! fern#internal#viewer#auto_duplication#init() abort
   if g:fern#disable_viewer_auto_duplication
     return
+  elseif g:fern#disable_drawer_distinguish_tabpage && fern#internal#drawer#is_drawer()
+    return
   endif
 
   augroup fern_internal_viewer_auto_duplication_init
