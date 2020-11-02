@@ -63,7 +63,7 @@ function! s:provider_get_children(node, ...) abort
     return s:Promise.reject('no children exists for %s', a:node._path)
   endif
   let l:Profile = fern#profile#start('fern#scheme#file#provider:provider_get_children')
-  return s:children(a:node._path, token)
+  return s:children(s:resolve(a:node._path), token)
         \.then(s:AsyncLambda.map_f({ v -> s:safe(funcref('s:node', [v])) }))
         \.then(s:AsyncLambda.filter_f({ v -> !empty(v) }))
         \.finally({ -> Profile() })
@@ -104,6 +104,17 @@ function! s:children(path, token) abort
         \ [a:path, a:token],
         \)
 endfunction
+
+if has('patch-8.2.1804')
+  let s:resolve = function('resolve')
+else
+  function! s:resolve(path) abort
+    if a:path ==# '/'
+      return a:path
+    endif
+    return resolve(a:path)
+  endfunction
+endif
 
 if s:is_windows
   let s:windows_drive_nodes = fern#scheme#file#util#list_drives(s:CancellationToken.none)
