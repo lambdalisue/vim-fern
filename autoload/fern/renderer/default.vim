@@ -38,20 +38,25 @@ function! s:lnum(index) abort
 endfunction
 
 function! s:syntax() abort
+  let prefix = !g:fern#disable_viewer_smart_cursor && g:fern#smart_cursor ==# 'stick' ? ' ' : ''
+
   syntax match FernLeaf   /^.*[^/].*$/ transparent contains=FernLeafSymbol
   syntax match FernBranch /^.*\/.*$/   transparent contains=FernBranchSymbol
   syntax match FernRoot   /\%1l.*/       transparent contains=FernRootText
   execute printf(
-        \ 'syntax match FernRootSymbol /%s/ contained nextgroup=FernRootText',
+        \ 'syntax match FernRootSymbol /%s%s/ contained nextgroup=FernRootText',
+        \ prefix,
         \ escape(g:fern#renderer#default#root_symbol, s:ESCAPE_PATTERN),
         \)
   execute printf(
-        \ 'syntax match FernLeafSymbol /^\%%(%s\)*%s/ contained nextgroup=FernLeafText',
+        \ 'syntax match FernLeafSymbol /^%s\%%(%s\)*%s/ contained nextgroup=FernLeafText',
+        \ prefix,
         \ escape(g:fern#renderer#default#leading, s:ESCAPE_PATTERN),
         \ escape(g:fern#renderer#default#leaf_symbol, s:ESCAPE_PATTERN),
         \)
   execute printf(
-        \ 'syntax match FernBranchSymbol /^\%%(%s\)*\%%(%s\|%s\)/ contained nextgroup=FernBranchText',
+        \ 'syntax match FernBranchSymbol /^%s\%%(%s\)*\%%(%s\|%s\)/ contained nextgroup=FernBranchText',
+        \ prefix,
         \ escape(g:fern#renderer#default#leading, s:ESCAPE_PATTERN),
         \ escape(g:fern#renderer#default#collapsed_symbol, s:ESCAPE_PATTERN),
         \ escape(g:fern#renderer#default#expanded_symbol, s:ESCAPE_PATTERN),
