@@ -151,6 +151,30 @@ Describe fern#fri
             \}
       Assert Equals(fern#fri#parse(expr), want)
     End
+
+    It returns FRI for 'file:///foobar'
+      let expr = 'file:///foobar'
+      let want = {
+            \ 'scheme': 'file',
+            \ 'authority': '',
+            \ 'path': 'foobar',
+            \ 'query': {},
+            \ 'fragment': '',
+            \}
+      Assert Equals(fern#fri#parse(expr), want)
+    End
+
+    It returns FRI for 'ssh://localhost/'
+      let expr = 'ssh://localhost/'
+      let want = {
+            \ 'scheme': 'ssh',
+            \ 'authority': 'localhost',
+            \ 'path': '',
+            \ 'query': {},
+            \ 'fragment': '',
+            \}
+      Assert Equals(fern#fri#parse(expr), want)
+    End
   End
 
   Describe #format()
