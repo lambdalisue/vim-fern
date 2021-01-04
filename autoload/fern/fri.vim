@@ -21,7 +21,7 @@ function! fern#fri#parse(expr) abort
     let scheme = ''
   endif
   let [authority, remains] = s:split1(remains, escape('/', s:PATTERN))
-  if empty(remains)
+  if empty(remains) && a:expr =~# printf('^%s:///', scheme)
     let remains = authority
     let authority = ''
   endif
