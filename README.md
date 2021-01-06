@@ -48,7 +48,7 @@ Fern ([furn](https://www.youtube.com/watch?v=SSYgr-_69mg)) is a general purpose 
 ---
 
 <p align="center">
-  <strong>🔍 <a href="https://github.com/topics/fern-vim-plugin">Click this to find fern plugins</a> 🔍</strong>
+  <strong>🔍 <a href="https://github.com/topics/fern-vim-plugin">Click here to find fern plugins</a> 🔍</strong>
 </p>
 
 ---
