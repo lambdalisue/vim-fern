@@ -1,7 +1,7 @@
 function! fern#internal#drawer#is_drawer(...) abort
   let bufname = a:0 ? a:1 : bufname('%')
   let fri = fern#fri#parse(bufname)
-  return fri.scheme ==# 'fern' && fri.authority =~# '\<drawer\>'
+  return fri.scheme ==# 'fern' && fri.authority =~# '^drawer:'
 endfunction
 
 function! fern#internal#drawer#resize() abort
