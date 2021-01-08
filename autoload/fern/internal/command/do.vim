@@ -43,5 +43,5 @@ function! s:predicator(drawer, winnr) abort
   let bufname = bufname(winbufnr(a:winnr))
   let fri = fern#fri#parse(bufname)
   return fri.scheme ==# 'fern'
-        \ && (!a:drawer || fri.authority =~# '\<drawer\>')
+        \ && (!a:drawer || fri.authority =~# '^drawer:')
 endfunction

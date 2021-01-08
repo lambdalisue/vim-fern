@@ -77,7 +77,7 @@ function! fern#internal#command#fern#command(mods, fargs) abort
     endif
 
     let winid_saved = win_getid()
-    if fri.authority =~# '\<drawer\>'
+    if fri.authority =~# '^drawer:'
       call fern#internal#drawer#open(fri, {
             \ 'mods': a:mods,
             \ 'toggle': toggle,
