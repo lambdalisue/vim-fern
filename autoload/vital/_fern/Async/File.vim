@@ -228,7 +228,7 @@ if has('mac') && executable('osascript')
     let script = 'tell app "Finder" to move the POSIX file "%s" to trash'
     let abspath = fnamemodify(a:path, ':p')
     return s:Process.start([
-          \ 'osascript', '-e', printf(script, abspath)
+          \ 'osascript', '-e', printf(script, escape(abspath, '"'))
           \], options)
   endfunction
 elseif has('win32') && executable('powershell')
