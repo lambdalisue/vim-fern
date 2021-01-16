@@ -43,11 +43,15 @@ function! fern#internal#buffer#open(bufname, ...) abort
   if options.keepjumps && options.opener ==# 'edit'
     let options.mods .= ' keepjumps'
   endif
+  " Use user frindly path on a real path to fix #284
+  let bufname = filereadable(a:bufname)
+        \ ? fnamemodify(a:bufname, ':~:.')
+        \ : a:bufname
   let args = [
         \ options.mods,
         \ options.cmdarg,
         \ options.opener,
-        \ fnameescape(a:bufname),
+        \ fnameescape(bufname),
         \]
   let cmdline = join(filter(args, { -> !empty(v:val) }), ' ')
   call fern#logger#debug('fern#internal#buffer#open', 'cmdline', cmdline)
