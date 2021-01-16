@@ -49,7 +49,7 @@ function! s:define_signs() abort
   let frames = g:fern#internal#spinner#frames
   for index in range(len(frames))
     call execute(printf(
-          \ 'sign define FernSignSpinner%d text=%s',
+          \ 'sign define FernSignSpinner%d text=%s texthl=FernSpinner',
           \ index,
           \ frames[index],
           \))
