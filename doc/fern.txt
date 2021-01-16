@@ -728,6 +728,9 @@ FernSyntax
 -----------------------------------------------------------------------------
 HIGHLIGHT						*fern-highlight*
 
+FernSpinner					*hl-FernSpinner*
+	A |highlight| group used as a text highlight of spinner |sign|.
+
 FernMarkedLine					*hl-FernMarkedLine*
 	A |highlight| group used as a line highlight of mark |sign|.
 
