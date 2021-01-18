@@ -237,6 +237,57 @@ Describe fern#internal#node
       Assert Equals(r[6]._uri, '/shallow/gamma')
       Assert Equals(r[7]._uri, '/leaf')
     End
+
+    It keeps status of nodes
+      let [r, e] = Promise.wait(
+            \ fern#internal#node#reload(node, nodes, provider, Comparator, token),
+            \ { 'timeout': TIMEOUT },
+            \)
+      Assert Equals(e, v:null)
+      Assert Equals(len(r), 8)
+      Assert Equals(r[0].status, g:fern#STATUS_EXPANDED)
+      Assert Equals(r[1].status, g:fern#STATUS_COLLAPSED)
+      Assert Equals(r[2].status, g:fern#STATUS_COLLAPSED)
+      Assert Equals(r[3].status, g:fern#STATUS_EXPANDED)
+      Assert Equals(r[4].status, g:fern#STATUS_COLLAPSED)
+      Assert Equals(r[5].status, g:fern#STATUS_COLLAPSED)
+      Assert Equals(r[6].status, g:fern#STATUS_NONE)
+      Assert Equals(r[7].status, g:fern#STATUS_NONE)
+    End
+
+    It resolves to a list of nodes (root)
+      let [r, e] = Promise.wait(
+            \ fern#internal#node#reload(nodes[0], nodes, provider, Comparator, token),
+            \ { 'timeout': TIMEOUT },
+            \)
+      Assert Equals(e, v:null)
+      Assert Equals(len(r), 8)
+      Assert Equals(r[0]._uri, '/')
+      Assert Equals(r[1]._uri, '/deep')
+      Assert Equals(r[2]._uri, '/heavy')
+      Assert Equals(r[3]._uri, '/shallow')
+      Assert Equals(r[4]._uri, '/shallow/alpha')
+      Assert Equals(r[5]._uri, '/shallow/beta')
+      Assert Equals(r[6]._uri, '/shallow/gamma')
+      Assert Equals(r[7]._uri, '/leaf')
+    End
+
+    It keeps status of nodes (root)
+      let [r, e] = Promise.wait(
+            \ fern#internal#node#reload(nodes[0], nodes, provider, Comparator, token),
+            \ { 'timeout': TIMEOUT },
+            \)
+      Assert Equals(e, v:null)
+      Assert Equals(len(r), 8)
+      Assert Equals(r[0].status, g:fern#STATUS_EXPANDED)
+      Assert Equals(r[1].status, g:fern#STATUS_COLLAPSED)
+      Assert Equals(r[2].status, g:fern#STATUS_COLLAPSED)
+      Assert Equals(r[3].status, g:fern#STATUS_EXPANDED)
+      Assert Equals(r[4].status, g:fern#STATUS_COLLAPSED)
+      Assert Equals(r[5].status, g:fern#STATUS_COLLAPSED)
+      Assert Equals(r[6].status, g:fern#STATUS_NONE)
+      Assert Equals(r[7].status, g:fern#STATUS_NONE)
+    End
   End
 
   Describe #reveal()
