@@ -27,5 +27,14 @@ function! s:compare(n1, n2) abort
   endfor
   " Shorter first
   let r = fern#util#compare(l1, l2)
-  return r is# 0 ? fern#util#compare(!a:n1.status, !a:n2.status) : r
+  if r isnot# 0
+    return r
+  endif
+  " Leaf first
+  let r = fern#util#compare(!a:n1.status, !a:n2.status)
+  if r isnot# 0
+    return r
+  endif
+  " Collapse first
+  return fern#util#compare(a:n2.status, a:n1.status)
 endfunction
