@@ -35,7 +35,7 @@ function! fern#internal#buffer#open(bufname, ...) abort
   endif
   if options.opener =~# s:edit_or_opener_pattern
     let opener2 = matchstr(options.opener, s:edit_or_opener_pattern)
-    let options.opener = &modified ? opener2 : options.opener
+    let options.opener = &modified ? opener2 : 'edit'
   endif
   if options.keepalt && options.opener ==# 'edit'
     let options.mods .= ' keepalt'
