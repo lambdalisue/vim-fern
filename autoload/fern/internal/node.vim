@@ -184,6 +184,7 @@ function! fern#internal#node#reload(node, nodes, provider, comparator, token) ab
         \ }))
         \.then({ v -> s:Promise.all(v) })
         \.then(s:AsyncLambda.reduce_f({ a, v -> a + v }, []))
+        \.then({ v -> s:sort(v, { a, b -> fern#util#compare(b.status, a.status) }) })
   let l:Done = fern#internal#node#process(a:node)
   return s:Promise.all([outer, inner])
         \.finally({ -> Profile('all') })

@@ -31,10 +31,5 @@ function! s:compare(n1, n2) abort
     return r
   endif
   " Leaf first
-  let r = fern#util#compare(!a:n1.status, !a:n2.status)
-  if r isnot# 0
-    return r
-  endif
-  " Collapse first
-  return fern#util#compare(a:n2.status, a:n1.status)
+  return fern#util#compare(!a:n1.status, !a:n2.status)
 endfunction
