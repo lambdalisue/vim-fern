@@ -26,10 +26,10 @@ function! s:compare(n1, n2) abort
     endif
   endfor
   " Shorter first
-  let r = s:comp(l1, l2)
-  return r is# 0 ? s:comp(!a:n1.status, !a:n2.status) : r
-endfunction
-
-function! s:comp(i1, i2) abort
-  return a:i1 == a:i2 ? 0 : a:i1 > a:i2 ? 1 : -1
+  let r = fern#util#compare(l1, l2)
+  if r isnot# 0
+    return r
+  endif
+  " Leaf first
+  return fern#util#compare(!a:n1.status, !a:n2.status)
 endfunction

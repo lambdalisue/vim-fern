@@ -1,5 +1,9 @@
 let s:Promise = vital#fern#import('Async.Promise')
 
+function! fern#util#compare(i1, i2) abort
+  return a:i1 == a:i2 ? 0 : a:i1 > a:i2 ? 1 : -1
+endfunction
+
 function! fern#util#sleep(ms) abort
   return s:Promise.new({ resolve -> timer_start(a:ms, { -> resolve() }) })
 endfunction
