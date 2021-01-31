@@ -6,6 +6,11 @@ let s:LEVEL_HIGHLIGHT = {
       \ 'ERROR': 'ErrorMsg',
       \}
 
+function! fern#logger#tap(value, ...) abort
+  call call('fern#logger#debug', [a:value] + a:000)
+  return a:value
+endfunction
+
 function! fern#logger#debug(...) abort
   if g:fern#loglevel > g:fern#DEBUG
     return

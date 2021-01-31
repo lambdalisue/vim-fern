@@ -605,6 +605,20 @@ Use following functions to log events.
 The log will be saved in |g:fern#logfile| or displayed with |echomsg| if
 |v:null| has specified to the variable.
 
+						*fern#logger#tap()*
+fern#logger#tap({value}, {object}...)
+	Log |String| representation of {value} and {object}s when
+	|g:fern#loglevel| beyonds |g:fern#logger#DEBUG| and return {value}.
+	It is useful to used in Promise's "then()" like
+>
+	call s:Promise.resolve("foo")
+	      \.then(function('fern#logger#tap')))
+	      \.then({ v -> fern#logger#tap(v) })
+	      \.then({ v -> fern#logger#tap(v, 'bar') })
+	" 'foo'
+	" 'foo'
+	" 'foo bar'
+<
 						*fern#logger#debug()*
 fern#logger#debug({object}...)
 	Log |String| representation of {object}s when |g:fern#loglevel|
