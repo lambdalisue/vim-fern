@@ -432,6 +432,11 @@ VARIABLE						*fern-variable*
 *g:fern#disable_drawer_auto_resize*
 	Set 1 to disable automatically resize drawer on |BufEnter| and
 	|BufLeave| autocmd.
+
+	Note that this feature is automatically disabled on floating windows
+	of Neovim to avoid unwilling resize reported as #294
+	https://github.com/lambdalisue/fern.vim/issues/294
+
 	Default: 0 
 
 *g:fern#disable_drawer_auto_quit*
