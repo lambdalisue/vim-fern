@@ -7,7 +7,7 @@ function! fern#internal#drawer#smart_quit#init() abort
 
   augroup fern_internal_drawer_smart_quit_init
     autocmd! * <buffer>
-    autocmd BufEnter <buffer> ++nested call s:smart_quit()
+    autocmd BufEnter <buffer> nested call s:smart_quit()
   augroup END
 endfunction
 

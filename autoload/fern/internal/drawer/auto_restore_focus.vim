@@ -32,5 +32,5 @@ endfunction
 
 augroup fern_internal_drawer_auto_restore_focus
   autocmd!
-  autocmd WinEnter * ++nested call s:auto_restore_focus()
+  autocmd WinEnter * nested call s:auto_restore_focus()
 augroup END

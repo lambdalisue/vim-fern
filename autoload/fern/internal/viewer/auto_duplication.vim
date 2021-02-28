@@ -5,7 +5,7 @@ function! fern#internal#viewer#auto_duplication#init() abort
 
   augroup fern_internal_viewer_auto_duplication_init
     autocmd! * <buffer>
-    autocmd WinEnter <buffer> ++nested call s:duplicate()
+    autocmd WinEnter <buffer> nested call s:duplicate()
   augroup END
 endfunction
 

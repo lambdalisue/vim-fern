@@ -7,7 +7,7 @@ function! fern#helper#new(...) abort
   let helper = extend({
         \ 'fern': fern,
         \ 'bufnr': bufnr,
-        \ 'winid': bufnr() == bufnr ? win_getid() : bufwinid(bufnr),
+        \ 'winid': bufnr('%') == bufnr ? win_getid() : bufwinid(bufnr),
         \}, s:helper)
   let helper.sync = fern#helper#sync#new(helper)
   let helper.async = fern#helper#async#new(helper)
