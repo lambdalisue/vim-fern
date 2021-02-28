@@ -19,7 +19,7 @@ jobs:
           - ubuntu-latest
         version:
           - stable
-          - v0.4.3
+          - v0.4.4
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v2
