@@ -19,7 +19,7 @@ endfunction
 
 function! s:update(timer, spinner, bufnr) abort
   let fern = getbufvar(a:bufnr, 'fern', v:null)
-  let winid = bufnr() == a:bufnr ? win_getid() : bufwinid(a:bufnr)
+  let winid = bufnr('%') == a:bufnr ? win_getid() : bufwinid(a:bufnr)
   if fern is# v:null || winid is# -1
     call timer_stop(a:timer)
     return
