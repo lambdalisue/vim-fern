@@ -52,7 +52,7 @@ function! s:init() abort
   augroup fern_internal_viewer_init
     autocmd! * <buffer>
     autocmd BufEnter <buffer> setlocal nobuflisted
-    autocmd BufReadCmd <buffer> ++nested call s:BufReadCmd()
+    autocmd BufReadCmd <buffer> nested call s:BufReadCmd()
     autocmd ColorScheme <buffer> call s:ColorScheme()
     autocmd CursorMoved,CursorMovedI,BufLeave <buffer> let b:fern_cursor = getcurpos()[1:2]
   augroup END
