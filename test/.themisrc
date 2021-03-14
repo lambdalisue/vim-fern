@@ -37,6 +37,3 @@ call themis#log('-----------------------------------------------------------')
 
 " Add test utilities
 set runtimepath+=./test/util
-
-" Disable 'smart_cursor' which slightly change the viewer content
-let g:fern#disable_viewer_smart_cursor = 1

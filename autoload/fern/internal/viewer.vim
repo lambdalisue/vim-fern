@@ -57,7 +57,7 @@ function! s:init() abort
     autocmd CursorMoved,CursorMovedI,BufLeave <buffer> let b:fern_cursor = getcurpos()[1:2]
   augroup END
   call fern#internal#viewer#auto_duplication#init()
-  call fern#internal#viewer#smart_cursor#init()
+  call fern#internal#viewer#hide_cursor#init()
 
   " Add unique fragment to make each buffer uniq
   let bufname = bufname('%')
