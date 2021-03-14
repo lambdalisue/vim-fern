@@ -24,7 +24,7 @@ call s:Config.config(expand('<sfile>:p'), {
       \ 'logfile': v:null,
       \ 'loglevel': g:fern#INFO,
       \ 'opener': 'edit',
-      \ 'smart_cursor': 'stick',
+      \ 'hide_cursor': 0,
       \ 'keepalt_on_edit': 0,
       \ 'keepjumps_on_edit': 0,
       \ 'disable_auto_buffer_delete': 0,
@@ -32,7 +32,6 @@ call s:Config.config(expand('<sfile>:p'), {
       \ 'disable_default_mappings': 0,
       \ 'disable_viewer_spinner': has('win32') && !has('gui_running'),
       \ 'disable_viewer_auto_duplication': 0,
-      \ 'disable_viewer_smart_cursor': 0,
       \ 'disable_drawer_auto_winfixwidth': 0,
       \ 'disable_drawer_auto_resize': 0,
       \ 'disable_drawer_smart_quit': get(g:, 'disable_drawer_auto_quit', 0),
@@ -70,4 +69,10 @@ if exists('g:fern#disable_drawer_auto_quit')
         \ 'g:fern#disable_drawer_auto_quit',
         \ 'g:fern#disable_drawer_smart_quit',
         \)
+endif
+if exists('g:fern#smart_cursor')
+  call fern#util#deprecated('g:fern#smart_cursor', 'g:fern#hide_cursor')
+endif
+if exists('g:fern#disable_viewer_smart_cursor')
+  call fern#util#deprecated('g:fern#disable_viewer_smart_cursor')
 endif

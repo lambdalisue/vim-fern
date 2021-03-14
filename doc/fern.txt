@@ -330,22 +330,16 @@ VARIABLE						*fern-variable*
 	windows style.
 	Default: 'edit'
 
+*g:fern#hide_cursor*
+	Set 1 to hide cursor and forcedly enable |cursorline| to visualize the
+	cursor node. The |cursorline| is automatically enabled when the focus
+	is on the buffer and automatically disabled when the cursor is out of
+	the buffer.
+	Note that Neovim prior to 0.5.0 cannot hide the cursor thus faint
+	vertical bar is used instead.
+
 *g:fern#smart_cursor*
-	A type |String| of the smart cursor. Available values are
-
-	"stick"		Stick the cursor to the first column to visualize the
-			cursor node. In this mode, single whitespace is
-			prefixed as a padding for better looks.
-
-	"hide"		Hide the cursor and forcedly enable |cursorline| to
-			visualize the cursor node. In this mode, |cursorline|
-			is automatically enabled when the focus is on the
-			buffer and automatically disabled when the cursor is
-			out of the buffer.
-			Note that Neovim prior to 0.5.0 cannot hide the cursor
-			thus faint vertical bar is used instead.
-	
-	Default: "stick"
+	DEPRECATED: Use |g:fern#hide_cursor| instead.
 
 *g:fern#keepalt_on_edit*
 	Set 1 to apply |keepalt| on the "open:edit" action to keep an
@@ -418,11 +412,9 @@ VARIABLE						*fern-variable*
 
 *g:fern#disable_viewer_hide_cursor*
 	DEPRECATED: The cursor is not hidden any longer in default.
-	See |g:fern#smart_cursor| for detail.
 
 *g:fern#disable_viewer_smart_cursor*
-	Set 1 to disable viewer smart cursor feature.
-	See |g:fern#smart_cursor| for detail.
+	DEPRECATED: The smart cursor feature has obsoleted.
 
 *g:fern#disable_drawer_auto_winfixwidth*
 	Set 1 to disable automatically enable 'winfixwidth' to drawer on
