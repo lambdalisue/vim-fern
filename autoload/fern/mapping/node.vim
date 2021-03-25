@@ -9,6 +9,7 @@ function! fern#mapping#node#init(disable_default_mappings) abort
   nnoremap <buffer><silent> <Plug>(fern-action-expand:in)     :<C-u>call <SID>call('expand_in')<CR>
   nnoremap <buffer><silent> <Plug>(fern-action-collapse)      :<C-u>call <SID>call('collapse')<CR>
   nnoremap <buffer><silent> <Plug>(fern-action-reveal)        :<C-u>call <SID>call('reveal')<CR>
+  nnoremap <buffer><silent> <Plug>(fern-action-focus:parent)  :<C-u>call <SID>call('focus_parent')<CR>
 
   nnoremap <buffer><silent> <Plug>(fern-action-enter)         :<C-u>call <SID>call('enter')<CR>
   nnoremap <buffer><silent> <Plug>(fern-action-leave)         :<C-u>call <SID>call('leave')<CR>
@@ -113,6 +114,16 @@ function! s:map_reveal(helper) abort
     return s:Promise.reject('Cancelled')
   endif
   return fern#internal#viewer#reveal(a:helper, path)
+endfunction
+
+function! s:map_focus_parent(helper) abort
+  let owner = a:helper.sync.get_cursor_node().__owner
+
+  if empty(owner)
+    return
+  endif
+
+  call a:helper.sync.focus_node(owner.__key)
 endfunction
 
 function! s:map_enter(helper) abort

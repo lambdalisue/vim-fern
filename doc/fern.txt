@@ -892,6 +892,9 @@ GLOBAL							*fern-mapping-global*
 *<Plug>(fern-action-reveal)*
 	Open a prompt to reveal a node in a tree.
 
+*<Plug>(fern-action-focus:parent)*
+	Focus the parent of the cursor node.
+
 *<Plug>(fern-action-enter)*
 	Open a new fern buffer which root node is a cursor node. In other
 	word, get enter the directory.
