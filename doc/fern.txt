@@ -396,7 +396,7 @@ VARIABLE						*fern-variable*
 *g:fern#disable_default_mappings*
 	Set 1 to disable default mappings
 	Note that this variable does not affect mappings for actions.
-	See |fern-action-mappings| for more detail.
+	See |fern-action-mapping| for more detail.
 	Default: 0
 
 *g:fern#disable_viewer_spinner*
