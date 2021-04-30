@@ -3,24 +3,39 @@ function! fern#internal#drawer#auto_resize#init() abort
     return
   endif
 
-  augroup fern_internal_drawer_init
+  augroup fern_internal_drawer_auto_resize_init
     autocmd! * <buffer>
-    autocmd BufEnter <buffer> call s:resize()
-    autocmd BufLeave <buffer> call s:resize()
+    autocmd BufEnter <buffer> call s:load_resize()
+    if !g:fern#disable_drawer_auto_resize_keep
+      autocmd BufLeave <buffer> call s:save_resize()
+    endif
   augroup END
 endfunction
 
+function! s:save_resize() abort
+  if s:should_skip()
+    return
+  endif
+  let b:fern_drawer_auto_resize_keep = winwidth(0)
+endfunction
+
+function! s:load_resize() abort
+  if s:should_skip()
+    return
+  endif
+  if !exists('b:fern_drawer_auto_resize_keep')
+    call fern#internal#drawer#resize()
+  else
+    execute 'vertical resize' b:fern_drawer_auto_resize_keep
+  endif
+endfunction
+
 if has('nvim')
-  function! s:is_relative() abort
+  function! s:should_skip() abort
     return nvim_win_get_config(win_getid()).relative !=# ''
   endfunction
-
-  function! s:resize() abort
-    if s:is_relative()
-      return
-    endif
-    call fern#internal#drawer#resize()
-  endfunction
 else
-  let s:resize = funcref('fern#internal#drawer#resize')
+  function! s:should_skip() abort
+    return 0
+  endfunction
 endif
