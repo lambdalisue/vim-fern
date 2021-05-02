@@ -422,8 +422,7 @@ VARIABLE						*fern-variable*
 	Default: 0
 
 *g:fern#disable_drawer_auto_resize*
-	Set 1 to disable automatically resize drawer on |BufEnter| and
-	|BufLeave| autocmd.
+	Set 1 to disable automatically resize drawer on |BufEnter| autocmd.
 
 	Note that this feature is automatically disabled on floating windows
 	of Neovim to avoid unwilling resize reported as #294
@@ -782,15 +781,21 @@ See |fern-action| for more detail.
 -----------------------------------------------------------------------------
 GLOBAL							*fern-mapping-global*
 
-*<Plug>(fern-action-zoom:half)*
-	Zoom width of the drawer style fern to half of the global width.
-	The original window width will be restored once user leave the window.
+*<Plug>(fern-action-zoom)*
+	Zoom width of the drawer style fern to the ratio of the global width.
+	It prompt users to ask a desired ratio of the width if no |v:count| is
+	given. Users can use 1 to 10 for the ratio.
 	It only works on a drawer style fern window.
 
-*<Plug>(fern-action-zoom:full)*
-	Zoom width of the drawer style fern to full of the global width.
-	The original window width will be restored once user leave the window.
+*<Plug>(fern-action-zoom:reset)*
+	Reset the width of the drawer style fern to its original width.
 	It only works on a drawer style fern window.
+
+*<Plug>(fern-action-zoom:half)*
+	This is an alias of "4<Plug>(fern-action-zoom)"
+
+*<Plug>(fern-action-zoom:full)*
+	This is an alias of "9<Plug>(fern-action-zoom)"
 
 *<Plug>(fern-action-hidden:set)*
 	Show hidden nodes. For example hidden nodes in file:// scheme is a
