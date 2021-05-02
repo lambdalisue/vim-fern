@@ -48,6 +48,9 @@ function! s:init() abort
   setlocal buftype=nofile bufhidden=unload
   setlocal noswapfile nobuflisted nomodifiable
   setlocal signcolumn=yes
+  " The 'foldmethod=manual' is required to avoid the following issue
+  " https://github.com/lambdalisue/fern.vim/issues/331
+  setlocal foldmethod=manual
 
   augroup fern_internal_viewer_init
     autocmd! * <buffer>
