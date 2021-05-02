@@ -24,7 +24,8 @@ function! s:map_zoom(helper) abort
   endif
   let alpha = v:count
   if alpha <= 0 || alpha > 10
-    let alpha = s:input_alpha('Width ratio [1-10]: ')
+    let current = float2nr(ceil(str2float(winwidth(0)) / &columns * 10))
+    let alpha = s:input_alpha(printf('Width ratio [%d -> 1-10]: ', current))
   endif
   let alpha = str2float(alpha)
   let width = &columns * (alpha / 10)
