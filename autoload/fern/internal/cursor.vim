@@ -9,37 +9,35 @@ function! fern#internal#cursor#restore() abort
   call s:restore()
 endfunction
 
-if has('nvim')
-  if has('nvim-0.5.0')
-    " https://github.com/neovim/neovim/issues/3688#issuecomment-574544618
-    function! s:hide() abort
-      set guicursor+=a:FernTransparentCursor/lCursor
-    endfunction
+if has('nvim-0.5.0')
+  " https://github.com/neovim/neovim/issues/3688#issuecomment-574544618
+  function! s:hide() abort
+    set guicursor+=a:FernTransparentCursor/lCursor
+  endfunction
 
-    function! s:restore() abort
-      set guicursor+=a:Cursor/lCursor
-      let &guicursor = s:guicursor_saved
-    endfunction
+  function! s:restore() abort
+    set guicursor+=a:Cursor/lCursor
+    let &guicursor = s:guicursor_saved
+  endfunction
 
-    function! s:highlight() abort
-      highlight default FernTransparentCursor gui=strikethrough blend=100
-    endfunction
-    call s:highlight()
+  function! s:highlight() abort
+    highlight default FernTransparentCursor gui=strikethrough blend=100
+  endfunction
+  call s:highlight()
 
-    augroup fern_internal_cursor
-      autocmd!
-      autocmd ColorScheme * call s:highlight()
-    augroup END
-  else
-    " No way thus use narrow cursor instead
-    function! s:hide() abort
-      set guicursor+=a:ver1
-    endfunction
+  augroup fern_internal_cursor
+    autocmd!
+    autocmd ColorScheme * call s:highlight()
+  augroup END
+elseif has('nvim') || has('gui_running')
+  " No way thus use narrow cursor instead
+  function! s:hide() abort
+    set guicursor+=a:ver1
+  endfunction
 
-    function! s:restore() abort
-      let &guicursor = s:guicursor_saved
-    endfunction
-  endif
+  function! s:restore() abort
+    let &guicursor = s:guicursor_saved
+  endfunction
 else
   " Vim supports 't_ve'
   function! s:hide() abort
