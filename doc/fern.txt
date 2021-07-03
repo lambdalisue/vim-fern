@@ -1102,6 +1102,10 @@ FILE							*fern-mapping-file*
 
 The following mappings/actions are only available on file:// scheme.
 
+*<Plug>(fern-action-ex)*
+	Open a prompt to execute an Ex command with a path of cursor node or 
+	paths of marked nodes.
+
 *<Plug>(fern-action-new-path)*
 	Open a prompt to ask a path and create a file/directory of the input
 	path from the path of a cursor node.

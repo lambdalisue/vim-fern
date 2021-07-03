@@ -241,6 +241,7 @@ endfunction
 let g:fern#scheme#file#mapping#mappings = get(g:, 'fern#scheme#file#mapping#mappings', [
       \ 'cd',
       \ 'clipboard',
+      \ 'ex',
       \ 'grep',
       \ 'rename',
       \ 'system',
