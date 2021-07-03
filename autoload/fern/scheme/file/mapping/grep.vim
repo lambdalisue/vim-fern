@@ -3,12 +3,20 @@ let s:Promise = vital#fern#import('Async.Promise')
 let s:Process = vital#fern#import('Async.Promise.Process')
 
 function! fern#scheme#file#mapping#grep#init(disable_default_mappings) abort
-  nnoremap <buffer><silent> <Plug>(fern-action-grep) :<C-u>call <SID>call('grep')<CR>
+  nnoremap <buffer><silent> <Plug>(fern-action-grep)  :<C-u>call <SID>call('grep')<CR>
+  nnoremap <buffer><silent> <Plug>(fern-action-grep=) :<C-u>call <SID>call_without_guard('grep')<CR>
 endfunction
 
 function! s:call(name, ...) abort
   return call(
         \ 'fern#mapping#call',
+        \ [funcref(printf('s:map_%s', a:name))] + a:000,
+        \)
+endfunction
+
+function! s:call_without_guard(name, ...) abort
+  return call(
+        \ 'fern#mapping#call_without_guard',
         \ [funcref(printf('s:map_%s', a:name))] + a:000,
         \)
 endfunction

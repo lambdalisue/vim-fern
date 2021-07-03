@@ -2,8 +2,10 @@ function! fern#mapping#filter#init(disable_default_mappings) abort
   nnoremap <buffer><silent> <Plug>(fern-action-hidden:set)    :<C-u>call <SID>call('hidden_set')<CR>
   nnoremap <buffer><silent> <Plug>(fern-action-hidden:unset)  :<C-u>call <SID>call('hidden_unset')<CR>
   nnoremap <buffer><silent> <Plug>(fern-action-hidden:toggle) :<C-u>call <SID>call('hidden_toggle')<CR>
-  nnoremap <buffer><silent> <Plug>(fern-action-include)     :<C-u>call <SID>call('include')<CR>
-  nnoremap <buffer><silent> <Plug>(fern-action-exclude)     :<C-u>call <SID>call('exclude')<CR>
+  nnoremap <buffer><silent> <Plug>(fern-action-include)       :<C-u>call <SID>call('include')<CR>
+  nnoremap <buffer><silent> <Plug>(fern-action-exclude)       :<C-u>call <SID>call('exclude')<CR>
+  nnoremap <buffer><silent> <Plug>(fern-action-include=)      :<C-u>call <SID>call_without_guard('include')<CR>
+  nnoremap <buffer><silent> <Plug>(fern-action-exclude=)      :<C-u>call <SID>call_without_guard('exclude')<CR>
 
   " Alias
   nmap <buffer> <Plug>(fern-action-hidden) <Plug>(fern-action-hidden:toggle)
@@ -26,6 +28,13 @@ endfunction
 function! s:call(name, ...) abort
   return call(
         \ 'fern#mapping#call',
+        \ [funcref(printf('s:map_%s', a:name))] + a:000,
+        \)
+endfunction
+
+function! s:call_without_guard(name, ...) abort
+  return call(
+        \ 'fern#mapping#call_without_guard',
         \ [funcref(printf('s:map_%s', a:name))] + a:000,
         \)
 endfunction

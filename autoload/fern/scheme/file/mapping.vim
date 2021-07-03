@@ -2,13 +2,16 @@ let s:Promise = vital#fern#import('Async.Promise')
 let s:Prompt = vital#fern#import('Prompt')
 
 function! fern#scheme#file#mapping#init(disable_default_mappings) abort
-  nnoremap <buffer><silent> <Plug>(fern-action-new-path) :<C-u>call <SID>call('new_path')<CR>
-  nnoremap <buffer><silent> <Plug>(fern-action-new-file) :<C-u>call <SID>call('new_file')<CR>
-  nnoremap <buffer><silent> <Plug>(fern-action-new-dir)  :<C-u>call <SID>call('new_dir')<CR>
-  nnoremap <buffer><silent> <Plug>(fern-action-copy)     :<C-u>call <SID>call('copy')<CR>
-  nnoremap <buffer><silent> <Plug>(fern-action-move)     :<C-u>call <SID>call('move')<CR>
-  nnoremap <buffer><silent> <Plug>(fern-action-trash)    :<C-u>call <SID>call('trash')<CR>
-  nnoremap <buffer><silent> <Plug>(fern-action-remove)   :<C-u>call <SID>call('remove')<CR>
+  nnoremap <buffer><silent> <Plug>(fern-action-new-path)  :<C-u>call <SID>call('new_path')<CR>
+  nnoremap <buffer><silent> <Plug>(fern-action-new-file)  :<C-u>call <SID>call('new_file')<CR>
+  nnoremap <buffer><silent> <Plug>(fern-action-new-dir)   :<C-u>call <SID>call('new_dir')<CR>
+  nnoremap <buffer><silent> <Plug>(fern-action-new-path=) :<C-u>call <SID>call_without_guard('new_path')<CR>
+  nnoremap <buffer><silent> <Plug>(fern-action-new-file=) :<C-u>call <SID>call_without_guard('new_file')<CR>
+  nnoremap <buffer><silent> <Plug>(fern-action-new-dir=)  :<C-u>call <SID>call_without_guard('new_dir')<CR>
+  nnoremap <buffer><silent> <Plug>(fern-action-copy)      :<C-u>call <SID>call('copy')<CR>
+  nnoremap <buffer><silent> <Plug>(fern-action-move)      :<C-u>call <SID>call('move')<CR>
+  nnoremap <buffer><silent> <Plug>(fern-action-trash)     :<C-u>call <SID>call('trash')<CR>
+  nnoremap <buffer><silent> <Plug>(fern-action-remove)    :<C-u>call <SID>call('remove')<CR>
 
   if !a:disable_default_mappings
     nmap <buffer><nowait> N <Plug>(fern-action-new-file)
@@ -22,6 +25,13 @@ endfunction
 function! s:call(name, ...) abort
   return call(
         \ 'fern#mapping#call',
+        \ [funcref(printf('s:map_%s', a:name))] + a:000,
+        \)
+endfunction
+
+function! s:call_without_guard(name, ...) abort
+  return call(
+        \ 'fern#mapping#call_without_guard',
         \ [funcref(printf('s:map_%s', a:name))] + a:000,
         \)
 endfunction
