@@ -919,7 +919,7 @@ GLOBAL							*fern-mapping-global*
 	The command will be applied on an "anchor" window when invoked from a
 	drawer style fern (|fern-glossary-anchor|.)
 
-*<Plug>(fern-action-edit-or-error)*
+*<Plug>(fern-action-open:edit-or-error)*
 	Open a cursor node or marked nodes with |edit| command or fallback
 	to print an error. 
 	Note that when 'hidden' has set or 'bufhidden' is "hide", the |edit|
