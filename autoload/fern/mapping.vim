@@ -34,6 +34,7 @@ endfunction
 
 call s:Config.config(expand('<sfile>:p'), {
       \ 'mappings': [
+      \   'diff',
       \   'drawer',
       \   'filter',
       \   'mark',

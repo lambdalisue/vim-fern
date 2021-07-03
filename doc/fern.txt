@@ -919,7 +919,7 @@ GLOBAL							*fern-mapping-global*
 	The command will be applied on an "anchor" window when invoked from a
 	drawer style fern (|fern-glossary-anchor|.)
 
-*<Plug>(fern-action-edit-or-error)*
+*<Plug>(fern-action-open:edit-or-error)*
 	Open a cursor node or marked nodes with |edit| command or fallback
 	to print an error. 
 	Note that when 'hidden' has set or 'bufhidden' is "hide", the |edit|
@@ -980,6 +980,95 @@ GLOBAL							*fern-mapping-global*
 	      \ <Plug>(fern-action-open)
 	      \ <Plug>(fern-action-open:select)
 <
+*<Plug>(fern-action-diff:select)*
+*<Plug>(fern-action-diff:select:vert)*
+	Open a first marked node through "window selector"
+	(|fern-glossary-window-selector|.) then open remains with |split| or
+	|vsplit| (:vert) to compare content through |diff| feature.
+
+*<Plug>(fern-action-diff:split)*
+*<Plug>(fern-action-diff:split:vert)*
+*<Plug>(fern-action-diff:vsplit)*
+*<Plug>(fern-action-diff:vsplit:vert)*
+*<Plug>(fern-action-diff:tabedit)*
+*<Plug>(fern-action-diff:tabedit:vert)*
+	Open a first marked node with a corresponding command then open remains
+	with |split| or |vsplit| (:vert) to compare contents through |diff|
+	feature.
+	The command will be applied on an "anchor" window when invoked from a
+	drawer style fern (|fern-glossary-anchor|.)
+
+*<Plug>(fern-action-diff:edit-or-error)*
+*<Plug>(fern-action-diff:edit-or-error:vert)*
+	Open a first marked node with |edit| command or fallback to print an
+	error then open remains with |split| or |vsplit| (:vert) to compare
+	contents through |diff| feature.
+	Note that when 'hidden' has set or 'bufhidden' is "hide", the |edit|
+	command will never fails.
+
+*<Plug>(fern-action-diff:edit-or-split)*
+*<Plug>(fern-action-diff:edit-or-split:vert)*
+*<Plug>(fern-action-diff:edit-or-vsplit)*
+*<Plug>(fern-action-diff:edit-or-vsplit:vert)*
+*<Plug>(fern-action-diff:edit-or-tabedit)*
+*<Plug>(fern-action-diff:edit-or-tabedit:vert)*
+	Open a first marked node with |edit| command or fallback to a 
+	corresponding command then .
+	Note that when 'hidden' has set or 'bufhidden' is "hide", the |edit|
+	command will never fails.
+
+*<Plug>(fern-action-diff:above)*
+*<Plug>(fern-action-diff:above:vert)*
+*<Plug>(fern-action-diff:left)*
+*<Plug>(fern-action-diff:left:vert)*
+*<Plug>(fern-action-diff:below)*
+*<Plug>(fern-action-diff:below:vert)*
+*<Plug>(fern-action-diff:right)*
+*<Plug>(fern-action-diff:right:vert)*
+	Open a first marked node on a corresponding direction from an "anchor"
+	window then open remains with |split| or |vsplit| (:vert) to compare
+	contents through |diff| feature.
+	The command will be applied on the anchor window when invoked from a
+	drawer style fern (|fern-glossary-anchor|.)
+
+*<Plug>(fern-action-diff:top)*
+*<Plug>(fern-action-diff:top:vert)*
+*<Plug>(fern-action-diff:leftest)*
+*<Plug>(fern-action-diff:leftest:vert)*
+*<Plug>(fern-action-diff:bottom)*
+*<Plug>(fern-action-diff:bottom:vert)*
+*<Plug>(fern-action-diff:rightest)*
+*<Plug>(fern-action-diff:rightest:vert)*
+	Open a first marked node on a edge of a corresponding direction from
+	an "anchor" window then open remains with |split| or |vsplit| (:vert)
+	to compare contents through |diff| feature.
+	The command will be applied on the anchor window when invoked from a
+	drawer style fern (|fern-glossary-anchor|.)
+
+*<Plug>(fern-action-diff:side)*
+*<Plug>(fern-action-diff:side:vert)*
+	Open a first marked node on the right side of the current window then
+	open remains with |split| or |vsplit| (:vert) to compare contents
+	through |diff| feature.
+	The behavior is slightly different between a drawer style fern
+	window and a split style fern window due to the presence of "anchor".
+
+*<Plug>(fern-action-diff:edit)*
+	An alias to "diff:edit-or-error" action. Users can overwrite this
+	mapping to change the default behavior of "diff:edit" action like:
+>
+	nmap <buffer> 
+	      \ <Plug>(fern-action-diff:edit)
+	      \ <Plug>(fern-action-diff:edit-or-tabedit)
+<
+*<Plug>(fern-action-diff)*
+	An alias to "diff:edit" action. Users can overwrite this mapping to
+	change the default behavior of "diff" action like:
+>
+	nmap <buffer> 
+	      \ <Plug>(fern-action-diff)
+	      \ <Plug>(fern-action-diff:select)
+<
 *<Plug>(fern-action-cancel)*
 	Cancel tree rendering.
 
@@ -1012,6 +1101,10 @@ GLOBAL							*fern-mapping-global*
 FILE							*fern-mapping-file*
 
 The following mappings/actions are only available on file:// scheme.
+
+*<Plug>(fern-action-ex)*
+	Open a prompt to execute an Ex command with a path of cursor node or 
+	paths of marked nodes.
 
 *<Plug>(fern-action-new-path)*
 	Open a prompt to ask a path and create a file/directory of the input
