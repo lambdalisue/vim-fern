@@ -9,6 +9,7 @@ function! fern#mapping#node#init(disable_default_mappings) abort
   nnoremap <buffer><silent> <Plug>(fern-action-expand:in)     :<C-u>call <SID>call('expand_in')<CR>
   nnoremap <buffer><silent> <Plug>(fern-action-collapse)      :<C-u>call <SID>call('collapse')<CR>
   nnoremap <buffer><silent> <Plug>(fern-action-reveal)        :<C-u>call <SID>call('reveal')<CR>
+  nnoremap <buffer><silent> <Plug>(fern-action-reveal=)       :<C-u>call <SID>call_without_guard('reveal')<CR>
   nnoremap <buffer><silent> <Plug>(fern-action-focus:parent)  :<C-u>call <SID>call('focus_parent')<CR>
 
   nnoremap <buffer><silent> <Plug>(fern-action-enter)         :<C-u>call <SID>call('enter')<CR>
@@ -32,6 +33,13 @@ endfunction
 function! s:call(name, ...) abort
   return call(
         \ 'fern#mapping#call',
+        \ [funcref(printf('s:map_%s', a:name))] + a:000,
+        \)
+endfunction
+
+function! s:call_without_guard(name, ...) abort
+  return call(
+        \ 'fern#mapping#call_without_guard',
         \ [funcref(printf('s:map_%s', a:name))] + a:000,
         \)
 endfunction
