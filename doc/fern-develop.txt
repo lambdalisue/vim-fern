@@ -400,8 +400,18 @@ Following methods are executed synchronously.
 
 			*fern-develop-helper.sync.is_drawer()*
 .sync.is_drawer()
-	Returns 1 if the fern buffer is shwon in a project drawer. Otherwise
+	Returns 1 if the fern buffer is shown in a project drawer. Otherwise
 	it returns 0.
+
+			*fern-develop-helper.sync.is_left_drawer()*
+.sync.is_left_drawer()
+	Returns 1 if the fern buffer is shown in a project drawer (left).
+	Otherwise it returns 0.
+
+			*fern-develop-helper.sync.is_right_drawer()*
+.sync.is_right_drawer()
+	Returns 1 if the fern buffer is shown in a project drawer (right).
+	Otherwise it returns 0.
 
 			*fern-develop-helper.sync.get_scheme()*
 .sync.get_scheme()

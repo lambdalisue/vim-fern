@@ -1,7 +1,19 @@
 function! fern#internal#drawer#is_drawer(...) abort
   let bufname = a:0 ? a:1 : bufname('%')
   let fri = fern#fri#parse(bufname)
+  return fri.scheme ==# 'fern' && fri.authority =~# '^drawer\(-right\)\?:'
+endfunction
+
+function! fern#internal#drawer#is_left_drawer(...) abort
+  let bufname = a:0 ? a:1 : bufname('%')
+  let fri = fern#fri#parse(bufname)
   return fri.scheme ==# 'fern' && fri.authority =~# '^drawer:'
+endfunction
+
+function! fern#internal#drawer#is_right_drawer(...) abort
+  let bufname = a:0 ? a:1 : bufname('%')
+  let fri = fern#fri#parse(bufname)
+  return fri.scheme ==# 'fern' && fri.authority =~# '^drawer-right:'
 endfunction
 
 function! fern#internal#drawer#resize() abort
@@ -13,9 +25,10 @@ endfunction
 function! fern#internal#drawer#open(fri, ...) abort
   let options = extend({
         \ 'toggle': 0,
+        \ 'right': 0,
         \}, a:0 ? a:1 : {},
         \)
-  if s:focus_next()
+  if s:focus_next(options.right)
     if winnr('$') > 1
       if options.toggle
         close
@@ -42,9 +55,12 @@ function! fern#internal#drawer#init() abort
   setlocal winfixwidth
 endfunction
 
-function! s:focus_next() abort
+function! s:focus_next(right) abort
+  let l:Predicator = a:right
+    \ ? function('fern#internal#drawer#is_right_drawer')
+    \ : function('fern#internal#drawer#is_left_drawer')
   let winnr = fern#internal#window#find(
-        \ { w -> fern#internal#drawer#is_drawer(bufname(winbufnr(w))) },
+        \ { w -> l:Predicator(bufname(winbufnr(w))) },
         \)
   if winnr is# 0
     return

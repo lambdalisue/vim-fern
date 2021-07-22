@@ -117,6 +117,20 @@ function! s:sync_is_drawer() abort dict
 endfunction
 let s:sync.is_drawer = funcref('s:sync_is_drawer')
 
+function! s:sync_is_left_drawer() abort dict
+  let helper = self.helper
+  let fern = helper.fern
+  return fern#internal#drawer#is_left_drawer(bufname(helper.bufnr))
+endfunction
+let s:sync.is_left_drawer = funcref('s:sync_is_left_drawer')
+
+function! s:sync_is_right_drawer() abort dict
+  let helper = self.helper
+  let fern = helper.fern
+  return fern#internal#drawer#is_right_drawer(bufname(helper.bufnr))
+endfunction
+let s:sync.is_right_drawer = funcref('s:sync_is_right_drawer')
+
 function! s:sync_get_scheme() abort dict
   let helper = self.helper
   let fern = helper.fern

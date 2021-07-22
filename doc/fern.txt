@@ -591,7 +591,7 @@ COMMAND							*fern-command*
 	Note that the command can be followed by a '|' and another command.
 
 							*:Fern-drawer*
-:Fern {url} -drawer [-width={width}] [-keep] [-toggle] ...
+:Fern {url} -drawer [-width={width}] [-keep] [-toggle] [-right]...
 	Open a fern buffer in project drawer style with the {width}.
 
 	If the {width} is specified, the width of the window is regulated to
@@ -600,16 +600,19 @@ COMMAND							*fern-command*
 	only this window exist. (See |g:fern#drawer_keep|)
 	If "-toggle" option is specified, existing fern buffer will be closed
 	rather than opening a new fern buffer when exist.
+	If "-right" option is specified, the drawer is placed on the right
+	side.
 
 	See |:Fern| for other arguments and options. Note that -opener options
 	is ignored for project drawer style.
 
 							*:FernDo*
-:FernDo {expr...} [-drawer] [-stay]
+:FernDo {expr...} [-drawer] [-right] [-stay]
 	Focus a next fern viewer and execute {expr...}. It does nothing if no
 	next fern viewer is found.
 	If "-drawer" option is specified, it focus and execute only a project
 	drawer style fern.
+	If "-right" option is specified, the drawer on the right side is used.
 	If "-stay" option is specified, it stay focus after execution.
 	Note that the command can be followed by a '|' and another command.
 
@@ -663,9 +666,10 @@ fern#smart#leaf({leaf}, {collapsed}[, {expanded}])
 <
 							*fern#smart#drawer()*
 fern#smart#drawer({drawer}, {explorer})
+fern#smart#drawer({drawer}, {drawer-right}, {explorer})
 	Return one of a given mapping expression determined by the style of
 	a current buffer. If the current buffer is drawer, the {drawer} is
-	returned. Otherwise the {explorer} is retunred.
+	returned. Otherwise the {explorer} is returned.
 >
 	" Perform 'expand' on drawer and 'enter' on explorer
 	nmap <buffer><expr>
