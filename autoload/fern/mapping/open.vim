@@ -24,6 +24,7 @@ function! fern#mapping#open#init(disable_default_mappings) abort
         \ fern#smart#drawer(
         \   "\<Plug>(fern-action-open:left)",
         \   "\<Plug>(fern-action-open:right)",
+        \   "\<Plug>(fern-action-open:right)",
         \ )
   nmap <buffer><silent><expr>
         \ <Plug>(fern-action-open-or-enter)

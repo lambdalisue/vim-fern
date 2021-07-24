@@ -13,11 +13,19 @@ function! fern#smart#leaf(leaf, branch, ...) abort
   endif
 endfunction
 
-function! fern#smart#drawer(drawer, viewer) abort
+function! fern#smart#drawer(drawer, viewer, ...) abort
   let helper = fern#helper#new()
-  return helper.sync.is_drawer()
-        \ ? a:drawer
-        \ : a:viewer
+  if a:0 is# 0
+    return helper.sync.is_drawer()
+          \ ? a:drawer
+          \ : a:viewer
+  else
+    return helper.sync.is_drawer()
+          \ ? helper.sync.is_right_drawer()
+          \   ? a:viewer
+          \   : a:drawer
+          \ : a:1
+  endif
 endfunction
 
 function! fern#smart#scheme(default, schemes) abort

@@ -3,18 +3,20 @@ function! fern#internal#command#do#command(mods, fargs) abort
   try
     let stay = fern#internal#args#pop(a:fargs, 'stay', v:false)
     let drawer = fern#internal#args#pop(a:fargs, 'drawer', v:false)
+    let right = fern#internal#args#pop(a:fargs, 'right', v:false)
 
     if len(a:fargs) is# 0
           \ || type(stay) isnot# v:t_bool
           \ || type(drawer) isnot# v:t_bool
-      throw 'Usage: FernDo {expr...} [-drawer] [-stay]'
+          \ || type(right) isnot# v:t_bool
+      throw 'Usage: FernDo {expr...} [-drawer] [-right] [-stay]'
     endif
 
     " Does all options are handled?
     call fern#internal#args#throw_if_dirty(a:fargs)
 
     let found = fern#internal#window#find(
-          \ funcref('s:predicator', [drawer]),
+          \ funcref('s:predicator', [drawer, right]),
           \ winnr() + 1,
           \)
     if !found
@@ -39,9 +41,11 @@ function! fern#internal#command#do#complete(arglead, cmdline, cursorpos) abort
   return fern#internal#complete#options(a:arglead, a:cmdline, a:cursorpos)
 endfunction
 
-function! s:predicator(drawer, winnr) abort
+function! s:predicator(drawer, right, winnr) abort
   let bufname = bufname(winbufnr(a:winnr))
   let fri = fern#fri#parse(bufname)
-  return fri.scheme ==# 'fern'
-        \ && (!a:drawer || fri.authority =~# '^drawer:')
+  return fri.scheme ==# 'fern' && (!a:drawer
+        \ || (!a:right && fri.authority =~# '^drawer:')
+        \ || (a:right && fri.authority =~# '^drawer-right:')
+        \)
 endfunction

@@ -1,5 +1,6 @@
 let s:Promise = vital#fern#import('Async.Promise')
-let s:drawer_opener = 'topleft vsplit'
+let s:drawer_left_opener = 'topleft vsplit'
+let s:drawer_right_opener = 'botright vsplit'
 
 function! fern#internal#command#fern#command(mods, fargs) abort
   try
@@ -8,15 +9,17 @@ function! fern#internal#command#fern#command(mods, fargs) abort
     let reveal = fern#internal#args#pop(a:fargs, 'reveal', '')
     let drawer = fern#internal#args#pop(a:fargs, 'drawer', v:false)
     if drawer
-      let opener = s:drawer_opener
       let width = fern#internal#args#pop(a:fargs, 'width', '')
       let keep = fern#internal#args#pop(a:fargs, 'keep', v:false)
       let toggle = fern#internal#args#pop(a:fargs, 'toggle', v:false)
+      let right = fern#internal#args#pop(a:fargs, 'right', v:false)
+      let opener = right ? s:drawer_right_opener : s:drawer_left_opener
     else
       let opener = fern#internal#args#pop(a:fargs, 'opener', g:fern#opener)
       let width = ''
       let keep = v:false
       let toggle = v:false
+      let right = v:false
     endif
 
     if len(a:fargs) isnot# 1
@@ -28,10 +31,11 @@ function! fern#internal#command#fern#command(mods, fargs) abort
           \ || type(width) isnot# v:t_string
           \ || type(keep) isnot# v:t_bool
           \ || type(toggle) isnot# v:t_bool
+          \ || type(right) isnot# v:t_bool
       if empty(drawer)
         throw 'Usage: Fern {url} [-opener={opener}] [-stay] [-wait] [-reveal={reveal}]'
       else
-        throw 'Usage: Fern {url} -drawer [-toggle] [-keep] [-width={width}] [-stay] [-wait] [-reveal={reveal}]'
+        throw 'Usage: Fern {url} -drawer [-right] [-toggle] [-keep] [-width={width}] [-stay] [-wait] [-reveal={reveal}]'
       endif
     endif
 
@@ -41,9 +45,14 @@ function! fern#internal#command#fern#command(mods, fargs) abort
     " Force project drawer style when
     " - The current buffer is project drawer style fern
     " - The 'opener' is 'edit'
-    if opener ==# 'edit' && fern#internal#drawer#is_drawer()
-      let drawer = v:true
-      let opener = s:drawer_opener
+    if opener ==# 'edit'
+      if fern#internal#drawer#is_left_drawer()
+        let drawer = v:true
+        let opener = s:drawer_left_opener
+      elseif right && fern#internal#drawer#is_right_drawer()
+        let drawer = v:true
+        let opener = s:drawer_right_opener
+      endif
     endif
 
     let expr = fern#util#expand(a:fargs[0])
@@ -58,7 +67,9 @@ function! fern#internal#command#fern#command(mods, fargs) abort
           \ 'path': path,
           \})
     let fri.authority = drawer
-          \ ? printf('drawer:%d', tabpagenr())
+          \ ? right
+          \   ? printf('drawer-right:%d', tabpagenr())
+          \   : printf('drawer:%d', tabpagenr())
           \ : ''
     let fri.query = extend(fri.query, {
           \ 'width': width,
@@ -77,12 +88,13 @@ function! fern#internal#command#fern#command(mods, fargs) abort
     endif
 
     let winid_saved = win_getid()
-    if fri.authority =~# '^drawer:'
+    if fri.authority =~# '^drawer\(-right\)\?:'
       call fern#internal#drawer#open(fri, {
             \ 'mods': a:mods,
             \ 'toggle': toggle,
             \ 'opener': opener,
             \ 'stay': stay ? win_getid() : 0,
+            \ 'right': right,
             \})
     else
       call fern#internal#viewer#open(fri, {
