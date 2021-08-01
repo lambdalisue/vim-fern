@@ -17,6 +17,8 @@ function! s:hide_cursor_init() abort
 
   " Do NOT allow cursorlineopt=number while the cursor is hidden (Fix #182)
   if exists('+cursorlineopt')
-    setlocal cursorlineopt=number,line
+    " NOTE:
+    " Default value is `number,line` (or `both` prior to patch-8.1.2029)
+    setlocal cursorlineopt&
   endif
 endfunction
