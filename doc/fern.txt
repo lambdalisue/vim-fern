@@ -226,8 +226,8 @@ For example, following execute "open" on leaf but "expand" on branch.
 >
 	nmap <buffer><expr> <Plug>(fern-my-open-or-expand)
 	      \ fern#smart#leaf(
-	      \   "\<Plug>(fern-action-open)",
-	      \   "\<Plug>(fern-action-expand)",
+	      \   "<Plug>(fern-action-open)",
+	      \   "<Plug>(fern-action-expand)",
 	      \ )
 <
 See https://github.com/lambdalisue/fern.vim/wiki/ for custom tips.
@@ -650,8 +650,8 @@ fern#smart#leaf({leaf}, {collapsed}[, {expanded}])
 	nmap <buffer><expr>
 	      \ <Plug>(fern-my-open-or-enter)
 	      \ fern#smart#leaf(
-	      \   "\<Plug>(fern-action-open)",
-	      \   "\<Plug>(fern-action-enter)",
+	      \   "<Plug>(fern-action-open)",
+	      \   "<Plug>(fern-action-enter)",
 	      \ )
 
 	" Perform 'open' on leaf node, 'expand' on collapsed node, and
@@ -659,9 +659,9 @@ fern#smart#leaf({leaf}, {collapsed}[, {expanded}])
 	nmap <buffer><expr>
 	      \ <Plug>(fern-my-open-or-expand-or-collapse)
 	      \ fern#smart#leaf(
-	      \   "\<Plug>(fern-action-open)",
-	      \   "\<Plug>(fern-action-expand)",
-	      \   "\<Plug>(fern-action-collapse)",
+	      \   "<Plug>(fern-action-open)",
+	      \   "<Plug>(fern-action-expand)",
+	      \   "<Plug>(fern-action-collapse)",
 	      \ )
 <
 							*fern#smart#drawer()*
@@ -675,8 +675,8 @@ fern#smart#drawer({drawer}, {drawer-right}, {explorer})
 	nmap <buffer><expr>
 	      \ <Plug>(fern-expand-or-enter)
 	      \ fern#smart#drawer(
-	      \   "\<Plug>(fern-action-expand)",
-	      \   "\<Plug>(fern-action-enter)",
+	      \   "<Plug>(fern-action-expand)",
+	      \   "<Plug>(fern-action-enter)",
 	      \ )
 <
 							*fern#smart#scheme()*
