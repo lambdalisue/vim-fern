@@ -6,13 +6,13 @@ function! fern#internal#drawer#auto_resize#init() abort
   if fern#internal#drawer#is_right_drawer()
     augroup fern_internal_drawer_init_right
       autocmd! * <buffer>
-      autocmd WinEnter <buffer> call s:load_width_right()
+      autocmd BufEnter,WinEnter <buffer> call s:load_width_right()
       autocmd WinLeave <buffer> call s:save_width_right()
     augroup END
   else
     augroup fern_internal_drawer_init
       autocmd! * <buffer>
-      autocmd WinEnter <buffer> call s:load_width()
+      autocmd BufEnter,WinEnter <buffer> call s:load_width()
       autocmd WinLeave <buffer> call s:save_width()
     augroup END
   endif
