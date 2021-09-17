@@ -1,5 +1,4 @@
 let s:Promise = vital#fern#import('Async.Promise')
-let s:Prompt = vital#fern#import('Prompt')
 
 function! fern#scheme#file#mapping#init(disable_default_mappings) abort
   nnoremap <buffer><silent> <Plug>(fern-action-new-path)  :<C-u>call <SID>call('new_path')<CR>
@@ -151,7 +150,7 @@ function! s:map_trash(helper) abort
     let prompt .= "\n..."
   endif
   let prompt .= "\nAre you sure to continue (Y[es]/no): "
-  if !s:Prompt.confirm(prompt)
+  if !fern#internal#prompt#confirm(prompt)
     return s:Promise.reject('Cancelled')
   endif
   let token = a:helper.fern.source.token
@@ -183,7 +182,7 @@ function! s:map_remove(helper) abort
     let prompt .= "\n..."
   endif
   let prompt .= "\nAre you sure to continue (Y[es]/no): "
-  if !s:Prompt.confirm(prompt)
+  if !fern#internal#prompt#confirm(prompt)
     return s:Promise.reject('Cancelled')
   endif
   let token = a:helper.fern.source.token
