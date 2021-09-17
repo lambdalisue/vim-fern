@@ -10,7 +10,9 @@ function! fern#scheme#file#mapping#init(disable_default_mappings) abort
   nnoremap <buffer><silent> <Plug>(fern-action-copy)      :<C-u>call <SID>call('copy')<CR>
   nnoremap <buffer><silent> <Plug>(fern-action-move)      :<C-u>call <SID>call('move')<CR>
   nnoremap <buffer><silent> <Plug>(fern-action-trash)     :<C-u>call <SID>call('trash')<CR>
+  nnoremap <buffer><silent> <Plug>(fern-action-trash=)    :<C-u>call <SID>call_without_guard('trash')<CR>
   nnoremap <buffer><silent> <Plug>(fern-action-remove)    :<C-u>call <SID>call('remove')<CR>
+  nnoremap <buffer><silent> <Plug>(fern-action-remove=)   :<C-u>call <SID>call_without_guard('remove')<CR>
 
   if !a:disable_default_mappings
     nmap <buffer><nowait> N <Plug>(fern-action-new-file)
