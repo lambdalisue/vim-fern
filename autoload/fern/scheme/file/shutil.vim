@@ -83,9 +83,15 @@ endfunction
 
 function! fern#scheme#file#shutil#trash(path, ...) abort
   let token = a:0 ? a:1 : s:CancellationToken.none
-  return s:File.trash(a:path, {
-        \ 'token': token,
-        \})
+  try
+    return s:File.trash(a:path, {
+          \ 'token': token,
+          \})
+  catch /vital: Async\.File:/
+    return s:Promise.reject('Dependencies not found. See :help fern-action-trash for detail.')
+  catch
+    return s:Promise.reject(v:exception)
+  endtry
 endfunction
 
 function! fern#scheme#file#shutil#remove(path, ...) abort
