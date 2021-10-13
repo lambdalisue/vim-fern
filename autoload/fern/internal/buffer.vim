@@ -70,8 +70,8 @@ endfunction
 
 function! fern#internal#buffer#renames(pairs) abort
   let bufnr_saved = bufnr('%')
-  let hidden_saved = &hidden
-  set hidden
+  let hidden_saved = &bufhidden
+  set bufhidden=hide
   try
     for [src, dst] in a:pairs
       let bufnr = bufnr(src)
@@ -83,8 +83,8 @@ function! fern#internal#buffer#renames(pairs) abort
       call s:patch_to_avoid_e13()
     endfor
   finally
-    execute printf('keepjumps keepalt %dbuffer', bufnr_saved)
-    let &hidden = hidden_saved
+    execute printf('keepjumps keepalt %dbuffer!', bufnr_saved)
+    let &bufhidden = hidden_saved
   endtry
 endfunction
 
