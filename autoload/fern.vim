@@ -58,21 +58,3 @@ function! fern#version() abort
   let r = system(printf('git -C %s describe --tags --always --dirty', s:root))
   echo printf('[fern] %s', r)
 endfunction
-
-" DEPRECATED:
-if exists('g:fern#disable_viewer_hide_cursor')
-  " Now the cursor is NOT hidden by default thus just warn users
-  call fern#util#deprecated('g:fern#disable_viewer_hide_cursor')
-endif
-if exists('g:fern#disable_drawer_auto_quit')
-  call fern#util#deprecated(
-        \ 'g:fern#disable_drawer_auto_quit',
-        \ 'g:fern#disable_drawer_smart_quit',
-        \)
-endif
-if exists('g:fern#smart_cursor')
-  call fern#util#deprecated('g:fern#smart_cursor', 'g:fern#hide_cursor')
-endif
-if exists('g:fern#disable_viewer_smart_cursor')
-  call fern#util#deprecated('g:fern#disable_viewer_smart_cursor')
-endif

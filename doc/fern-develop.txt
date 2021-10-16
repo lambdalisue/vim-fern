@@ -283,14 +283,6 @@ Following hook will be emitted by |fern#hook#emit()| from fern itself.
 	all content has rendererd.
 	The {helper} is a helper instance described in |fern-develop-helper|.
 
-"renderer:syntax" ({helper})
-	DEPRECATED:
-	Use "viewer:syntax" instead.
-
-"renderer:highlight" ({helper})
-	DEPRECATED:
-	Use "viewer:highlight" instead.
-
 
 =============================================================================
 HELPER						*fern-develop-helper*

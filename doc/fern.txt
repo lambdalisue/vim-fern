@@ -284,14 +284,6 @@ Users can customize above appearance by the following variables.
 	A |String| used as a symbol of expanded branch node.
 	Default: "|- "
 
-*g:fern#renderer#default#marked_symbol*
-	OBSOLETE(v1.6.0)~
-	Use |g:fern#mark_symbol| instead.
-
-*g:fern#renderer#default#unmarked_symbol*
-	OBSOLETE(v1.6.0)~
-	No alternative feature is provided.
-
 See |FernHighlight| and |fern-highlight| to change pre-defeined |highlight|.
 
 Or create user custom renderer to change the appearance completely.
@@ -337,9 +329,6 @@ VARIABLE						*fern-variable*
 	the buffer.
 	Note that Neovim prior to 0.5.0 cannot hide the cursor thus faint
 	vertical bar is used instead.
-
-*g:fern#smart_cursor*
-	DEPRECATED: Use |g:fern#hide_cursor| instead.
 
 *g:fern#keepalt_on_edit*
 	Set 1 to apply |keepalt| on the "open:edit" action to keep an
@@ -410,12 +399,6 @@ VARIABLE						*fern-variable*
 	The duplication is mainly occured when user execute |split| or
 	|vsplit| command to duplicate window.
 
-*g:fern#disable_viewer_hide_cursor*
-	DEPRECATED: The cursor is not hidden any longer in default.
-
-*g:fern#disable_viewer_smart_cursor*
-	DEPRECATED: The smart cursor feature has obsoleted.
-
 *g:fern#disable_drawer_auto_winfixwidth*
 	Set 1 to disable automatically enable 'winfixwidth' to drawer on
 	|BufEnter| autocmd.
@@ -429,9 +412,6 @@ VARIABLE						*fern-variable*
 	https://github.com/lambdalisue/fern.vim/issues/294
 
 	Default: 0 
-
-*g:fern#disable_drawer_auto_quit*
-	DEPRECATED: Use |g:fern#disable_drawer_smart_quit| instead.
 
 *g:fern#disable_drawer_smart_quit*
 	Set 1 to disable smart quit behavior when there are only two buffer
@@ -614,13 +594,6 @@ COMMAND							*fern-command*
 	drawer style fern.
 	If "-right" option is specified, the drawer on the right side is used.
 	If "-stay" option is specified, it stay focus after execution.
-	Note that the command can be followed by a '|' and another command.
-
-							*:FernFocus*
-:FernFocus [-drawer]
-	DEPRECATED: Use |:FernDo| with ":" like ":FernDo :" instead.
-	Focus a next fern viewer. If "-drawer" option is specified, it focus
-	only a project drawer style fern.
 	Note that the command can be followed by a '|' and another command.
 
 							*:FernReveal*
@@ -817,15 +790,6 @@ GLOBAL							*fern-mapping-global*
 	An alias to "hidden:toggle" action. Users can overwrite this mapping
 	to change the default behavior of "hidden" action.
 
-*<Plug>(fern-action-hidden-set)*
-	DEPRECATED: Use |<Plug>(fern-action-hidden:set)| instead.
-	
-*<Plug>(fern-action-hidden-unset)*
-	DEPRECATED: Use |<Plug>(fern-action-hidden:unset)| instead.
-
-*<Plug>(fern-action-hidden-toggle)*
-	DEPRECATED: Use |<Plug>(fern-action-hidden:toggle)| instead.
-
 *<Plug>(fern-action-include)*
 *<Plug>(fern-action-include=)*
 	Open a prompt to enter include filter. Users can type a |pattern| to
@@ -865,18 +829,6 @@ GLOBAL							*fern-mapping-global*
 *<Plug>(fern-action-mark)*
 	An alias to "mark:toggle" action. Users can overwrite this mapping to 
 	change the default behavior of "mark" action.
-
-*<Plug>(fern-action-mark-clear)*
-	DEPRECATED: Use |<Plug>(fern-action-mark:clear)| instead.
-
-*<Plug>(fern-action-mark-set)*
-	DEPRECATED: Use |<Plug>(fern-action-mark:set)| instead.
-
-*<Plug>(fern-action-mark-unset)*
-	DEPRECATED: Use |<Plug>(fern-action-mark:unset)| instead.
-
-*<Plug>(fern-action-mark-toggle)*
-	DEPRECATED: Use |<Plug>(fern-action-mark:toggle)| instead.
 
 *<Plug>(fern-action-debug)*
 	Echo debug information of a cursor node.

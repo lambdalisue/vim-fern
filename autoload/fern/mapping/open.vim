@@ -51,12 +51,6 @@ function! fern#mapping#open#init(disable_default_mappings) abort
     nmap <buffer><nowait> E <Plug>(fern-action-open:side)
     nmap <buffer><nowait> t <Plug>(fern-action-open:tabedit)
   endif
-
-  " DEPRECATED:
-  nmap <buffer><silent><expr> <Plug>(fern-open-or-enter)
-        \ fern#mapping#deprecated('fern-open-or-enter', 'fern-action-open-or-enter')
-  nmap <buffer><silent><expr> <Plug>(fern-open-or-expand)
-        \ fern#mapping#deprecated('fern-open-or-expand', 'fern-action-open-or-expand')
 endfunction
 
 function! s:call(name, ...) abort

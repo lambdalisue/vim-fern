@@ -19,24 +19,6 @@ function! fern#mapping#mark#init(disable_default_mappings) abort
     nmap <buffer><nowait> -     <Plug>(fern-action-mark)
     vmap <buffer><nowait> -     <Plug>(fern-action-mark)
   endif
-
-  " DEPRECATED:
-  nmap <buffer><silent><expr> <Plug>(fern-action-mark-clear)
-        \ <SID>deprecated('fern-action-mark-clear', 'fern-action-mark:clear')
-  nmap <buffer><silent><expr> <Plug>(fern-action-mark-set)
-        \ <SID>deprecated('fern-action-mark-set', 'fern-action-mark:set')
-  nmap <buffer><silent><expr> <Plug>(fern-action-mark-unset)
-        \ <SID>deprecated('fern-action-mark-unset', 'fern-action-mark:unset')
-  nmap <buffer><silent><expr> <Plug>(fern-action-mark-toggle)
-        \ <SID>deprecated('fern-action-mark-toggle', 'fern-action-mark:toggle')
-  vmap <buffer><silent><expr> <Plug>(fern-action-mark-clear)
-        \ <SID>deprecated('fern-action-mark-clear', 'fern-action-mark:clear')
-  vmap <buffer><silent><expr> <Plug>(fern-action-mark-set)
-        \ <SID>deprecated('fern-action-mark-set', 'fern-action-mark:set')
-  vmap <buffer><silent><expr> <Plug>(fern-action-mark-unset)
-        \ <SID>deprecated('fern-action-mark-unset', 'fern-action-mark:unset')
-  vmap <buffer><silent><expr> <Plug>(fern-action-mark-toggle)
-        \ <SID>deprecated('fern-action-mark-toggle', 'fern-action-mark:toggle')
 endfunction
 
 function! s:call(name, ...) abort
