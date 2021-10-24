@@ -6,7 +6,6 @@ if exists('g:loaded_fern') || (!has('nvim') && !has('patch-8.1.0994'))
   finish
 endif
 let g:loaded_fern = 1
-let g:fern_loaded = 1 " Obsolete: For backward compatibility
 
 command! -bar -nargs=*
       \ -complete=customlist,fern#internal#command#fern#complete

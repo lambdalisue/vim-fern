@@ -15,14 +15,6 @@ function! fern#mapping#filter#init(disable_default_mappings) abort
     nmap <buffer><nowait> fi <Plug>(fern-action-include)
     nmap <buffer><nowait> fe <Plug>(fern-action-exclude)
   endif
-
-  " DEPRECATED:
-  nmap <buffer><silent><expr> <Plug>(fern-action-hidden-set)
-        \ fern#mapping#deprecated('fern-action-hidden-set', 'fern-action-hidden:set')
-  nmap <buffer><silent><expr> <Plug>(fern-action-hidden-unset)
-        \ fern#mapping#deprecated('fern-action-hidden-unset', 'fern-action-hidden:unset')
-  nmap <buffer><silent><expr> <Plug>(fern-action-hidden-toggle)
-        \ fern#mapping#deprecated('fern-action-hidden-toggle', 'fern-action-hidden:toggle')
 endfunction
 
 function! s:call(name, ...) abort

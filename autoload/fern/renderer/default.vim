@@ -95,14 +95,3 @@ call s:Config.config(expand('<sfile>:p'), {
       \ 'collapsed_symbol': '|+ ',
       \ 'expanded_symbol': '|- ',
       \})
-
-" OBSOLETE:
-if exists('g:fern#renderer#default#marked_symbol')
-  call fern#util#obsolete(
-        \ 'g:fern#renderer#default#marked_symbol',
-        \ 'g:fern#mark_symbol',
-        \)
-endif
-if exists('g:fern#renderer#default#unmarked_symbol')
-  call fern#util#obsolete('g:fern#renderer#default#unmarked_symbol')
-endif
