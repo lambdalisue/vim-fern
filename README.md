@@ -60,7 +60,7 @@ Fern ([furn](https://www.youtube.com/watch?v=SSYgr-_69mg)) is a general purpose 
 - Provide features as actions so that user don't have to remember mappings
 - Make operation asynchronous as much as possible to keep latency
 - User experience is more important than simplicity (maintainability)
-- Custamizability is less important than simplicity (maintainability)
+- Customizability is less important than simplicity (maintainability)
 - Easy to create 3rd party plugins to support any kind of trees
 
 ## Installation
@@ -120,7 +120,7 @@ All usage above open fern as [*split windows style*][]. To open fern as [*projec
 
 A fern window with _project drawer_ style always appeared to the most left side of Vim and behaviors of some mappings/actions are slightly modified (e.g. a buffer in the next window will be used as an anchor buffer in a project drawer style to open a new buffer.)
 
-Note that addtional to the all options available for _split windows_ style, _project drawer_ style enables the follwoing options:
+Note that additional to the all options available for _split windows_ style, _project drawer_ style enables the following options:
 
 | Option    | Default | Description                                                      |
 | --------- | ------- | ---------------------------------------------------------------- |
