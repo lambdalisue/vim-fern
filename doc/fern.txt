@@ -1148,6 +1148,7 @@ The following mappings/actions are only available on file:// scheme.
 	The prompt will repeatedly open if multiple nodes has marked.
 
 *<Plug>(fern-action-trash)*
+*<Plug>(fern-action-trash=)*
 	Open a prompt to ask if fern can send the cursor node or marked nodes
 	to the system trash-bin. It uses the following implementations to send
 	the node(s) into system trash-bin.
@@ -1159,11 +1160,26 @@ The following mappings/actions are only available on file:// scheme.
 			https://github.com/b4b4r07/gomi
 	Note that the action fails without removing the files/directories if
 	no requirement exists on Linux.
+	You can use a "=" variant to apply values to the prompt and/or submit
+	a value like:
+>
+	" Immediately delete
+	nmap <buffer>
+	      \ <Plug>(my-trash)
+	      \ <Plug>(fern-action-trash=)y<CR>
 
 *<Plug>(fern-action-remove)*
+*<Plug>(fern-action-remove=)*
 	Open a prompt to ask if fern can DELETE the cursor node or marked
 	nodes. BE CAREFUL with this action while it DELETE the file/direcoty
 	and users cannot restore (like "rm" in terminal.)
+	You can use a "=" variant to apply values to the prompt and/or submit
+	a value like:
+>
+	" Immediately delete
+	nmap <buffer>
+	      \ <Plug>(my-trash)
+	      \ <Plug>(fern-action-trash=)y<CR>
 
 *<Plug>(fern-action-cd:root)*
 *<Plug>(fern-action-lcd:root)*

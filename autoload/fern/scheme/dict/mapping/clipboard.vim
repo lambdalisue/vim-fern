@@ -1,4 +1,3 @@
-let s:Prompt = vital#fern#import('Prompt')
 let s:Promise = vital#fern#import('Async.Promise')
 
 let s:clipboard = {
@@ -65,7 +64,7 @@ function! s:map_clipboard_paste(helper) abort
       let prompt .= "\n..."
     endif
     let prompt .= "\nAre you sure to continue (Y[es]/no): "
-    if !s:Prompt.confirm(prompt)
+    if !fern#internal#prompt#confirm(prompt)
       return s:Promise.reject('Cancelled')
     endif
   endif

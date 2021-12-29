@@ -12,7 +12,6 @@ Config
 Lambda
 System.Filepath
 Vim.Window.Cursor
-Prompt
 App.Action
 App.WindowSelector
 App.WindowLocator

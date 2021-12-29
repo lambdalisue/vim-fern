@@ -1,6 +1,5 @@
 let s:File = vital#fern#import('Async.File')
 let s:Promise = vital#fern#import('Async.Promise')
-let s:Prompt = vital#fern#import('Prompt')
 let s:CancellationToken = vital#fern#import('Async.CancellationToken')
 
 function! fern#scheme#file#shutil#open(path, ...) abort
@@ -108,5 +107,5 @@ function! s:select_overwrite_method(path) abort
         \ 'Please select an overwrite method (esc to cancel)',
         \ 'f[orce]/r[ename]: ',
         \], "\n")
-  return s:Prompt.select(prompt, 1, 1, '[fr]')
+  return fern#internal#prompt#select(prompt, 1, 1, '[fr]')
 endfunction

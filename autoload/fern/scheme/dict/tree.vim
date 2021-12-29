@@ -1,4 +1,3 @@
-let s:Prompt = vital#fern#import('Prompt')
 let s:Promise = vital#fern#import('Async.Promise')
 
 function! fern#scheme#dict#tree#read(tree, path, ...) abort
@@ -119,7 +118,7 @@ function! s:select_overwrite_method(path) abort
         \ 'Please select an overwrite method (esc to cancel)',
         \ 'f[orce]/r[ename]: ',
         \], "\n")
-  return s:Prompt.select(prompt, 1, 1, '[fr]')
+  return fern#internal#prompt#select(prompt, 1, 1, '[fr]')
 endfunction
 
 function! s:dig(tree, terms, create) abort
