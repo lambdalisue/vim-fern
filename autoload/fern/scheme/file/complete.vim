@@ -47,6 +47,7 @@ function! s:get_basepath(cmdline) abort
   let fargs = fargs[index(fargs, 'Fern') + 1:]
   let fargs = filter(fargs, { -> v:val[:0] !=# '-' })
   let base = len(fargs) ==# 1 ? fargs[0] : ''
+  let base = base ==# '' ? '.' : base
   return fnamemodify(base, ':p')
 endfunction
 
