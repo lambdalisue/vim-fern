@@ -11,7 +11,7 @@ Describe buffer-list
     edit hello
     Fern debug:/// -wait
     let output = split(execute('ls'), '\n')
-    Assert Match(output[0], '^\s*\d\+\s\+\#\s\+"hello"\s\+line 1$')
+    Assert Match(output[0], '^\s*\d\+\s\+\#h\?\s\+"hello"\s\+line 1$')
     Assert Equals(len(output), 1)
   End
 
@@ -19,7 +19,7 @@ Describe buffer-list
     edit hello
     Fern debug:/// -wait
     let output = split(execute('ls!'), '\n')
-    Assert Match(output[0], '^\s*\d\+\s\+\#\s\+"hello"\s\+line 1$')
+    Assert Match(output[0], '^\s*\d\+\s\+\#h\?\s\+"hello"\s\+line 1$')
     Assert Match(output[1], '^\s*\d\+u%a-\s\+"fern://.*"\s\+line 1$')
     Assert Equals(len(output), 2)
   End
@@ -28,7 +28,7 @@ Describe buffer-list
     edit hello
     Fern debug:/// -reveal=deep/alpha/beta -wait
     let output = split(execute('ls!'), '\n')
-    Assert Match(output[0], '^\s*\d\+\s\+\#\s\+"hello"\s\+line 1$')
+    Assert Match(output[0], '^\s*\d\+\s\+\#h\?\s\+"hello"\s\+line 1$')
     Assert Match(output[1], '^\s*\d\+u%a-\s\+"fern://.*"\s\+line \d\+$')
     Assert Equals(len(output), 2)
   End
