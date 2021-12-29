@@ -121,6 +121,9 @@ if has('win32') && executable('cmd')
     let dst = substitute(a:dst, '[/\\]\+', '\', 'g')
     " src must NOT have trailing slush
     let src = substitute(src, '\\$', '', '')
+    " apply shellescape on neovim
+    let src = has('nvim') ? shellescape(src) : src
+    let dst = has('nvim') ? shellescape(dst) : dst
     return s:Process.start([
           \ 'cmd.exe', '/c', 'move', '/y', src, dst,
           \], options)
@@ -156,6 +159,9 @@ if has('win32') && executable('cmd')
     let dst = substitute(a:dst, '[/\\]\+', '\', 'g')
     " src must NOT have trailing slush
     let src = substitute(src, '\\$', '', '')
+    " apply shellescape on neovim
+    let src = has('nvim') ? shellescape(src) : src
+    let dst = has('nvim') ? shellescape(dst) : dst
     return s:Process.start([
           \ 'cmd', '/c', 'copy', '/y', src, dst,
           \], options)
