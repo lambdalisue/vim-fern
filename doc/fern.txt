@@ -576,10 +576,10 @@ COMMAND							*fern-command*
 
 	If the {width} is specified, the width of the window is regulated to
 	the specified value. (See |g:fern#drawer_width|)
-	If "-keep" options is specified, the buffer won't close even there is
-	only this window exist. (See |g:fern#drawer_keep|)
-	If "-toggle" option is specified, existing fern buffer will be closed
-	rather than opening a new fern buffer when exist.
+	If "-keep" option is specified, the buffer won't close even if only
+	this window exists. (See |g:fern#drawer_keep|)
+	If "-toggle" option is specified, an existing fern buffer will be 
+	closed rather than opening a new one.
 	If "-right" option is specified, the drawer is placed on the right
 	side.
 
