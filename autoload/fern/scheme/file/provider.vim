@@ -118,7 +118,7 @@ endif
 
 if s:is_windows
   let s:windows_drive_nodes = fern#scheme#file#util#list_drives(s:CancellationToken.none)
-          \.then(s:AsyncLambda.map_f({ v -> s:safe(funcref('s:node', [v . '\'])) }))
+          \.then(s:AsyncLambda.map_f({ v -> s:safe(funcref('s:node', [v])) }))
           \.then(s:AsyncLambda.filter_f({ v -> !empty(v) }))
 endif
 
