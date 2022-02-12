@@ -36,8 +36,9 @@ if exists('*readdir')
   function! fern#scheme#file#util#list_entries_readdir(path, ...) abort
     let l:Profile = fern#profile#start('fern#scheme#file#util#list_entries_readdir')
     let s = s:is_windows ? '\' : '/'
+    let p = a:path[-1:] ==# s ? a:path : (a:path . s)
     return s:Promise.resolve(readdir(a:path))
-          \.then(s:AsyncLambda.map_f({ v -> a:path . s . v }))
+          \.then(s:AsyncLambda.map_f({ v -> p . v }))
           \.finally({ -> Profile() })
   endfunction
 endif
@@ -45,8 +46,9 @@ endif
 function! fern#scheme#file#util#list_entries_glob(path, ...) abort
   let l:Profile = fern#profile#start('fern#scheme#file#util#list_entries_glob')
   let s = s:is_windows ? '\' : '/'
-  let a = s:Promise.resolve(glob(a:path . s . '*', 1, 1, 1))
-  let b = s:Promise.resolve(glob(a:path . s . '.*', 1, 1, 1))
+  let p = a:path[-1:] ==# s ? a:path : (a:path . s)
+  let a = s:Promise.resolve(glob(p . '*', 1, 1, 1))
+  let b = s:Promise.resolve(glob(p . '.*', 1, 1, 1))
         \.then(s:AsyncLambda.filter_f({ v -> v[-2:] !=# s . '.' && v[-3:] !=# s . '..' }))
   return s:Promise.all([a, b])
         \.then(s:AsyncLambda.reduce_f({ a, v -> a + v }, []))
