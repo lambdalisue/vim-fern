@@ -316,11 +316,12 @@ VARIABLE				*fern-develop-helper-variable*
 
 			*fern-develop-helper.bufnr*
 .bufnr
-	A buffer number where the target fern instance binded.
+	A buffer number where the target fern instance is associated.
 
 			*fern-develop-helper.winid*
 .winid
-	A window number where a target fern instance binded.
+	A window number where a target fern instance is associated.
+	Use |fern-develop-helper.sync.winid()| to get proper value.
 
 			*fern-develop-helper.STATUS_NONE*
 			*fern-develop-helper.STATUS_COLLAPSED*
@@ -334,6 +335,10 @@ VARIABLE				*fern-develop-helper-variable*
 SYNC METHODS				*fern-develop-helper.sync*
 
 Following methods are executed synchronously.
+
+			*fern-develop-helper.sync.winid()*
+.sync.winid()
+	Return |winid| where a target fern instance is associated.
 
 			*fern-develop-helper.sync.echo()*
 .sync.echo({message})

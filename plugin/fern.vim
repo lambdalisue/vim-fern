@@ -25,8 +25,19 @@ function! s:BufReadCmd() abort
         \.catch({ e -> fern#logger#error(e) })
 endfunction
 
+function! s:SessionLoadPost() abort
+  let bufnr = bufnr()
+  call s:BufReadCmd()
+  " Re-apply required window options
+  for winid in win_findbuf(bufnr)
+    let [tabnr, winnr] = win_id2tabwin(winid)
+    call settabwinvar(tabnr, winnr, '&concealcursor', 'nvic')
+    call settabwinvar(tabnr, winnr, '&conceallevel', 2)
+  endfor
+endfunction
+
 augroup fern_internal
   autocmd! *
   autocmd BufReadCmd fern://* nested call s:BufReadCmd()
-  autocmd SessionLoadPost fern://* nested call s:BufReadCmd()
+  autocmd SessionLoadPost fern://* nested call s:SessionLoadPost()
 augroup END

@@ -11,6 +11,18 @@ endfunction
 
 let s:sync = {}
 
+function! s:sync_winid() abort dict
+  let helper = self.helper
+  if win_id2tabwin(helper.winid) != [0, 0]
+    return helper.winid
+  endif
+  " Original window has disappeared
+  let winids = win_findbuf(helper.bufnr)
+  let helper.winid = len(winids) is# 0 ? -1 : winids[0]
+  return helper.winid
+endfunction
+let s:sync.winid = funcref('s:sync_winid')
+
 function! s:sync_echo(message, ...) abort dict
   let hl = a:0 ? a:1 : 'None'
   try
@@ -73,14 +85,22 @@ let s:sync.get_selected_nodes = funcref('s:sync_get_selected_nodes')
 function! s:sync_get_cursor() abort dict
   let helper = self.helper
   let fern = helper.fern
-  return s:WindowCursor.get_cursor(helper.winid)
+  let winid = self.winid()
+  if winid is# -1
+    return [0, 0]
+  endif
+  return s:WindowCursor.get_cursor(winid)
 endfunction
 let s:sync.get_cursor = funcref('s:sync_get_cursor')
 
 function! s:sync_set_cursor(cursor) abort dict
   let helper = self.helper
   let fern = helper.fern
-  call s:WindowCursor.set_cursor(helper.winid, a:cursor)
+  let winid = self.winid()
+  if winid is# -1
+    return
+  endif
+  call s:WindowCursor.set_cursor(winid, a:cursor)
   call setbufvar(helper.bufnr, 'fern_cursor', a:cursor)
 endfunction
 let s:sync.set_cursor = funcref('s:sync_set_cursor')
