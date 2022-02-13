@@ -20,6 +20,7 @@ endfunction
 
 function! fern#internal#viewer#reveal(helper, path) abort
   let path = fern#internal#filepath#to_slash(a:path)
+  let path = substitute(path, '^\./', '', '')
   let reveal = split(path, '/')
   let previous = a:helper.sync.get_cursor_node()
   return s:Promise.resolve()
