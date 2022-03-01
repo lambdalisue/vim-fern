@@ -57,8 +57,6 @@ function! s:init() abort
     autocmd! * <buffer>
     autocmd BufEnter <buffer> setlocal nobuflisted
     autocmd BufReadCmd <buffer> nested call s:BufReadCmd()
-    autocmd Syntax <buffer> call s:Syntax()
-    autocmd ColorScheme <buffer> call s:ColorScheme()
     autocmd CursorMoved,CursorMovedI,BufLeave <buffer> let b:fern_cursor = getcurpos()[1:2]
   augroup END
   call fern#internal#viewer#auto_duplication#init()
@@ -94,9 +92,6 @@ function! s:init() abort
   if !g:fern#disable_viewer_spinner
     call fern#internal#spinner#start()
   endif
-  call helper.fern.renderer.highlight()
-  call fern#hook#emit('viewer:highlight', helper)
-  doautocmd <nomodeline> User FernHighlight
 
   " now the buffer is ready so set filetype to emit FileType
   setlocal filetype=fern
@@ -137,20 +132,6 @@ function! s:BufReadCmd() abort
         \.then({ -> helper.async.redraw() })
         \.then({ -> fern#hook#emit('viewer:ready', helper) })
         \.catch({ e -> fern#logger#error(e) })
-endfunction
-
-function! s:Syntax() abort
-  let helper = fern#helper#new()
-  call helper.fern.renderer.syntax()
-  call fern#hook#emit('viewer:syntax', helper)
-  doautocmd <nomodeline> User FernSyntax
-endfunction
-
-function! s:ColorScheme() abort
-  let helper = fern#helper#new()
-  call helper.fern.renderer.highlight()
-  call fern#hook#emit('viewer:highlight', helper)
-  doautocmd <nomodeline> User FernHighlight
 endfunction
 
 augroup fern_internal_viewer
