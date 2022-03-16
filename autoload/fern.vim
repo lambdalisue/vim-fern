@@ -47,6 +47,7 @@ call s:Config.config(expand('<sfile>:p'), {
       \ 'comparators': {},
       \ 'drawer_width': 30,
       \ 'drawer_keep': v:false,
+      \ 'drawer_hover_popup_delay': 0,
       \ 'mark_symbol': '*',
       \})
 
