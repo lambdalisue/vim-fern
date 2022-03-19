@@ -80,10 +80,22 @@ function! s:init() abort
     throw printf('no such scheme %s exists', scheme)
   endif
 
-  let b:fern = fern#internal#core#new(
-        \ resource_uri,
-        \ provider,
-        \)
+  if !exists("g:fern") && !g:fern#disable_drawer_universal
+    let g:fern = fern#internal#core#new(
+          \ resource_uri,
+          \ provider,
+          \)
+  endif
+
+  if g:fern#disable_drawer_universal
+    let b:fern = fern#internal#core#new(
+          \ resource_uri,
+          \ provider,
+          \)
+  else
+    let b:fern = g:fern
+  endif  
+
   let helper = fern#helper#new()
   let root = helper.sync.get_root_node()
 
