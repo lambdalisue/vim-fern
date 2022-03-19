@@ -71,7 +71,7 @@ function! fern#internal#command#fern#command(mods, fargs) abort
           \   ? printf('drawer-right:%d', tabpagenr())
           \   : printf('drawer:%d', tabpagenr())
           \ : ''
-    if drawer && !g:fern#disable_drawer_universal
+    if drawer && g:fern#disable_drawer_tabpage_isolation
       let fri.authority = right ? 'drawer-right:0' : 'drawer:0'
     endif
     let fri.query = extend(fri.query, {
