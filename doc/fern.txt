@@ -421,6 +421,15 @@ VARIABLE						*fern-variable*
 
 	Default: 0
 
+*g:fern#disable_drawer_universal*
+	Set 1 to disable the universal fern trees for left and right position
+        respectively.
+
+        If enabled, there is only one left or right drawer across the all the windows
+        for a given VIM instance.
+
+        Default: 1
+
 *g:fern#disable_drawer_smart_quit*
 	Set 1 to disable smart quit behavior when there are only two buffer
 	remains (one is for the drawer styled fern window.)

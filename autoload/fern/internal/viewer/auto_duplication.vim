@@ -1,5 +1,5 @@
 function! fern#internal#viewer#auto_duplication#init() abort
-  if g:fern#disable_viewer_auto_duplication
+  if g:fern#disable_viewer_auto_duplication || !g:fern#disable_drawer_universal
     return
   endif
 
