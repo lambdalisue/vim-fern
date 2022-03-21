@@ -421,6 +421,14 @@ VARIABLE						*fern-variable*
 
 	Default: 0
 
+*g:fern#disable_drawer_tabpage_isolation*
+	Set 1 to disable the drawer tabpage isolation.
+
+        If disabled, there is only one left or right drawer across the all the
+        windows and tabs for a given VIM instance.
+
+        Default: 0
+
 *g:fern#disable_drawer_smart_quit*
 	Set 1 to disable smart quit behavior when there are only two buffer
 	remains (one is for the drawer styled fern window.)
