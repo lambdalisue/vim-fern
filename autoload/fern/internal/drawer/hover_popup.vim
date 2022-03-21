@@ -1,5 +1,5 @@
 let s:win = v:null
-let s:timer = 0
+let s:show_timer = 0
 
 function! fern#internal#drawer#hover_popup#init() abort
   if g:fern#disable_drawer_hover_popup
@@ -15,16 +15,24 @@ function! fern#internal#drawer#hover_popup#init() abort
 
   augroup fern_internal_drawer_hover_popup_init
     autocmd! * <buffer>
-    autocmd CursorMoved <buffer> call timer_stop(s:timer) | call s:hide() | let s:timer = timer_start(g:fern#drawer_hover_popup_delay, { -> s:show(fern#helper#new()) })
-    autocmd BufLeave <buffer> call timer_stop(s:timer) | call s:hide()
+    autocmd CursorMoved <buffer> call s:debounced_show()
+    autocmd BufLeave <buffer> call s:hide()
   augroup END
 endfunction
 
 function! s:available() abort
-  return has('nvim') || exists('*popup_create')
+  let has_win = has('nvim') || exists('*popup_create')
+  return has_win && exists('*win_execute')
+endfunction
+
+function! s:debounced_show() abort
+  call s:hide()
+  let s:show_timer = timer_start(g:fern#drawer_hover_popup_delay, { -> s:show(fern#helper#new())  })
 endfunction
 
 function! s:show(helper) abort
+  call s:hide()
+
   if strdisplaywidth(getline('.')) <= winwidth(0)
     return
   endif
@@ -35,11 +43,12 @@ function! s:show(helper) abort
   endif
 
   let line = getline('.')
+  let width = strdisplaywidth(substitute(line, '[^[:print:]]*$', '', 'g'))
   if has('nvim')
     let s:win = nvim_open_win(nvim_create_buf(v:false, v:true), v:false, {
     \    'relative': 'win',
     \    'bufpos': [line('.') - 2, 0],
-    \    'width': strdisplaywidth(substitute(line, '[^[:print:]]*$', '', 'g')),
+    \    'width': width,
     \    'height': 1,
     \    'noautocmd': v:true,
     \    'style': 'minimal',
@@ -49,17 +58,18 @@ function! s:show(helper) abort
     let s:win = popup_create(line, {
     \    'line': 'cursor',
     \    'col': ui_width + 1,
-    \    'maxwidth': strdisplaywidth(substitute(line, '[^[:print:]]*$', '', 'g')),
+    \    'maxwidth': width,
     \  })
   endif
+
   function! s:apply() abort closure
     call setbufline('%', 1, line)
-    setlocal nowrap
-    setlocal cursorline
     call a:helper.fern.renderer.syntax()
     call a:helper.fern.renderer.highlight()
     syntax clear FernRoot
     syntax clear FernRootText
+
+    setlocal nowrap cursorline noswapfile nobuflisted buftype=nofile bufhidden=hide
     if has('nvim')
       setlocal winhighlight=NormalFloat:Normal
     endif
@@ -68,11 +78,15 @@ function! s:show(helper) abort
 endfunction
 
 function! s:hide() abort
+  call timer_stop(s:show_timer)
+
   if s:win is# v:null
     return
   endif
   if has('nvim')
-    call nvim_win_hide(s:win)
+    if nvim_win_is_valid(s:win)
+      call nvim_win_close(s:win, v:true)
+    endif
   else
     call popup_close(s:win)
   endif
