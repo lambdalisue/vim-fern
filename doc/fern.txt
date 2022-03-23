@@ -417,7 +417,8 @@ VARIABLE						*fern-variable*
 	Set 1 to disable popups shown when the name of a node extends beyond
 	the width of the drawer.
 
-	Note that this feature is not supported in Neovim.
+	Note that this feature is required the |win_execute| and
+	popup/floatwin features. 
 
 	Default: 0
 
@@ -529,6 +530,11 @@ VARIABLE						*fern-variable*
 	A |Boolean| which indicate whether the last fern window should be keep
 	open or close.
 	Default: |v:false|
+
+*g:fern#drawer_hover_popup_delay*
+	A |Number| value to specify the delay time to show the hover popup.
+	See |g:fern#disable_drawer_hover_popup|
+	Default: |0|
 
 *g:fern#mark_symbol*
 	A |String| which is used as a mark symbol text.
