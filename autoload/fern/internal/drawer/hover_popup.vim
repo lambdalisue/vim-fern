@@ -27,17 +27,21 @@ endfunction
 
 function! s:debounced_show() abort
   call s:hide()
-  let s:show_timer = timer_start(g:fern#drawer_hover_popup_delay, { -> s:show(fern#helper#new())  })
+  let s:show_timer = timer_start(g:fern#drawer_hover_popup_delay, { -> s:show()  })
 endfunction
 
-function! s:show(helper) abort
+function! s:show() abort
+  if &filetype !=# 'fern'
+    return
+  endif
   call s:hide()
 
   if strdisplaywidth(getline('.')) <= winwidth(0)
     return
   endif
 
-  let node = a:helper.sync.get_cursor_node()
+  let helper = fern#helper#new()
+  let node = helper.sync.get_cursor_node()
   if node is# v:null
     return
   endif
@@ -64,8 +68,8 @@ function! s:show(helper) abort
 
   function! s:apply() abort closure
     call setbufline('%', 1, line)
-    call a:helper.fern.renderer.syntax()
-    call a:helper.fern.renderer.highlight()
+    call helper.fern.renderer.syntax()
+    call helper.fern.renderer.highlight()
     syntax clear FernRoot
     syntax clear FernRootText
 
