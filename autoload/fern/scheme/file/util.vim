@@ -24,7 +24,7 @@ endif
 if !s:is_windows && executable('find')
   function! fern#scheme#file#util#list_entries_find(path, token) abort
     let l:Profile = fern#profile#start('fern#scheme#file#util#list_entries_find')
-    return s:Process.start(['find', a:path, '-follow', '-maxdepth', '1'], { 'token': a:token, 'reject_on_failure': 1 })
+    return s:Process.start(['find', '-H', a:path, '-maxdepth', '1'], { 'token': a:token, 'reject_on_failure': 1 })
           \.catch({ v -> s:Promise.reject(join(v.stderr, "\n")) })
           \.then({ v -> v.stdout })
           \.then(s:AsyncLambda.filter_f({ v -> !empty(v) && v !=# a:path }))
