@@ -2,21 +2,14 @@ let s:root = expand('<sfile>:p:h')
 let s:Config = vital#fern#import('Config')
 
 " Define Public constant
-let g:fern#STATUS_NONE = 0
-let g:fern#STATUS_COLLAPSED = 1
-let g:fern#STATUS_EXPANDED = 2
-lockvar g:fern#STATUS_NONE
-lockvar g:fern#STATUS_COLLAPSED
-lockvar g:fern#STATUS_EXPANDED
+const g:fern#STATUS_NONE = 0
+const g:fern#STATUS_COLLAPSED = 1
+const g:fern#STATUS_EXPANDED = 2
 
-let g:fern#DEBUG = 0
-let g:fern#INFO = 1
-let g:fern#WARN = 2
-let g:fern#ERROR = 3
-lockvar g:fern#DEBUG
-lockvar g:fern#INFO
-lockvar g:fern#WARN
-lockvar g:fern#ERROR
+const g:fern#DEBUG = 0
+const g:fern#INFO = 1
+const g:fern#WARN = 2
+const g:fern#ERROR = 3
 
 " Define Public variables
 call s:Config.config(expand('<sfile>:p'), {

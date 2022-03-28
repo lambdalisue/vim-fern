@@ -1,8 +1,7 @@
 Describe jumplist
   Before all
     let fern_keepjumps_on_edit = g:fern#keepjumps_on_edit
-    let workdir = tempname()
-    lockvar workdir
+    const workdir = tempname()
     call mkdir(workdir, 'p')
     call writefile([], fern#internal#filepath#join([workdir, 'alpha']))
     call writefile([], fern#internal#filepath#join([workdir, 'beta']))

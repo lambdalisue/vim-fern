@@ -1,8 +1,7 @@
 Describe special-characters
   Before all
     let l:Join = function('fern#internal#filepath#join')
-    let workdir = tempname()
-    lockvar workdir
+    const workdir = tempname()
     let candidates = [
           \ ';',
           \ '#',
