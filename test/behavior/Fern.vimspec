@@ -1,8 +1,7 @@
 Describe Fern
   Before all
     let l:Join = function('fern#internal#filepath#join')
-    let workdir = tempname()
-    lockvar workdir
+    const workdir = tempname()
     call mkdir(Join([workdir, 'deep', 'alpha', 'beta']), 'p')
     call mkdir(Join([workdir, 'shallow', 'alpha']), 'p')
     call mkdir(Join([workdir, 'shallow', 'beta']), 'p')

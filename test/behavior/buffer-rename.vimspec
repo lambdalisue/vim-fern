@@ -1,7 +1,6 @@
 Describe buffer-rename
   Before
-    let workdir = tempname()
-    lockvar workdir
+    const workdir = tempname()
     call mkdir(workdir, 'p')
     call writefile([], fern#internal#filepath#join([workdir, 'alpha']))
     call writefile([], fern#internal#filepath#join([workdir, 'beta']))

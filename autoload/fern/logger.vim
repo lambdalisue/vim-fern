@@ -84,11 +84,7 @@ function! s:format(level, args, sep) abort
 endfunction
 
 " For backword compatibility
-let g:fern#logger#DEBUG = g:fern#DEBUG
-let g:fern#logger#INFO = g:fern#INFO
-let g:fern#logger#WARN = g:fern#WARN
-let g:fern#logger#ERROR = g:fern#ERROR
-lockvar g:fern#logger#DEBUG
-lockvar g:fern#logger#INFO
-lockvar g:fern#logger#WARN
-lockvar g:fern#logger#ERROR
+const g:fern#logger#DEBUG = g:fern#DEBUG
+const g:fern#logger#INFO = g:fern#INFO
+const g:fern#logger#WARN = g:fern#WARN
+const g:fern#logger#ERROR = g:fern#ERROR
