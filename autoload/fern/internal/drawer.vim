@@ -50,9 +50,11 @@ function! fern#internal#drawer#init() abort
   call fern#internal#drawer#auto_resize#init()
   call fern#internal#drawer#auto_winfixwidth#init()
   call fern#internal#drawer#auto_restore_focus#init()
+  call fern#internal#drawer#auto_restore_winfixwidth#init()
   call fern#internal#drawer#smart_quit#init()
   call fern#internal#drawer#hover_popup#init()
   call fern#internal#drawer#resize()
+
   setlocal winfixwidth
 endfunction
 
