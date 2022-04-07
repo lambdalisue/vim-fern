@@ -500,6 +500,12 @@ VARIABLE						*fern-variable*
 <
 	Default: 0 
 
+*g:fern#disable_drawer_auto_restore_winfixwidth*
+	Set 1 to disable automatically restore 'winfixwidth' on |BufWinLeave|
+	autocmd.
+
+	Default: 0
+
 *g:fern#default_hidden*
 	Set 1 to enter hidden mode (show hidden files) in default.
 	Default: 0
