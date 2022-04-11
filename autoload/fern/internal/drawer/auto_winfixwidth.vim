@@ -5,6 +5,10 @@ function! fern#internal#drawer#auto_winfixwidth#init() abort
 
   augroup fern_internal_drawer_auto_winfixwidth_init
     autocmd! * <buffer>
-    autocmd BufEnter <buffer> setlocal winfixwidth
+    autocmd BufEnter <buffer> call s:set_winfixwidth()
   augroup END
+endfunction
+
+function! s:set_winfixwidth() abort
+  let &l:winfixwidth = winnr('$') isnot# 1
 endfunction
