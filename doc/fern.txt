@@ -401,7 +401,9 @@ VARIABLE						*fern-variable*
 
 *g:fern#disable_drawer_auto_winfixwidth*
 	Set 1 to disable automatically enable 'winfixwidth' to drawer on
-	|BufEnter| autocmd.
+	|BufEnter| autocmd. Note that it automatically set 'nowinfixwidth' on
+	the autocmd when there is only one window.
+
 	Default: 0
 
 *g:fern#disable_drawer_auto_resize*
@@ -499,12 +501,6 @@ VARIABLE						*fern-variable*
 	                        +---------------+---------------+
 <
 	Default: 0 
-
-*g:fern#disable_drawer_auto_restore_winfixwidth*
-	Set 1 to disable automatically restore 'winfixwidth' on |BufWinLeave|
-	autocmd.
-
-	Default: 0
 
 *g:fern#default_hidden*
 	Set 1 to enter hidden mode (show hidden files) in default.

@@ -31,7 +31,6 @@ call s:Config.config(expand('<sfile>:p'), {
       \ 'disable_drawer_hover_popup': 0,
       \ 'disable_drawer_tabpage_isolation': 0,
       \ 'disable_drawer_auto_restore_focus': 0,
-      \ 'disable_drawer_auto_restore_winfixwidth': 0,
       \ 'default_hidden': 0,
       \ 'default_include': '',
       \ 'default_exclude': '',
