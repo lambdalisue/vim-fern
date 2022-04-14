@@ -422,6 +422,8 @@ VARIABLE						*fern-variable*
 	Note that this feature is required the |win_execute| and
 	popup/floatwin features. 
 
+	Note that this feature is only available on a left-sided drawer.
+
 	Default: 0
 
 *g:fern#disable_drawer_tabpage_isolation*
