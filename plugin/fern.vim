@@ -20,6 +20,9 @@ if !has('nvim') && !has('patch-8.1.0994')
   " version is not equal to this.
   call s:warn('Vim prior to 8.1.0994 does not have required feature thus fern is disabled.')
   finish
+elseif exists('+shellslash') && &shellslash
+  call s:warn('"shellslash" option is not supported thus fern is disabled.')
+  finish
 elseif !has('nvim') && !has('patch-8.1.2269')
   call s:warn('Vim prior to 8.1.2269 is not supported and fern might not work properly.')
 elseif has('nvim') && !has('nvim-0.4.4')
