@@ -296,6 +296,10 @@ INTERFACE						*fern-interface*
 -----------------------------------------------------------------------------
 VARIABLE						*fern-variable*
 
+*g:fern_disable_startup_warnings*
+	Set 1 to disable startup warning messages.
+	Default: 0
+
 *g:fern#profile*
 	Set 1 to enable fern profiling mode.
 	Default: 0
