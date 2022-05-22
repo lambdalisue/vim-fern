@@ -16,9 +16,9 @@ let s:conditions = [
       \ { wi -> !getbufvar(wi.bufnr, '&previewwindow', 0) },
       \]
 
-" Add condition to check if the window is floating
+" Add condition to make sure that the window is not floating
 if exists('*nvim_win_get_config')
-  call add(s:conditions, { wi -> nvim_win_get_config(wi.winid).relative !=# '' })
+  call add(s:conditions, { wi -> nvim_win_get_config(wi.winid).relative ==# '' })
 endif
 
 function! s:score(winnr) abort
