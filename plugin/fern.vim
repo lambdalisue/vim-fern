@@ -1,11 +1,34 @@
-if exists('g:loaded_fern') || (!has('nvim') && !has('patch-8.1.0994'))
+if exists('g:loaded_fern')
+  finish
+endif
+let g:loaded_fern = 1
+
+function! s:warn(message) abort
+  if get(g:, 'fern_disable_startup_warnings')
+    return
+  endif
+  echohl ErrorMsg
+  echo printf('[fern] %s', a:message)
+  echo '[fern] Disable this warning message by adding "let g:fern_disable_startup_warning = 1" on your vimrc.'
+  echohl None
+endfunction
+
+if !has('nvim') && !has('patch-8.1.0994')
   " NOTE:
   " At least https://github.com/vim/vim/releases/tag/v8.1.0994 is required
   " thus minimum working version is 8.1.0994. Remember that minimum support
   " version is not equal to this.
+  call s:warn('Vim prior to 8.1.0994 does not have required feature thus fern is disabled.')
   finish
+elseif exists('+shellslash') && &shellslash
+  call s:warn('"shellslash" option is not supported thus fern is disabled.')
+  finish
+elseif !has('nvim') && !has('patch-8.1.2269')
+  call s:warn('Vim prior to 8.1.2269 is not supported and fern might not work properly.')
+elseif has('nvim') && !has('nvim-0.4.4')
+  call s:warn('Neovim prior to 0.4.4 is not supported and fern might not work properly.')
 endif
-let g:loaded_fern = 1
+
 
 command! -bar -nargs=*
       \ -complete=customlist,fern#internal#command#fern#complete
