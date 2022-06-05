@@ -108,6 +108,7 @@ function! s:list(...) abort
   let conceal = a:0 ? a:1 : v:true
   let l:Sort = { a, b -> s:_compare(a[1], b[1]) }
   let rs = split(execute('nmap'), '\n')
+  call filter(rs, {_, v -> match(v, '^n') != -1})
   call map(rs, { _, v -> v[3:] })
   call map(rs, { _, v -> matchlist(v, '^\([^ ]\+\)\s*\*\?@\?\(.*\)$')[1:2] })
 
