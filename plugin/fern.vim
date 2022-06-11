@@ -9,7 +9,7 @@ function! s:warn(message) abort
   endif
   echohl ErrorMsg
   echo printf('[fern] %s', a:message)
-  echo '[fern] Disable this warning message by adding "let g:fern_disable_startup_warning = 1" on your vimrc.'
+  echo '[fern] Disable this warning message by adding "let g:fern_disable_startup_warnings = 1" on your vimrc.'
   echohl None
 endfunction
 
