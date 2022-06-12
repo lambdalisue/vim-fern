@@ -13,6 +13,7 @@ function! s:select(winnrs, ...) abort
         \ 'select_chars': split('abcdefghijklmnopqrstuvwxyz', '\zs'),
         \ 'statusline_hl': 'VitalWindowSelectorStatusLine',
         \ 'indicator_hl': 'VitalWindowSelectorIndicator',
+        \ 'winbar_hl': 'VitalWindowSelectorWinBar',
         \ 'use_winbar': &laststatus is# 3 && exists('&winbar'),
         \}, a:0 ? a:1 : {})
   if !options.use_winbar && &laststatus is# 3
@@ -37,7 +38,9 @@ function! s:select(winnrs, ...) abort
           \ { _, v -> get(scs, v, string(v)) },
           \)
     let l:S = funcref('s:_statusline', [
-          \ options.statusline_hl,
+          \ options.use_winbar
+          \   ? options.winbar_hl
+          \   : options.statusline_hl,
           \ options.indicator_hl,
           \])
     call map(keys(store), { k, v -> setwinvar(v, target, S(v, chars[k])) })
@@ -94,6 +97,9 @@ endfunction
 function! s:_highlight() abort
   highlight default link VitalWindowSelectorStatusLine StatusLineNC
   highlight default link VitalWindowSelectorIndicator  DiffText
+  if exists('&winbar')
+    highlight default link VitalWindowSelectorWinBar WinBarNC
+  endif
 endfunction
 
 augroup vital_app_window_selector_internal
