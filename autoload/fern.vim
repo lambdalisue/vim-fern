@@ -27,6 +27,7 @@ call s:Config.config(expand('<sfile>:p'), {
       \ 'disable_viewer_auto_duplication': 0,
       \ 'disable_drawer_auto_winfixwidth': 0,
       \ 'disable_drawer_auto_resize': 0,
+      \ 'disable_drawer_auto_resize_all': 1,
       \ 'disable_drawer_smart_quit': get(g:, 'disable_drawer_auto_quit', 0),
       \ 'disable_drawer_hover_popup': 0,
       \ 'disable_drawer_tabpage_isolation': 0,

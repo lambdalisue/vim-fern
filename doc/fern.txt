@@ -419,6 +419,13 @@ VARIABLE						*fern-variable*
 
 	Default: 0
 
+*g:fern#disable_drawer_auto_resize_all*
+	Set 1 to disable automatically resize all windows on |BufEnter| autocmd.
+	Note that this feature affects all windows except for drawer if
+        |g:fern#disable_drawer_auto_winfixwidth| is 1.
+
+	Default: 1
+
 *g:fern#disable_drawer_hover_popup*
 	Set 1 to disable popups shown when the name of a node extends beyond
 	the width of the drawer.
