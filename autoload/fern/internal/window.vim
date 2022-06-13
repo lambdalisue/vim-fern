@@ -28,12 +28,14 @@ function! fern#internal#window#select() abort
         \ 'select_chars': g:fern#internal#window#select_chars,
         \ 'statusline_hl': 'FernWindowSelectStatusLine',
         \ 'indicator_hl': 'FernWindowSelectIndicator',
+        \ 'use_winbar': g:fern#internal#window#use_winbar,
         \})
 endfunction
 
 call s:Config.config(expand('<sfile>:p'), {
       \ 'auto_select': 1,
       \ 'select_chars': split('abcdefghijklmnopqrstuvwxyz', '\zs'),
+      \ 'use_winbar': exists('&winbar') && &laststatus is# 3,
       \})
 
 function! s:highlight() abort

@@ -13,15 +13,23 @@ function! s:select(winnrs, ...) abort
         \ 'select_chars': split('abcdefghijklmnopqrstuvwxyz', '\zs'),
         \ 'statusline_hl': 'VitalWindowSelectorStatusLine',
         \ 'indicator_hl': 'VitalWindowSelectorIndicator',
+        \ 'winbar_hl': 'VitalWindowSelectorWinBar',
+        \ 'use_winbar': &laststatus is# 3 && exists('&winbar'),
         \}, a:0 ? a:1 : {})
+  if !options.use_winbar && &laststatus is# 3
+    echohl WarningMsg
+    echomsg 'vital: App.WindowSelector: The laststatus=3 on Neovim requires winbar feature to show window indicator'
+    echohl None
+  endif
   if options.auto_select && len(a:winnrs) <= 1
     call win_gotoid(len(a:winnrs) ? win_getid(a:winnrs[0]) : win_getid())
     return 0
   endif
+  let target = options.use_winbar ? '&winbar' : '&statusline'
   let length = len(a:winnrs)
   let store = {}
   for winnr in a:winnrs
-    let store[winnr] = getwinvar(winnr, '&statusline')
+    let store[winnr] = getwinvar(winnr, target)
   endfor
   try
     let scs = options.select_chars
@@ -30,10 +38,12 @@ function! s:select(winnrs, ...) abort
           \ { _, v -> get(scs, v, string(v)) },
           \)
     let l:S = funcref('s:_statusline', [
-          \ options.statusline_hl,
+          \ options.use_winbar
+          \   ? options.winbar_hl
+          \   : options.statusline_hl,
           \ options.indicator_hl,
           \])
-    call map(keys(store), { k, v -> setwinvar(v, '&statusline', S(v, chars[k])) })
+    call map(keys(store), { k, v -> setwinvar(v, target, S(v, chars[k])) })
     redrawstatus
     call s:_cnoremap_all(chars)
     let n = input('choose window: ')
@@ -48,7 +58,7 @@ function! s:select(winnrs, ...) abort
     endif
     call win_gotoid(win_getid(a:winnrs[n]))
   finally
-    call map(keys(store), { _, v -> setwinvar(v, '&statusline', store[v]) })
+    call map(keys(store), { _, v -> setwinvar(v, target, store[v]) })
     redrawstatus
   endtry
 endfunction
@@ -87,6 +97,9 @@ endfunction
 function! s:_highlight() abort
   highlight default link VitalWindowSelectorStatusLine StatusLineNC
   highlight default link VitalWindowSelectorIndicator  DiffText
+  if exists('&winbar')
+    highlight default link VitalWindowSelectorWinBar WinBarNC
+  endif
 endfunction
 
 augroup vital_app_window_selector_internal
