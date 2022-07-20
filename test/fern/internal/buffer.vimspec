@@ -135,6 +135,22 @@ Describe fern#internal#buffer
             \ 'opener': 'vsplit',
             \})
       Assert Equals(winnr('$'), 2)
+      %bwipeout!
+
+      call fern#internal#buffer#open('hello1', {
+            \ 'opener': 'edit',
+            \})
+      call fern#internal#buffer#open('hello2', {
+            \ 'opener': 'vsplit',
+            \})
+      call fern#internal#buffer#open('hello1', {
+            \ 'opener': 'drop',
+            \})
+      Assert Equals(winnr(), 2)
+      call fern#internal#buffer#open('hello2', {
+            \ 'opener': 'drop',
+            \})
+      Assert Equals(winnr(), 1)
     End
   End
 End
