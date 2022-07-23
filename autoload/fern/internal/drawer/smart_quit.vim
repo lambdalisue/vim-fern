@@ -30,11 +30,12 @@ function! s:smart_quit() abort
   elseif keep
     " Add a new window to avoid being a last window
     let winid = win_getid()
-    if has('nvim')
-      call s:complement(winid, width)
-    else
+    if has('patch-8.1.1756') || has('nvim-0.7.1')
       " Use timer to avoid E242 in Vim
+      " https://github.com/lambdalisue/fern.vim/issues/435
       call timer_start(0, { -> s:complement(winid, width) })
+    else
+      call s:complement(winid, width)
     endif
   else
     " This window is a last window of a current tabpage
