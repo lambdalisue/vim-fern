@@ -29,6 +29,8 @@ elseif has('nvim') && !has('nvim-0.4.4')
   call s:warn('Neovim prior to 0.4.4 is not supported and fern might not work properly.')
 endif
 
+call s:warn('The default branch of fern.vim has changed from "master" to "main". Please re-install fern.vim from the latest "main" branch.')
+
 
 command! -bar -nargs=*
       \ -complete=customlist,fern#internal#command#fern#complete

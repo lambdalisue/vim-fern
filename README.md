@@ -11,6 +11,15 @@
 [![vim](https://github.com/lambdalisue/fern.vim/workflows/vim/badge.svg)](https://github.com/lambdalisue/fern.vim/actions?query=workflow%3Avim)
 [![neovim](https://github.com/lambdalisue/fern.vim/workflows/neovim/badge.svg)](https://github.com/lambdalisue/fern.vim/actions?query=workflow%3Aneovim)
 
+---
+
+**WARNING**
+
+The default branch of fern.vim has changed from `master` to `main` because GitHub changed its default branch `main` and I couldn't be bothered to pay attention to whether the repository default branch is `master` or `main` anymore.
+I'm sorry for the inconvenience but please re-install fern.vim from the latest `main` branch so that you can truck the latest changes.
+
+---
+
 <p align="center">
 <strong>Split windows (netrw style)</strong><br>
 <sup>
