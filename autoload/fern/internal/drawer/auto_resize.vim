@@ -18,13 +18,20 @@ function! fern#internal#drawer#auto_resize#init() abort
   endif
 endfunction
 
+function! s:count_others() abort
+  let bufnr = bufnr('%')
+  let bufnrs = map(range(0, winnr('$')), { -> winbufnr(v:val) })
+  call filter(bufnrs, { -> bufnr isnot# v:val })
+  return len(bufnrs)
+endfunction
+
 if has('nvim')
   function! s:should_ignore() abort
-    return nvim_win_get_config(win_getid()).relative !=# ''
+    return nvim_win_get_config(win_getid()).relative !=# '' || s:count_others() is# 0
   endfunction
 else
   function! s:should_ignore() abort
-    return 0
+    return s:count_others() is# 0
   endfunction
 endif
 
