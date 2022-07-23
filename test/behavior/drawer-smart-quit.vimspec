@@ -1,3 +1,9 @@
+if has('win32')
+  command! Relax sleep 100m
+else
+  command! Relax sleep 1m
+endif
+
 Describe drawer-smart-quit
   After all
     %bwipeout!
@@ -14,7 +20,7 @@ Describe drawer-smart-quit
       Fern . -drawer -keep -stay
       Assert Equals(winnr('$'), 2)
       quit
-      sleep 1m
+      Relax
       Assert Equals(winnr('$'), 2)
     End
 
@@ -23,7 +29,7 @@ Describe drawer-smart-quit
       Fern . -drawer -keep -stay
       Assert Equals(winnr('$'), 2)
       quit
-      sleep 1m
+      Relax
       Assert Equals(winnr('$'), 1)
     End
   End
