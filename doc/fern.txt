@@ -562,6 +562,11 @@ VARIABLE						*fern-variable*
 	A |Number| value that specifies whether to synchronize file renames to the buffer
 	Default: 0
 
+*g:fern#window_selector_use_popup*
+	A |Boolean| which use popup/float window to select window.
+	See |fern-glossary-window-selector|
+	Default: 0
+
 -----------------------------------------------------------------------------
 COMMAND							*fern-command*
 

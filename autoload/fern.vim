@@ -42,6 +42,7 @@ call s:Config.config(expand('<sfile>:p'), {
       \ 'drawer_keep': v:false,
       \ 'drawer_hover_popup_delay': 0,
       \ 'mark_symbol': '*',
+      \ 'window_selector_use_popup': 0,
       \})
 
 function! fern#version() abort

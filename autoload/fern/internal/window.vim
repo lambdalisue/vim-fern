@@ -29,6 +29,7 @@ function! fern#internal#window#select() abort
         \ 'statusline_hl': 'FernWindowSelectStatusLine',
         \ 'indicator_hl': 'FernWindowSelectIndicator',
         \ 'use_winbar': g:fern#internal#window#use_winbar,
+        \ 'use_popup': g:fern#window_selector_use_popup,
         \})
 endfunction
 
