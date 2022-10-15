@@ -15,7 +15,7 @@ function! fern#internal#drawer#hover_popup#init() abort
 
   augroup fern_internal_drawer_hover_popup_init
     autocmd! * <buffer>
-    autocmd CursorMoved <buffer> call s:debounced_show()
+    autocmd CursorMoved <buffer> call s:delayed_show()
     autocmd BufLeave <buffer> call s:hide()
   augroup END
 endfunction
@@ -25,9 +25,9 @@ function! s:available() abort
   return has_win && exists('*win_execute')
 endfunction
 
-function! s:debounced_show() abort
+function! s:delayed_show() abort
   call s:hide()
-  let s:show_timer = timer_start(g:fern#drawer_hover_popup_delay, { -> s:show()  })
+  let s:show_timer = timer_start(g:fern#drawer_hover_popup_delay, { -> s:show() })
 endfunction
 
 function! s:show() abort
@@ -36,7 +36,12 @@ function! s:show() abort
   endif
   call s:hide()
 
-  if strdisplaywidth(getline('.')) <= winwidth(0)
+  " remove trailing unprintable characters
+  let line = substitute(getline('.'), '[^[:print:]]*$', '', 'g')
+  let line_width = strdisplaywidth(line)
+
+  " don't show a popup if the line fits in the window
+  if line_width < winwidth(0)
     return
   endif
 
@@ -46,23 +51,25 @@ function! s:show() abort
     return
   endif
 
-  let line = getline('.')
-  let width = strdisplaywidth(substitute(line, '[^[:print:]]*$', '', 'g'))
   if has('nvim')
     let s:win = nvim_open_win(nvim_create_buf(v:false, v:true), v:false, {
     \    'relative': 'win',
     \    'bufpos': [line('.') - 2, 0],
-    \    'width': width,
+    \    'width': line_width,
     \    'height': 1,
     \    'noautocmd': v:true,
     \    'style': 'minimal',
     \  })
   else
-    let ui_width = screenpos(0, line('.'), 1).col - win_screenpos(0)[1]
+    " calculate position of popup
+    let drawer_winid = win_getid()
+    let pos = getcurpos(drawer_winid)
+    let curpos = screenpos(drawer_winid, pos[1], 1)
+
     let s:win = popup_create(line, {
     \    'line': 'cursor',
-    \    'col': ui_width + 1,
-    \    'maxwidth': width,
+    \    'col': curpos['col'],
+    \    'maxwidth': line_width,
     \  })
   endif
 

@@ -424,9 +424,7 @@ VARIABLE						*fern-variable*
 	the width of the drawer.
 
 	Note that this feature is required the |win_execute| and
-	popup/floatwin features. 
-
-	Note that this feature is only available on a left-sided drawer.
+	popup/floatwin features.
 
 	Default: 0
 
@@ -531,7 +529,7 @@ VARIABLE						*fern-variable*
 	Default: "default"
 
 *g:fern#drawer_width*
-	A |Number| width of drawer in default.
+	A |Number|, the default width of the drawer window.
 	Default: 30
 
 *g:fern#drawer_keep*
