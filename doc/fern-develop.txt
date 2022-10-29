@@ -561,7 +561,7 @@ nodes as a tree.
 	Return a promise which is resolved to a list of |String|.
 
 	Change (v1.6.0):~
-	Second argumet ({marks}) has removed.
+	Second argument ({marks}) has removed.
 
 					*fern-develop-renderer.index()*
 .index({lnum})

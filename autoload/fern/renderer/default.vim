@@ -40,7 +40,7 @@ endfunction
 function! s:syntax() abort
   syntax match FernLeaf   /^.*[^/].*$/ transparent contains=FernLeafSymbol
   syntax match FernBranch /^.*\/.*$/   transparent contains=FernBranchSymbol
-  syntax match FernRoot   /\%1l.*/       transparent contains=FernRootText
+  syntax match FernRoot   /\%1l.*/       transparent contains=FernRootSymbol
   execute printf(
         \ 'syntax match FernRootSymbol /%s/ contained nextgroup=FernRootText',
         \ escape(g:fern#renderer#default#root_symbol, s:ESCAPE_PATTERN),
