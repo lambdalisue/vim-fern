@@ -67,7 +67,7 @@ Fern ([furn](https://www.youtube.com/watch?v=SSYgr-_69mg)) is a general purpose 
 
 fern.vim has no extra dependencies so use your favorite Vim plugin manager or see [How to install](https://github.com/lambdalisue/fern.vim/wiki#how-to-install) page for detail.
 
-- Neovim users **SHOULD** add [antoinemadec/FixCursorHold.nvim](https://github.com/antoinemadec/FixCursorHold.nvim) for now (See [#120](https://github.com/lambdalisue/fern.vim/issues/120))
+- If you use Neovim < 0.8, you **SHOULD** add [antoinemadec/FixCursorHold.nvim](https://github.com/antoinemadec/FixCursorHold.nvim) (See [#120](https://github.com/lambdalisue/fern.vim/issues/120))
 
 ## Usage
 
