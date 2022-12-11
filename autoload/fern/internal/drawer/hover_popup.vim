@@ -62,10 +62,7 @@ function! s:show() abort
           \})
   else
     " calculate position of popup
-    let drawer_winid = win_getid()
-    let pos = getcurpos(drawer_winid)
-    let curpos = screenpos(drawer_winid, pos[1], 1)
-
+    let curpos = screenpos(win_getid(), getcurpos()[1], 1)
     let s:win = popup_create(line, {
           \ 'line': 'cursor',
           \ 'col': curpos['col'],
