@@ -53,24 +53,21 @@ function! s:show() abort
 
   if has('nvim')
     let s:win = nvim_open_win(nvim_create_buf(v:false, v:true), v:false, {
-    \    'relative': 'win',
-    \    'bufpos': [line('.') - 2, 0],
-    \    'width': line_width,
-    \    'height': 1,
-    \    'noautocmd': v:true,
-    \    'style': 'minimal',
-    \  })
+          \ 'relative': 'win',
+          \ 'bufpos': [line('.') - 2, 0],
+          \ 'width': line_width,
+          \ 'height': 1,
+          \ 'noautocmd': v:true,
+          \ 'style': 'minimal',
+          \})
   else
     " calculate position of popup
-    let drawer_winid = win_getid()
-    let pos = getcurpos(drawer_winid)
-    let curpos = screenpos(drawer_winid, pos[1], 1)
-
+    let curpos = screenpos(win_getid(), getcurpos()[1], 1)
     let s:win = popup_create(line, {
-    \    'line': 'cursor',
-    \    'col': curpos['col'],
-    \    'maxwidth': line_width,
-    \  })
+          \ 'line': 'cursor',
+          \ 'col': curpos['col'],
+          \ 'maxwidth': line_width,
+          \})
   endif
 
   function! s:apply() abort closure
