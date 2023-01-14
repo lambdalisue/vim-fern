@@ -67,6 +67,6 @@ function! s:focus_next(right) abort
   if winnr is# 0
     return
   endif
-  noautocmd call win_gotoid(win_getid(winnr))
+  call win_gotoid(win_getid(winnr))
   return 1
 endfunction
