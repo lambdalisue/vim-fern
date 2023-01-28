@@ -38,23 +38,25 @@ function! s:lnum(index) abort
 endfunction
 
 function! s:syntax() abort
-  syntax match FernLeaf   /^.*[^/].*$/ transparent contains=FernLeafSymbol
-  syntax match FernBranch /^.*\/.*$/   transparent contains=FernBranchSymbol
+  syntax match FernLeaf   /^.*[^/].*$/ transparent contains=FernLeaderSymbol
+  syntax match FernBranch /^.*\/.*$/   transparent contains=FernLeaderSymbol
   syntax match FernRoot   /\%1l.*/       transparent contains=FernRootSymbol
   execute printf(
         \ 'syntax match FernRootSymbol /%s/ contained nextgroup=FernRootText',
         \ escape(g:fern#renderer#default#root_symbol, s:ESCAPE_PATTERN),
         \)
   execute printf(
-        \ 'syntax match FernLeafSymbol /^\%%(%s\)*%s/ contained nextgroup=FernLeafText',
-        \ escape(g:fern#renderer#default#leading, s:ESCAPE_PATTERN),
+        \ 'syntax match FernLeafSymbol /%s/ contained nextgroup=FernLeafText',
         \ escape(g:fern#renderer#default#leaf_symbol, s:ESCAPE_PATTERN),
         \)
   execute printf(
-        \ 'syntax match FernBranchSymbol /^\%%(%s\)*\%%(%s\|%s\)/ contained nextgroup=FernBranchText',
-        \ escape(g:fern#renderer#default#leading, s:ESCAPE_PATTERN),
+        \ 'syntax match FernBranchSymbol /\%%(%s\|%s\)/ contained nextgroup=FernBranchText',
         \ escape(g:fern#renderer#default#collapsed_symbol, s:ESCAPE_PATTERN),
         \ escape(g:fern#renderer#default#expanded_symbol, s:ESCAPE_PATTERN),
+        \)
+  execute printf(
+        \ 'syntax match FernLeaderSymbol /^\%%(%s\)*/ contained nextgroup=FernBranchSymbol,FernLeafSymbol',
+        \ escape(g:fern#renderer#default#leading, s:ESCAPE_PATTERN),
         \)
   syntax match FernRootText   /.*\ze.*$/ contained nextgroup=FernBadgeSep
   syntax match FernLeafText   /.*\ze.*$/ contained nextgroup=FernBadgeSep
@@ -71,6 +73,7 @@ function! s:highlight() abort
   highlight default link FernLeafText     None
   highlight default link FernBranchSymbol Directory
   highlight default link FernBranchText   Directory
+  highlight default link FernLeaderSymbol Directory
 endfunction
 
 function! s:render_node(node, base, options) abort
