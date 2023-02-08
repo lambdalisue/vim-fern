@@ -46,8 +46,8 @@ No external dependencies~
 	https://github.com/lambdalisue/vital-Whisky/issues/31
 
 Asynchronous~
-	Fern uses asynchronous technique to perform most of operations so Vim 
-	would not freeze during operations. It is probably obvious in Windows 
+	Fern uses asynchronous technique to perform most of operations so Vim
+	would not freeze during operations. It is probably obvious in Windows
 	while file operations in Windows are relatively slow.
 
 Split windows or project drawer~
@@ -55,21 +55,21 @@ Split windows or project drawer~
 	drawer (e.g.  NERDTree); officially.
 
 Buffer name base~
-	Fern is developed based on |BufReadCmd| technique like netrw. Thus any 
-	buffer starts from "fern://" are handled by fern and required 
-	arguments and options are read from the buffer name. That's why fern 
+	Fern is developed based on |BufReadCmd| technique like netrw. Thus any
+	buffer starts from "fern://" are handled by fern and required
+	arguments and options are read from the buffer name. That's why fern
 	integrate well with |session|.
 
 Action~
 	Fern provides operation as action. When user hit "?", all actions and
-	corresponding mapping (if exist) are shown. When user hit "a", an 
+	corresponding mapping (if exist) are shown. When user hit "a", an
 	action prompt will popped up and user can input an action to execute.
-	So users don't have to remember complex mappings to execute operation 
+	So users don't have to remember complex mappings to execute operation
 	which is not often required.
 
 Window selector~
-	Fern has an internal window selector which works like 
-	t9md/vim-choosewin.  Users can quickly select which window to open a 
+	Fern has an internal window selector which works like
+	t9md/vim-choosewin.  Users can quickly select which window to open a
 	selected node.
 	See |hl-FernWindowSelectIndicator| and |hl-FernWindowSelectStatusLine|
 	to customize the statusline when selecting a window.
@@ -77,7 +77,7 @@ Window selector~
 
 Renamer (A.k.a exrename)~
 	Fern has an internal renamer which works like "exrename" in
-	Shougo/vimfiler.  Users can edit multiple path of nodes in Vim's 
+	Shougo/vimfiler.  Users can edit multiple path of nodes in Vim's
 	buffer and ":w" to apply changes to actual nodes (file, directory,
 	bookmark, etc.)
 	https://github.com/Shougo/vimfiler
@@ -88,13 +88,13 @@ System CRUD operations ("file" scheme)~
 
 System program support ("file" scheme)~
 	Fern supports to open a file/directory through a system default
-	program. So it's quite easy to open a directory with Explorer 
+	program. So it's quite easy to open a directory with Explorer
 	(Windows), Finder (macOS), or whatever.
 
 System trash-bin support ("file" scheme)~
-	Fern supports system trash-bin by PowerShell (Windows), osascript 
-	(macOS), and 3rd party applications (Linux). Any files/directories 
-	deleted by "trash" action are sent to system trash-bin rather than 
+	Fern supports system trash-bin by PowerShell (Windows), osascript
+	(macOS), and 3rd party applications (Linux). Any files/directories
+	deleted by "trash" action are sent to system trash-bin rather than
 	actual delete.
 
 -----------------------------------------------------------------------------
@@ -504,7 +504,7 @@ VARIABLE						*fern-variable*
 	                        |               |               |
 	                        +---------------+---------------+
 <
-	Default: 0 
+	Default: 0
 
 *g:fern#default_hidden*
 	Set 1 to enter hidden mode (show hidden files) in default.
@@ -611,7 +611,7 @@ COMMAND							*fern-command*
 	the specified value. (See |g:fern#drawer_width|)
 	If "-keep" option is specified, the buffer won't close even if only
 	this window exists. (See |g:fern#drawer_keep|)
-	If "-toggle" option is specified, an existing fern buffer will be 
+	If "-toggle" option is specified, an existing fern buffer will be
 	closed rather than opening a new one.
 	If "-right" option is specified, the drawer is placed on the right
 	side.
@@ -745,32 +745,41 @@ FernMarkedText					*hl-FernMarkedText*
 
 FernRootSymbol					*hl-FernRootSymbol*
 	A |highlight| group of renderer used for root node symbol.
-	An actual appearance will be determined by the |fern-renderer| thus 
+	An actual appearance will be determined by the |fern-renderer| thus
 	this highlight might not be referred.
-	
+
 FernRootText					*hl-FernRootText*
 	A |highlight| group of renderer used for root node text.
-	An actual appearance will be determined by the |fern-renderer| thus 
+	An actual appearance will be determined by the |fern-renderer| thus
 	this highlight might not be referred.
 
 FernLeafSymbol					*hl-FernLeafSymbol*
 	A |highlight| group of renderer used for leaf node symbol.
-	An actual appearance will be determined by the |fern-renderer| thus 
+	See |g:fern#renderer#default#leaf_symbol|.
+	An actual appearance will be determined by the |fern-renderer| thus
 	this highlight might not be referred.
-	
+
 FernLeafText					*hl-FernLeafText*
 	A |highlight| group of renderer used for leaf node text.
-	An actual appearance will be determined by the |fern-renderer| thus 
+	An actual appearance will be determined by the |fern-renderer| thus
 	this highlight might not be referred.
 
 FernBranchSymbol				*hl-FernBranchSymbol*
 	A |highlight| group of renderer used for branch node symbol.
-	An actual appearance will be determined by the |fern-renderer| thus 
+	See |g:fern#renderer#default#expanded_symbol| and
+	|g:fern#renderer#default#collapsed_symbol|.
+	An actual appearance will be determined by the |fern-renderer| thus
 	this highlight might not be referred.
-	
+
 FernBranchText					*hl-FernBranchText*
 	A |highlight| group of renderer used for branch node text.
-	An actual appearance will be determined by the |fern-renderer| thus 
+	An actual appearance will be determined by the |fern-renderer| thus
+	this highlight might not be referred.
+
+FernLeaderSymbol				*hl-FernLeaderSymbol*
+	A |highlight| group of renderer used for the node leading symbol.
+	See |g:fern#renderer#default#leading|.
+	An actual appearance will be determined by the |fern-renderer| thus
 	this highlight might not be referred.
 
 FernWindowSelectIndicator		*hl-FernWindowSelectIndicator*
@@ -810,7 +819,7 @@ GLOBAL							*fern-mapping-global*
 *<Plug>(fern-action-hidden:set)*
 	Show hidden nodes. For example hidden nodes in file:// scheme is a
 	file or directory starts from '.' character.
-	
+
 *<Plug>(fern-action-hidden:unset)*
 	Hide hidden nodes. For example hidden nodes in file:// scheme is a
 	file or directory starts from '.' character.
@@ -860,7 +869,7 @@ GLOBAL							*fern-mapping-global*
 	Toggle marks on cursor node(s).
 
 *<Plug>(fern-action-mark)*
-	An alias to "mark:toggle" action. Users can overwrite this mapping to 
+	An alias to "mark:toggle" action. Users can overwrite this mapping to
 	change the default behavior of "mark" action.
 
 *<Plug>(fern-action-debug)*
@@ -876,7 +885,7 @@ GLOBAL							*fern-mapping-global*
 	An alias to "reload:all" action. Users can overwrite this mapping to
 	change the default behavior of "reload" action like:
 >
-	nmap <buffer> 
+	nmap <buffer>
 	      \ <Plug>(fern-action-reload)
 	      \ <Plug>(fern-action-reload:cursor)
 <
@@ -891,7 +900,7 @@ GLOBAL							*fern-mapping-global*
 	An alias to "expand:in" action. Users can overwrite this mapping to
 	change the default behavior of "expand" action like:
 >
-	nmap <buffer> 
+	nmap <buffer>
 	      \ <Plug>(fern-action-expand)
 	      \ <Plug>(fern-action-expand:stay)
 <
@@ -918,7 +927,7 @@ GLOBAL							*fern-mapping-global*
 	word, get enter the directory.
 
 *<Plug>(fern-action-leave)*
-	Open a new fern buffer which root node is a parent node of the current 
+	Open a new fern buffer which root node is a parent node of the current
 	root node. In other word, go up directory.
 
 *<Plug>(fern-action-open:select)*
@@ -938,7 +947,7 @@ GLOBAL							*fern-mapping-global*
 
 *<Plug>(fern-action-open:edit-or-error)*
 	Open a cursor node or marked nodes with |edit| command or fallback
-	to print an error. 
+	to print an error.
 	Note that when 'hidden' has set or 'bufhidden' is "hide", the |edit|
 	command will never fails.
 
@@ -985,7 +994,7 @@ GLOBAL							*fern-mapping-global*
 	An alias to "open:edit-or-error" action. Users can overwrite this
 	mapping to change the default behavior of "open:edit" action like:
 >
-	nmap <buffer> 
+	nmap <buffer>
 	      \ <Plug>(fern-action-open:edit)
 	      \ <Plug>(fern-action-open:edit-or-tabedit)
 <
@@ -993,7 +1002,7 @@ GLOBAL							*fern-mapping-global*
 	An alias to "open:edit" action. Users can overwrite this mapping to
 	change the default behavior of "open" action like:
 >
-	nmap <buffer> 
+	nmap <buffer>
 	      \ <Plug>(fern-action-open)
 	      \ <Plug>(fern-action-open:select)
 <
@@ -1029,7 +1038,7 @@ GLOBAL							*fern-mapping-global*
 *<Plug>(fern-action-diff:edit-or-vsplit:vert)*
 *<Plug>(fern-action-diff:edit-or-tabedit)*
 *<Plug>(fern-action-diff:edit-or-tabedit:vert)*
-	Open a first marked node with |edit| command or fallback to a 
+	Open a first marked node with |edit| command or fallback to a
 	corresponding command then .
 	Note that when 'hidden' has set or 'bufhidden' is "hide", the |edit|
 	command will never fails.
@@ -1074,7 +1083,7 @@ GLOBAL							*fern-mapping-global*
 	An alias to "diff:edit-or-error" action. Users can overwrite this
 	mapping to change the default behavior of "diff:edit" action like:
 >
-	nmap <buffer> 
+	nmap <buffer>
 	      \ <Plug>(fern-action-diff:edit)
 	      \ <Plug>(fern-action-diff:edit-or-tabedit)
 <
@@ -1082,7 +1091,7 @@ GLOBAL							*fern-mapping-global*
 	An alias to "diff:edit" action. Users can overwrite this mapping to
 	change the default behavior of "diff" action like:
 >
-	nmap <buffer> 
+	nmap <buffer>
 	      \ <Plug>(fern-action-diff)
 	      \ <Plug>(fern-action-diff:select)
 <
@@ -1101,15 +1110,15 @@ GLOBAL							*fern-mapping-global*
 	An alias to "yank:bufname" action. Users can overwrite this mapping to
 	change the default behavior of "yank" action like:
 >
-	nmap <buffer> 
+	nmap <buffer>
 	      \ <Plug>(fern-action-yank)
 	      \ <Plug>(fern-action-yank:label)
 <
 	Note that this mapping is overwritten in FILE scheme.
 
 *<Plug>(fern-wait)*
-	Wait until the fern buffer become ready which would opened just before 
-	this mapping. This is required while fern buffers are loaded 
+	Wait until the fern buffer become ready which would opened just before
+	this mapping. This is required while fern buffers are loaded
 	asynchronously but mappings are inovked synchronously.
 	Note this is not action.
 
@@ -1121,7 +1130,7 @@ The following mappings/actions are only available on file:// scheme.
 
 *<Plug>(fern-action-ex)*
 *<Plug>(fern-action-ex=)*
-	Open a prompt to execute an Ex command with a path of cursor node or 
+	Open a prompt to execute an Ex command with a path of cursor node or
 	paths of marked nodes.
 	You can use a "=" variant to apply values to the prompt and/or submit
 	a value like:
@@ -1161,7 +1170,7 @@ The following mappings/actions are only available on file:// scheme.
 <
 *<Plug>(fern-action-new-dir)*
 *<Plug>(fern-action-new-dir=)*
-	Open a prompt to ask a path and create a directory of the input path 
+	Open a prompt to ask a path and create a directory of the input path
 	from the path of a cursor node.
 	Any intermediate directories of the destination will be created.
 	You can use a "=" variant to apply values to the prompt and/or submit
@@ -1234,7 +1243,7 @@ The following mappings/actions are only available on file:// scheme.
 	An alias to "cd:cursor", "lcd:cursor", and "tcd:cursor" action.
 	Users can overwrite this mapping to change the default behavior like:
 >
-	nmap <buffer> 
+	nmap <buffer>
 	      \ <Plug>(fern-action-cd)
 	      \ <Plug>(fern-action-cd:root)
 <
@@ -1317,7 +1326,7 @@ The following mappings/actions are only available on file:// scheme.
 *<Plug>(fern-action-terminal:edit)*
 *<Plug>(fern-action-terminal:side)*
 *<Plug>(fern-action-terminal)*
-	Open terminal window(s) on or on parent of a cursor node or marked 
+	Open terminal window(s) on or on parent of a cursor node or marked
 	nodes in similar manners of global "open" actions.
 
 *<Plug>(fern-action-yank:path)*
