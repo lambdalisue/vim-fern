@@ -74,7 +74,7 @@ function! s:show() abort
     call setbufline('%', 1, line)
     call helper.fern.renderer.syntax()
     call helper.fern.renderer.highlight()
-    syntax clear FernRoot
+    syntax clear FernRootSymbol
     syntax clear FernRootText
 
     setlocal nowrap cursorline noswapfile nobuflisted buftype=nofile bufhidden=hide

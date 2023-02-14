@@ -5,6 +5,16 @@ Describe fern#internal#buffer
 
   Before
     %bwipeout!
+    if !has('nvim')
+      call prop_type_add('test_prop', { 'highlight': 'Question' })
+    endif
+  End
+
+  After
+    let g:fern#enable_textprop_support = 0
+    if !has('nvim')
+      call prop_type_delete('test_prop')
+    endif
   End
 
   Describe #replace()
@@ -114,6 +124,45 @@ Describe fern#internal#buffer
             \ "World",
             \])
       Assert Equals(getbufvar(bufnr, '&modified'), 1)
+    End
+
+    It should replace buffer content with text and properties
+      if has('nvim')
+        Assert Skip('text properties are only supported in vim')
+      endif
+
+      let g:fern#enable_textprop_support = 1
+
+      let bufnr = bufnr('%')
+      call setline(1, [
+            \ "Hello",
+            \ "Darkness",
+            \ "My",
+            \ "Old",
+            \ "Friend",
+            \])
+      new
+      call fern#internal#buffer#replace(bufnr, [
+            \ { 'text': 'Empty Props', 'props': [] },
+            \ { 'text': 'Undefined Props' },
+            \ { 'text': 'With Properties!', 'props':
+            \   [{ 'col': 1, 'length': 4, 'type': 'test_prop' }]
+            \ },
+            \])
+      Assert Equals(getbufline(bufnr, 1, '$'), [
+            \ "Empty Props",
+            \ "Undefined Props",
+            \ "With Properties!",
+            \])
+
+      Assert True(empty(prop_list(1, { 'bufnr': bufnr })))
+      Assert True(empty(prop_list(2, { 'bufnr': bufnr })))
+
+      let result_props = prop_list(3, { 'bufnr': bufnr })
+      Assert Equal(len(result_props), 1)
+      Assert Equal(result_props[0].col, 1)
+      Assert Equal(result_props[0].length, 4)
+      Assert Equal(result_props[0].type, 'test_prop')
     End
   End
 
