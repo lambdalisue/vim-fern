@@ -36,6 +36,7 @@ call s:Config.config(expand('<sfile>:p'), {
       \ 'default_exclude': '',
       \ 'renderer': 'default',
       \ 'renderers': {},
+      \ 'enable_textprop_support': 0,
       \ 'comparator': 'default',
       \ 'comparators': {},
       \ 'drawer_width': 30,

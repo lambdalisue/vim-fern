@@ -5,12 +5,38 @@ function! fern#internal#buffer#replace(bufnr, content) abort
   let modifiable_saved = getbufvar(a:bufnr, '&modifiable')
   try
     call setbufvar(a:bufnr, '&modifiable', 1)
-    call setbufline(a:bufnr, 1, a:content)
-    call deletebufline(a:bufnr, len(a:content) + 1, '$')
+
+    if g:fern#enable_textprop_support
+      call s:replace_buffer_content(a:bufnr, a:content)
+    else
+      call setbufline(a:bufnr, 1, a:content)
+      call deletebufline(a:bufnr, len(a:content) + 1, '$')
+    endif
   finally
     call setbufvar(a:bufnr, '&modifiable', modifiable_saved)
     call setbufvar(a:bufnr, '&modified', modified_saved)
   endtry
+endfunction
+
+" Replace buffer content with lines of text with (optional) text properties.
+function! s:replace_buffer_content(bufnr, content) abort
+  for lnum in range(len(a:content))
+    let line = a:content[lnum]
+    let [text, props] = type(line) is# v:t_dict
+      \ ? [line.text, get(line, 'props', [])]
+      \ : [line, []]
+
+    call setbufline(a:bufnr, lnum + 1, text)
+
+    if exists('*prop_add')
+      for prop in props
+        let prop.bufnr = a:bufnr
+        call prop_add(lnum + 1, prop.col, prop)
+      endfor
+    endif
+  endfor
+
+  call deletebufline(a:bufnr, len(a:content) + 1, '$')
 endfunction
 
 function! fern#internal#buffer#open(bufname, ...) abort

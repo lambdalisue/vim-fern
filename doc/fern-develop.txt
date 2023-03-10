@@ -558,7 +558,15 @@ nodes as a tree.
 
 					*fern-develop-renderer.render()*
 .render({nodes})
-	Return a promise which is resolved to a list of |String|.
+	Return a promise which is resolved to:
+
+	  a list of |String|, or
+	  if |g:fern#enable_textprop_support| is 1, a list of |Dictionary|
+		with the following entries:
+	    text  |String| with the text to display.
+	    props A list of text properties (|Dictionary|). Optional. Not supported
+	          for Neovim. Each entry is a dictionary, like the third argument
+	          of |prop_add()|, but specifying a column with a "col" entry.
 
 	Change (v1.6.0):~
 	Second argument ({marks}) has removed.
