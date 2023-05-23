@@ -1136,7 +1136,7 @@ The following mappings/actions are only available on file:// scheme.
 *<Plug>(fern-action-ex)*
 *<Plug>(fern-action-ex=)*
 	Open a prompt to execute an Ex command with a path of cursor node or
-	paths of marked nodes.
+	paths of marked nodes. The paths are |fnameescape()|ed.
 	You can use a "=" variant to apply values to the prompt and/or submit
 	a value like:
 >
