@@ -26,7 +26,7 @@ function! s:map_ex(helper) abort
     return
   endif
   call feedkeys("\<Home>", 'in')
-  let expr = join(map(copy(nodes), { _, v -> fnamemodify(v._path, ':~:.') }), ' ')
+  let expr = join(map(copy(nodes), { _, v -> fnameescape(fnamemodify(v._path, ':~:.')) }), ' ')
   let expr = input(':', ' ' . expr, 'command')
   if empty(expr)
     return
