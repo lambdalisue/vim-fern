@@ -3,10 +3,8 @@ name: vim
 on:
   push:
     branches:
-      - master
+      - main
   pull_request:
-    branches:
-      - master
 
 jobs:
   build:
@@ -18,21 +16,25 @@ jobs:
           - windows-latest
           - ubuntu-latest
         version:
-          - nightly
-          - v8.2.0716   # Ubuntu 20.10 (2021/02/28)
-          - v8.1.2269   # Ubuntu 20.04 (2021/02/28)
+          - head
+          - v8.2.0716 # Ubuntu 20.10 (2021/02/28)
+          - v8.1.2269 # Ubuntu 20.04 (2021/02/28)
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
+      - uses: actions/checkout@v3
         with:
           repository: thinca/vim-themis
           path: vim-themis
-      - uses: rhysd/action-setup-vim@v1
+      - uses: thinca/action-setup-vim@v1
         id: vim
         with:
-          neovim: false
-          version: ${{ matrix.version }}
+          vim_type: "Vim"
+          vim_version: "${{ matrix.version }}"
+          # NOTE:
+          # On Linux, Vim must be built from source to fix `input` issue
+          # https://github.com/thinca/action-setup-vim/issues/11
+          download: "${{ (runner.OS == 'Linux' && 'never') || 'available' }}"
       - name: Run tests
         env:
           THEMIS_VIM: ${{ steps.vim.outputs.executable }}
