@@ -3,10 +3,8 @@ name: vim
 on:
   push:
     branches:
-      - master
+      - main
   pull_request:
-    branches:
-      - master
 
 jobs:
   build:
@@ -19,8 +17,8 @@ jobs:
           - ubuntu-latest
         version:
           - nightly
-          - v8.2.0716   # Ubuntu 20.10 (2021/02/28)
-          - v8.1.2269   # Ubuntu 20.04 (2021/02/28)
+          - v8.2.0716 # Ubuntu 20.10 (2021/02/28)
+          - v8.1.2269 # Ubuntu 20.04 (2021/02/28)
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v2
