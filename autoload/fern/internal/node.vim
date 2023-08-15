@@ -135,7 +135,6 @@ function! fern#internal#node#expand_tree(node, nodes, provider, comparator, toke
   if a:node is# v:null || a:node.status is# s:STATUS_NONE
     return s:Promise.resolve(a:nodes)
   endif
-  " Expand the node
   return fern#internal#node#expand(a:node, a:nodes, a:provider, a:comparator, a:token)
         \.then({ -> fern#internal#node#children(a:node, a:provider, a:token) })
         \.then(s:AsyncLambda.map_f({child_node -> fern#internal#node#expand_tree(child_node, a:nodes, a:provider, a:comparator, a:token)}))
