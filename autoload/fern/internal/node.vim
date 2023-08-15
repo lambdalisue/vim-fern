@@ -141,7 +141,7 @@ function! fern#internal#node#expand_tree(node, nodes, provider, comparator, toke
         \.then({ -> fern#internal#node#children(a:node, a:provider, a:token) })
         \.then(s:AsyncLambda.map_f({child_node -> fern#internal#node#expand_tree(child_node, a:nodes, a:provider, a:comparator, a:token)}))
         \.then({ subtrees -> s:Promise.all(subtrees)})
-
+        \.then({ -> a:nodes })
 endfunction
 
 function! fern#internal#node#collapse(node, nodes, provider, comparator, token) abort
