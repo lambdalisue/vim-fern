@@ -19,6 +19,7 @@ function! fern#mapping#node#init(disable_default_mappings) abort
 
   nmap <buffer> <Plug>(fern-action-reload) <Plug>(fern-action-reload:all)
   nmap <buffer> <Plug>(fern-action-expand) <Plug>(fern-action-expand:in)
+  nmap <buffer> <Plug>(fern-action-expand-tree) <Plug>(fern-action-expand-tree:in)
 
   if !a:disable_default_mappings
     nmap <buffer><nowait> <F5> <Plug>(fern-action-reload)
