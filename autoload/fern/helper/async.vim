@@ -179,7 +179,7 @@ function! s:async_expand_tree(key) abort dict
         \   fern.source.token,
         \ )
         \})
-        \.then({ _ -> self.update_nodes(fern.nodes) })
+        \.then({ ns -> self.update_nodes(ns) })
         \.finally({ -> Profile() })
 endfunction
 let s:async.expand_tree = funcref('s:async_expand_tree')
