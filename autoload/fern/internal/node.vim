@@ -248,7 +248,6 @@ function! s:extend(key, nodes, new_nodes) abort
 endfunction
 
 function! s:expand_recursively(index, key, nodes, provider, comparator, token) abort
-  echom "Lookie here:" a:nodes
   let node = fern#internal#node#find(a:key[:a:index], a:nodes)
   if node is# v:null || node.status is# s:STATUS_NONE
     return s:Promise.resolve(a:nodes)
