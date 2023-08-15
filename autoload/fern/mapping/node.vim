@@ -7,6 +7,8 @@ function! fern#mapping#node#init(disable_default_mappings) abort
   nnoremap <buffer><silent> <Plug>(fern-action-reload:cursor) :<C-u>call <SID>call('reload_cursor')<CR>
   nnoremap <buffer><silent> <Plug>(fern-action-expand:stay)   :<C-u>call <SID>call('expand_stay')<CR>
   nnoremap <buffer><silent> <Plug>(fern-action-expand:in)     :<C-u>call <SID>call('expand_in')<CR>
+  nnoremap <buffer><silent> <Plug>(fern-action-expand-recursive:stay)   :<C-u>call <SID>call('expand_recursive_stay')<CR>
+  nnoremap <buffer><silent> <Plug>(fern-action-expand-recursive:in)     :<C-u>call <SID>call('expand_recursive_in')<CR>
   nnoremap <buffer><silent> <Plug>(fern-action-collapse)      :<C-u>call <SID>call('collapse')<CR>
   nnoremap <buffer><silent> <Plug>(fern-action-reveal)        :<C-u>call <SID>call('reveal')<CR>
   nnoremap <buffer><silent> <Plug>(fern-action-reveal=)       :<C-u>call <SID>call_without_guard('reveal')<CR>
@@ -87,6 +89,39 @@ function! s:map_expand_in(helper) abort
   let previous = a:helper.sync.get_cursor_node()
   let ns = {}
   return a:helper.async.expand_node(node.__key)
+        \.then({ -> a:helper.async.get_child_nodes(node.__key) })
+        \.then({ c -> s:Lambda.let(ns, 'offset', len(c) > 0) })
+        \.then({ -> a:helper.async.redraw() })
+        \.then({ -> a:helper.sync.focus_node(
+        \   node.__key,
+        \   { 'previous': previous, 'offset': ns.offset },
+        \ )
+        \})
+endfunction
+
+function! s:map_expand_recursive_stay(helper) abort
+  let node = a:helper.sync.get_cursor_node()
+  if node is# v:null
+    return s:Promise.reject('no node found on a cursor line')
+  endif
+  let previous = a:helper.sync.get_cursor_node()
+  return a:helper.async.expand_tree(node.__key)
+        \.then({ -> a:helper.async.redraw() })
+        \.then({ -> a:helper.sync.focus_node(
+        \   node.__key,
+        \   { 'previous': previous },
+        \ )
+        \})
+endfunction
+
+function! s:map_expand_recursive_in(helper) abort
+  let node = a:helper.sync.get_cursor_node()
+  if node is# v:null
+    return s:Promise.reject('no node found on a cursor line')
+  endif
+  let previous = a:helper.sync.get_cursor_node()
+  let ns = {}
+  return a:helper.async.expand_tree(node.__key)
         \.then({ -> a:helper.async.get_child_nodes(node.__key) })
         \.then({ c -> s:Lambda.let(ns, 'offset', len(c) > 0) })
         \.then({ -> a:helper.async.redraw() })
