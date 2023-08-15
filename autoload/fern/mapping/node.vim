@@ -2,20 +2,20 @@ let s:Promise = vital#fern#import('Async.Promise')
 let s:Lambda = vital#fern#import('Lambda')
 
 function! fern#mapping#node#init(disable_default_mappings) abort
-  nnoremap <buffer><silent> <Plug>(fern-action-debug)         :<C-u>call <SID>call('debug')<CR>
-  nnoremap <buffer><silent> <Plug>(fern-action-reload:all)    :<C-u>call <SID>call('reload_all')<CR>
-  nnoremap <buffer><silent> <Plug>(fern-action-reload:cursor) :<C-u>call <SID>call('reload_cursor')<CR>
-  nnoremap <buffer><silent> <Plug>(fern-action-expand:stay)   :<C-u>call <SID>call('expand_stay')<CR>
-  nnoremap <buffer><silent> <Plug>(fern-action-expand:in)     :<C-u>call <SID>call('expand_in')<CR>
-  nnoremap <buffer><silent> <Plug>(fern-action-expand-recursive:stay)   :<C-u>call <SID>call('expand_recursive_stay')<CR>
-  nnoremap <buffer><silent> <Plug>(fern-action-expand-recursive:in)     :<C-u>call <SID>call('expand_recursive_in')<CR>
-  nnoremap <buffer><silent> <Plug>(fern-action-collapse)      :<C-u>call <SID>call('collapse')<CR>
-  nnoremap <buffer><silent> <Plug>(fern-action-reveal)        :<C-u>call <SID>call('reveal')<CR>
-  nnoremap <buffer><silent> <Plug>(fern-action-reveal=)       :<C-u>call <SID>call_without_guard('reveal')<CR>
-  nnoremap <buffer><silent> <Plug>(fern-action-focus:parent)  :<C-u>call <SID>call('focus_parent')<CR>
+  nnoremap <buffer><silent> <Plug>(fern-action-debug)            :<C-u>call <SID>call('debug')<CR>
+  nnoremap <buffer><silent> <Plug>(fern-action-reload:all)       :<C-u>call <SID>call('reload_all')<CR>
+  nnoremap <buffer><silent> <Plug>(fern-action-reload:cursor)    :<C-u>call <SID>call('reload_cursor')<CR>
+  nnoremap <buffer><silent> <Plug>(fern-action-expand:stay)      :<C-u>call <SID>call('expand_stay')<CR>
+  nnoremap <buffer><silent> <Plug>(fern-action-expand:in)        :<C-u>call <SID>call('expand_in')<CR>
+  nnoremap <buffer><silent> <Plug>(fern-action-expand-tree:stay) :<C-u>call <SID>call('expand_tree_stay')<CR>
+  nnoremap <buffer><silent> <Plug>(fern-action-expand-tree:in)   :<C-u>call <SID>call('expand_tree_in')<CR>
+  nnoremap <buffer><silent> <Plug>(fern-action-collapse)         :<C-u>call <SID>call('collapse')<CR>
+  nnoremap <buffer><silent> <Plug>(fern-action-reveal)           :<C-u>call <SID>call('reveal')<CR>
+  nnoremap <buffer><silent> <Plug>(fern-action-reveal=)          :<C-u>call <SID>call_without_guard('reveal')<CR>
+  nnoremap <buffer><silent> <Plug>(fern-action-focus:parent)     :<C-u>call <SID>call('focus_parent')<CR>
 
-  nnoremap <buffer><silent> <Plug>(fern-action-enter)         :<C-u>call <SID>call('enter')<CR>
-  nnoremap <buffer><silent> <Plug>(fern-action-leave)         :<C-u>call <SID>call('leave')<CR>
+  nnoremap <buffer><silent> <Plug>(fern-action-enter)            :<C-u>call <SID>call('enter')<CR>
+  nnoremap <buffer><silent> <Plug>(fern-action-leave)            :<C-u>call <SID>call('leave')<CR>
 
   nmap <buffer> <Plug>(fern-action-reload) <Plug>(fern-action-reload:all)
   nmap <buffer> <Plug>(fern-action-expand) <Plug>(fern-action-expand:in)
@@ -99,7 +99,7 @@ function! s:map_expand_in(helper) abort
         \})
 endfunction
 
-function! s:map_expand_recursive_stay(helper) abort
+function! s:map_expand_tree_stay(helper) abort
   let node = a:helper.sync.get_cursor_node()
   if node is# v:null
     return s:Promise.reject('no node found on a cursor line')
@@ -114,7 +114,7 @@ function! s:map_expand_recursive_stay(helper) abort
         \})
 endfunction
 
-function! s:map_expand_recursive_in(helper) abort
+function! s:map_expand_tree_in(helper) abort
   let node = a:helper.sync.get_cursor_node()
   if node is# v:null
     return s:Promise.reject('no node found on a cursor line')
