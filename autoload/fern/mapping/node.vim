@@ -123,9 +123,9 @@ function! s:map_expand_tree_in(helper) abort
   let previous = a:helper.sync.get_cursor_node()
   let ns = {}
   return a:helper.async.expand_tree(node.__key)
+        \.then({ -> a:helper.async.redraw() })
         \.then({ -> a:helper.async.get_child_nodes(node.__key) })
         \.then({ c -> s:Lambda.let(ns, 'offset', len(c) > 0) })
-        \.then({ -> a:helper.async.redraw() })
         \.then({ -> a:helper.sync.focus_node(
         \   node.__key,
         \   { 'previous': previous, 'offset': ns.offset },
