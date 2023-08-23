@@ -134,16 +134,18 @@ endfunction
 
 function! fern#internal#node#expand_tree(node, nodes, provider, comparator, token) abort
   if a:node is# v:null || a:node.status is# s:STATUS_NONE
-    return s:Promise.reject("cannot expand a leaf node")
+    return s:Promise.reject('cannot expand a leaf node')
   endif
   let l:state = {}
+  let l:Done = fern#internal#node#process(a:node)
   return fern#internal#node#expand(a:node, a:nodes, a:provider, a:comparator, a:token)
         \.then({ns -> s:Lambda.let(state, 'ns', ns)})
         \.then({ -> fern#internal#node#children(a:node, a:provider, a:token) })
-        \.then(s:AsyncLambda.filter_f({child -> child isnot# v:null && child.status isnot# s:STATUS_NONE}))
-        \.then(s:AsyncLambda.map_f({child_node -> fern#internal#node#expand_tree(child_node, state.ns, a:provider, a:comparator, a:token)}))
-        \.then({ subtree_promises -> s:Promise.all(subtree_promises)})
-        \.then({ -> state.ns })
+        \.then(s:AsyncLambda.filter_f({ child -> child isnot# v:null && child.status isnot# s:STATUS_NONE }))
+        \.then(s:AsyncLambda.map_f({child_node -> fern#internal#node#expand_tree(child_node, state.ns, a:provider, a:comparator, a:token) }))
+        \.then({ subtree_promises -> s:Promise.all(subtree_promises) })
+        \.then({ -> l:state.ns })
+        \.finally({ -> Done() })
 endfunction
 
 function! fern#internal#node#collapse(node, nodes, provider, comparator, token) abort
