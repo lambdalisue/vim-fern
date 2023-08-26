@@ -395,7 +395,7 @@ Describe fern#internal#node
             \])
 
       let [r, e] = Promise.wait(
-            \ fern#internal#node#reveal(['deep', 'alpha'], nodes, provider, Comparator, token),
+            \ fern#internal#node#reveal(['deep', 'alpha'], r, provider, Comparator, token),
             \ { 'timeout': TIMEOUT },
             \)
       Assert Equals(e, v:null)
@@ -410,23 +410,7 @@ Describe fern#internal#node
             \])
 
       let [r, e] = Promise.wait(
-            \ fern#internal#node#reveal(['deep', 'alpha', 'beta'], nodes, provider, Comparator, token),
-            \ { 'timeout': TIMEOUT },
-            \)
-      Assert Equals(e, v:null)
-      Assert Equals(DescribeNodes(r), [
-            \ '/',
-            \ '/deep',
-            \ '/deep/alpha',
-            \ '/deep/alpha/beta',
-            \ '/deep/alpha/beta/gamma',
-            \ '/heavy',
-            \ '/shallow',
-            \ '/leaf',
-            \])
-
-      let [r, e] = Promise.wait(
-            \ fern#internal#node#reveal(['deep', 'alpha', 'beta', 'gamma'], nodes, provider, Comparator, token),
+            \ fern#internal#node#reveal(['deep', 'alpha', 'beta'], r, provider, Comparator, token),
             \ { 'timeout': TIMEOUT },
             \)
       Assert Equals(e, v:null)
@@ -442,7 +426,23 @@ Describe fern#internal#node
             \])
 
       let [r, e] = Promise.wait(
-            \ fern#internal#node#reveal(['deep', 'alpha', 'beta', 'gamma', 'UNKNOWN'], nodes, provider, Comparator, token),
+            \ fern#internal#node#reveal(['deep', 'alpha', 'beta', 'gamma'], r, provider, Comparator, token),
+            \ { 'timeout': TIMEOUT },
+            \)
+      Assert Equals(e, v:null)
+      Assert Equals(DescribeNodes(r), [
+            \ '/',
+            \ '/deep',
+            \ '/deep/alpha',
+            \ '/deep/alpha/beta',
+            \ '/deep/alpha/beta/gamma',
+            \ '/heavy',
+            \ '/shallow',
+            \ '/leaf',
+            \])
+
+      let [r, e] = Promise.wait(
+            \ fern#internal#node#reveal(['deep', 'alpha', 'beta', 'gamma', 'UNKNOWN'], r, provider, Comparator, token),
             \ { 'timeout': TIMEOUT },
             \)
       Assert Equals(e, v:null)
@@ -492,7 +492,7 @@ Describe fern#internal#node
             \])
 
       let [r, e] = Promise.wait(
-            \ fern#internal#node#reveal(['deep', 'alpha'], nodes, provider, Comparator, token),
+            \ fern#internal#node#reveal(['deep', 'alpha'], r, provider, Comparator, token),
             \ { 'timeout': TIMEOUT },
             \)
       Assert Equals(e, v:null)
@@ -507,23 +507,7 @@ Describe fern#internal#node
             \])
 
       let [r, e] = Promise.wait(
-            \ fern#internal#node#reveal(['deep', 'alpha', 'beta'], nodes, provider, Comparator, token),
-            \ { 'timeout': TIMEOUT },
-            \)
-      Assert Equals(e, v:null)
-      Assert Equals(DescribeNodes(r), [
-            \ '/',
-            \ '/deep',
-            \ '/deep/alpha',
-            \ '/deep/alpha/beta',
-            \ '/deep/alpha/beta/gamma',
-            \ '/heavy',
-            \ '/shallow',
-            \ '/leaf',
-            \])
-
-      let [r, e] = Promise.wait(
-            \ fern#internal#node#reveal(['deep', 'alpha', 'beta', 'gamma'], nodes, provider, Comparator, token),
+            \ fern#internal#node#reveal(['deep', 'alpha', 'beta'], r, provider, Comparator, token),
             \ { 'timeout': TIMEOUT },
             \)
       Assert Equals(e, v:null)
@@ -539,7 +523,23 @@ Describe fern#internal#node
             \])
 
       let [r, e] = Promise.wait(
-            \ fern#internal#node#reveal(['deep', 'alpha', 'beta', 'gamma', 'UNKNOWN'], nodes, provider, Comparator, token),
+            \ fern#internal#node#reveal(['deep', 'alpha', 'beta', 'gamma'], r, provider, Comparator, token),
+            \ { 'timeout': TIMEOUT },
+            \)
+      Assert Equals(e, v:null)
+      Assert Equals(DescribeNodes(r), [
+            \ '/',
+            \ '/deep',
+            \ '/deep/alpha',
+            \ '/deep/alpha/beta',
+            \ '/deep/alpha/beta/gamma',
+            \ '/heavy',
+            \ '/shallow',
+            \ '/leaf',
+            \])
+
+      let [r, e] = Promise.wait(
+            \ fern#internal#node#reveal(['deep', 'alpha', 'beta', 'gamma', 'UNKNOWN'], r, provider, Comparator, token),
             \ { 'timeout': TIMEOUT },
             \)
       Assert Equals(e, v:null)
