@@ -121,7 +121,7 @@ function! fern#internal#node#expand(node, nodes, provider, comparator, token) ab
         \.finally({ -> Profile('children') })
         \.then({ v -> s:sort(v, a:comparator.compare) })
         \.finally({ -> Profile('sort') })
-        \.then({ v -> s:extend(a:node.__key, a:nodes, v) })
+        \.then({ v -> s:extend(a:node.__key, copy(a:nodes), v) })
         \.finally({ -> Profile('extend') })
         \.finally({ -> Done() })
         \.finally({ -> Profile() })
