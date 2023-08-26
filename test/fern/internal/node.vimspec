@@ -236,21 +236,22 @@ Describe fern#internal#node
             \)
 
       Assert Equals(e, v:null)
-      Assert Equals(len(r), 14)
-      Assert Equals(r[0]._uri, '/')
-      Assert Equals(r[1]._uri, '/deep')
-      Assert Equals(r[2]._uri, '/deep/alpha')
-      Assert Equals(r[3]._uri, '/deep/alpha/beta')
-      Assert Equals(r[4]._uri, '/deep/alpha/beta/gamma')
-      Assert Equals(r[5]._uri, '/heavy')
-      Assert Equals(r[6]._uri, '/heavy/alpha')
-      Assert Equals(r[7]._uri, '/heavy/beta')
-      Assert Equals(r[8]._uri, '/heavy/gamma')
-      Assert Equals(r[9]._uri, '/shallow')
-      Assert Equals(r[10]._uri, '/shallow/alpha')
-      Assert Equals(r[11]._uri, '/shallow/beta')
-      Assert Equals(r[12]._uri, '/shallow/gamma')
-      Assert Equals(r[13]._uri, '/leaf')
+      Assert Equals(DescribeNodes(r), [
+            \ '/',
+            \ '/deep',
+            \ '/deep/alpha',
+            \ '/deep/alpha/beta',
+            \ '/deep/alpha/beta/gamma',
+            \ '/heavy',
+            \ '/heavy/alpha',
+            \ '/heavy/beta',
+            \ '/heavy/gamma',
+            \ '/shallow',
+            \ '/shallow/alpha',
+            \ '/shallow/beta',
+            \ '/shallow/gamma',
+            \ '/leaf',
+            \])
     End
   End
 
