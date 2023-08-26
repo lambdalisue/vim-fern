@@ -208,8 +208,7 @@ function! fern#internal#node#reveal(key, nodes, provider, comparator, token) abo
   if node is# v:null || node.status is# s:STATUS_NONE
     return s:Promise.resolve(a:nodes)
   endif
-  return fern#internal#node#collapse(node, a:nodes, a:provider, a:comparator, a:token)
-        \.then({ ns -> s:expand_recursively(0, a:key, ns, a:provider, a:comparator, a:token) })
+  return s:expand_recursively(0, a:key, a:nodes, a:provider, a:comparator, a:token)
         \.finally({ -> Profile() })
 endfunction
 
