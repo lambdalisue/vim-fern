@@ -146,19 +146,33 @@ function! fern#internal#node#expand(node, nodes, provider, comparator, token) ab
 endfunction
 
 function! fern#internal#node#expand_tree(node, nodes, provider, comparator, token) abort
-  if a:node is# v:null || a:node.status is# s:STATUS_NONE
-    return s:Promise.reject('cannot expand a leaf node')
+  if a:node.status is# s:STATUS_NONE
+    return s:Promise.reject('cannot expand leaf node')
+  elseif a:node.status is# s:STATUS_EXPANDED
+    " Collpase first to avoid duplication
+    return fern#internal#node#collapse(a:node, a:nodes, a:provider, a:comparator, a:token)
+      \.then({ ns -> fern#internal#node#expand_tree(a:node, ns, a:provider, a:comparator, a:token) })
+  elseif has_key(a:node.concealed, '__promise_expand')
+    return a:node.concealed.__promise_expand
+  elseif has_key(a:node, 'concealed.__promise_collapse')
+    return a:node.concealed.__promise_collapse
   endif
-  let l:state = {}
+  let l:Profile = fern#profile#start('fern#internal#node#expand_tree')
   let l:Done = fern#internal#node#process(a:node)
-  return fern#internal#node#expand(a:node, a:nodes, a:provider, a:comparator, a:token)
-        \.then({ns -> s:Lambda.let(state, 'ns', ns)})
-        \.then({ -> fern#internal#node#children(a:node, a:provider, a:token) })
-        \.then(s:AsyncLambda.filter_f({ child -> child isnot# v:null && child.status isnot# s:STATUS_NONE }))
-        \.then(s:AsyncLambda.map_f({child_node -> fern#internal#node#expand_tree(child_node, state.ns, a:provider, a:comparator, a:token) }))
-        \.then({ subtree_promises -> s:Promise.all(subtree_promises) })
-        \.then({ -> l:state.ns })
+  let p = fern#internal#node#descendants(a:node, a:provider, a:token)
+        \.finally({ -> Profile('descendants') })
+        \.then({ v -> s:sort(v, a:comparator.compare) })
+        \.finally({ -> Profile('sort') })
+        \.then(s:Lambda.map_f({ n -> n.status isnot# s:STATUS_NONE ? extend(n, {'status': s:STATUS_EXPANDED}) : n }))
+        \.finally({ -> Profile('expand') })
+        \.then({ v -> s:extend(a:node.__key, copy(a:nodes), v) })
+        \.finally({ -> Profile('extend') })
         \.finally({ -> Done() })
+        \.finally({ -> Profile() })
+  call p.then({ -> s:Lambda.let(a:node, 'status', s:STATUS_EXPANDED) })
+  let a:node.concealed.__promise_expand = p
+        \.finally({ -> s:Lambda.unlet(a:node.concealed, '__promise_expand') })
+  return p
 endfunction
 
 function! fern#internal#node#collapse(node, nodes, provider, comparator, token) abort
