@@ -924,7 +924,7 @@ GLOBAL							*fern-mapping-global*
 	nmap <buffer>
 	      \ <Plug>(fern-action-expand-tree)
 	      \ <Plug>(fern-action-expand-tree:stay)
-
+<
 *<Plug>(fern-action-collapse)*
 	Collapse on a cursor node.
 
