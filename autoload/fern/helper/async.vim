@@ -156,6 +156,31 @@ function! s:async_expand_node(key) abort dict
 endfunction
 let s:async.expand_node = funcref('s:async_expand_node')
 
+function! s:async_expand_tree(key) abort dict
+  let helper = self.helper
+  let fern = helper.fern
+  let node = fern#internal#node#find(a:key, fern.nodes)
+  if empty(node)
+    return s:Promise.reject(printf('failed to find a node %s', a:key))
+  elseif node.status is# helper.STATUS_NONE
+    " To improve UX, reload owner instead
+    return self.reload_node(node.__owner.__key)
+  endif
+  let l:Profile = fern#profile#start('fern#helper:helper.async.expand_tree')
+  return s:Promise.resolve()
+        \.then({ -> fern#internal#node#expand_tree(
+        \   node,
+        \   fern.nodes,
+        \   fern.provider,
+        \   fern.comparator,
+        \   fern.source.token,
+        \ )
+        \})
+        \.then({ ns -> self.update_nodes(ns) })
+        \.finally({ -> Profile() })
+endfunction
+let s:async.expand_tree = funcref('s:async_expand_tree')
+
 function! s:async_collapse_node(key) abort dict
   let helper = self.helper
   let fern = helper.fern

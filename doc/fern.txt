@@ -909,7 +909,22 @@ GLOBAL							*fern-mapping-global*
 	      \ <Plug>(fern-action-expand)
 	      \ <Plug>(fern-action-expand:stay)
 <
+*<Plug>(fern-action-expand-tree:stay)*
+	Recursively expand the tree on a cursor node and keep the cursor on the
+	root node.
 
+*<Plug>(fern-action-expand-tree:in)*
+	Recursively expand the tree on a cursor node and keep the cursor on the 
+	root node (moves to the first child node after the cursor node)
+
+*<Plug>(fern-action-expand-tree)*
+	An alias to "expand-tree:in" action. Users can overwrite this mapping to
+	change the default behavior of "expand-tree" action like:
+>
+	nmap <buffer>
+	      \ <Plug>(fern-action-expand-tree)
+	      \ <Plug>(fern-action-expand-tree:stay)
+<
 *<Plug>(fern-action-collapse)*
 	Collapse on a cursor node.
 

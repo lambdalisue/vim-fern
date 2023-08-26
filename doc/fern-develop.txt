@@ -483,6 +483,11 @@ Following methods are executed asynchronously and return a promise.
 	Return a promise to expand a node identified by the {key}.
 	It reloads the node instead when the node has expanded or leaf.
 
+			*fern-develop-helper.async.expand_tree()*
+.async.expand_tree({key})
+	Return a promise to recursively expand a node identified by the {key}.
+	It reloads the node instead when the node is leaf.
+
 			*fern-develop-helper.async.collapse_node()*
 .async.collapse_node({key})
 	Return a promise to collapse a node identified by the {key}.
