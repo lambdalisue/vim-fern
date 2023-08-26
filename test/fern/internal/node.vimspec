@@ -133,6 +133,30 @@ Describe fern#internal#node
     End
   End
 
+  Describe #descendants()
+    Before
+      let node = fern#internal#node#root('debug:///deep', provider)
+    End
+
+    It returns a promise
+      let p = fern#internal#node#descendants(node, provider, token)
+      Assert True(Promise.is_promise(p))
+    End
+
+    It resolves to a list of descendant nodes of a given node
+      let [r, e] = Promise.wait(
+            \ fern#internal#node#descendants(node, provider, token),
+            \ { 'timeout': TIMEOUT },
+            \)
+      Assert Equals(e, v:null)
+      Assert Equals(DescribeNodes(r), [
+            \ '/deep/alpha',
+            \ '/deep/alpha/beta',
+            \ '/deep/alpha/beta/gamma',
+            \])
+    End
+  End
+
   Describe #expand()
     Before
       let root = fern#internal#node#root('debug:///', provider)

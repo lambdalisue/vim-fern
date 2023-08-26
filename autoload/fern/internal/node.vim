@@ -106,6 +106,19 @@ function! fern#internal#node#children(node, provider, token, ...) abort
   return p
 endfunction
 
+function! fern#internal#node#descendants(node, provider, token, ...) abort
+  let options = extend({
+        \ 'cache': 1,
+        \}, a:0 ? a:1 : {})
+  if a:node.status is# s:STATUS_NONE
+    return s:Promise.resolve([])
+  endif
+  return fern#internal#node#children(a:node, a:provider, a:token, options)
+        \.then(s:Lambda.map_f({ n -> fern#internal#node#descendants(n, a:provider, a:token, options).then({ ns -> extend([n], ns) }) }))
+        \.then({ ps -> s:Promise.all(ps) })
+        \.then(s:Lambda.reduce_f({ a, ns -> extend(a, ns) }, []))
+endfunction
+
 function! fern#internal#node#expand(node, nodes, provider, comparator, token) abort
   if a:node.status is# s:STATUS_NONE
     return s:Promise.reject('cannot expand leaf node')
