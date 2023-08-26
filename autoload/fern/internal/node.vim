@@ -152,6 +152,7 @@ function! fern#internal#node#collapse(node, nodes, provider, comparator, token) 
         \.finally({ -> Done() })
         \.finally({ -> Profile() })
   call p.then({ -> s:Lambda.let(a:node, 'status', s:STATUS_COLLAPSED) })
+        \.then({ -> s:Lambda.unlet(a:node.concealed, '__cache_children') })
   let a:node.concealed.__promise_collapse = p
         \.finally({ -> s:Lambda.unlet(a:node.concealed, '__promise_collapse') })
   return p
