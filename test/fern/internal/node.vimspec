@@ -1,3 +1,8 @@
+function! DescribeNodes(nodes, ...) abort
+  let l:Getter = a:0 ? a:1 : { v -> v._uri }
+  return map(copy(a:nodes), { _, v -> l:Getter(v) })
+endfunction
+
 Describe fern#internal#node
   Before
     let TIMEOUT = 5000
@@ -120,10 +125,11 @@ Describe fern#internal#node
             \ { 'timeout': TIMEOUT },
             \)
       Assert Equals(e, v:null)
-      Assert Equals(len(r), 3)
-      Assert Equals(r[0]._uri, '/shallow/alpha')
-      Assert Equals(r[1]._uri, '/shallow/beta')
-      Assert Equals(r[2]._uri, '/shallow/gamma')
+      Assert Equals(DescribeNodes(r), [
+            \ '/shallow/alpha',
+            \ '/shallow/beta',
+            \ '/shallow/gamma',
+            \])
     End
   End
 
@@ -143,12 +149,13 @@ Describe fern#internal#node
             \ { 'timeout': TIMEOUT },
             \)
       Assert Equals(e, v:null)
-      Assert Equals(len(r), 5)
-      Assert Equals(r[0]._uri, '/')
-      Assert Equals(r[1]._uri, '/deep')
-      Assert Equals(r[2]._uri, '/heavy')
-      Assert Equals(r[3]._uri, '/shallow')
-      Assert Equals(r[4]._uri, '/leaf')
+      Assert Equals(DescribeNodes(r), [
+            \ '/',
+            \ '/deep',
+            \ '/heavy',
+            \ '/shallow',
+            \ '/leaf',
+            \])
 
       let node = r[3]
       let [r, e] = Promise.wait(
@@ -156,15 +163,16 @@ Describe fern#internal#node
             \ { 'timeout': TIMEOUT },
             \)
       Assert Equals(e, v:null)
-      Assert Equals(len(r), 8)
-      Assert Equals(r[0]._uri, '/')
-      Assert Equals(r[1]._uri, '/deep')
-      Assert Equals(r[2]._uri, '/heavy')
-      Assert Equals(r[3]._uri, '/shallow')
-      Assert Equals(r[4]._uri, '/shallow/alpha')
-      Assert Equals(r[5]._uri, '/shallow/beta')
-      Assert Equals(r[6]._uri, '/shallow/gamma')
-      Assert Equals(r[7]._uri, '/leaf')
+      Assert Equals(DescribeNodes(r), [
+            \ '/',
+            \ '/deep',
+            \ '/heavy',
+            \ '/shallow',
+            \ '/shallow/alpha',
+            \ '/shallow/beta',
+            \ '/shallow/gamma',
+            \ '/leaf',
+            \])
     End
   End
 
@@ -193,12 +201,13 @@ Describe fern#internal#node
             \ { 'timeout': TIMEOUT },
             \)
       Assert Equals(e, v:null)
-      Assert Equals(len(r), 5)
-      Assert Equals(r[0]._uri, '/')
-      Assert Equals(r[1]._uri, '/deep')
-      Assert Equals(r[2]._uri, '/heavy')
-      Assert Equals(r[3]._uri, '/shallow')
-      Assert Equals(r[4]._uri, '/leaf')
+      Assert Equals(DescribeNodes(r), [
+            \ '/',
+            \ '/deep',
+            \ '/heavy',
+            \ '/shallow',
+            \ '/leaf',
+            \])
     End
   End
 
@@ -227,15 +236,16 @@ Describe fern#internal#node
             \ { 'timeout': TIMEOUT },
             \)
       Assert Equals(e, v:null)
-      Assert Equals(len(r), 8)
-      Assert Equals(r[0]._uri, '/')
-      Assert Equals(r[1]._uri, '/deep')
-      Assert Equals(r[2]._uri, '/heavy')
-      Assert Equals(r[3]._uri, '/shallow')
-      Assert Equals(r[4]._uri, '/shallow/alpha')
-      Assert Equals(r[5]._uri, '/shallow/beta')
-      Assert Equals(r[6]._uri, '/shallow/gamma')
-      Assert Equals(r[7]._uri, '/leaf')
+      Assert Equals(DescribeNodes(r), [
+            \ '/',
+            \ '/deep',
+            \ '/heavy',
+            \ '/shallow',
+            \ '/shallow/alpha',
+            \ '/shallow/beta',
+            \ '/shallow/gamma',
+            \ '/leaf',
+            \])
     End
 
     It keeps status of nodes
@@ -244,15 +254,16 @@ Describe fern#internal#node
             \ { 'timeout': TIMEOUT },
             \)
       Assert Equals(e, v:null)
-      Assert Equals(len(r), 8)
-      Assert Equals(r[0].status, g:fern#STATUS_EXPANDED)
-      Assert Equals(r[1].status, g:fern#STATUS_COLLAPSED)
-      Assert Equals(r[2].status, g:fern#STATUS_COLLAPSED)
-      Assert Equals(r[3].status, g:fern#STATUS_EXPANDED)
-      Assert Equals(r[4].status, g:fern#STATUS_COLLAPSED)
-      Assert Equals(r[5].status, g:fern#STATUS_COLLAPSED)
-      Assert Equals(r[6].status, g:fern#STATUS_NONE)
-      Assert Equals(r[7].status, g:fern#STATUS_NONE)
+      Assert Equals(DescribeNodes(r, { v -> v.status }), [
+            \ g:fern#STATUS_EXPANDED,
+            \ g:fern#STATUS_COLLAPSED,
+            \ g:fern#STATUS_COLLAPSED,
+            \ g:fern#STATUS_EXPANDED,
+            \ g:fern#STATUS_COLLAPSED,
+            \ g:fern#STATUS_COLLAPSED,
+            \ g:fern#STATUS_NONE,
+            \ g:fern#STATUS_NONE,
+            \])
     End
 
     It resolves to a list of nodes (root)
@@ -261,15 +272,16 @@ Describe fern#internal#node
             \ { 'timeout': TIMEOUT },
             \)
       Assert Equals(e, v:null)
-      Assert Equals(len(r), 8)
-      Assert Equals(r[0]._uri, '/')
-      Assert Equals(r[1]._uri, '/deep')
-      Assert Equals(r[2]._uri, '/heavy')
-      Assert Equals(r[3]._uri, '/shallow')
-      Assert Equals(r[4]._uri, '/shallow/alpha')
-      Assert Equals(r[5]._uri, '/shallow/beta')
-      Assert Equals(r[6]._uri, '/shallow/gamma')
-      Assert Equals(r[7]._uri, '/leaf')
+      Assert Equals(DescribeNodes(r), [
+            \ '/',
+            \ '/deep',
+            \ '/heavy',
+            \ '/shallow',
+            \ '/shallow/alpha',
+            \ '/shallow/beta',
+            \ '/shallow/gamma',
+            \ '/leaf',
+            \])
     End
 
     It keeps status of nodes (root)
@@ -278,15 +290,16 @@ Describe fern#internal#node
             \ { 'timeout': TIMEOUT },
             \)
       Assert Equals(e, v:null)
-      Assert Equals(len(r), 8)
-      Assert Equals(r[0].status, g:fern#STATUS_EXPANDED)
-      Assert Equals(r[1].status, g:fern#STATUS_COLLAPSED)
-      Assert Equals(r[2].status, g:fern#STATUS_COLLAPSED)
-      Assert Equals(r[3].status, g:fern#STATUS_EXPANDED)
-      Assert Equals(r[4].status, g:fern#STATUS_COLLAPSED)
-      Assert Equals(r[5].status, g:fern#STATUS_COLLAPSED)
-      Assert Equals(r[6].status, g:fern#STATUS_NONE)
-      Assert Equals(r[7].status, g:fern#STATUS_NONE)
+      Assert Equals(DescribeNodes(r, { v -> v.status }), [
+            \ g:fern#STATUS_EXPANDED,
+            \ g:fern#STATUS_COLLAPSED,
+            \ g:fern#STATUS_COLLAPSED,
+            \ g:fern#STATUS_EXPANDED,
+            \ g:fern#STATUS_COLLAPSED,
+            \ g:fern#STATUS_COLLAPSED,
+            \ g:fern#STATUS_NONE,
+            \ g:fern#STATUS_NONE,
+            \])
     End
   End
 
@@ -310,15 +323,16 @@ Describe fern#internal#node
             \ { 'timeout': TIMEOUT },
             \)
       Assert Equals(e, v:null)
-      Assert Equals(len(r), 8)
-      Assert Equals(r[0]._uri, '/')
-      Assert Equals(r[1]._uri, '/deep')
-      Assert Equals(r[2]._uri, '/deep/alpha')
-      Assert Equals(r[3]._uri, '/deep/alpha/beta')
-      Assert Equals(r[4]._uri, '/deep/alpha/beta/gamma')
-      Assert Equals(r[5]._uri, '/heavy')
-      Assert Equals(r[6]._uri, '/shallow')
-      Assert Equals(r[7]._uri, '/leaf')
+      Assert Equals(DescribeNodes(r), [
+            \ '/',
+            \ '/deep',
+            \ '/deep/alpha',
+            \ '/deep/alpha/beta',
+            \ '/deep/alpha/beta/gamma',
+            \ '/heavy',
+            \ '/shallow',
+            \ '/leaf',
+            \])
     End
 
     It recursively expand nodes to focus specified nodes (step by step)
@@ -327,72 +341,77 @@ Describe fern#internal#node
             \ { 'timeout': TIMEOUT },
             \)
       Assert Equals(e, v:null)
-      Assert Equals(len(r), 6)
-      Assert Equals(r[0]._uri, '/')
-      Assert Equals(r[1]._uri, '/deep')
-      Assert Equals(r[2]._uri, '/deep/alpha')
-      Assert Equals(r[3]._uri, '/heavy')
-      Assert Equals(r[4]._uri, '/shallow')
-      Assert Equals(r[5]._uri, '/leaf')
+      Assert Equals(DescribeNodes(r), [
+            \ '/',
+            \ '/deep',
+            \ '/deep/alpha',
+            \ '/heavy',
+            \ '/shallow',
+            \ '/leaf',
+            \])
 
       let [r, e] = Promise.wait(
             \ fern#internal#node#reveal(['deep', 'alpha'], nodes, provider, Comparator, token),
             \ { 'timeout': TIMEOUT },
             \)
       Assert Equals(e, v:null)
-      Assert Equals(len(r), 7)
-      Assert Equals(r[0]._uri, '/')
-      Assert Equals(r[1]._uri, '/deep')
-      Assert Equals(r[2]._uri, '/deep/alpha')
-      Assert Equals(r[3]._uri, '/deep/alpha/beta')
-      Assert Equals(r[4]._uri, '/heavy')
-      Assert Equals(r[5]._uri, '/shallow')
-      Assert Equals(r[6]._uri, '/leaf')
+      Assert Equals(DescribeNodes(r), [
+            \ '/',
+            \ '/deep',
+            \ '/deep/alpha',
+            \ '/deep/alpha/beta',
+            \ '/heavy',
+            \ '/shallow',
+            \ '/leaf',
+            \])
 
       let [r, e] = Promise.wait(
             \ fern#internal#node#reveal(['deep', 'alpha', 'beta'], nodes, provider, Comparator, token),
             \ { 'timeout': TIMEOUT },
             \)
       Assert Equals(e, v:null)
-      Assert Equals(len(r), 8)
-      Assert Equals(r[0]._uri, '/')
-      Assert Equals(r[1]._uri, '/deep')
-      Assert Equals(r[2]._uri, '/deep/alpha')
-      Assert Equals(r[3]._uri, '/deep/alpha/beta')
-      Assert Equals(r[4]._uri, '/deep/alpha/beta/gamma')
-      Assert Equals(r[5]._uri, '/heavy')
-      Assert Equals(r[6]._uri, '/shallow')
-      Assert Equals(r[7]._uri, '/leaf')
+      Assert Equals(DescribeNodes(r), [
+            \ '/',
+            \ '/deep',
+            \ '/deep/alpha',
+            \ '/deep/alpha/beta',
+            \ '/deep/alpha/beta/gamma',
+            \ '/heavy',
+            \ '/shallow',
+            \ '/leaf',
+            \])
 
       let [r, e] = Promise.wait(
             \ fern#internal#node#reveal(['deep', 'alpha', 'beta', 'gamma'], nodes, provider, Comparator, token),
             \ { 'timeout': TIMEOUT },
             \)
       Assert Equals(e, v:null)
-      Assert Equals(len(r), 8)
-      Assert Equals(r[0]._uri, '/')
-      Assert Equals(r[1]._uri, '/deep')
-      Assert Equals(r[2]._uri, '/deep/alpha')
-      Assert Equals(r[3]._uri, '/deep/alpha/beta')
-      Assert Equals(r[4]._uri, '/deep/alpha/beta/gamma')
-      Assert Equals(r[5]._uri, '/heavy')
-      Assert Equals(r[6]._uri, '/shallow')
-      Assert Equals(r[7]._uri, '/leaf')
+      Assert Equals(DescribeNodes(r), [
+            \ '/',
+            \ '/deep',
+            \ '/deep/alpha',
+            \ '/deep/alpha/beta',
+            \ '/deep/alpha/beta/gamma',
+            \ '/heavy',
+            \ '/shallow',
+            \ '/leaf',
+            \])
 
       let [r, e] = Promise.wait(
             \ fern#internal#node#reveal(['deep', 'alpha', 'beta', 'gamma', 'UNKNOWN'], nodes, provider, Comparator, token),
             \ { 'timeout': TIMEOUT },
             \)
       Assert Equals(e, v:null)
-      Assert Equals(len(r), 8)
-      Assert Equals(r[0]._uri, '/')
-      Assert Equals(r[1]._uri, '/deep')
-      Assert Equals(r[2]._uri, '/deep/alpha')
-      Assert Equals(r[3]._uri, '/deep/alpha/beta')
-      Assert Equals(r[4]._uri, '/deep/alpha/beta/gamma')
-      Assert Equals(r[5]._uri, '/heavy')
-      Assert Equals(r[6]._uri, '/shallow')
-      Assert Equals(r[7]._uri, '/leaf')
+      Assert Equals(DescribeNodes(r), [
+            \ '/',
+            \ '/deep',
+            \ '/deep/alpha',
+            \ '/deep/alpha/beta',
+            \ '/deep/alpha/beta/gamma',
+            \ '/heavy',
+            \ '/shallow',
+            \ '/leaf',
+            \])
     End
 
     It recursively expand nodes to focus specified nodes (1 step to UNKNOWN)
@@ -401,15 +420,16 @@ Describe fern#internal#node
             \ { 'timeout': TIMEOUT },
             \)
       Assert Equals(e, v:null)
-      Assert Equals(len(r), 8)
-      Assert Equals(r[0]._uri, '/')
-      Assert Equals(r[1]._uri, '/deep')
-      Assert Equals(r[2]._uri, '/deep/alpha')
-      Assert Equals(r[3]._uri, '/deep/alpha/beta')
-      Assert Equals(r[4]._uri, '/deep/alpha/beta/gamma')
-      Assert Equals(r[5]._uri, '/heavy')
-      Assert Equals(r[6]._uri, '/shallow')
-      Assert Equals(r[7]._uri, '/leaf')
+      Assert Equals(DescribeNodes(r), [
+            \ '/',
+            \ '/deep',
+            \ '/deep/alpha',
+            \ '/deep/alpha/beta',
+            \ '/deep/alpha/beta/gamma',
+            \ '/heavy',
+            \ '/shallow',
+            \ '/leaf',
+            \])
     End
 
     It recursively expand nodes to focus specified nodes (step by step to UNKNOWN)
@@ -418,72 +438,77 @@ Describe fern#internal#node
             \ { 'timeout': TIMEOUT },
             \)
       Assert Equals(e, v:null)
-      Assert Equals(len(r), 6)
-      Assert Equals(r[0]._uri, '/')
-      Assert Equals(r[1]._uri, '/deep')
-      Assert Equals(r[2]._uri, '/deep/alpha')
-      Assert Equals(r[3]._uri, '/heavy')
-      Assert Equals(r[4]._uri, '/shallow')
-      Assert Equals(r[5]._uri, '/leaf')
+      Assert Equals(DescribeNodes(r), [
+            \ '/',
+            \ '/deep',
+            \ '/deep/alpha',
+            \ '/heavy',
+            \ '/shallow',
+            \ '/leaf',
+            \])
 
       let [r, e] = Promise.wait(
             \ fern#internal#node#reveal(['deep', 'alpha'], nodes, provider, Comparator, token),
             \ { 'timeout': TIMEOUT },
             \)
       Assert Equals(e, v:null)
-      Assert Equals(len(r), 7)
-      Assert Equals(r[0]._uri, '/')
-      Assert Equals(r[1]._uri, '/deep')
-      Assert Equals(r[2]._uri, '/deep/alpha')
-      Assert Equals(r[3]._uri, '/deep/alpha/beta')
-      Assert Equals(r[4]._uri, '/heavy')
-      Assert Equals(r[5]._uri, '/shallow')
-      Assert Equals(r[6]._uri, '/leaf')
+      Assert Equals(DescribeNodes(r), [
+            \ '/',
+            \ '/deep',
+            \ '/deep/alpha',
+            \ '/deep/alpha/beta',
+            \ '/heavy',
+            \ '/shallow',
+            \ '/leaf',
+            \])
 
       let [r, e] = Promise.wait(
             \ fern#internal#node#reveal(['deep', 'alpha', 'beta'], nodes, provider, Comparator, token),
             \ { 'timeout': TIMEOUT },
             \)
       Assert Equals(e, v:null)
-      Assert Equals(len(r), 8)
-      Assert Equals(r[0]._uri, '/')
-      Assert Equals(r[1]._uri, '/deep')
-      Assert Equals(r[2]._uri, '/deep/alpha')
-      Assert Equals(r[3]._uri, '/deep/alpha/beta')
-      Assert Equals(r[4]._uri, '/deep/alpha/beta/gamma')
-      Assert Equals(r[5]._uri, '/heavy')
-      Assert Equals(r[6]._uri, '/shallow')
-      Assert Equals(r[7]._uri, '/leaf')
+      Assert Equals(DescribeNodes(r), [
+            \ '/',
+            \ '/deep',
+            \ '/deep/alpha',
+            \ '/deep/alpha/beta',
+            \ '/deep/alpha/beta/gamma',
+            \ '/heavy',
+            \ '/shallow',
+            \ '/leaf',
+            \])
 
       let [r, e] = Promise.wait(
             \ fern#internal#node#reveal(['deep', 'alpha', 'beta', 'gamma'], nodes, provider, Comparator, token),
             \ { 'timeout': TIMEOUT },
             \)
       Assert Equals(e, v:null)
-      Assert Equals(len(r), 8)
-      Assert Equals(r[0]._uri, '/')
-      Assert Equals(r[1]._uri, '/deep')
-      Assert Equals(r[2]._uri, '/deep/alpha')
-      Assert Equals(r[3]._uri, '/deep/alpha/beta')
-      Assert Equals(r[4]._uri, '/deep/alpha/beta/gamma')
-      Assert Equals(r[5]._uri, '/heavy')
-      Assert Equals(r[6]._uri, '/shallow')
-      Assert Equals(r[7]._uri, '/leaf')
+      Assert Equals(DescribeNodes(r), [
+            \ '/',
+            \ '/deep',
+            \ '/deep/alpha',
+            \ '/deep/alpha/beta',
+            \ '/deep/alpha/beta/gamma',
+            \ '/heavy',
+            \ '/shallow',
+            \ '/leaf',
+            \])
 
       let [r, e] = Promise.wait(
             \ fern#internal#node#reveal(['deep', 'alpha', 'beta', 'gamma', 'UNKNOWN'], nodes, provider, Comparator, token),
             \ { 'timeout': TIMEOUT },
             \)
       Assert Equals(e, v:null)
-      Assert Equals(len(r), 8)
-      Assert Equals(r[0]._uri, '/')
-      Assert Equals(r[1]._uri, '/deep')
-      Assert Equals(r[2]._uri, '/deep/alpha')
-      Assert Equals(r[3]._uri, '/deep/alpha/beta')
-      Assert Equals(r[4]._uri, '/deep/alpha/beta/gamma')
-      Assert Equals(r[5]._uri, '/heavy')
-      Assert Equals(r[6]._uri, '/shallow')
-      Assert Equals(r[7]._uri, '/leaf')
+      Assert Equals(DescribeNodes(r), [
+            \ '/',
+            \ '/deep',
+            \ '/deep/alpha',
+            \ '/deep/alpha/beta',
+            \ '/deep/alpha/beta/gamma',
+            \ '/heavy',
+            \ '/shallow',
+            \ '/leaf',
+            \])
     End
   End
 End
