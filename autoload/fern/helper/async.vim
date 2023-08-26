@@ -165,9 +165,6 @@ function! s:async_expand_tree(key) abort dict
   elseif node.status is# helper.STATUS_NONE
     " To improve UX, reload owner instead
     return self.reload_node(node.__owner.__key)
-  elseif node.status is# helper.STATUS_EXPANDED
-    " To improve UX, reload instead
-    return self.reload_node(node.__key)
   endif
   let l:Profile = fern#profile#start('fern#helper:helper.async.expand_tree')
   return s:Promise.resolve()
