@@ -61,6 +61,7 @@ function! s:init() abort
   augroup END
   call fern#internal#viewer#auto_duplication#init()
   call fern#internal#viewer#hide_cursor#init()
+  call fern#internal#viewer#hide_cursorline#init()
 
   " Add unique fragment to make each buffer uniq
   let bufname = bufname('%')

@@ -327,12 +327,14 @@ VARIABLE						*fern-variable*
 	Default: 'edit'
 
 *g:fern#hide_cursor*
-	Set 1 to hide cursor and forcedly enable |cursorline| to visualize the
-	cursor node. The |cursorline| is automatically enabled when the focus
-	is on the buffer and automatically disabled when the cursor is out of
-	the buffer.
+	Set 1 to forcibly hide the cursor for the fern window (see |t_ve|).
+
 	Note that Neovim prior to 0.5.0 cannot hide the cursor thus faint
 	vertical bar is used instead.
+
+*g:fern#hide_cursorline*
+	Set 1 to forcibly disable |cursorline| for the fern window
+	when focus is not on the fern window.
 
 *g:fern#keepalt_on_edit*
 	Set 1 to apply |keepalt| on the "open:edit" action to keep an
