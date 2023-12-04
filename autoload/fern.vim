@@ -18,6 +18,7 @@ call s:Config.config(expand('<sfile>:p'), {
       \ 'loglevel': g:fern#INFO,
       \ 'opener': 'edit',
       \ 'hide_cursor': 0,
+      \ 'hide_cursorline': 0,
       \ 'keepalt_on_edit': 0,
       \ 'keepjumps_on_edit': 0,
       \ 'disable_auto_buffer_delete': 0,
