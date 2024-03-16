@@ -15,10 +15,10 @@ if !exists('*nvim_win_get_cursor')
     else
       let winid_saved = win_getid()
       try
-        call win_gotoid(a:winid)
+        noautocmd call win_gotoid(a:winid)
         return s:get_cursor(a:winid)
       finally
-        call win_gotoid(winid_saved)
+        noautocmd call win_gotoid(winid_saved)
       endtry
     endif
   endfunction
@@ -36,10 +36,10 @@ if !exists('*nvim_win_set_cursor')
     else
       let winid_saved = win_getid()
       try
-        call win_gotoid(a:winid)
+        noautocmd call win_gotoid(a:winid)
         call s:set_cursor(a:winid, a:pos)
       finally
-        call win_gotoid(winid_saved)
+        noautocmd call win_gotoid(winid_saved)
       endtry
     endif
   endfunction
