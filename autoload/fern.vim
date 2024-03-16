@@ -24,6 +24,7 @@ call s:Config.config(expand('<sfile>:p'), {
       \ 'disable_auto_buffer_delete': 0,
       \ 'disable_auto_buffer_rename': 0,
       \ 'disable_default_mappings': 0,
+      \ 'disable_enter_to_leave_on_root': 0,
       \ 'disable_viewer_spinner': has('win32') && !has('gui_running'),
       \ 'disable_viewer_auto_duplication': 0,
       \ 'disable_drawer_auto_winfixwidth': 0,

@@ -567,6 +567,11 @@ VARIABLE						*fern-variable*
 	A |Number| value that specifies whether to synchronize file renames to the buffer
 	Default: 0
 
+*g:fern#disable_enter_to_leave_on_root*
+	A |Boolean| to disable "enter to leave" behavior on the root node.
+	If set to 1, "enter" on the root node will reload the tree instead.
+	Default: 0
+
 *g:fern#window_selector_use_popup*
 	A |Boolean| which use popup/float window to select window.
 	See |fern-glossary-window-selector|

@@ -173,7 +173,11 @@ function! s:map_enter(helper) abort
   if node is# v:null
     return s:Promise.reject('no node found on a cursor line')
   endif
-  return a:helper.async.enter_tree(node)
+  if g:fern#disable_enter_to_leave_on_root || !empty(node.__owner)
+    return a:helper.async.enter_tree(node)
+  else
+    return a:helper.async.leave_tree()
+  endif
 endfunction
 
 function! s:map_leave(helper) abort
