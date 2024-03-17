@@ -714,7 +714,7 @@ fern#smart#scheme({default}, {schemes})
 fern#smart#root({root}, {others})
 	Return one of a given mapping expression determined by a kind of a
 	current cursor node. If the node is root, the {root} is returned.
-	Otehrwise the {others} is returned.
+	Otherwise the {others} is returned.
 >
 	" Perform 'leave' on root node and 'open-or-enter' on others
 	nmap <buffer><expr>
