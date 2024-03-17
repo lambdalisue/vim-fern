@@ -222,6 +222,9 @@ Fern provide following mapping helper functions:
 	|fern#smart#scheme()|	Return a mapping expression determined by a
 				scheme of a current fern tree
 
+	|fern#smart#root()|	Return a mapping expression determined by a
+				kind of a current cursor node
+
 For example, following execute "open" on leaf but "expand" on branch.
 >
 	nmap <buffer><expr> <Plug>(fern-my-open-or-expand)
