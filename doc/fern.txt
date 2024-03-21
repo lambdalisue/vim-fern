@@ -222,6 +222,9 @@ Fern provide following mapping helper functions:
 	|fern#smart#scheme()|	Return a mapping expression determined by a
 				scheme of a current fern tree
 
+	|fern#smart#root()|	Return a mapping expression determined by a
+				kind of a current cursor node
+
 For example, following execute "open" on leaf but "expand" on branch.
 >
 	nmap <buffer><expr> <Plug>(fern-my-open-or-expand)
@@ -686,7 +689,7 @@ fern#smart#drawer({drawer}, {drawer-right}, {explorer})
 >
 	" Perform 'expand' on drawer and 'enter' on explorer
 	nmap <buffer><expr>
-	      \ <Plug>(fern-expand-or-enter)
+	      \ <Plug>(fern-my-expand-or-enter)
 	      \ fern#smart#drawer(
 	      \   "<Plug>(fern-action-expand)",
 	      \   "<Plug>(fern-action-enter)",
@@ -708,6 +711,20 @@ fern#smart#scheme({default}, {schemes})
 	      \   {
 	      \     'bookmark': "\<C-^>",
 	      \   },
+	      \ )
+
+							*fern#smart#root()*
+fern#smart#root({root}, {others})
+	Return one of a given mapping expression determined by a kind of a
+	current cursor node. If the node is root, the {root} is returned.
+	Otherwise the {others} is returned.
+>
+	" Perform 'leave' on root node and 'open-or-enter' on others
+	nmap <buffer><expr>
+	      \ <Plug>(fern-my-leave-or-open-or-enter)
+	      \ fern#smart#root(
+	      \   "<Plug>(fern-action-leave)",
+	      \   "<Plug>(fern-action-open-or-enter)",
 	      \ )
 
 -----------------------------------------------------------------------------

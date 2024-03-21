@@ -36,3 +36,14 @@ function! fern#smart#scheme(default, schemes) abort
   endif
   return a:default
 endfunction
+
+function! fern#smart#root(root, others) abort
+  let helper = fern#helper#new()
+  let node = helper.sync.get_cursor_node()
+  if node is# v:null
+    return "\<Nop>"
+  endif
+  return node.__owner is# v:null
+        \ ? a:root
+        \ : a:others
+endfunction
