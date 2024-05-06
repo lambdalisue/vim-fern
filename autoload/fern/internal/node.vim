@@ -60,7 +60,9 @@ function! fern#internal#node#parent(node, provider, token, ...) abort
   endif
   let l:Profile = fern#profile#start('fern#internal#node#parent')
   let l:Done = fern#internal#node#process(a:node)
-  let p = a:provider.get_parent(a:node, a:token)
+  let p = s:Promise.new({ resolve ->
+        \   resolve(a:provider.get_parent(a:node, a:token))
+        \ })
         \.then({ n -> s:new(n, {
         \   '__key': [],
         \   '__owner': v:null,
@@ -91,7 +93,9 @@ function! fern#internal#node#children(node, provider, token, ...) abort
   endif
   let l:Profile = fern#profile#start('fern#internal#node#children')
   let l:Done = fern#internal#node#process(a:node)
-  let p = a:provider.get_children(a:node, a:token)
+  let p = s:Promise.new({ resolve ->
+        \   resolve(a:provider.get_children(a:node, a:token))
+        \ })
         \.then(s:AsyncLambda.map_f({ n ->
         \   s:new(n, {
         \     '__key': a:node.__key + [n.name],
