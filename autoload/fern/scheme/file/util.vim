@@ -37,7 +37,8 @@ if exists('*readdir')
     let l:Profile = fern#profile#start('fern#scheme#file#util#list_entries_readdir')
     let s = s:is_windows ? '\' : '/'
     let p = a:path[-1:] ==# s ? a:path : (a:path . s)
-    return s:Promise.resolve(readdir(a:path))
+    silent! let children = readdir(a:path)
+    return s:Promise.resolve(children)
           \.then(s:AsyncLambda.map_f({ v -> p . v }))
           \.finally({ -> Profile() })
   endfunction
