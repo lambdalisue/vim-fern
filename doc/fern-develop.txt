@@ -1,4 +1,4 @@
-*fern-develop.txt*		Developer documentations for fern.vim
+*fern-develop.txt*		Developer documentations for vim-fern
 
 Author:  Alisue <lambdalisue@hashnote.net>
 License: MIT license
@@ -24,7 +24,7 @@ UTILITY					|fern-develop-utility|
 =============================================================================
 INTRODUCTION					*fern-develop-introduction*
 
-This is documentation for |fern.vim| developer.
+This is documentation for |vim-fern| developer.
 
 
 =============================================================================

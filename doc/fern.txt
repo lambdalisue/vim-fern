@@ -31,7 +31,7 @@ DEVELOPMENT				|fern-development|
 =============================================================================
 INTRODUCTION						*fern-introduction*
 
-*fern.vim* (fern) is a general purpose asynchronous tree explorer written in
+*vim-fern* (fern) is a general purpose asynchronous tree explorer written in
 pure Vim script. It provides "file" scheme in default to use it as a file
 explorer.
 
@@ -41,7 +41,7 @@ FEATURES						*fern-features*
 No external dependencies~
 	Fern is written in pure Vim script without any external libraries
 	(note that vim-jp/vital.vim is bundled, not external dependencies) so
-	users do NOT need to install anything rather than fern.vim itself.
+	users do NOT need to install anything rather than vim-fern itself.
 	Exception: "trash" feature in Linux.
 	https://github.com/lambdalisue/vital-Whisky/issues/31
 
@@ -233,7 +233,7 @@ For example, following execute "open" on leaf but "expand" on branch.
 	      \   "<Plug>(fern-action-expand)",
 	      \ )
 <
-See https://github.com/lambdalisue/fern.vim/wiki/ for custom tips.
+See https://github.com/lambdalisue/vim-fern/wiki/ for custom tips.
 
 
 =============================================================================
@@ -250,11 +250,11 @@ RENDERER						*fern-renderer*
 
 Renderer is an object to render nodes as a tree like (default renderer):
 >
-	fern.vim
+	vim-fern
 	|- autoload
 	 |+ fern
 	 |+ vital
-	 |  fern.vim
+	 |  vim-fern
 	|- doc
 	 |  fern-develop.txt
 	 |  fern.txt
@@ -400,7 +400,7 @@ VARIABLE						*fern-variable*
 *g:fern#disable_viewer_spinner*
 	Set 1 to disable viewer spinner shown on a sign column.
 	Note that the default value will be 1 if CUI Vim is running on
-	Windows. See https://github.com/lambdalisue/fern.vim/issues/256 for
+	Windows. See https://github.com/lambdalisue/vim-fern/issues/256 for
 	detail.
 
 *g:fern#disable_viewer_auto_duplication*
@@ -420,7 +420,7 @@ VARIABLE						*fern-variable*
 
 	Note that this feature is automatically disabled on floating windows
 	of Neovim to avoid unwilling resize reported as #294
-	https://github.com/lambdalisue/fern.vim/issues/294
+	https://github.com/lambdalisue/vim-fern/issues/294
 
 	Default: 0
 

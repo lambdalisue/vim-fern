@@ -1,4 +1,4 @@
-# 🌿 fern.vim
+# 🌿 vim-fern
 
 ![Support Vim 8.1.2269 or above](https://img.shields.io/badge/support-Vim%208.1.2269%20or%20above-yellowgreen.svg)
 ![Support Neovim 0.4.4 or above](https://img.shields.io/badge/support-Neovim%200.4.4%20or%20above-yellowgreen.svg)
@@ -7,9 +7,9 @@
 [![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Doc](https://img.shields.io/badge/doc-%3Ah%20fern-orange.svg)](doc/fern.txt)
 [![Doc (dev)](https://img.shields.io/badge/doc-%3Ah%20fern--develop-orange.svg)](doc/fern-develop.txt)
-[![reviewdog](https://github.com/lambdalisue/fern.vim/workflows/reviewdog/badge.svg)](https://github.com/lambdalisue/fern.vim/actions?query=workflow%3Areviewdog)
-[![vim](https://github.com/lambdalisue/fern.vim/workflows/vim/badge.svg)](https://github.com/lambdalisue/fern.vim/actions?query=workflow%3Avim)
-[![neovim](https://github.com/lambdalisue/fern.vim/workflows/neovim/badge.svg)](https://github.com/lambdalisue/fern.vim/actions?query=workflow%3Aneovim)
+[![reviewdog](https://github.com/lambdalisue/vim-fern/workflows/reviewdog/badge.svg)](https://github.com/lambdalisue/vim-fern/actions?query=workflow%3Areviewdog)
+[![vim](https://github.com/lambdalisue/vim-fern/workflows/vim/badge.svg)](https://github.com/lambdalisue/vim-fern/actions?query=workflow%3Avim)
+[![neovim](https://github.com/lambdalisue/vim-fern/workflows/neovim/badge.svg)](https://github.com/lambdalisue/vim-fern/actions?query=workflow%3Aneovim)
 
 <p align="center">
 <strong>Split windows (netrw style)</strong><br>
@@ -39,11 +39,12 @@
 </p>
 <p align="right">
 <sup>
-See <a href="https://github.com/lambdalisue/fern.vim/wiki/Screenshots" target="_blank">Screenshots</a> for more screenshots.
+See <a href="https://github.com/lambdalisue/vim-fern/wiki/Screenshots" target="_blank">Screenshots</a> for more screenshots.
 </sup>
 </p>
 
-Fern ([furn](https://www.youtube.com/watch?v=SSYgr-_69mg)) is a general purpose asynchronous tree viewer written in pure Vim script.
+Fern ([furn](https://www.youtube.com/watch?v=SSYgr-_69mg)) is a general purpose
+asynchronous tree viewer written in pure Vim script.
 
 ---
 
@@ -56,7 +57,8 @@ Fern ([furn](https://www.youtube.com/watch?v=SSYgr-_69mg)) is a general purpose 
 ## Concept
 
 - Supports both Vim and Neovim without any external dependencies
-- Support _split windows_ and _project drawer_ explained in [this article](http://vimcasts.org/blog/2013/01/oil-and-vinegar-split-windows-and-project-drawer/)
+- Support _split windows_ and _project drawer_ explained in
+  [this article](http://vimcasts.org/blog/2013/01/oil-and-vinegar-split-windows-and-project-drawer/)
 - Provide features as actions so that user don't have to remember mappings
 - Make operation asynchronous as much as possible to keep latency
 - User experience is more important than simplicity (maintainability)
@@ -65,9 +67,14 @@ Fern ([furn](https://www.youtube.com/watch?v=SSYgr-_69mg)) is a general purpose 
 
 ## Installation
 
-fern.vim has no extra dependencies so use your favorite Vim plugin manager or see [How to install](https://github.com/lambdalisue/fern.vim/wiki#how-to-install) page for detail.
+vim-fern has no extra dependencies so use your favorite Vim plugin manager or
+see
+[How to install](https://github.com/lambdalisue/vim-fern/wiki#how-to-install)
+page for detail.
 
-- If you use Neovim < 0.8, you **SHOULD** add [antoinemadec/FixCursorHold.nvim](https://github.com/antoinemadec/FixCursorHold.nvim) (See [#120](https://github.com/lambdalisue/fern.vim/issues/120))
+- If you use Neovim < 0.8, you **SHOULD** add
+  [antoinemadec/FixCursorHold.nvim](https://github.com/antoinemadec/FixCursorHold.nvim)
+  (See [#120](https://github.com/lambdalisue/vim-fern/issues/120))
 
 ## Usage
 
@@ -112,15 +119,21 @@ The following options are available for fern viewer.
 
 ![Screencast of Project drawer](https://user-images.githubusercontent.com/546312/73184080-324fa380-415f-11ea-8280-e0b6c7a9989f.gif)
 
-All usage above open fern as [*split windows style*][]. To open fern as [*project drawer style*][], use `-drawer` option like:
+All usage above open fern as [_split windows style_][*split windows style*]. To
+open fern as [_project drawer style_][*project drawer style*], use `-drawer`
+option like:
 
 ```vim
 :Fern . -drawer
 ```
 
-A fern window with _project drawer_ style always appeared to the most left side of Vim and behaviors of some mappings/actions are slightly modified (e.g. a buffer in the next window will be used as an anchor buffer in a project drawer style to open a new buffer.)
+A fern window with _project drawer_ style always appeared to the most left side
+of Vim and behaviors of some mappings/actions are slightly modified (e.g. a
+buffer in the next window will be used as an anchor buffer in a project drawer
+style to open a new buffer.)
 
-Note that additional to the all options available for _split windows_ style, _project drawer_ style enables the following options:
+Note that additional to the all options available for _split windows_ style,
+_project drawer_ style enables the following options:
 
 | Option    | Default | Description                                                      |
 | --------- | ------- | ---------------------------------------------------------------- |
@@ -137,15 +150,16 @@ Note that additional to the all options available for _split windows_ style, _pr
 
 ### Actions
 
-To execute actions, hit `a` on a fern buffer and input an action to perform.
-To see all actions available, hit `?` or execute `help` action then all available actions will be listed.
+To execute actions, hit `a` on a fern buffer and input an action to perform. To
+see all actions available, hit `?` or execute `help` action then all available
+actions will be listed.
 
 ![Actions](https://user-images.githubusercontent.com/546312/73184453-c91c6000-415f-11ea-8e6b-f1df4b9284de.gif)
 
 ### Window selector
 
 The `open:select` action open a prompt to visually select window to open a node.
-This feature is strongly inspired by [t9md/vim-choosewin][].
+This feature is strongly inspired by [t9md/vim-choosewin][t9md/vim-choosewin].
 
 ![Window selector](https://user-images.githubusercontent.com/546312/73605707-090e9780-45e5-11ea-864a-457dd785f1c4.gif)
 
@@ -153,9 +167,9 @@ This feature is strongly inspired by [t9md/vim-choosewin][].
 
 ### Renamer action (A.k.a exrename)
 
-The `rename` action open a new buffer with path of selected nodes.
-Users can edit that buffer and `:w` applies the changes.
-This feature is strongly inspired by [shougo/vimfiler.vim][].
+The `rename` action open a new buffer with path of selected nodes. Users can
+edit that buffer and `:w` applies the changes. This feature is strongly inspired
+by [shougo/vimfiler.vim][shougo/vimfiler.vim].
 
 ![Renamer](https://user-images.githubusercontent.com/546312/73184814-5d86c280-4160-11ea-9ed1-d5a8d66d1774.gif)
 
@@ -165,8 +179,10 @@ This feature is strongly inspired by [shougo/vimfiler.vim][].
 
 ## Users
 
-Most of functionalities are provided as plugins in fern.
-So visit [Github topics of `fern-vim-plugin`](https://github.com/topics/fern-vim-plugin) or [Plugins](https://github.com/lambdalisue/fern.vim/wiki/Plugins) page to find fern plugins to satisfy your wants.
+Most of functionalities are provided as plugins in fern. So visit
+[Github topics of `fern-vim-plugin`](https://github.com/topics/fern-vim-plugin)
+or [Plugins](https://github.com/lambdalisue/vim-fern/wiki/Plugins) page to find
+fern plugins to satisfy your wants.
 
 For example, following features are provided as official plugins
 
@@ -179,18 +195,20 @@ And lot more!
 
 ## Developers
 
-Please add `fern-vim-plugin` topic to your fern plugin. The topic is used to list up 3rd party fern plugins.
+Please add `fern-vim-plugin` topic to your fern plugin. The topic is used to
+list up 3rd party fern plugins.
 ![](https://user-images.githubusercontent.com/546312/94343538-d160ce00-0053-11eb-9ec6-0dd2a4c3f4b0.png)
 
 Then please add a following badge to indicate that your plugin is for fern.
 
 ```
-[![fern plugin](https://img.shields.io/badge/🌿%20fern-plugin-yellowgreen)](https://github.com/lambdalisue/fern.vim)
+[![fern plugin](https://img.shields.io/badge/🌿%20fern-plugin-yellowgreen)](https://github.com/lambdalisue/vim-fern)
 ```
 
 ## Customize
 
-Use `FileType fern` autocmd to execute initialization scripts for fern buffer like:
+Use `FileType fern` autocmd to execute initialization scripts for fern buffer
+like:
 
 ```vim
 function! s:init_fern() abort
@@ -204,21 +222,25 @@ augroup fern-custom
 augroup END
 ```
 
-The `FileType` autocmd will be invoked AFTER a fern buffer has initialized but BEFORE contents of a buffer become ready.
-So avoid accessing actual contents in the above function.
+The `FileType` autocmd will be invoked AFTER a fern buffer has initialized but
+BEFORE contents of a buffer become ready. So avoid accessing actual contents in
+the above function.
 
-See [Tips](https://github.com/lambdalisue/fern.vim/wiki/Tips) pages to find tips, or write pages to share your tips ;-)
+See [Tips](https://github.com/lambdalisue/vim-fern/wiki/Tips) pages to find
+tips, or write pages to share your tips ;-)
 
 # Contribution
 
 Any contribution including documentations are welcome.
 
-Contributors who change codes should install [thinca/vim-themis][] to run tests before complete a PR.
-PRs which does not pass tests won't be accepted.
+Contributors who change codes should install
+[thinca/vim-themis][thinca/vim-themis] to run tests before complete a PR. PRs
+which does not pass tests won't be accepted.
 
 [thinca/vim-themis]: https://github.com/thinca/vim-themis
 
 # License
 
-The code in fern.vim follows MIT license texted in [LICENSE](./LICENSE).
-Contributors need to agree that any modifications sent in this repository follow the license.
+The code in vim-fern follows MIT license texted in [LICENSE](./LICENSE).
+Contributors need to agree that any modifications sent in this repository follow
+the license.
