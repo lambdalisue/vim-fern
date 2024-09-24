@@ -1,6 +1,7 @@
 let s:Promise = vital#fern#import('Async.Promise')
 let s:Process = vital#fern#import('Async.Promise.Process')
 let s:AsyncLambda = vital#fern#import('Async.Lambda')
+let s:Lambda = vital#fern#import('Lambda')
 let s:is_windows = has('win32')
 
 if !s:is_windows && executable('ls')
@@ -57,13 +58,18 @@ function! fern#scheme#file#util#list_entries_glob(path, ...) abort
 endfunction
 
 if s:is_windows
+  let s:list_drives_cache = v:null
   function! fern#scheme#file#util#list_drives(token) abort
+    if s:list_drives_cache isnot# v:null
+      return s:Promise.resolve(s:list_drives_cache)
+    endif
     let l:Profile = fern#profile#start('fern#scheme#file#util#list_drives')
     return s:Process.start(['wmic', 'logicaldisk', 'get', 'name'], { 'token': a:token, 'reject_on_failure': 1 })
           \.catch({ v -> s:Promise.reject(join(v.stderr, "\n")) })
           \.then({ v -> v.stdout })
           \.then(s:AsyncLambda.filter_f({ v -> v =~# '^\w:' }))
           \.then(s:AsyncLambda.map_f({ v -> v:val[:1] . '\' }))
+          \.then({ v -> s:Lambda.let(s:, 'list_drives_cache', v) })
           \.finally({ -> Profile() })
   endfunction
 endif
