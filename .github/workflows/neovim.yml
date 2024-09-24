@@ -1,10 +1,11 @@
-name: neovim
+name: Neovim
 
 on:
   push:
     branches:
       - main
   pull_request:
+  workflow_dispatch:
 
 jobs:
   build:
@@ -20,16 +21,16 @@ jobs:
           - v0.4.4
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
         with:
           repository: thinca/vim-themis
           path: vim-themis
-      - uses: thinca/action-setup-vim@v1
+      - uses: rhysd/action-setup-vim@v1
         id: nvim
         with:
-          vim_type: "Neovim"
-          vim_version: "${{ matrix.version }}"
+          neovim: true
+          version: "${{ matrix.version }}"
       - name: Run tests
         env:
           THEMIS_VIM: ${{ steps.nvim.outputs.executable }}
