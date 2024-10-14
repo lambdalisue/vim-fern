@@ -5,13 +5,14 @@ on:
     branches:
       - main
   pull_request:
+  workflow_dispatch:
 
 jobs:
   vimlint:
     name: runner / vint
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - name: vint
         uses: reviewdog/action-vint@v1
         with:
