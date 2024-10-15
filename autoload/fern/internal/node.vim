@@ -82,12 +82,6 @@ function! fern#internal#node#children(node, provider, token, ...) abort
         \}, a:0 ? a:1 : {})
   if a:node.status is# s:STATUS_NONE
     return s:Promise.reject('leaf node does not have children')
-  elseif has_key(a:node.concealed, '__cache_children') && options.cache
-    " Return a fresh copy of cached children so that status won't be cached
-    return s:AsyncLambda.map(
-          \ a:node.concealed.__cache_children,
-          \ { v -> deepcopy(v) },
-          \)
   elseif has_key(a:node.concealed, '__promise_children')
     return a:node.concealed.__promise_children
   endif
@@ -102,7 +96,6 @@ function! fern#internal#node#children(node, provider, token, ...) abort
         \     '__owner': a:node,
         \   })
         \ }))
-        \.then({ v -> s:Lambda.pass(v, s:Lambda.let(a:node.concealed, '__cache_children', v)) })
         \.finally({ -> Done() })
         \.finally({ -> Profile() })
   let a:node.concealed.__promise_children = p
@@ -199,7 +192,6 @@ function! fern#internal#node#collapse(node, nodes, provider, comparator, token) 
         \.finally({ -> Done() })
         \.finally({ -> Profile() })
   call p.then({ -> s:Lambda.let(a:node, 'status', s:STATUS_COLLAPSED) })
-        \.then({ -> s:Lambda.unlet(a:node.concealed, '__cache_children') })
   let a:node.concealed.__promise_collapse = p
         \.finally({ -> s:Lambda.unlet(a:node.concealed, '__promise_collapse') })
   return p
