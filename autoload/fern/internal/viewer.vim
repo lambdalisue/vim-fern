@@ -46,7 +46,7 @@ function! s:init() abort
         \ FernReveal
         \ call fern#internal#command#reveal#command(<q-mods>, [<f-args>])
 
-  setlocal buftype=nofile bufhidden=unload
+  setlocal buftype=nofile
   setlocal noswapfile nobuflisted nomodifiable
   setlocal signcolumn=yes
   " The 'foldmethod=manual' is required to avoid the following issue
