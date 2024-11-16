@@ -1,5 +1,4 @@
 let s:t_ve_saved = &t_ve
-let s:guicursor_saved = &guicursor
 
 function! fern#internal#cursor#hide() abort
   call s:hide()
@@ -16,8 +15,7 @@ if has('nvim-0.5.0')
   endfunction
 
   function! s:restore() abort
-    set guicursor+=a:Cursor/lCursor
-    let &guicursor = s:guicursor_saved
+    set guicursor-=a:FernTransparentCursor/lCursor
   endfunction
 
   function! s:highlight() abort
