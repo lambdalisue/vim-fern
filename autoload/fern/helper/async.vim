@@ -19,9 +19,11 @@ function! s:async_redraw() abort dict
   let fern = helper.fern
   return s:Promise.resolve()
         \.then({ -> fern.renderer.render(fern.visible_nodes) })
+        \.then({ v -> s:reject_on_non_fern_buffer(helper.bufnr, v) })
         \.then({ v -> fern#internal#buffer#replace(helper.bufnr, v) })
         \.then({ -> helper.async.remark() })
         \.then({ -> fern#hook#emit('viewer:redraw', helper) })
+        \.catch({ e -> s:is_non_fern_buffer_rejection(e) ? 0 : s:Promise.reject(e) })
         \.finally({ -> Profile() })
 endfunction
 let s:async.redraw = funcref('s:async_redraw')
@@ -346,4 +348,19 @@ function! s:enter(fern, node) abort
   catch
     return s:Promise.reject(v:exception)
   endtry
+endfunction
+
+" Check if the 'bufnr' is a fern buffer
+" This check is required because the 'bufnr' may be a buffer that is not a
+" fern buffer caused by 'enew' command prior to the initial rendering.
+" See https://github.com/lambdalisue/fern.vim/issues/514 for detail.
+function! s:reject_on_non_fern_buffer(bufnr, value) abort
+  if bufname(a:bufnr) !~# 'fern://'
+    return s:Promise.reject('reject because the buffer is not a fern buffer')
+  endif
+  return s:Promise.resolve(a:value)
+endfunction
+
+function! s:is_non_fern_buffer_rejection(message) abort
+  return a:message ==# 'reject because the buffer is not a fern buffer'
 endfunction
