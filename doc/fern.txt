@@ -1037,6 +1037,7 @@ GLOBAL							*fern-mapping-global*
 	      \ <Plug>(fern-action-open:edit)
 	      \ <Plug>(fern-action-open:edit-or-tabedit)
 <
+
 *<Plug>(fern-action-open)*
 	An alias to "open:edit" action. Users can overwrite this mapping to
 	change the default behavior of "open" action like:
@@ -1045,6 +1046,7 @@ GLOBAL							*fern-mapping-global*
 	      \ <Plug>(fern-action-open)
 	      \ <Plug>(fern-action-open:select)
 <
+
 *<Plug>(fern-action-diff:select)*
 *<Plug>(fern-action-diff:select:vert)*
 	Open a first marked node through "window selector"
@@ -1252,7 +1254,7 @@ The following mappings/actions are only available on file:// scheme.
 	nmap <buffer>
 	      \ <Plug>(my-trash)
 	      \ <Plug>(fern-action-trash=)y<CR>
-
+<
 *<Plug>(fern-action-remove)*
 *<Plug>(fern-action-remove=)*
 	Open a prompt to ask if fern can DELETE the cursor node or marked
@@ -1265,7 +1267,7 @@ The following mappings/actions are only available on file:// scheme.
 	nmap <buffer>
 	      \ <Plug>(my-trash)
 	      \ <Plug>(fern-action-trash=)y<CR>
-
+<
 *<Plug>(fern-action-cd:root)*
 *<Plug>(fern-action-lcd:root)*
 *<Plug>(fern-action-tcd:root)*
@@ -1371,6 +1373,19 @@ The following mappings/actions are only available on file:// scheme.
 *<Plug>(fern-action-yank:path)*
 	Yank the node path. In FILE scheme, |<Plug>(fern-action-yank)| is
 	aliased to this mapping.
+
+*<Plug>(fern-action-preview:left)*
+*<Plug>(fern-action-preview:right)*
+*<Plug>(fern-action-preview:top)*
+*<Plug>(fern-action-preview:bottom)*
+*<Plug>(fern-action-preview)*
+	Show the cursor node in a |preview-window| in similar manners of global
+	"open" actions.
+	If you would like to jump to the preview window, you can register a
+	mapping like:
+>
+	nnoremap P <Plug>(fern-action-preview)<C-w>p
+<
 
 -----------------------------------------------------------------------------
 DICT							*fern-mapping-dict*
