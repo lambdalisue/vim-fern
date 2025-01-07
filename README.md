@@ -7,9 +7,9 @@
 [![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Doc](https://img.shields.io/badge/doc-%3Ah%20fern-orange.svg)](doc/fern.txt)
 [![Doc (dev)](https://img.shields.io/badge/doc-%3Ah%20fern--develop-orange.svg)](doc/fern-develop.txt)
-[![reviewdog](https://github.com/lambdalisue/vim-fern/workflows/reviewdog/badge.svg)](https://github.com/lambdalisue/vim-fern/actions?query=workflow%3Areviewdog)
-[![vim](https://github.com/lambdalisue/vim-fern/workflows/vim/badge.svg)](https://github.com/lambdalisue/vim-fern/actions?query=workflow%3Avim)
-[![neovim](https://github.com/lambdalisue/vim-fern/workflows/neovim/badge.svg)](https://github.com/lambdalisue/vim-fern/actions?query=workflow%3Aneovim)
+[![reviewdog](https://github.com/lambdalisue/vim-fern/actions/workflows/reviewdog.yml/badge.svg)](https://github.com/lambdalisue/vim-fern/actions/workflows/reviewdog.yml)
+[![Vim](https://github.com/lambdalisue/vim-fern/actions/workflows/vim.yml/badge.svg)](https://github.com/lambdalisue/vim-fern/actions/workflows/vim.yml)
+[![Neovim](https://github.com/lambdalisue/vim-fern/actions/workflows/neovim.yml/badge.svg)](https://github.com/lambdalisue/vim-fern/actions/workflows/neovim.yml)
 
 <p align="center">
 <strong>Split windows (netrw style)</strong><br>
