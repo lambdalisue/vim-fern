@@ -1,18 +1,25 @@
 let s:Promise = vital#fern#import('Async.Promise')
 
 function! fern#scheme#file#mapping#init(disable_default_mappings) abort
-  nnoremap <buffer><silent> <Plug>(fern-action-new-path)  :<C-u>call <SID>call('new_path')<CR>
-  nnoremap <buffer><silent> <Plug>(fern-action-new-file)  :<C-u>call <SID>call('new_file')<CR>
-  nnoremap <buffer><silent> <Plug>(fern-action-new-dir)   :<C-u>call <SID>call('new_dir')<CR>
-  nnoremap <buffer><silent> <Plug>(fern-action-new-path=) :<C-u>call <SID>call_without_guard('new_path')<CR>
-  nnoremap <buffer><silent> <Plug>(fern-action-new-file=) :<C-u>call <SID>call_without_guard('new_file')<CR>
-  nnoremap <buffer><silent> <Plug>(fern-action-new-dir=)  :<C-u>call <SID>call_without_guard('new_dir')<CR>
-  nnoremap <buffer><silent> <Plug>(fern-action-copy)      :<C-u>call <SID>call('copy')<CR>
-  nnoremap <buffer><silent> <Plug>(fern-action-move)      :<C-u>call <SID>call('move')<CR>
-  nnoremap <buffer><silent> <Plug>(fern-action-trash)     :<C-u>call <SID>call('trash')<CR>
-  nnoremap <buffer><silent> <Plug>(fern-action-trash=)    :<C-u>call <SID>call_without_guard('trash')<CR>
-  nnoremap <buffer><silent> <Plug>(fern-action-remove)    :<C-u>call <SID>call('remove')<CR>
-  nnoremap <buffer><silent> <Plug>(fern-action-remove=)   :<C-u>call <SID>call_without_guard('remove')<CR>
+  nnoremap <buffer><silent> <Plug>(fern-action-new-path)       :<C-u>call <SID>call('new_path')<CR>
+  nnoremap <buffer><silent> <Plug>(fern-action-new-file)       :<C-u>call <SID>call('new_file')<CR>
+  nnoremap <buffer><silent> <Plug>(fern-action-new-dir)        :<C-u>call <SID>call('new_dir')<CR>
+  nnoremap <buffer><silent> <Plug>(fern-action-new-path=)      :<C-u>call <SID>call_without_guard('new_path')<CR>
+  nnoremap <buffer><silent> <Plug>(fern-action-new-file=)      :<C-u>call <SID>call_without_guard('new_file')<CR>
+  nnoremap <buffer><silent> <Plug>(fern-action-new-dir=)       :<C-u>call <SID>call_without_guard('new_dir')<CR>
+  nnoremap <buffer><silent> <Plug>(fern-action-copy)           :<C-u>call <SID>call('copy')<CR>
+  nnoremap <buffer><silent> <Plug>(fern-action-move)           :<C-u>call <SID>call('move')<CR>
+  nnoremap <buffer><silent> <Plug>(fern-action-trash)          :<C-u>call <SID>call('trash')<CR>
+  nnoremap <buffer><silent> <Plug>(fern-action-trash=)         :<C-u>call <SID>call_without_guard('trash')<CR>
+  nnoremap <buffer><silent> <Plug>(fern-action-remove)         :<C-u>call <SID>call('remove')<CR>
+  nnoremap <buffer><silent> <Plug>(fern-action-remove=)        :<C-u>call <SID>call_without_guard('remove')<CR>
+  nnoremap <buffer><silent> <Plug>(fern-action-preview:left)   :<C-u>call <SID>call('preview', 'vertical topleft')<CR>
+  nnoremap <buffer><silent> <Plug>(fern-action-preview:right)  :<C-u>call <SID>call('preview', 'vertical botright')<CR>
+  nnoremap <buffer><silent> <Plug>(fern-action-preview:top)    :<C-u>call <SID>call('preview', 'topleft')<CR>
+  nnoremap <buffer><silent> <Plug>(fern-action-preview:bottom) :<C-u>call <SID>call('preview', 'botright')<CR>
+
+  " Alias map
+  nnoremap <buffer><silent> <Plug>(fern-action-preview) <Plug>(fern-action-preview:bottom)
 
   if !a:disable_default_mappings
     nmap <buffer><nowait> N <Plug>(fern-action-new-file)
@@ -203,6 +210,23 @@ function! s:map_remove(helper) abort
         \.then({ -> a:helper.async.reload_node(root.__key) })
         \.then({ -> a:helper.async.redraw() })
         \.then({ -> a:helper.sync.echo(printf('%d items are removed', len(ps))) })
+endfunction
+
+function! s:map_preview(helper, prefix) abort
+  let node = a:helper.sync.get_cursor_node()
+  if node is# v:null
+    return s:Promise.reject('cursor node is not visible')
+  endif
+  if node.status isnot# a:helper.STATUS_NONE
+    return s:Promise.resolve()
+  endif
+
+  try
+    execute printf("noautocmd %s pedit %s", a:prefix, fnameescape(node._path))
+    return s:Promise.resolve()
+  catch
+    return s:Promise.reject(v:exception)
+  endtry
 endfunction
 
 function! s:new_file(helper, name) abort
