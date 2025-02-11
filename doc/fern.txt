@@ -1265,8 +1265,8 @@ The following mappings/actions are only available on file:// scheme.
 >
 	" Immediately delete
 	nmap <buffer>
-	      \ <Plug>(my-trash)
-	      \ <Plug>(fern-action-trash=)y<CR>
+	      \ <Plug>(my-remove)
+	      \ <Plug>(fern-action-remove=)y<CR>
 <
 *<Plug>(fern-action-cd:root)*
 *<Plug>(fern-action-lcd:root)*
