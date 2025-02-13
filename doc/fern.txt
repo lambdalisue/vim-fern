@@ -1258,15 +1258,15 @@ The following mappings/actions are only available on file:// scheme.
 *<Plug>(fern-action-remove)*
 *<Plug>(fern-action-remove=)*
 	Open a prompt to ask if fern can DELETE the cursor node or marked
-	nodes. BE CAREFUL with this action while it DELETE the file/direcoty
+	nodes. BE CAREFUL with this action while it DELETE the file/directoty
 	and users cannot restore (like "rm" in terminal.)
 	You can use a "=" variant to apply values to the prompt and/or submit
 	a value like:
 >
 	" Immediately delete
 	nmap <buffer>
-	      \ <Plug>(my-trash)
-	      \ <Plug>(fern-action-trash=)y<CR>
+	      \ <Plug>(my-remove)
+	      \ <Plug>(fern-action-remove=)y<CR>
 <
 *<Plug>(fern-action-cd:root)*
 *<Plug>(fern-action-lcd:root)*
