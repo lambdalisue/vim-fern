@@ -146,7 +146,7 @@ function! fern#internal#node#expand_tree(node, nodes, provider, comparator, toke
   if a:node.status is# s:STATUS_NONE
     return s:Promise.reject('cannot expand leaf node')
   elseif a:node.status is# s:STATUS_EXPANDED
-    " Collpase first to avoid duplication
+    " Collapse first to avoid duplication
     return fern#internal#node#collapse(a:node, a:nodes, a:provider, a:comparator, a:token)
       \.then({ ns -> fern#internal#node#expand_tree(a:node, ns, a:provider, a:comparator, a:token) })
   elseif has_key(a:node.concealed, '__promise_expand')

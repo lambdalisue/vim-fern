@@ -28,7 +28,7 @@ Describe fern#hook
   End
 
   Describe #remove()
-    It removes a specfied hook
+    It removes a specified hook
       let ns1 = []
       let ns2 = []
       call fern#hook#add('t', { -> extend(ns1, a:000) })
