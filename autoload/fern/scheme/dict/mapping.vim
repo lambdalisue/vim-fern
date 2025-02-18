@@ -144,7 +144,7 @@ function! s:map_remove(helper) abort
 
   let nodes = a:helper.sync.get_selected_nodes()
   let paths = map(copy(nodes), { _, v -> v._path })
-  let prompt = printf('The follwoing %d entries will be removed', len(paths))
+  let prompt = printf('The following %d entries will be removed', len(paths))
   for path in paths[:5]
     let prompt .= "\n" . path
   endfor

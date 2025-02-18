@@ -69,7 +69,7 @@ function! fern#internal#buffer#open(bufname, ...) abort
   if options.keepjumps && options.opener ==# 'edit'
     let options.mods .= ' keepjumps'
   endif
-  " Use user frindly path on a real path to fix #284
+  " Use user friendly path on a real path to fix #284
   let bufname = filereadable(a:bufname)
         \ ? fnamemodify(a:bufname, ':~:.')
         \ : a:bufname

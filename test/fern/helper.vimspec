@@ -246,7 +246,7 @@ Describe fern#helper
         It does not reject the promise
           let [r, e] = Promise.wait(
                \ helper.async.sleep(1),
-               \ { 'timoeut': TIMEOUT },
+               \ { 'timeout': TIMEOUT },
                \)
           Assert Equals(e, v:null)
         End
@@ -261,7 +261,7 @@ Describe fern#helper
         It does not reject the promise
           let [r, e] = Promise.wait(
                \ helper.async.redraw(),
-               \ { 'timoeut': TIMEOUT },
+               \ { 'timeout': TIMEOUT },
                \)
           Assert Equals(e, v:null)
         End

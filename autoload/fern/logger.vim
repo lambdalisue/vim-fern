@@ -83,7 +83,7 @@ function! s:format(level, args, sep) abort
   return map(split(m, '\n'), { -> printf("%-5S:%s%s", a:level, a:sep, v:val) })
 endfunction
 
-" For backword compatibility
+" For backward compatibility
 const g:fern#logger#DEBUG = g:fern#DEBUG
 const g:fern#logger#INFO = g:fern#INFO
 const g:fern#logger#WARN = g:fern#WARN

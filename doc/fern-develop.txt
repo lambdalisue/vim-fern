@@ -185,7 +185,7 @@ like:
 	call add(g:fern#mapping#mappings, ['your_plugin'])
 >
 *g:fern#mapping#mappings*
-	A |List| of globally available mapping names. 
+	A |List| of globally available mapping names.
 	A target mapping MUST exist under "fern#mapping#" namespace.
 
 
@@ -199,7 +199,7 @@ Provider is a core instance to produce scheme plugin. The instance must has
 the following methods.
 
 				*fern-develop-scheme-provider.get_root()*
-.get_root({url})		
+.get_root({url})
 	Return a (partial) node instance of the {url} (|String|).
 	The node instance will be used as a root node of a tree.
 	It throws error when no node is found for the {url}.
@@ -239,8 +239,8 @@ the following methods.
 MAPPING					*fern-develop-scheme-mapping*
 
 Fern provides scheme mappings under "autoload/fern/scheme/{scheme}/mapping"
-directory.  Mapping MUST provide an init function as 
-"fern#scheme#{scheme}#mapping#{name}#init()" with a boolean argument to disable 
+directory.  Mapping MUST provide an init function as
+"fern#scheme#{scheme}#mapping#{name}#init()" with a boolean argument to disable
 default mappings.
 
 Mappings under that directory are registered automatically when a filename has
@@ -280,7 +280,7 @@ Following hook will be emitted by |fern#hook#emit()| from fern itself.
 
 "viewer:ready" ({helper})
 	Called when fern viewer has ready, mean that the buffer has opened and
-	all content has rendererd.
+	all content has rendered.
 	The {helper} is a helper instance described in |fern-develop-helper|.
 
 
@@ -312,7 +312,7 @@ VARIABLE				*fern-develop-helper-variable*
 	"include"	A |List| of |String| to include nodes
 	"exclude"	A |List| of |String| to exclude nodes
 
-	Develoeprs can refer each attributes but Do NOT modify.
+	Developers can refer each attributes but Do NOT modify.
 
 			*fern-develop-helper.bufnr*
 .bufnr

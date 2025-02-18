@@ -287,7 +287,7 @@ Users can customize above appearance by the following variables.
 	A |String| used as a symbol of expanded branch node.
 	Default: "|- "
 
-See |FernHighlight| and |fern-highlight| to change pre-defeined |highlight|.
+See |FernHighlight| and |fern-highlight| to change pre-defined |highlight|.
 
 Or create user custom renderer to change the appearance completely.
 See |fern-develop-renderer| for more details.
@@ -387,7 +387,7 @@ VARIABLE						*fern-variable*
 	Note that even with this option, any |jump-motions| performed in a
 	fern buffer updates |jumplist|. For example, if user move cursors by
 	"G" in above situation, |CTRL-O| in last step jumps to the fern buffer
-	rather than a buffer "A" because a jump for "G" has recoreded in
+	rather than a buffer "A" because a jump for "G" has recorded in
 	|jumplist|.
 	Default: 0
 
@@ -405,7 +405,7 @@ VARIABLE						*fern-variable*
 
 *g:fern#disable_viewer_auto_duplication*
 	Set 1 to disable viewer auto duplication on |WinEnter| autocmd.
-	The duplication is mainly occured when user execute |split| or
+	The duplication is mainly occurred when user execute |split| or
 	|vsplit| command to duplicate window.
 
 *g:fern#disable_drawer_auto_winfixwidth*
@@ -589,7 +589,7 @@ COMMAND							*fern-command*
 	If {reveal} is specified, parent nodes of the node which is identified
 	by the {reveal} are expanded and the node will be focused.
 	The {reveal} must be a relative path separated by "/" from the
-	specfied {url}.
+	specified {url}.
 	Note that if the {url} is for "file" scheme, an absolute path can be
 	specified to the {reveal}.
 							*fern-opener*
@@ -608,7 +608,7 @@ COMMAND							*fern-command*
 	"edit/tabedit"	Open a buffer by |edit| or |tabedit| when the buffer
 			is |modified|
 
-	Additionally, any modifiers (|mods|) are allowd to be prepend (e.g.
+	Additionally, any modifiers (|mods|) are allowed to be prepend (e.g.
 	"topleft split".)
 
 	Note that the command can be followed by a '|' and another command.
@@ -933,7 +933,7 @@ GLOBAL							*fern-mapping-global*
 	root node.
 
 *<Plug>(fern-action-expand-tree:in)*
-	Recursively expand the tree on a cursor node and keep the cursor on the 
+	Recursively expand the tree on a cursor node and keep the cursor on the
 	root node (moves to the first child node after the cursor node)
 
 *<Plug>(fern-action-expand-tree)*
@@ -981,7 +981,7 @@ GLOBAL							*fern-mapping-global*
 	drawer style fern (|fern-glossary-anchor|.)
 
 *<Plug>(fern-action-open:drop)*
-	Open a cursor node or jump the window when it was already opend.
+	Open a cursor node or jump the window when it was already opened.
 	Note See |drop| for more details.
 
 *<Plug>(fern-action-open:edit-or-error)*
@@ -1258,7 +1258,7 @@ The following mappings/actions are only available on file:// scheme.
 *<Plug>(fern-action-remove)*
 *<Plug>(fern-action-remove=)*
 	Open a prompt to ask if fern can DELETE the cursor node or marked
-	nodes. BE CAREFUL with this action while it DELETE the file/directoty
+	nodes. BE CAREFUL with this action while it DELETE the file/directory
 	and users cannot restore (like "rm" in terminal.)
 	You can use a "=" variant to apply values to the prompt and/or submit
 	a value like:
