@@ -251,7 +251,7 @@ elseif has('win32') && executable('powershell')
           \]
     return s:Process.start([
           \ 'powershell',
-          \ '-ExecutionPolicy', 'Bypass',
+          \ '-ExecutionPolicy', 'Bypass', '-NoProfile',
           \ '-Command', printf(join(script, "\r\n"), abspath),
           \], options)
           \.then({ r -> s:_iconv_result(r) })
