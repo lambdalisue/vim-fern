@@ -92,7 +92,7 @@ function! s:render_node(node, base, options) abort
 endfunction
 
 call s:Config.config(expand('<sfile>:p'), {
-      \ 'leading': ' ',
+      \ 'leading': "\t",
       \ 'root_symbol': '',
       \ 'leaf_symbol': '|  ',
       \ 'collapsed_symbol': '|+ ',
