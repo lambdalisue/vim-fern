@@ -41,9 +41,9 @@ Describe fern#renderer#default
         Assert Equals(r, [
               \ 'root',
               \ '|- shallow/',
-              \ ' |+ alpha/',
-              \ ' |+ beta/',
-              \ ' |  gamma',
+              \ "\t|+ alpha/",
+              \ "\t|+ beta/",
+              \ "\t|  gamma",
               \])
       End
 
@@ -60,9 +60,9 @@ Describe fern#renderer#default
         Assert Equals(r, [
               \ 'root',
               \ '|- shallow/',
-              \ ' |+ alpha/',
-              \ ' |+ beta/',
-              \ ' |  gamma',
+              \ "\t|+ alpha/",
+              \ "\t|+ beta/",
+              \ "\t|  gamma",
               \])
       End
     End
