@@ -110,6 +110,38 @@ fern#fri#encode({str}[, {pattern}])
 fern#fri#decode({str})
 	Decode percent-encoding from the {str}.
 
+						*fern#fri#to#path()*
+fern#fri#to#path({fri})
+	Convert a FRI instance to a path.
+	It returns a decoded "path" attribute with a leading "/".
+
+						*fern#fri#to#filepath()*
+fern#fri#to#filepath({fri})
+	Convert a FRI instance of "file://" protocol to a file path.
+	It returns a slash separated path on Linux/Unix and a backslash
+	separated path on Windows.
+>
+	" How to get a file path from a fern buffer name.
+	let l:bufname = 'fern://file:///Users/alisue/wk/hello%252520world$'
+	let l:fri1 = fern#fri#parse(l:bufname)
+	let l:fri2 = fern#fri#parse(l:fri1.path)
+	echo fern#fri#to#filepath(l:fri2)
+<
+						*fern#fri#from#path()*
+fern#fri#from#path({path})
+	Convert an absolute path to a FRI instance of "file://" protocol.
+	It returns a FRI instance with "scheme" set to "file" and
+	"path" set to the {path}.
+
+	It assumes that the {path} is slash separated absolute path. Use
+	|fern#fri#from#filepath()| instead when the {path} is a file path.
+
+						*fern#fri#from#filepath()*
+fern#fri#from#filepath({path})
+	Convert an absolute file path to a FRI instance of "file://" protocol.
+	It returns a FRI instance with "scheme" set to "file" and
+	"path" set to the slash separated {path}. The {path} is converted to
+	a slash separated path.
 
 =============================================================================
 NODE						*fern-develop-node*
