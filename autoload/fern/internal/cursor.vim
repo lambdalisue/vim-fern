@@ -1,4 +1,5 @@
 let s:t_ve_saved = &t_ve
+let s:guicursor_saved = &guicursor
 
 function! fern#internal#cursor#hide() abort
   call s:hide()
