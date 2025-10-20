@@ -97,16 +97,26 @@ function! s:BufWriteCmd() abort
     for Modifier in b:fern_replacer_modifiers
       let result = Modifier(result)
     endfor
-    let l:Resolve = b:fern_replacer_resolve
-    set nomodified
-    close
-    call Resolve(result)
   catch
     echohl ErrorMsg
     echo '[fern] Please fix the following error first to continue or cancel with ":q!"'
     echo printf('[fern] %s', substitute(v:exception, '^Vim(.*):', '', ''))
     echohl None
+    return
   endtry
+  set nomodified
+  let l:Resolve = b:fern_replacer_resolve
+  let winid = win_getid()
+  let bufnr = bufnr()
+  call timer_start(0, { -> s:post_write(l:Resolve, result, winid, bufnr) })
+endfunction
+
+function! s:post_write(resolve, result, winid, bufnr) abort
+  if winbufnr(a:winid) == a:bufnr
+    call win_execute(a:winid, 'close')
+  endif
+  let l:Resolve = a:resolve
+  call Resolve(a:result)
 endfunction
 
 function! s:syntax() abort
