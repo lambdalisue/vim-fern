@@ -73,7 +73,11 @@ function! s:show() abort
   function! s:apply() abort closure
     call setbufline('%', 1, line)
     call helper.fern.renderer.syntax()
+    call fern#hook#emit('viewer:syntax', helper)
+    doautocmd <nomodeline> User FernSyntax
     call helper.fern.renderer.highlight()
+    call fern#hook#emit('viewer:highlight', helper)
+    doautocmd <nomodeline> User FernHighlight
     syntax clear FernRootSymbol
     syntax clear FernRootText
 
