@@ -13,13 +13,23 @@ function! fern#scheme#file#mapping#init(disable_default_mappings) abort
   nnoremap <buffer><silent> <Plug>(fern-action-trash=)         :<C-u>call <SID>call_without_guard('trash')<CR>
   nnoremap <buffer><silent> <Plug>(fern-action-remove)         :<C-u>call <SID>call('remove')<CR>
   nnoremap <buffer><silent> <Plug>(fern-action-remove=)        :<C-u>call <SID>call_without_guard('remove')<CR>
-  nnoremap <buffer><silent> <Plug>(fern-action-preview:left)   :<C-u>call <SID>call('preview', 'vertical topleft')<CR>
-  nnoremap <buffer><silent> <Plug>(fern-action-preview:right)  :<C-u>call <SID>call('preview', 'vertical botright')<CR>
-  nnoremap <buffer><silent> <Plug>(fern-action-preview:top)    :<C-u>call <SID>call('preview', 'topleft')<CR>
-  nnoremap <buffer><silent> <Plug>(fern-action-preview:bottom) :<C-u>call <SID>call('preview', 'botright')<CR>
+  nnoremap <buffer><silent> <Plug>(fern-action-preview:noautocmd:left)   :<C-u>call <SID>call('preview', 'vertical topleft', v:true)<CR>
+  nnoremap <buffer><silent> <Plug>(fern-action-preview:noautocmd:right)  :<C-u>call <SID>call('preview', 'vertical botright', v:true)<CR>
+  nnoremap <buffer><silent> <Plug>(fern-action-preview:noautocmd:top)    :<C-u>call <SID>call('preview', 'topleft', v:true)<CR>
+  nnoremap <buffer><silent> <Plug>(fern-action-preview:noautocmd:bottom) :<C-u>call <SID>call('preview', 'botright', v:true)<CR>
+  nnoremap <buffer><silent> <Plug>(fern-action-preview:autocmd:left)     :<C-u>call <SID>call('preview', 'vertical topleft', v:false)<CR>
+  nnoremap <buffer><silent> <Plug>(fern-action-preview:autocmd:right)    :<C-u>call <SID>call('preview', 'vertical botright', v:false)<CR>
+  nnoremap <buffer><silent> <Plug>(fern-action-preview:autocmd:top)      :<C-u>call <SID>call('preview', 'topleft', v:false)<CR>
+  nnoremap <buffer><silent> <Plug>(fern-action-preview:autocmd:bottom)   :<C-u>call <SID>call('preview', 'botright', v:false)<CR>
 
   " Alias map
-  nnoremap <buffer><silent> <Plug>(fern-action-preview) <Plug>(fern-action-preview:bottom)
+  nmap <buffer><silent> <Plug>(fern-action-preview:noautocmd) <Plug>(fern-action-preview:noautocmd:bottom)
+  nmap <buffer><silent> <Plug>(fern-action-preview:autocmd)   <Plug>(fern-action-preview:autocmd:bottom)
+  nmap <buffer><silent> <Plug>(fern-action-preview:left)      <Plug>(fern-action-preview:noautocmd:left)
+  nmap <buffer><silent> <Plug>(fern-action-preview:right)     <Plug>(fern-action-preview:noautocmd:right)
+  nmap <buffer><silent> <Plug>(fern-action-preview:top)       <Plug>(fern-action-preview:noautocmd:top)
+  nmap <buffer><silent> <Plug>(fern-action-preview:bottom)    <Plug>(fern-action-preview:noautocmd:bottom)
+  nmap <buffer><silent> <Plug>(fern-action-preview)           <Plug>(fern-action-preview:noautocmd)
 
   if !a:disable_default_mappings
     nmap <buffer><nowait> N <Plug>(fern-action-new-file)
@@ -212,7 +222,7 @@ function! s:map_remove(helper) abort
         \.then({ -> a:helper.sync.echo(printf('%d items are removed', len(ps))) })
 endfunction
 
-function! s:map_preview(helper, prefix) abort
+function! s:map_preview(helper, prefix, noautocmd) abort
   let node = a:helper.sync.get_cursor_node()
   if node is# v:null
     return s:Promise.reject('cursor node is not visible')
@@ -222,7 +232,11 @@ function! s:map_preview(helper, prefix) abort
   endif
 
   try
-    execute printf("noautocmd %s pedit %s", a:prefix, fnameescape(node._path))
+    if a:noautocmd
+      execute printf("noautocmd %s pedit %s", a:prefix, fnameescape(node._path))
+    else
+      execute printf("%s pedit %s", a:prefix, fnameescape(node._path))
+    endif
     return s:Promise.resolve()
   catch
     return s:Promise.reject(v:exception)
