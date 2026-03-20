@@ -176,6 +176,7 @@ function! s:async_expand_tree(key) abort dict
         \   fern.provider,
         \   fern.comparator,
         \   fern.source.token,
+        \   fern.exclude,
         \ )
         \})
         \.then({ ns -> self.update_nodes(ns) })

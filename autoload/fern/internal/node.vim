@@ -142,13 +142,14 @@ function! fern#internal#node#expand(node, nodes, provider, comparator, token) ab
   return p
 endfunction
 
-function! fern#internal#node#expand_tree(node, nodes, provider, comparator, token) abort
+function! fern#internal#node#expand_tree(node, nodes, provider, comparator, token, ...) abort
+  let exclude = a:0 ? a:1 : ''
   if a:node.status is# s:STATUS_NONE
     return s:Promise.reject('cannot expand leaf node')
   elseif a:node.status is# s:STATUS_EXPANDED
     " Collapse first to avoid duplication
     return fern#internal#node#collapse(a:node, a:nodes, a:provider, a:comparator, a:token)
-      \.then({ ns -> fern#internal#node#expand_tree(a:node, ns, a:provider, a:comparator, a:token) })
+      \.then({ ns -> fern#internal#node#expand_tree(a:node, ns, a:provider, a:comparator, a:token, exclude) })
   elseif has_key(a:node.concealed, '__promise_expand')
     return a:node.concealed.__promise_expand
   elseif has_key(a:node, 'concealed.__promise_collapse')
@@ -160,6 +161,8 @@ function! fern#internal#node#expand_tree(node, nodes, provider, comparator, toke
         \.finally({ -> Profile('descendants') })
         \.then({ v -> s:sort(v, a:comparator.compare) })
         \.finally({ -> Profile('sort') })
+        \.then({ v -> s:filter_excluded(v, exclude) })
+        \.finally({ -> Profile('filter_excluded') })
         \.then(s:Lambda.map_f({ n -> n.status isnot# s:STATUS_NONE ? extend(n, {'status': s:STATUS_EXPANDED}) : n }))
         \.finally({ -> Profile('expand') })
         \.then({ v -> s:extend(a:node.__key, copy(a:nodes), v) })
@@ -273,6 +276,32 @@ endfunction
 
 function! s:sort(nodes, compare) abort
   return s:Promise.resolve(sort(a:nodes, a:compare))
+endfunction
+
+function! s:filter_excluded(nodes, exclude) abort
+  if empty(a:exclude)
+    return a:nodes
+  endif
+  let excluded_keys = []
+  let result = []
+  for node in a:nodes
+    let dominated = 0
+    for ekey in excluded_keys
+      if len(node.__key) > len(ekey) && node.__key[:len(ekey)-1] ==# ekey
+        let dominated = 1
+        break
+      endif
+    endfor
+    if dominated
+      continue
+    endif
+    if node.label =~# a:exclude
+      call add(excluded_keys, node.__key)
+      continue
+    endif
+    call add(result, node)
+  endfor
+  return result
 endfunction
 
 function! s:extend(key, nodes, new_nodes) abort
