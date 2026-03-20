@@ -1374,6 +1374,16 @@ The following mappings/actions are only available on file:// scheme.
 	Yank the node path. In FILE scheme, |<Plug>(fern-action-yank)| is
 	aliased to this mapping.
 
+*<Plug>(fern-action-preview:noautocmd:left)*
+*<Plug>(fern-action-preview:noautocmd:right)*
+*<Plug>(fern-action-preview:noautocmd:top)*
+*<Plug>(fern-action-preview:noautocmd:bottom)*
+*<Plug>(fern-action-preview:noautocmd)*
+*<Plug>(fern-action-preview:autocmd:left)*
+*<Plug>(fern-action-preview:autocmd:right)*
+*<Plug>(fern-action-preview:autocmd:top)*
+*<Plug>(fern-action-preview:autocmd:bottom)*
+*<Plug>(fern-action-preview:autocmd)*
 *<Plug>(fern-action-preview:left)*
 *<Plug>(fern-action-preview:right)*
 *<Plug>(fern-action-preview:top)*
@@ -1381,6 +1391,12 @@ The following mappings/actions are only available on file:// scheme.
 *<Plug>(fern-action-preview)*
 	Show the cursor node in a |preview-window| in similar manners of global
 	"open" actions.
+	The "noautocmd" variant opens the preview window with |:noautocmd|,
+	which prevents autocommands from firing (e.g., filetype detection and
+	syntax highlighting). The "autocmd" variant allows autocommands to run,
+	enabling syntax highlighting in the preview window.
+	The directional variants without "noautocmd"/"autocmd" prefix and the
+	bare "preview" action are aliases for the "noautocmd" variants.
 	If you would like to jump to the preview window, you can register a
 	mapping like:
 >
