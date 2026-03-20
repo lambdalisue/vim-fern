@@ -39,6 +39,7 @@ function! s:show() abort
   " remove trailing unprintable characters
   let line = substitute(getline('.'), '[^[:print:]]*$', '', 'g')
   let line_width = strdisplaywidth(line)
+  let tabstop = &tabstop
 
   " don't show a popup if the line fits in the window
   if line_width < winwidth(0)
@@ -81,6 +82,7 @@ function! s:show() abort
     syntax clear FernRootSymbol
     syntax clear FernRootText
 
+    let &l:tabstop = tabstop
     setlocal nowrap cursorline noswapfile nobuflisted buftype=nofile bufhidden=hide
     if has('nvim')
       setlocal winhighlight=NormalFloat:Normal
