@@ -70,9 +70,15 @@ function! fern#internal#buffer#open(bufname, ...) abort
     if !options.keepjumps
       " Explicitly record the current position in the jump list before
       " opening the file. In newer Neovim, ':edit' from a 'nofile' buffer
-      " no longer updates the jump list automatically.
+      " no longer updates the jump list automatically. We use 'm'' (set
+      " the previous context mark, which adds the current position to the
+      " jump list) to record the position, then always use 'keepjumps' to
+      " prevent the ':edit' command from adding a duplicate entry.
       execute "normal! m'"
     endif
+    " Always use 'keepjumps' to avoid duplicate jump entries: the position
+    " is either already recorded above (keepjumps=0) or intentionally not
+    " recorded (keepjumps=1).
     let options.mods .= ' keepjumps'
   endif
   " Use user friendly path on a real path to fix #284
