@@ -60,6 +60,7 @@ function! s:show() abort
           \ 'height': 1,
           \ 'noautocmd': v:true,
           \ 'style': 'minimal',
+          \ 'border': 'none',
           \})
   else
     " calculate position of popup
