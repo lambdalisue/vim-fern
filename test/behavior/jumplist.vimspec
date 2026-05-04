@@ -40,8 +40,6 @@ Describe jumplist
     execute printf('Fern %s -wait', fnameescape(workdir))
     execute "normal G\<Plug>(fern-action-open:edit)"
     let output = split(execute('jumps'), '\n')
-    " NOTE:
-    " It seems '-wait' affects 'jumps' somehow
     Assert Match(output[1], '^\s\+3\s\+1\s\+\d\+ alpha$', output)
     Assert Match(output[2], '^\s\+2\s\+1\s\+\d\+ fern://.*/file:///.*$', output)
     Assert Match(output[3], '^\s\+1\s\+4\s\+\d\+ fern://.*/file:///.*$', output)
@@ -56,8 +54,6 @@ Describe jumplist
     execute printf('Fern %s -wait', fnameescape(workdir))
     execute "normal G\<Plug>(fern-action-open:edit)"
     let output = split(execute('jumps'), '\n')
-    " NOTE:
-    " It seems '-wait' affects 'jumps' somehow
     Assert Match(output[1], '^\s\+2\s\+1\s\+\d\+ alpha$', output)
     Assert Match(output[2], '^\s\+1\s\+1\s\+\d\+ fern://.*/file:///.*$', output)
     Assert Match(output[3], '^>$', output)

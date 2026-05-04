@@ -66,7 +66,13 @@ function! fern#internal#buffer#open(bufname, ...) abort
   if options.keepalt && options.opener ==# 'edit'
     let options.mods .= ' keepalt'
   endif
-  if options.keepjumps && options.opener ==# 'edit'
+  if options.opener ==# 'edit'
+    if !options.keepjumps
+      " Explicitly record the current position in the jump list before
+      " opening the file. In newer Neovim, ':edit' from a 'nofile' buffer
+      " no longer updates the jump list automatically.
+      execute "normal! m'"
+    endif
     let options.mods .= ' keepjumps'
   endif
   " Use user friendly path on a real path to fix #284
