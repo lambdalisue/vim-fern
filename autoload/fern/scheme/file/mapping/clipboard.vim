@@ -6,10 +6,14 @@ let s:clipboard = {
       \}
 
 function! fern#scheme#file#mapping#clipboard#init(disable_default_mappings) abort
-  nnoremap <buffer><silent> <Plug>(fern-action-clipboard-copy)  :<C-u>call <SID>call('clipboard_copy')<CR>
-  nnoremap <buffer><silent> <Plug>(fern-action-clipboard-move)  :<C-u>call <SID>call('clipboard_move')<CR>
-  nnoremap <buffer><silent> <Plug>(fern-action-clipboard-paste) :<C-u>call <SID>call('clipboard_paste')<CR>
-  nnoremap <buffer><silent> <Plug>(fern-action-clipboard-clear) :<C-u>call <SID>call('clipboard_clear')<CR>
+  nnoremap <buffer><silent> <Plug>(fern-action-clipboard-copy)            :<C-u>call <SID>call('clipboard_copy')<CR>
+  nnoremap <buffer><silent> <Plug>(fern-action-clipboard-move)            :<C-u>call <SID>call('clipboard_move')<CR>
+  nnoremap <buffer><silent> <Plug>(fern-action-clipboard-paste-confirm)   :<C-u>call <SID>call('clipboard_paste', 1)<CR>
+  nnoremap <buffer><silent> <Plug>(fern-action-clipboard-paste-immediate) :<C-u>call <SID>call('clipboard_paste', 0)<CR>
+  nnoremap <buffer><silent> <Plug>(fern-action-clipboard-clear)           :<C-u>call <SID>call('clipboard_clear')<CR>
+ 
+  " Alias map
+  nmap <buffer><silent> <Plug>(fern-action-clipboard-paste) <Plug>(fern-action-clipboard-paste-confirm)
 
   if !a:disable_default_mappings
     nmap <buffer><nowait> C <Plug>(fern-action-clipboard-copy)
@@ -49,12 +53,12 @@ function! s:map_clipboard_copy(helper) abort
         \.then({ -> a:helper.sync.echo(printf('%d items are saved in clipboard to copy', len(nodes))) })
 endfunction
 
-function! s:map_clipboard_paste(helper) abort
+function! s:map_clipboard_paste(helper, confirm_move) abort
   if empty(s:clipboard)
     return s:Promise.reject('Nothing to paste')
   endif
 
-  if s:clipboard.mode ==# 'move'
+  if s:clipboard.mode ==# 'move' && a:confirm_move
     let paths = map(copy(s:clipboard.candidates), { -> v:val._path })
     let prompt = printf('The following %d nodes will be moved', len(paths))
     for path in paths[:5]
