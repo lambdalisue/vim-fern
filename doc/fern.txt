@@ -1300,9 +1300,13 @@ The following mappings/actions are only available on file:// scheme.
 	action.
 	Note that this action has NO-relation with the system clipboard.
 
+*<Plug>(fern-action-clipboard-paste-confirm)*
+*<Plug>(fern-action-clipboard-paste-immediate)*
 *<Plug>(fern-action-clipboard-paste)*
 	Paste copied/moved nodes on a cursor node. It does not clear the
 	internal clipboard so users can copy -> paste -> paste -> ...
+	The confirm variant prompts the user for confirmation when moving
+	files (this is default), and the immediate variant skips this prompt.
 	Note that this action has NO-relation with the system clipboard.
 
 *<Plug>(fern-action-clipboard-clear)*
