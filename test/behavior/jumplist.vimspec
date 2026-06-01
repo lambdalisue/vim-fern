@@ -42,11 +42,23 @@ Describe jumplist
     let output = split(execute('jumps'), '\n')
     " NOTE:
     " It seems '-wait' affects 'jumps' somehow
-    Assert Match(output[1], '^\s\+3\s\+1\s\+\d\+ alpha$', output)
-    Assert Match(output[2], '^\s\+2\s\+1\s\+\d\+ fern://.*/file:///.*$', output)
-    Assert Match(output[3], '^\s\+1\s\+4\s\+\d\+ fern://.*/file:///.*$', output)
-    Assert Match(output[4], '^>$', output)
-    Assert Equals(len(output), 5)
+    "
+    " On Vim (and Neovim up to v0.4.4) leaving the fern buffer via 'edit'
+    " records an extra jump, so the jumplist holds two fern:// entries.
+    " Recent Neovim no longer records that jump, leaving a single fern://
+    " entry. Either way the jumplist must be updated (alpha is kept as the
+    " most distant jump), unlike the keepjumps_on_edit is 1 case below.
+    if len(output) == 5
+      Assert Match(output[1], '^\s\+3\s\+1\s\+\d\+ alpha$', output)
+      Assert Match(output[2], '^\s\+2\s\+1\s\+\d\+ fern://.*/file:///.*$', output)
+      Assert Match(output[3], '^\s\+1\s\+4\s\+\d\+ fern://.*/file:///.*$', output)
+      Assert Match(output[4], '^>$', output)
+    else
+      Assert Match(output[1], '^\s\+2\s\+1\s\+\d\+ alpha$', output)
+      Assert Match(output[2], '^\s\+1\s\+1\s\+\d\+ fern://.*/file:///.*$', output)
+      Assert Match(output[3], '^>$', output)
+      Assert Equals(len(output), 4)
+    endif
   End
 
   It Fern keeps jumps after 'open:edit' action in split windows style if g:fern#keepjumps_on_edit is 1
