@@ -58,7 +58,10 @@ function! s:select(winnrs, ...) abort
             \   : options.statusline_hl,
             \ options.indicator_hl,
             \])
-      call map(keys(store), { k, v -> setwinvar(v, target, S(v, chars[k])) })
+      for i in range(length)
+        let winnr = a:winnrs[i]
+        call setwinvar(winnr, target, S(winnr, chars[i]))
+      endfor
       redrawstatus
     endif
     call s:_cnoremap_all(chars)
@@ -77,7 +80,9 @@ function! s:select(winnrs, ...) abort
     if options.use_popup
       call s:_clear_popups()
     else
-      call map(keys(store), { _, v -> setwinvar(v, target, store[v]) })
+      for winnr in a:winnrs
+        call setwinvar(winnr, target, store[winnr])
+      endfor
       redrawstatus
     endif
   endtry
