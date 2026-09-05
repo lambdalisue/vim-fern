@@ -214,11 +214,13 @@ function! s:map_remove(helper) abort
     call add(bufutil_paths, path)
   endfor
   let root = a:helper.sync.get_root_node()
+  let cursor = a:helper.sync.get_cursor()
   return s:Promise.all(ps)
         \.then({ -> s:auto_buffer_delete(bufutil_paths) })
         \.then({ -> a:helper.async.collapse_modified_nodes(nodes) })
         \.then({ -> a:helper.async.reload_node(root.__key) })
         \.then({ -> a:helper.async.redraw() })
+        \.then({ -> a:helper.sync.set_cursor(cursor) })
         \.then({ -> a:helper.sync.echo(printf('%d items are removed', len(ps))) })
 endfunction
 
