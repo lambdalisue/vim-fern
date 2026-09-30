@@ -47,7 +47,7 @@ else
   function! s:set_cursor(winid, pos) abort
     try
       call nvim_win_set_cursor(a:winid, a:pos)
-    catch /Cursor position outside buffer/
+    catch /Cursor position outside buffer\|Invalid cursor line: out of range/
       " Do nothing
     endtry
   endfunction
