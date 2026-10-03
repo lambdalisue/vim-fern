@@ -40,7 +40,7 @@ endfunction
 
 function! s:to_slash_windows(path) abort
   let prefix = s:is_absolute_windows(a:path) ? '/' : ''
-  let terms = filter(split(a:path, '\\'), '!empty(v:val)')
+  let terms = filter(split(a:path, '\\/'), '!empty(v:val)')
   return prefix . join(terms, '/')
 endfunction
 
